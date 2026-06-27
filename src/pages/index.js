@@ -8,6 +8,19 @@ export default function Home() {
 
     // 1) Lire le token dans l'URL
     const params = new URLSearchParams(window.location.search);
+    const code = params.get("code");
+
+    if (code) {
+      fetch(`https://sixsence-backend.onrender.com/auth/discord/callback?code=${code}`)
+        .then(res => res.json())
+        .then(data => {
+if (data.token) {
+  localStorage.setItem("token", data.token);
+  window.location.href = data.redirect;
+}
+        });
+      return; // On stoppe ici pour éviter le reste du useEffect
+    }
     const tokenFromUrl = params.get("token");
 
     if (tokenFromUrl) {
