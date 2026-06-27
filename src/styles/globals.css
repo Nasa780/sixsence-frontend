@@ -1,0 +1,201 @@
+/* -------------------------------------------------- */
+/*  BLACK OPS 1 — BUNKER SOG CRT STYLE (A2 MEDIUM)     */
+/* -------------------------------------------------- */
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+html, body {
+  margin: 0;
+  padding: 0;
+  background: #000;
+  color: #0f0;
+  font-family: monospace;
+  min-height: 100%;
+  overflow-x: hidden;
+}
+
+/* -------------------------------------------------- */
+/*  CRT WRAPPER FIX                                    */
+/* -------------------------------------------------- */
+
+.crt-scanlines,
+.crt-grain,
+.crt-glitch,
+.crt-flicker,
+.crt-vibrate,
+.crt-warp {
+  position: relative;
+  z-index: 1;
+}
+
+/* -------------------------------------------------- */
+/*  SCANLINES — BUNKER SOG                             */
+/* -------------------------------------------------- */
+
+.crt-scanlines::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: repeating-linear-gradient(
+    to bottom,
+    rgba(0, 255, 0, 0.06) 0px,
+    rgba(0, 255, 0, 0.06) 2px,
+    transparent 3px,
+    transparent 4px
+  );
+  pointer-events: none;
+  z-index: 50;
+  opacity: 0.7;
+}
+
+/* -------------------------------------------------- */
+/*  GRAIN — BUNKER SOG                                 */
+/* -------------------------------------------------- */
+
+.crt-grain::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background-image: url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVQIW2P8z8BQDwAFgwJ/lzszLwAAAABJRU5ErkJggg==");
+  opacity: 0.25;
+  mix-blend-mode: overlay;
+  pointer-events: none;
+  z-index: 40;
+}
+
+/* -------------------------------------------------- */
+/*  GLOW PHOSPHORE — BUNKER SOG                        */
+/* -------------------------------------------------- */
+
+.text-green-400,
+.text-green-300 {
+  text-shadow: 0 0 6px rgba(0, 255, 0, 0.4);
+}
+
+/* -------------------------------------------------- */
+/*  VIBRATION CRT                                      */
+/* -------------------------------------------------- */
+
+.crt-vibrate {
+  animation: crtVibrate 0.25s infinite linear;
+}
+
+@keyframes crtVibrate {
+  0% { transform: translate(0, 0); }
+  20% { transform: translate(1px, -1px); }
+  40% { transform: translate(-1px, 1px); }
+  60% { transform: translate(1px, 1px); }
+  80% { transform: translate(-1px, -1px); }
+  100% { transform: translate(0, 0); }
+}
+
+/* -------------------------------------------------- */
+/*  GLITCH RGB                                         */
+/* -------------------------------------------------- */
+
+.crt-glitch::before,
+.crt-glitch::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: inherit;
+  mix-blend-mode: screen;
+  opacity: 0.12;
+  animation: glitchShift 0.35s infinite;
+  pointer-events: none;
+}
+
+.crt-glitch::before {
+  transform: translateX(-2px);
+  filter: hue-rotate(90deg);
+}
+
+.crt-glitch::after {
+  transform: translateX(2px);
+  filter: hue-rotate(-90deg);
+}
+
+@keyframes glitchShift {
+  0% { clip-path: inset(0 0 0 0); }
+  20% { clip-path: inset(12% 0 40% 0); }
+  40% { clip-path: inset(75% 0 10% 0); }
+  60% { clip-path: inset(30% 0 50% 0); }
+  80% { clip-path: inset(55% 0 25% 0); }
+  100% { clip-path: inset(0 0 0 0); }
+}
+
+/* -------------------------------------------------- */
+/*  FLICKER CRT                                        */
+/* -------------------------------------------------- */
+
+.crt-flicker {
+  animation: crtFlicker 4s infinite;
+}
+
+@keyframes crtFlicker {
+  0%, 100% { opacity: 1; }
+  10% { opacity: 0.92; }
+  20% { opacity: 0.80; }
+  30% { opacity: 0.90; }
+  40% { opacity: 0.85; }
+  50% { opacity: 0.88; }
+  60% { opacity: 0.93; }
+  70% { opacity: 0.82; }
+  80% { opacity: 0.95; }
+  90% { opacity: 0.88; }
+}
+
+/* -------------------------------------------------- */
+/*  BLINK CURSOR                                       */
+/* -------------------------------------------------- */
+
+.blink {
+  animation: blink 1.2s steps(2, start) infinite;
+}
+
+@keyframes blink {
+  to { visibility: hidden; }
+}
+
+/* --- BLACK OPS UI ELEMENTS --- */
+
+.sog-panel {
+  border: 1px solid rgba(0,255,80,0.3);
+  padding: 16px;
+  background: rgba(0, 20, 0, 0.4);
+  box-shadow: 0 0 12px rgba(0,255,80,0.15);
+  backdrop-filter: blur(2px);
+}
+
+.sog-title {
+  font-size: 28px;
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  color: #00ff66;
+  text-shadow: 0 0 8px rgba(0,255,80,0.5);
+}
+
+.sog-button {
+  border: 1px solid rgba(0,255,80,0.4);
+  padding: 10px 18px;
+  display: inline-block;
+  margin: 6px 0;
+  cursor: pointer;
+  transition: 0.15s;
+}
+
+.sog-button:hover {
+  background: rgba(0,255,80,0.1);
+  box-shadow: 0 0 10px rgba(0,255,80,0.4);
+  transform: translateX(4px);
+}
+
+/* -------------------------------------------------- */
+/*  POLICE MODERNE (si tu veux l’utiliser ailleurs)   */
+/* -------------------------------------------------- */
+
+body {
+  font-family: 'Poppins', sans-serif;
+}
