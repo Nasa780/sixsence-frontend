@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { getToken } from "../utils/auth";
+import { getToken } from "../../utils/auth";
 import { useRouter } from "next/router";
 import RankedModeCard from "../components/RankedModeCard";
 import LeaderboardPreview from "../components/LeaderboardPreview";

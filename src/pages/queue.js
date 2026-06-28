@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { getToken, isAuthenticated } from "../utils/auth";
+import { getToken, isAuthenticated } from "../../utils/auth";
 
 export default function QueuePage() {
   const [user, setUser] = useState(null);
