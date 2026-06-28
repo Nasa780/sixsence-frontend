@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { getToken, isAuthenticated } from "../utils/auth";
 
 export default function Home() {
   const [user, setUser] = useState(null);
@@ -6,21 +7,9 @@ export default function Home() {
   useEffect(() => {
     if (typeof window === "undefined") return;
 
-    // 1) Lire le token dans l'URL
     const params = new URLSearchParams(window.location.search);
-    const code = params.get("code");
 
-    if (code) {
-      fetch(`https://sixsence-backend.onrender.com/auth/discord/callback?code=${code}`)
-        .then(res => res.json())
-        .then(data => {
-if (data.token) {
-  localStorage.setItem("token", data.token);
-  window.location.href = data.redirect;
-}
-        });
-      return; // On stoppe ici pour éviter le reste du useEffect
-    }
+    // 1) Récupérer le token dans l'URL
     const tokenFromUrl = params.get("token");
 
     if (tokenFromUrl) {
@@ -29,11 +18,10 @@ if (data.token) {
     }
 
     // 2) Charger l'utilisateur
-    const token = localStorage.getItem("token");
-    if (!token) return;
+    if (!isAuthenticated()) return;
 
     fetch("https://sixsence-backend.onrender.com/me", {
-      headers: { Authorization: `Bearer ${token}` },
+      headers: { Authorization: `Bearer ${getToken()}` },
     })
       .then((res) => res.json())
       .then((data) => {
@@ -42,13 +30,11 @@ if (data.token) {
   }, []);
 
   return (
-<div
-  className="min-h-screen flex items-center justify-center text-sog-green font-sog crt-scanlines crt-grain bg-cover bg-center bg-no-repeat"
-  style={{ backgroundImage: "url('/images/maxresdefault.jpg')" }}
->
-
+    <div
+      className="min-h-screen flex items-center justify-center text-sog-green font-sog crt-scanlines crt-grain bg-cover bg-center bg-no-repeat"
+      style={{ backgroundImage: "url('/images/maxresdefault.jpg')" }}
+    >
       <div className="sog-panel w-[600px] crt-glitch crt-flicker text-center">
-
         <h1 className="sog-title mb-10">
           ► SIXSENCE OPERATIONS TERMINAL<span className="blink">_</span>
         </h1>
@@ -72,43 +58,39 @@ if (data.token) {
               </p>
             </div>
 
-<div className="space-y-4 mx-auto w-[300px] flex flex-col items-center">
+            <div className="space-y-4 mx-auto w-[300px] flex flex-col items-center">
+              <a href="/queue" className="sog-button block w-full">
+                ► MODE CLASSÉ
+              </a>
 
-  <a href="/queue" className="sog-button block w-full">
-    ► MODE CLASSÉ
-  </a>
+              <a href="/profile" className="sog-button block w-full">
+                ► PROFIL
+              </a>
 
-  <a href="/profile" className="sog-button block w-full">
-    ► PROFIL
-  </a>
+              <a href="/leaderboard" className="sog-button block w-full">
+                ► CLASSEMENT
+              </a>
 
-  <a href="/leaderboard" className="sog-button block w-full">
-    ► CLASSEMENT
-  </a>
+              <a href="/settings" className="sog-button block w-full">
+                ► PARAMÈTRES
+              </a>
 
-  <a href="/settings" className="sog-button block w-full">
-    ► PARAMÈTRES
-  </a>
-
-  <button
-    onClick={() => {
-      localStorage.removeItem("token");
-      window.location.reload();
-    }}
-    className="sog-button block w-full text-red-400 border-red-600 hover:bg-red-900/40"
-  >
-    ► DÉCONNEXION
-  </button>
-
-</div>
-
+              <button
+                onClick={() => {
+                  localStorage.removeItem("token");
+                  window.location.reload();
+                }}
+                className="sog-button block w-full text-red-400 border-red-600 hover:bg-red-900/40"
+              >
+                ► DÉCONNEXION
+              </button>
+            </div>
           </>
         )}
 
         <p className="opacity-60 mt-10 text-sm">
           SOG BUNKER SYSTEM — ACCESS LEVEL 3
         </p>
-
       </div>
     </div>
   );
