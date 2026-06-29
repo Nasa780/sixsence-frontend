@@ -1,6 +1,5 @@
 import { useEffect, useState } from "react";
-import { getToken, isAuthenticated } from "../utils/auth2";
-
+import { getToken, isAuthenticated } from "../utils/auth";
 
 export default function Home() {
   const [user, setUser] = useState(null);
@@ -8,7 +7,6 @@ export default function Home() {
   useEffect(() => {
     if (typeof window === "undefined") return;
 
-    // Récupération du token dans l'URL
     const params = new URLSearchParams(window.location.search);
     const tokenFromUrl = params.get("token");
 
@@ -17,10 +15,8 @@ export default function Home() {
       window.history.replaceState({}, "", "/");
     }
 
-    // Si pas authentifié → on ne fetch pas /me
     if (!isAuthenticated()) return;
 
-    // Récupération des infos utilisateur
     fetch("https://sixsence-backend.onrender.com/me", {
       headers: { Authorization: `Bearer ${getToken()}` },
     })
@@ -31,48 +27,56 @@ export default function Home() {
   }, []);
 
   return (
-    <div className="min-h-screen bg-[#07070D] text-white">
+    <div className="relative min-h-screen bg-[#07070D] text-white overflow-hidden">
 
-      {/* ---------------------- TOP BAR ---------------------- */}
-      <header className="flex justify-end items-center p-6">
-        <img src="/assets/fr.png" className="w-8 mr-4" alt="FR" />
+      {/* ---------------------- PARTICLES BACKGROUND ---------------------- */}
+      <div className="absolute inset-0 pointer-events-none">
+        <img
+          src="/assets/particles.png"
+          alt=""
+          className="w-full h-full object-cover opacity-40"
+        />
+      </div>
 
-        {/* Bouton Discord */}
+      {/* ---------------------- HEADER ---------------------- */}
+      <header className="relative z-10 flex justify-between items-center px-10 py-6">
+        <img src="/assets/logo.png" alt="Six Sence" className="h-10" />
+
         <a
           href="https://sixsence-backend.onrender.com/auth/discord"
-          className="px-4 py-2 bg-[#5865f2] rounded-lg font-semibold"
+          className="px-5 py-2 bg-[#5865F2] rounded-lg font-semibold"
         >
           Discord
         </a>
       </header>
 
-      {/* ---------------------- HERO SECTION (Figma) ---------------------- */}
-      <main className="text-center mt-20 px-4">
+      {/* ---------------------- MAIN CONTENT ---------------------- */}
+      <main className="relative z-10 text-center mt-20 px-4">
 
         {/* SAISON */}
-        <p className="text-whiteDim tracking-widest text-sm uppercase">
+        <p className="text-white/60 tracking-widest text-sm uppercase">
           SAISON 1 — COMPÉTITION OUVERTE
         </p>
 
         {/* TITRE SIX SENCE */}
-        <h1 className="font-raj font-bold text-[168px] leading-[148px] tracking-[3.36px] uppercase bg-heroText bg-clip-text text-transparent text-center">
+        <h1 className="font-raj font-bold text-[160px] leading-[140px] tracking-[3px] uppercase bg-gradient-to-b from-[#FFD66B] to-white bg-clip-text text-transparent">
           SIX SENCE
         </h1>
 
         {/* SOUS-TITRE */}
-        <p className="font-raj font-semibold text-[15.68px] leading-[24px] tracking-[8.1536px] uppercase text-whiteDim text-center mt-4">
+        <p className="font-raj font-semibold text-[16px] leading-[24px] tracking-[8px] uppercase text-white/60 mt-4">
           MATCHMAKING STRUCTURÉ, MODE RANKED, PROGRESSION RÉELLE.
         </p>
 
         {/* PARAGRAPHE */}
-        <p className="font-inter text-[14.08px] leading-[25px] text-whiteSoft text-center w-[349px] mx-auto mt-4">
+        <p className="font-inter text-[15px] leading-[25px] text-white/70 w-[360px] mx-auto mt-4">
           La plateforme de compétition nouvelle génération.  
           Matchmaking en temps réel, classement dynamique.
         </p>
 
         {/* CTA */}
         <div className="flex justify-center gap-4 mt-10">
-          <button className="px-8 py-3 bg-accent text-black font-raj font-bold rounded-[3px] shadow-accent">
+          <button className="px-8 py-3 bg-[#FFB84C] text-black font-raj font-bold rounded-[3px] shadow-[0_0_20px_rgba(255,184,76,0.4)]">
             JOUEZ GRATUITEMENT
           </button>
 
@@ -85,17 +89,17 @@ export default function Home() {
         </div>
 
         {/* ---------------------- WINDOWS APP BOX ---------------------- */}
-        <div className="mt-16 mx-auto w-[400px] bg-[#0B0B12] rounded-[6px] p-6 flex flex-col items-center">
+        <div className="mt-16 mx-auto w-[400px] bg-[#0B0B12] rounded-[6px] p-6 flex flex-col items-center border border-white/10">
           <div className="flex gap-2 mb-4">
-            <span className="font-raj font-bold text-[11.2px] tracking-[2.464px] uppercase text-white">
+            <span className="font-raj font-bold text-[12px] tracking-[2px] uppercase text-white">
               Application
             </span>
-            <span className="font-raj font-semibold text-[11.2px] tracking-[2.464px] uppercase text-whiteDim">
+            <span className="font-raj font-semibold text-[12px] tracking-[2px] uppercase text-white/60">
               Windows
             </span>
           </div>
 
-          <button className="w-[202px] h-[34.8px] bg-accent rounded-[3px] shadow-accent font-raj font-bold uppercase">
+          <button className="w-[200px] h-[36px] bg-[#FFB84C] rounded-[3px] shadow-[0_0_20px_rgba(255,184,76,0.4)] font-raj font-bold uppercase">
             INSTALLER L’APPLICATION
           </button>
         </div>
