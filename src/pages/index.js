@@ -43,53 +43,54 @@ export default function Home() {
       {/* ---------------------- HERO SECTION (VERSION FUSIONNÉE) ---------------------- */}
       <main className="text-center mt-20 px-4">
 
-        {/* SAISON */}
-        <p className="text-gray-300 tracking-widest text-sm">
-          SAISON 1 — COMPÉTITION OUVERTE
-        </p>
+{/* SAISON */}
+<p className="text-gray-300 tracking-widest text-sm">
+  SAISON 1 — COMPÉTITION OUVERTE
+</p>
 
-        {/* TITRE SIX SENCE (VERSION Figma) */}
-        <h1 className="text-[168px] leading-[148px] font-extrabold mt-4 bg-gradient-to-b from-[#ffe27a] to-white text-transparent bg-clip-text uppercase">
-          SIX SENCE
-        </h1>
+{/* TITRE SIX SENCE (Figma) */}
+<h1 className="font-raj font-bold text-[168px] leading-[148px] tracking-[3.36px] uppercase bg-heroText bg-clip-text text-transparent text-center">
+  SIX SENCE
+</h1>
 
-        {/* SOUS-TITRE */}
-        <p className="text-gray-300 text-lg mt-4 uppercase tracking-[8px]">
-          MATCHMAKING STRUCTURÉ, MODE RANKED, PROGRESSION RÉELLE.
-        </p>
+{/* SOUS-TITRE */}
+<p className="font-raj font-semibold text-[15.68px] leading-[24px] tracking-[8.1536px] uppercase text-[rgba(255,255,255,0.45)] text-center mt-4">
+  MATCHMAKING STRUCTURÉ, MODE RANKED, PROGRESSION RÉELLE.
+</p>
 
-        {/* PARAGRAPHE */}
-        <p className="text-gray-400 max-w-xl mx-auto mt-4 text-[17px]">
-          La plateforme de compétition Call of Duty nouvelle génération en SND Hardcore.
-        </p>
+{/* PARAGRAPHE */}
+<p className="font-inter text-[14.08px] leading-[25px] text-[rgba(175,175,200,0.6)] text-center w-[349px] mx-auto mt-4">
+  La plateforme de compétition nouvelle génération.
+</p>
 
-        {/* CTA */}
-        <div className="flex justify-center gap-4 mt-10">
-          <button className="px-6 py-3 bg-[#ff7a00] rounded-xl font-semibold">
-            JOUEZ GRATUITEMENT
-          </button>
+{/* CTA */}
+<div className="flex justify-center gap-4 mt-10">
+  <button className="px-8 py-3 bg-white text-black font-raj font-bold rounded-[3px] shadow">
+    Créer un compte
+  </button>
 
-          <a
-            href="https://sixsence-backend.onrender.com/auth/discord"
-            className="px-6 py-3 bg-[#1a1f3c] text-[#9bb0ff] rounded-xl font-semibold"
-          >
-            REJOINDRE DISCORD
-          </a>
-        </div>
+  <button className="px-8 py-3 bg-accent text-black font-raj font-bold rounded-[3px] shadow-accent">
+    Télécharger l'application
+  </button>
+</div>
+
 
         {/* ---------------------- WINDOWS APP BOX (VERSION Figma) ---------------------- */}
-        <div className="mt-16 mx-auto w-[320px] bg-white/5 border border-white/10 p-5 rounded-xl text-left">
-          <p className="text-[#ff7a00] text-sm font-semibold tracking-[2.4px] uppercase">
-            APPLICATION WINDOWS
-          </p>
-          <p className="text-gray-300 text-sm mt-1">
-            Installez SixSence sur votre PC pour une expérience optimale.
-          </p>
-          <button className="mt-4 px-4 py-2 bg-[#ff7a00] rounded-lg font-semibold">
-            INSTALLER L’APPLICATION
-          </button>
-        </div>
-      </main>
+<div className="mt-16 mx-auto w-[400px] bg-[#0B0B12] rounded-[6px] p-6 flex flex-col items-center">
+  <div className="flex gap-2 mb-4">
+    <span className="font-raj font-bold text-[11.2px] tracking-[2.464px] uppercase text-white">
+      Application
+    </span>
+    <span className="font-raj font-semibold text-[11.2px] tracking-[2.464px] uppercase text-[rgba(255,255,255,0.4)]">
+      Windows
+    </span>
+  </div>
+
+  <button className="w-[202px] h-[34.8px] bg-accent rounded-[3px] shadow-accent font-raj font-bold uppercase">
+    Installer l'application
+  </button>
+</div>
+
 
       {/* ---------------------- TERMINAL SOG SI USER CONNECTÉ ---------------------- */}
       {user && (
