@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { getToken, isAuthenticated } from "../routes/auth";
+import { getToken, isAuthenticated } from "../utils/auth";
 
 
 export default function Home() {
