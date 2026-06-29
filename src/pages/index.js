@@ -60,90 +60,93 @@ export default function Home() {
       </header>
 
       {/* --------------------------- MAIN CONTENT --------------------------- */}
-      <main className="relative z-10 flex justify-between items-start mt-20 px-20">
+      <main className="relative z-10 flex justify-center mt-20 px-4">
 
-        {/* COLONNE GAUCHE */}
-        <div className="flex flex-col">
+        {/* CONTAINER GLOBAL FIGMA — 2189px */}
+        <div className="w-full max-w-[2189px] mx-auto flex justify-between">
 
-          {/* SAISON */}
-          <img
-            src="/assets/Saison 1 — Compétition Ouverte.png"
-            alt="Saison"
-            className="w-[420px] mb-4"
-          />
+          {/* --------------------------- COLONNE GAUCHE --------------------------- */}
+          <div className="flex flex-col">
 
-          {/* TITRE SIX SENCE */}
-          <img
-            src="/assets/SIX SENCE.png"
-            alt="Six Sence"
-            className="w-[600px] mb-6"
-          />
-
-          {/* SOUS-TITRE */}
-          <img
-            src="/assets/Matchmaking structuré, mode Ra....png"
-            alt="Sous titre"
-            className="w-[500px] mb-4"
-          />
-
-          {/* PARAGRAPHE */}
-          <img
-            src="/assets/La plateforme de compétition mo....png"
-            alt="Paragraphe"
-            className="w-[420px] mb-10"
-          />
-
-          {/* BOUTONS */}
-          <div className="flex gap-4">
-
-            {/* BOUTON JAUNE */}
+            {/* SAISON */}
             <img
-              src="/assets/Buttonjaune.png"
-              alt="Jouez Maintenant"
-              className="h-[60px] cursor-pointer hover:opacity-90 transition"
+              src="/assets/Saison 1 — Compétition Ouverte.png"
+              alt="Saison"
+              className="mb-4"
             />
 
-            {/* BOUTON DISCORD */}
-            <a
-              href="https://sixsence-backend.onrender.com/auth/discord"
-              className="block"
-            >
+            {/* TITRE SIX SENCE */}
+            <img
+              src="/assets/SIX SENCE.png"
+              alt="Six Sence"
+              className="mb-6"
+            />
+
+            {/* SOUS-TITRE */}
+            <img
+              src="/assets/Matchmaking structuré, mode Ra....png"
+              alt="Sous titre"
+              className="mb-4"
+            />
+
+            {/* PARAGRAPHE */}
+            <img
+              src="/assets/La plateforme de compétition mo....png"
+              alt="Paragraphe"
+              className="mb-10"
+            />
+
+            {/* BOUTONS */}
+            <div className="flex gap-4">
+
+              {/* BOUTON JAUNE */}
               <img
-                src="/assets/Buttondiscord.png"
-                alt="Rejoindre Discord"
-                className="h-[60px] cursor-pointer hover:opacity-90 transition"
+                src="/assets/Buttonjaune.png"
+                alt="Jouez Maintenant"
+                className="cursor-pointer hover:opacity-90 transition"
               />
-            </a>
+
+              {/* BOUTON DISCORD */}
+              <a
+                href="https://sixsence-backend.onrender.com/auth/discord"
+                className="block"
+              >
+                <img
+                  src="/assets/Buttondiscord.png"
+                  alt="Rejoindre Discord"
+                  className="cursor-pointer hover:opacity-90 transition"
+                />
+              </a>
+
+            </div>
+          </div>
+
+          {/* --------------------------- COLONNE DROITE --------------------------- */}
+          <div className="flex flex-col items-end">
+
+            {/* PARAGRAPHE APPLICATION */}
+            <img
+              src="/assets/Paragraphapplication.png"
+              alt="Application"
+              className="mb-4"
+            />
+
+            {/* CARD APPLICATION */}
+            <img
+              src="/assets/Containerapp.png"
+              alt="Application Windows"
+            />
+
+            {/* BOUTON INSTALLER */}
+            <img
+              src="/assets/Buttonapp.png"
+              alt="Installer"
+              className="mt-4 cursor-pointer hover:opacity-90 transition"
+            />
 
           </div>
-        </div>
-
-        {/* COLONNE DROITE — APP CARD */}
-        <div className="flex flex-col items-end">
-
-          {/* PARAGRAPHE APPLICATION */}
-          <img
-            src="/assets/Paragraphapplication.png"
-            alt="Application"
-            className="w-[300px] mb-4"
-          />
-
-          {/* CARD APPLICATION */}
-          <img
-            src="/assets/Containerapp.png"
-            alt="Application Windows"
-            className="w-[380px]"
-          />
-
-          {/* BOUTON INSTALLER */}
-          <img
-            src="/assets/Buttonapp.png"
-            alt="Installer"
-            className="w-[200px] mt-4 cursor-pointer hover:opacity-90 transition"
-          />
 
         </div>
-
       </main>
     </div>
   );
