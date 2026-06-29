@@ -27,30 +27,29 @@ export default function Home() {
   }, []);
 
   return (
-    <div className="relative min-h-screen bg-[#07070D] text-white overflow-hidden">
+    <div className="relative min-h-screen bg-[#0B0812] text-white overflow-hidden">
 
-{/* --------------------------- BACKGROUND + PARTICLES --------------------------- */}
-<div className="absolute inset-0 pointer-events-none">
+      {/* --------------------------- BACKGROUND + PARTICLES --------------------------- */}
+      <div className="absolute inset-0 pointer-events-none">
 
-  {/* Tactical Background */}
-  <img
-    src="/assets/TacticalBackground.png"
-    alt="Background"
-    className="w-full h-full object-cover opacity-30"
-  />
+        {/* Tactical Background */}
+        <img
+          src="/assets/TacticalBackground.png"
+          alt="Background"
+          className="w-full h-full object-cover opacity-30"
+        />
 
-  {/* Particles */}
-  <img
-    src="/assets/Particles.png"
-    alt="Particles"
-    className="w-full h-full object-cover opacity-40"
-  />
+        {/* Particles */}
+        <img
+          src="/assets/Particles.png"
+          alt="Particles"
+          className="w-full h-full object-cover opacity-40"
+        />
+      </div>
 
-</div>
-
-      {/* ---------------------- HEADER ---------------------- */}
+      {/* --------------------------- HEADER --------------------------- */}
       <header className="relative z-10 flex justify-between items-center px-10 py-6">
-        <img src="/assets/Header.png" alt="Six Sence" className="h-10" />
+        <img src="/assets/Header.png" alt="Six Sence" className="h-12" />
 
         <a
           href="https://sixsence-backend.onrender.com/auth/discord"
@@ -60,15 +59,15 @@ export default function Home() {
         </a>
       </header>
 
-      {/* ---------------------- MAIN CONTENT ---------------------- */}
+      {/* --------------------------- MAIN CONTENT --------------------------- */}
       <main className="relative z-10 text-center mt-20 px-4">
 
-{/* MAIN IMAGE (Figma) */}
-<img
-  src="/assets/Main.png"
-  alt="Main Visual"
-  className="mx-auto mb-10 w-full max-w-[1200px] opacity-90 pointer-events-none select-none"
-/>
+        {/* MAIN CONTENT IMAGE */}
+        <img
+          src="/assets/MainContent.png"
+          alt="Main Visual"
+          className="mx-auto mb-10 w-full max-w-[1200px] pointer-events-none select-none"
+        />
 
         {/* SAISON */}
         <p className="text-white/60 tracking-widest text-sm uppercase">
@@ -105,12 +104,12 @@ export default function Home() {
           </a>
         </div>
 
-{/* ---------------------- WINDOWS APP BOX ---------------------- */}
-<img
-  src="/assets/AppCard.png"
-  alt="Application Card"
-  className="mx-auto mt-16 w-[400px]"
-/>
+        {/* --------------------------- APP CARD --------------------------- */}
+        <img
+          src="/assets/AppCard.png"
+          alt="Application Card"
+          className="mx-auto mt-16 w-[400px]"
+        />
 
       </main>
     </div>
