@@ -2,6 +2,30 @@ import { useEffect, useState } from "react";
 import { getToken, isAuthenticated } from "../../utils/auth";
 
 export default function Home() {
+  const [user, setUser] = useState(null);
+
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+
+    const params = new URLSearchParams(window.location.search);
+    const tokenFromUrl = params.get("token");
+
+    if (tokenFromUrl) {
+      localStorage.setItem("token", tokenFromUrl);
+      window.history.replaceState({}, "", "/");
+    }
+
+    if (!isAuthenticated()) return;
+
+    fetch("https://sixsence-backend.onrender.com/me", {
+      headers: { Authorization: `Bearer ${getToken()}` },
+    })
+      .then((res) => res.json())
+      .then((data) => {
+        if (!data.error) setUser(data);
+      });
+  }, []);
+
   return (
     <div className="min-h-screen bg-[#07070D] text-white">
 
