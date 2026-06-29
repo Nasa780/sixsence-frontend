@@ -69,15 +69,12 @@ export default function Home() {
           className="mx-auto mb-10 w-full max-w-[1200px] pointer-events-none select-none"
         />
 
-        {/* SAISON */}
-        <p className="text-white/60 tracking-widest text-sm uppercase">
-          SAISON 1 — COMPÉTITION OUVERTE
-        </p>
-
-        {/* TITRE SIX SENCE */}
-        <h1 className="font-raj font-bold text-[160px] leading-[140px] tracking-[3px] uppercase bg-gradient-to-b from-[#FFD66B] to-white bg-clip-text text-transparent">
-          SIX SENCE
-        </h1>
+{/* SAISON IMAGE */}
+<img
+  src="/assets/Saison 1 — Compétition Ouverte.png"
+  alt="Saison 1 — Compétition Ouverte"
+  className="mx-auto mb-4 w-[420px] pointer-events-none select-none"
+/>
 
         {/* SOUS-TITRE */}
         <p className="font-raj font-semibold text-[16px] leading-[24px] tracking-[8px] uppercase text-white/60 mt-4">
