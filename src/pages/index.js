@@ -51,12 +51,17 @@ export default function Home() {
       <header className="relative z-10 flex justify-between items-center px-10 py-6">
         <img src="/assets/Header.png" alt="Six Sence" className="h-12" />
 
-        <a
-          href="https://sixsence-backend.onrender.com/auth/discord"
-          className="px-5 py-2 bg-[#5865F2] rounded-lg font-semibold"
-        >
-          Discord
-        </a>
+{/* BOUTON DISCORD IMAGE */}
+<a
+  href="https://sixsence-backend.onrender.com/auth/discord"
+  className="block"
+>
+  <img
+    src="/assets/Buttondiscord.png"
+    alt="Rejoindre Discord"
+    className="h-12 pointer-events-auto hover:opacity-90 transition"
+  />
+</a>
       </header>
 
       {/* --------------------------- MAIN CONTENT --------------------------- */}
