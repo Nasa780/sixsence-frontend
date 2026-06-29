@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
-import { getToken, isAuthenticated } from "../utils/auth";
+import { getToken, isAuthenticated } from "../routes/auth";
+
 
 export default function Home() {
   const [user, setUser] = useState(null);
