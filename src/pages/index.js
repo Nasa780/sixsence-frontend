@@ -69,38 +69,6 @@ export default function Home() {
           className="mx-auto mb-10 w-full max-w-[1200px] pointer-events-none select-none"
         />
 
-{/* SAISON IMAGE */}
-<img
-  src="/assets/Saison 1 — Compétition Ouverte.png"
-  alt="Saison 1 — Compétition Ouverte"
-  className="mx-auto mb-4 w-[420px] pointer-events-none select-none"
-/>
-
-        {/* SOUS-TITRE */}
-        <p className="font-raj font-semibold text-[16px] leading-[24px] tracking-[8px] uppercase text-white/60 mt-4">
-          MATCHMAKING STRUCTURÉ, MODE RANKED, PROGRESSION RÉELLE.
-        </p>
-
-        {/* PARAGRAPHE */}
-        <p className="font-inter text-[15px] leading-[25px] text-white/70 w-[360px] mx-auto mt-4">
-          La plateforme de compétition nouvelle génération.  
-          Matchmaking en temps réel, classement dynamique.
-        </p>
-
-        {/* CTA */}
-        <div className="flex justify-center gap-4 mt-10">
-          <button className="px-8 py-3 bg-[#FFB84C] text-black font-raj font-bold rounded-[3px] shadow-[0_0_20px_rgba(255,184,76,0.4)]">
-            JOUEZ GRATUITEMENT
-          </button>
-
-          <a
-            href="https://sixsence-backend.onrender.com/auth/discord"
-            className="px-8 py-3 bg-[#1A1F3C] text-[#9BB0FF] font-raj font-bold rounded-[3px]"
-          >
-            REJOINDRE DISCORD
-          </a>
-        </div>
-
         {/* --------------------------- APP CARD --------------------------- */}
         <img
           src="/assets/AppCard.png"
