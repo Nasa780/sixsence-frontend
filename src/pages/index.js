@@ -30,18 +30,12 @@ export default function Home() {
     <div className="relative min-h-screen bg-[#0B0812] text-white overflow-hidden">
 
       {/* --------------------------- BACKGROUND --------------------------- */}
-      <div className="absolute inset-0 pointer-events-none">
-        <img
-          src="/assets/TacticalBackground.png"
-          alt="Background"
-          className="w-full h-full object-cover opacity-30"
-        />
-        <img
-          src="/assets/Particles.png"
-          alt="Particles"
-          className="w-full h-full object-cover opacity-40"
-        />
-      </div>
+<div className="absolute inset-0 pointer-events-none">
+  <img
+    src="/assets/HomePage.png"
+    className="w-full h-full object-cover"
+  />
+</div>
 
       {/* --------------------------- HEADER --------------------------- */}
       <header className="relative z-10 flex justify-between items-center px-10 py-6">
@@ -79,21 +73,21 @@ export default function Home() {
             <img
               src="/assets/SIX SENCE.png"
               alt="Six Sence"
-              className="mb-6"
+              className="absolute left-[730px] top-[148px]"
             />
 
             {/* SOUS-TITRE */}
             <img
               src="/assets/Matchmaking structuré, mode Ra....png"
               alt="Sous titre"
-              className="mb-4"
+              className="absolute left-[857px] top-[24px]"
             />
 
             {/* PARAGRAPHE */}
             <img
               src="/assets/La plateforme de compétition mo....png"
               alt="Paragraphe"
-              className="mb-10"
+              className="absolute left-[349px] top-[51px]"
             />
 
             {/* BOUTONS */}
@@ -103,7 +97,7 @@ export default function Home() {
               <img
                 src="/assets/Buttonjaune.png"
                 alt="Jouez Maintenant"
-                className="cursor-pointer hover:opacity-90 transition"
+                className="absolute left-[246.41px] top-[47.92px] cursor-pointer hover:opacity-90 transition"
               />
 
               {/* BOUTON DISCORD */}
@@ -114,7 +108,7 @@ export default function Home() {
                 <img
                   src="/assets/Buttondiscord.png"
                   alt="Rejoindre Discord"
-                  className="cursor-pointer hover:opacity-90 transition"
+                  className="absolute left-[238px] top-[48px] cursor-pointer hover:opacity-90 transition"
                 />
               </a>
 
@@ -128,20 +122,21 @@ export default function Home() {
             <img
               src="/assets/Paragraphapplication.png"
               alt="Application"
-              className="mb-4"
+              className="absolute left-[84px] top-[14px]"
             />
 
-            {/* CARD APPLICATION */}
+            {/* WINDOWS APPLICATION */}
             <img
               src="/assets/Containerapp.png"
               alt="Application Windows"
+              className="absolute left-[86.19px] top-[51px]"
             />
 
             {/* BOUTON INSTALLER */}
             <img
               src="/assets/Buttonapp.png"
               alt="Installer"
-              className="mt-4 cursor-pointer hover:opacity-90 transition"
+              className="absolute left-[202px] top-[34.8px] cursor-pointer hover:opacity-90 transition"
             />
 
           </div>
