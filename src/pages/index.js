@@ -40,24 +40,30 @@ export default function Home() {
         </a>
       </header>
 
-      {/* ---------------------- HERO SECTION ---------------------- */}
+      {/* ---------------------- HERO SECTION (VERSION FUSIONNÉE) ---------------------- */}
       <main className="text-center mt-20 px-4">
+
+        {/* SAISON */}
         <p className="text-gray-300 tracking-widest text-sm">
           SAISON 1 — COMPÉTITION OUVERTE
         </p>
 
-        <h1 className="text-6xl font-extrabold mt-4 bg-gradient-to-b from-[#ffe27a] to-white text-transparent bg-clip-text">
+        {/* TITRE SIX SENCE (VERSION Figma) */}
+        <h1 className="text-[168px] leading-[148px] font-extrabold mt-4 bg-gradient-to-b from-[#ffe27a] to-white text-transparent bg-clip-text uppercase">
           SIX SENCE
         </h1>
 
-        <p className="text-gray-300 text-lg mt-4">
+        {/* SOUS-TITRE */}
+        <p className="text-gray-300 text-lg mt-4 uppercase tracking-[8px]">
           MATCHMAKING STRUCTURÉ, MODE RANKED, PROGRESSION RÉELLE.
         </p>
 
+        {/* PARAGRAPHE */}
         <p className="text-gray-400 max-w-xl mx-auto mt-4 text-[17px]">
           La plateforme de compétition Call of Duty nouvelle génération en SND Hardcore.
         </p>
 
+        {/* CTA */}
         <div className="flex justify-center gap-4 mt-10">
           <button className="px-6 py-3 bg-[#ff7a00] rounded-xl font-semibold">
             JOUEZ GRATUITEMENT
@@ -71,9 +77,11 @@ export default function Home() {
           </a>
         </div>
 
-        {/* ---------------------- WINDOWS APP BOX ---------------------- */}
+        {/* ---------------------- WINDOWS APP BOX (VERSION Figma) ---------------------- */}
         <div className="mt-16 mx-auto w-[320px] bg-white/5 border border-white/10 p-5 rounded-xl text-left">
-          <p className="text-[#ff7a00] text-sm font-semibold">APPLICATION WINDOWS</p>
+          <p className="text-[#ff7a00] text-sm font-semibold tracking-[2.4px] uppercase">
+            APPLICATION WINDOWS
+          </p>
           <p className="text-gray-300 text-sm mt-1">
             Installez SixSence sur votre PC pour une expérience optimale.
           </p>
