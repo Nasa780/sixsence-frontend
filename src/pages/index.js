@@ -29,18 +29,28 @@ export default function Home() {
   return (
     <div className="relative min-h-screen bg-[#07070D] text-white overflow-hidden">
 
-      {/* ---------------------- PARTICLES BACKGROUND ---------------------- */}
-      <div className="absolute inset-0 pointer-events-none">
-        <img
-          src="/assets/particles.png"
-          alt=""
-          className="w-full h-full object-cover opacity-40"
-        />
-      </div>
+{/* --------------------------- BACKGROUND + PARTICLES --------------------------- */}
+<div className="absolute inset-0 pointer-events-none">
+
+  {/* Tactical Background */}
+  <img
+    src="/assets/TacticalBackground.png"
+    alt="Background"
+    className="w-full h-full object-cover opacity-30"
+  />
+
+  {/* Particles */}
+  <img
+    src="/assets/Particles.png"
+    alt="Particles"
+    className="w-full h-full object-cover opacity-40"
+  />
+
+</div>
 
       {/* ---------------------- HEADER ---------------------- */}
       <header className="relative z-10 flex justify-between items-center px-10 py-6">
-        <img src="/assets/logo.png" alt="Six Sence" className="h-10" />
+        <img src="/assets/Header.png" alt="Six Sence" className="h-10" />
 
         <a
           href="https://sixsence-backend.onrender.com/auth/discord"
@@ -52,6 +62,13 @@ export default function Home() {
 
       {/* ---------------------- MAIN CONTENT ---------------------- */}
       <main className="relative z-10 text-center mt-20 px-4">
+
+{/* MAIN IMAGE (Figma) */}
+<img
+  src="/assets/Main.png"
+  alt="Main Visual"
+  className="mx-auto mb-10 w-full max-w-[1200px] opacity-90 pointer-events-none select-none"
+/>
 
         {/* SAISON */}
         <p className="text-white/60 tracking-widest text-sm uppercase">
@@ -88,21 +105,13 @@ export default function Home() {
           </a>
         </div>
 
-        {/* ---------------------- WINDOWS APP BOX ---------------------- */}
-        <div className="mt-16 mx-auto w-[400px] bg-[#0B0B12] rounded-[6px] p-6 flex flex-col items-center border border-white/10">
-          <div className="flex gap-2 mb-4">
-            <span className="font-raj font-bold text-[12px] tracking-[2px] uppercase text-white">
-              Application
-            </span>
-            <span className="font-raj font-semibold text-[12px] tracking-[2px] uppercase text-white/60">
-              Windows
-            </span>
-          </div>
+{/* ---------------------- WINDOWS APP BOX ---------------------- */}
+<img
+  src="/assets/AppCard.png"
+  alt="Application Card"
+  className="mx-auto mt-16 w-[400px]"
+/>
 
-          <button className="w-[200px] h-[36px] bg-[#FFB84C] rounded-[3px] shadow-[0_0_20px_rgba(255,184,76,0.4)] font-raj font-bold uppercase">
-            INSTALLER L’APPLICATION
-          </button>
-        </div>
       </main>
     </div>
   );
