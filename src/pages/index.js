@@ -29,17 +29,13 @@ export default function Home() {
   return (
     <div className="relative min-h-screen bg-[#0B0812] text-white overflow-hidden">
 
-      {/* --------------------------- BACKGROUND + PARTICLES --------------------------- */}
+      {/* --------------------------- BACKGROUND --------------------------- */}
       <div className="absolute inset-0 pointer-events-none">
-
-        {/* Tactical Background */}
         <img
           src="/assets/TacticalBackground.png"
           alt="Background"
           className="w-full h-full object-cover opacity-30"
         />
-
-        {/* Particles */}
         <img
           src="/assets/Particles.png"
           alt="Particles"
@@ -49,37 +45,104 @@ export default function Home() {
 
       {/* --------------------------- HEADER --------------------------- */}
       <header className="relative z-10 flex justify-between items-center px-10 py-6">
-        <img src="/assets/Header.png" alt="Six Sence" className="h-12" />
+        <img src="/assets/SixSenceLogo.png" alt="Six Sence" className="h-12" />
 
-{/* BOUTON DISCORD IMAGE */}
-<a
-  href="https://sixsence-backend.onrender.com/auth/discord"
-  className="block"
->
-  <img
-    src="/assets/Buttondiscord.png"
-    alt="Rejoindre Discord"
-    className="h-12 pointer-events-auto hover:opacity-90 transition"
-  />
-</a>
+        <a
+          href="https://sixsence-backend.onrender.com/auth/discord"
+          className="block"
+        >
+          <img
+            src="/assets/Buttonbleu.png"
+            alt="Discord"
+            className="h-12 hover:opacity-90 transition"
+          />
+        </a>
       </header>
 
       {/* --------------------------- MAIN CONTENT --------------------------- */}
-      <main className="relative z-10 text-center mt-20 px-4">
+      <main className="relative z-10 flex justify-between items-start mt-20 px-20">
 
-        {/* MAIN CONTENT IMAGE */}
-        <img
-          src="/assets/MainContent.png"
-          alt="Main Visual"
-          className="mx-auto mb-10 w-full max-w-[1200px] pointer-events-none select-none"
-        />
+        {/* COLONNE GAUCHE */}
+        <div className="flex flex-col">
 
-        {/* --------------------------- APP CARD --------------------------- */}
-        <img
-          src="/assets/AppCard.png"
-          alt="Application Card"
-          className="mx-auto mt-16 w-[400px]"
-        />
+          {/* SAISON */}
+          <img
+            src="/assets/Saison 1 — Compétition Ouverte.png"
+            alt="Saison"
+            className="w-[420px] mb-4"
+          />
+
+          {/* TITRE SIX SENCE */}
+          <img
+            src="/assets/SIX SENCE.png"
+            alt="Six Sence"
+            className="w-[600px] mb-6"
+          />
+
+          {/* SOUS-TITRE */}
+          <img
+            src="/assets/Matchmaking structuré, mode Ra....png"
+            alt="Sous titre"
+            className="w-[500px] mb-4"
+          />
+
+          {/* PARAGRAPHE */}
+          <img
+            src="/assets/La plateforme de compétition mo....png"
+            alt="Paragraphe"
+            className="w-[420px] mb-10"
+          />
+
+          {/* BOUTONS */}
+          <div className="flex gap-4">
+
+            {/* BOUTON JAUNE */}
+            <img
+              src="/assets/Buttonjaune.png"
+              alt="Jouez Maintenant"
+              className="h-[60px] cursor-pointer hover:opacity-90 transition"
+            />
+
+            {/* BOUTON DISCORD */}
+            <a
+              href="https://sixsence-backend.onrender.com/auth/discord"
+              className="block"
+            >
+              <img
+                src="/assets/Buttondiscord.png"
+                alt="Rejoindre Discord"
+                className="h-[60px] cursor-pointer hover:opacity-90 transition"
+              />
+            </a>
+
+          </div>
+        </div>
+
+        {/* COLONNE DROITE — APP CARD */}
+        <div className="flex flex-col items-end">
+
+          {/* PARAGRAPHE APPLICATION */}
+          <img
+            src="/assets/Paragraphapplication.png"
+            alt="Application"
+            className="w-[300px] mb-4"
+          />
+
+          {/* CARD APPLICATION */}
+          <img
+            src="/assets/Containerapp.png"
+            alt="Application Windows"
+            className="w-[380px]"
+          />
+
+          {/* BOUTON INSTALLER */}
+          <img
+            src="/assets/Buttonapp.png"
+            alt="Installer"
+            className="w-[200px] mt-4 cursor-pointer hover:opacity-90 transition"
+          />
+
+        </div>
 
       </main>
     </div>
