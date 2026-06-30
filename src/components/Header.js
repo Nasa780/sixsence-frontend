@@ -17,7 +17,7 @@ export default function Header() {
       {/* Bloc gauche : Logo + Texte */}
       <div className="flex flex-row items-center gap-[10px]">
         <Image
-          src="/SixSenceLogo.png"
+          src="/assets/SixSenceLogo.png"
           alt="Six Sence Logo"
           width={37}
           height={37}
@@ -31,14 +31,14 @@ export default function Header() {
       {/* Bloc droit : Boutons */}
       <div className="flex flex-row items-center gap-[20px]">
         <Image
-          src="/Buttonfr.png"
+          src="/assets/Buttonfr.png"
           alt="Bouton FR"
           width={120}
           height={40}
         />
 
         <Image
-          src="/Buttondiscord.png"
+          src="/assets/Buttondiscord.png"
           alt="Bouton Discord"
           width={120}
           height={40}
