@@ -26,7 +26,6 @@ export default function Home() {
         if (!data.error) setUser(data);
       });
 
-    // SCALE AUTO
     const updateScale = () => {
       const s = window.innerWidth / 2189;
       setScale(s);
@@ -34,15 +33,14 @@ export default function Home() {
 
     updateScale();
     window.addEventListener("resize", updateScale);
-
     return () => window.removeEventListener("resize", updateScale);
   }, []);
 
   return (
-    <div className="relative min-h-screen bg-[#0B0812] text-white overflow-hidden">
+    <div className="min-h-screen bg-[#0B0812] text-white flex flex-col">
 
       {/* HEADER */}
-      <header className="relative z-50 flex justify-between items-center px-4 py-4">
+      <header className="relative z-50 flex justify-between items-center px-8 py-6">
         <img src="/assets/SixSenceLogo.png" alt="Six Sence" className="h-12" />
 
         <a href="https://sixsence-backend.onrender.com/auth/discord">
@@ -55,18 +53,16 @@ export default function Home() {
       </header>
 
       {/* MAIN */}
-      <main className="relative z-10 w-full flex justify-center">
-
-        {/* CONTENEUR FIGMA SCALÉ */}
+      <main className="flex-1 flex justify-center items-start">
         <div
-          className="relative origin-top-left"
+          className="relative"
           style={{
             width: "2189px",
             height: "1304px",
             transform: `scale(${scale})`,
+            transformOrigin: "top center",
           }}
         >
-
           {/* BACKGROUND */}
           <img
             src="/assets/HomePage.png"
@@ -128,7 +124,6 @@ export default function Home() {
             src="/assets/Buttonapp.png"
             className="absolute left-[202px] top-[34.8px] cursor-pointer hover:opacity-90 transition"
           />
-
         </div>
       </main>
     </div>
