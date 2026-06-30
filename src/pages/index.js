@@ -36,6 +36,9 @@ export default function Home() {
     return () => window.removeEventListener("resize", updateScale);
   }, []);
 
+  // Fonction utilitaire pour scaler les positions
+  const pos = (value) => value * scale;
+
   return (
     <div className="min-h-screen bg-[#0B0812] text-white flex flex-col">
 
@@ -52,21 +55,21 @@ export default function Home() {
         </a>
       </header>
 
-      {/* MAIN — COMMENCE À 0px */}
+      {/* MAIN */}
       <main className="flex justify-center items-start mt-0 pt-0">
 
-        {/* CONTENEUR FIGMA SCALÉ ET CENTRÉ */}
+        {/* CONTENEUR FIGMA SCALÉ */}
         <div
           className="relative"
           style={{
-            width: "2189px",
-            height: "1304px",
+            width: `${2189 * scale}px`,
+            height: `${1304 * scale}px`,
             transform: `scale(${scale})`,
             transformOrigin: "top center",
           }}
         >
 
-          {/* BACKGROUND DANS LE CONTENEUR */}
+          {/* BACKGROUND */}
           <img
             src="/assets/HomePage.png"
             className="absolute inset-0 w-[2189px] h-[1304px] pointer-events-none"
@@ -75,57 +78,96 @@ export default function Home() {
           {/* SAISON */}
           <img
             src="/assets/Saison 1 — Compétition Ouverte.png"
-            className="absolute left-[254px] top-[28px]"
+            style={{
+              position: "absolute",
+              left: pos(254),
+              top: pos(28),
+            }}
           />
 
           {/* TITRE SIX SENCE */}
           <img
             src="/assets/SIX SENCE.png"
-            className="absolute left-[730px] top-[148px]"
+            style={{
+              position: "absolute",
+              left: pos(730),
+              top: pos(148),
+            }}
           />
 
           {/* SOUS-TITRE */}
           <img
             src="/assets/Matchmaking structuré, mode Ra....png"
-            className="absolute left-[857px] top-[24px]"
+            style={{
+              position: "absolute",
+              left: pos(857),
+              top: pos(24),
+            }}
           />
 
           {/* PARAGRAPHE */}
           <img
             src="/assets/La plateforme de compétition mo....png"
-            className="absolute left-[349px] top-[51px]"
+            style={{
+              position: "absolute",
+              left: pos(349),
+              top: pos(51),
+            }}
           />
 
           {/* BOUTON JAUNE */}
           <img
             src="/assets/Buttonjaune.png"
-            className="absolute left-[246.41px] top-[47.92px] cursor-pointer hover:opacity-90 transition"
+            style={{
+              position: "absolute",
+              left: pos(246.41),
+              top: pos(47.92),
+            }}
+            className="cursor-pointer hover:opacity-90 transition"
           />
 
           {/* BOUTON BLEU */}
           <a href="https://sixsence-backend.onrender.com/auth/discord">
             <img
               src="/assets/Buttonbleu.png"
-              className="absolute left-[246.41px] top-[120px] cursor-pointer hover:opacity-90 transition"
+              style={{
+                position: "absolute",
+                left: pos(246.41),
+                top: pos(120),
+              }}
+              className="cursor-pointer hover:opacity-90 transition"
             />
           </a>
 
           {/* PARAGRAPHE APPLICATION */}
           <img
             src="/assets/Paragraphapplication.png"
-            className="absolute left-[84px] top-[14px]"
+            style={{
+              position: "absolute",
+              left: pos(84),
+              top: pos(14),
+            }}
           />
 
           {/* WINDOWS APPLICATION */}
           <img
             src="/assets/Containerapp.png"
-            className="absolute left-[86.19px] top-[51px]"
+            style={{
+              position: "absolute",
+              left: pos(86.19),
+              top: pos(51),
+            }}
           />
 
           {/* BOUTON INSTALLER */}
           <img
             src="/assets/Buttonapp.png"
-            className="absolute left-[202px] top-[34.8px] cursor-pointer hover:opacity-90 transition"
+            style={{
+              position: "absolute",
+              left: pos(202),
+              top: pos(34.8),
+            }}
+            className="cursor-pointer hover:opacity-90 transition"
           />
 
         </div>
