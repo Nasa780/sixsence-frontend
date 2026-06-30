@@ -52,13 +52,13 @@ export default function Home() {
       </header>
 
       {/* MAIN */}
-      <main className="relative z-10 w-full overflow-x-auto flex justify-center">
+      <main className="relative z-10 w-full overflow-x-auto flex justify-center min-w-[2189px]">
 
         {/* Empêche le shrink */}
         <div className="min-w-[2189px] min-h-[1304px] flex justify-center">
 
           {/* Conteneur Figma */}
-          <div className="relative w-[2189px] h-[1304px]">
+          <div className="relative w-[2189px] h-[1304px] min-w-[2189px]">
 
             {/* SAISON */}
             <img
