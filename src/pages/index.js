@@ -38,7 +38,7 @@ export default function Home() {
       </div>
 
       {/* HEADER */}
-      <header className="relative z-10 flex justify-between items-center px-10 py-6">
+      <header className="relative z-10 flex justify-between items-center px-4 py-4">
         <img src="/assets/SixSenceLogo.png" alt="Six Sence" className="h-12" />
 
         {/* Bouton Discord EN HAUT */}
