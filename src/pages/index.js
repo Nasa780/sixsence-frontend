@@ -46,7 +46,7 @@ export default function Home() {
           <img
             src="/assets/Buttondiscord.png"
             alt="Rejoindre Discord"
-            className="h-12 hover:opacity-90 transition"
+            className="absolute left-[110px] top-[37px] h-12 hover:opacity-90 transition"
           />
         </a>
       </header>
@@ -60,7 +60,7 @@ export default function Home() {
           <img
             src="/assets/Saison 1 — Compétition Ouverte.png"
             alt="Saison"
-            className="absolute left-[???px] top-[???px]"
+            className="absolute left-[254px] top-[28px]"
           />
 
           {/* TITRE SIX SENCE */}
