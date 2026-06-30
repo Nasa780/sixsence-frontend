@@ -39,8 +39,8 @@ export default function Home() {
   return (
     <div className="min-h-screen bg-[#0B0812] text-white flex flex-col">
 
-      {/* HEADER */}
-      <header className="relative z-50 flex justify-between items-center px-8 py-6">
+      {/* HEADER — COLLÉ EN HAUT */}
+      <header className="absolute top-0 left-0 w-full z-50 flex justify-between items-center px-8 py-6">
         <img src="/assets/SixSenceLogo.png" alt="Six Sence" className="h-12" />
 
         <a href="https://sixsence-backend.onrender.com/auth/discord">
@@ -52,8 +52,8 @@ export default function Home() {
         </a>
       </header>
 
-      {/* MAIN */}
-      <main className="flex-1 flex justify-center items-start">
+      {/* MAIN — COMMENCE À 0px */}
+      <main className="flex justify-center items-start mt-0 pt-0">
 
         {/* CONTENEUR FIGMA SCALÉ ET CENTRÉ */}
         <div
