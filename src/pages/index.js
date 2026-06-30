@@ -54,6 +54,8 @@ export default function Home() {
 
       {/* MAIN */}
       <main className="flex-1 flex justify-center items-start">
+
+        {/* CONTENEUR FIGMA SCALÉ ET CENTRÉ */}
         <div
           className="relative"
           style={{
@@ -63,7 +65,8 @@ export default function Home() {
             transformOrigin: "top center",
           }}
         >
-          {/* BACKGROUND */}
+
+          {/* BACKGROUND DANS LE CONTENEUR */}
           <img
             src="/assets/HomePage.png"
             className="absolute inset-0 w-[2189px] h-[1304px] pointer-events-none"
@@ -124,6 +127,7 @@ export default function Home() {
             src="/assets/Buttonapp.png"
             className="absolute left-[202px] top-[34.8px] cursor-pointer hover:opacity-90 transition"
           />
+
         </div>
       </main>
     </div>
