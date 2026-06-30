@@ -41,6 +41,15 @@ export default function Home() {
       <header className="relative z-10 flex justify-between items-center px-10 py-6">
         <img src="/assets/SixSenceLogo.png" alt="Six Sence" className="h-12" />
 
+          <a
+            href="https://sixsence-backend.onrender.com/auth/discord"
+          >
+            <img
+              src="/assets/Buttondiscord.png"
+              alt="Rejoindre Discord"
+              className="absolute left-[238px] top-[48px] cursor-pointer hover:opacity-90 transition"
+            />
+          </a>
         <a
           href="https://sixsence-backend.onrender.com/auth/discord"
           className="block"
@@ -94,15 +103,16 @@ export default function Home() {
           />
 
           {/* BOUTON DISCORD (CTA principal) */}
-          <a
-            href="https://sixsence-backend.onrender.com/auth/discord"
-          >
-            <img
-              src="/assets/Buttondiscord.png"
-              alt="Rejoindre Discord"
-              className="absolute left-[238px] top-[48px] cursor-pointer hover:opacity-90 transition"
-            />
-          </a>
+        <a
+          href="https://sixsence-backend.onrender.com/auth/discord"
+          className="block"
+        >
+          <img
+            src="/assets/Buttonbleu.png"
+            alt="Discord"
+            className="h-12 hover:opacity-90 transition"
+          />
+        </a>
 
           {/* PARAGRAPHE APPLICATION */}
           <img
