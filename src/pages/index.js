@@ -41,22 +41,11 @@ export default function Home() {
       <header className="relative z-10 flex justify-between items-center">
         <img src="/assets/SixSenceLogo.png" alt="Six Sence" className="h-12" />
 
-          <a
-            href="https://sixsence-backend.onrender.com/auth/discord"
-          >
-            <img
-              src="/assets/Buttondiscord.png"
-              alt="Rejoindre Discord"
-              className="absolute left-[238px] top-[48px] cursor-pointer hover:opacity-90 transition"
-            />
-          </a>
-        <a
-          href="https://sixsence-backend.onrender.com/auth/discord"
-          className="block"
-        >
+        {/* ✔ Bouton Discord EN HAUT */}
+        <a href="https://sixsence-backend.onrender.com/auth/discord">
           <img
-            src="/assets/Buttonbleu.png"
-            alt="Discord"
+            src="/assets/Buttondiscord.png"
+            alt="Rejoindre Discord"
             className="h-12 hover:opacity-90 transition"
           />
         </a>
@@ -95,24 +84,21 @@ export default function Home() {
             className="absolute left-[349px] top-[51px]"
           />
 
-          {/* BOUTON JAUNE */}
+          {/* ✔ BOUTON JAUNE */}
           <img
             src="/assets/Buttonjaune.png"
             alt="Jouez Maintenant"
             className="absolute left-[246.41px] top-[47.92px] cursor-pointer hover:opacity-90 transition"
           />
 
-          {/* BOUTON DISCORD (CTA principal) */}
-        <a
-          href="https://sixsence-backend.onrender.com/auth/discord"
-          className="block"
-        >
-          <img
-            src="/assets/Buttonbleu.png"
-            alt="Discord"
-            className="h-12 hover:opacity-90 transition"
-          />
-        </a>
+          {/* ✔ BOUTON BLEU À CÔTÉ DU JAUNE */}
+          <a href="https://sixsence-backend.onrender.com/auth/discord">
+            <img
+              src="/assets/Buttonbleu.png"
+              alt="Discord"
+              className="absolute left-[246.41px] top-[120px] cursor-pointer hover:opacity-90 transition"
+            />
+          </a>
 
           {/* PARAGRAPHE APPLICATION */}
           <img
