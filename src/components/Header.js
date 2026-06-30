@@ -9,16 +9,16 @@ export default function Header() {
         flex
         flex-row
         items-center
-        justify-between
-        px-[36px]
-        py-[20px]
+        px-[20px]
+        pt-[36px]
+        pb-[20px]
       "
     >
       {/* Bloc gauche : Logo + Texte */}
       <div className="flex flex-row items-center gap-[10px]">
         <Image
-          src="/assets/SixSenceLogo.png"
-          alt="Six Sence Logo"
+          src="/assets/Icon.png"
+          alt="Six Sence Icon"
           width={37}
           height={37}
         />
@@ -29,19 +29,19 @@ export default function Header() {
       </div>
 
       {/* Bloc droit : Boutons */}
-      <div className="flex flex-row items-center gap-[20px]">
+      <div className="ml-auto flex flex-row items-center gap-[20px]">
         <Image
           src="/assets/Buttonfr.png"
           alt="Bouton FR"
-          width={120}
-          height={40}
+          width={80}
+          height={30}
         />
 
         <Image
           src="/assets/Buttondiscord.png"
           alt="Bouton Discord"
-          width={120}
-          height={40}
+          width={100}
+          height={30}
         />
       </div>
     </header>
