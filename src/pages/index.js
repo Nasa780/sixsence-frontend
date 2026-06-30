@@ -27,29 +27,29 @@ export default function Home() {
   }, []);
 
   return (
-    <div className="min-h-screen bg-[#0B0812] text-white flex flex-col items-center justify-start overflow-x-auto">
+    <div className="min-h-screen bg-[#0B0812] text-white flex justify-center overflow-x-auto">
 
-      {/* HEADER DANS LE DESIGN */}
-      <header className="w-[2189px] flex justify-between items-center px-8 py-6 z-20 relative">
-        <img src="/assets/SixSenceLogo.png" alt="Six Sence" className="h-12" />
-
-        <a href="https://sixsence-backend.onrender.com/auth/discord">
-          <img
-            src="/assets/Buttondiscord.png"
-            alt="Rejoindre Discord"
-            className="h-12 hover:opacity-90 transition"
-          />
-        </a>
-      </header>
-
-      {/* BLOC FIGMA FIXE */}
-      <main className="w-[2189px] h-[1304px] relative">
+      {/* CONTENEUR FIGMA EXACT */}
+      <div className="relative w-[2189px] h-[1304px]">
 
         {/* BACKGROUND */}
         <img
           src="/assets/HomePage.png"
           className="absolute inset-0 w-[2189px] h-[1304px] pointer-events-none"
         />
+
+        {/* HEADER DANS LE DESIGN */}
+        <header className="absolute left-0 top-0 w-full flex justify-between items-center px-8 py-6">
+          <img src="/assets/SixSenceLogo.png" alt="Six Sence" className="h-12" />
+
+          <a href="https://sixsence-backend.onrender.com/auth/discord">
+            <img
+              src="/assets/Buttondiscord.png"
+              alt="Rejoindre Discord"
+              className="h-12 hover:opacity-90 transition"
+            />
+          </a>
+        </header>
 
         {/* SAISON */}
         <img
@@ -106,7 +106,8 @@ export default function Home() {
           src="/assets/Buttonapp.png"
           className="absolute left-[202px] top-[34.8px] cursor-pointer hover:opacity-90 transition"
         />
-      </main>
+
+      </div>
     </div>
   );
 }
