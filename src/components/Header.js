@@ -1,4 +1,3 @@
-// components/Header.tsx
 import Image from "next/image";
 
 export default function Header() {
@@ -17,16 +16,13 @@ export default function Header() {
     >
       {/* Bloc gauche : Logo + Texte */}
       <div className="flex flex-row items-center gap-[10px]">
-        {/* Logo */}
         <Image
           src="/SixSenceLogo.png"
           alt="Six Sence Logo"
           width={37}
           height={37}
-          className="rounded-sm"
         />
 
-        {/* Texte SIX SENCE */}
         <span className="text-white font-semibold tracking-[0.2em] text-[14px]">
           SIX SENCE
         </span>
@@ -34,7 +30,6 @@ export default function Header() {
 
       {/* Bloc droit : Boutons */}
       <div className="flex flex-row items-center gap-[20px]">
-        {/* Bouton FR */}
         <Image
           src="/Buttonfr.png"
           alt="Bouton FR"
@@ -42,7 +37,6 @@ export default function Header() {
           height={40}
         />
 
-        {/* Bouton Discord */}
         <Image
           src="/Buttondiscord.png"
           alt="Bouton Discord"
