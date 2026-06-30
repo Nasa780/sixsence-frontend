@@ -33,7 +33,7 @@ export default function Home() {
       <div className="absolute inset-0 pointer-events-none">
         <img
           src="/assets/HomePage.png"
-          className="w-full h-full object-cover"
+          className="absolute inset-0 w-[2189px] h-[1304px]"
         />
       </div>
 
