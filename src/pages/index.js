@@ -29,7 +29,7 @@ export default function Home() {
   return (
     <div className="relative min-h-screen bg-[#0B0812] text-white overflow-hidden">
 
-      {/* --------------------------- BACKGROUND --------------------------- */}
+      {/* BACKGROUND */}
       <div className="absolute inset-0 pointer-events-none">
         <img
           src="/assets/HomePage.png"
@@ -37,7 +37,7 @@ export default function Home() {
         />
       </div>
 
-      {/* --------------------------- HEADER --------------------------- */}
+      {/* HEADER */}
       <header className="relative z-10 flex justify-between items-center px-10 py-6">
         <img src="/assets/SixSenceLogo.png" alt="Six Sence" className="h-12" />
 
@@ -53,10 +53,9 @@ export default function Home() {
         </a>
       </header>
 
-      {/* --------------------------- MAIN CONTENT --------------------------- */}
-      <main className="relative z-10 flex justify-center mt-20 px-4">
+      {/* MAIN */}
+      <main className="relative z-10 flex justify-center">
 
-        {/* 🔥 CONTENEUR FIGMA FIXE — PATCH */}
         <div className="relative mx-auto w-[2189px] h-[1304px]">
 
           {/* SAISON */}
@@ -94,12 +93,16 @@ export default function Home() {
             className="absolute left-[246.41px] top-[47.92px] cursor-pointer hover:opacity-90 transition"
           />
 
-          {/* BOUTON DISCORD */}
-          <img
-            src="/assets/Buttondiscord.png"
-            alt="Rejoindre Discord"
-            className="absolute left-[238px] top-[48px] cursor-pointer hover:opacity-90 transition"
-          />
+          {/* BOUTON DISCORD (CTA principal) */}
+          <a
+            href="https://sixsence-backend.onrender.com/auth/discord"
+          >
+            <img
+              src="/assets/Buttondiscord.png"
+              alt="Rejoindre Discord"
+              className="absolute left-[238px] top-[48px] cursor-pointer hover:opacity-90 transition"
+            />
+          </a>
 
           {/* PARAGRAPHE APPLICATION */}
           <img
