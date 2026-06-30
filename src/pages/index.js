@@ -56,60 +56,69 @@ export default function Home() {
       {/* --------------------------- MAIN CONTENT --------------------------- */}
       <main className="relative z-10 flex justify-center mt-20 px-4">
 
-        {/* PATCH : CONTENEUR FIGMA FIXE */}
+        {/* 🔥 CONTENEUR FIGMA FIXE — PATCH */}
         <div className="relative mx-auto w-[2189px] h-[1304px]">
 
           {/* SAISON */}
           <img
             src="/assets/Saison 1 — Compétition Ouverte.png"
+            alt="Saison"
             className="absolute left-[???px] top-[???px]"
           />
 
           {/* TITRE SIX SENCE */}
           <img
             src="/assets/SIX SENCE.png"
+            alt="Six Sence"
             className="absolute left-[730px] top-[148px]"
           />
 
           {/* SOUS-TITRE */}
           <img
             src="/assets/Matchmaking structuré, mode Ra....png"
+            alt="Sous titre"
             className="absolute left-[857px] top-[24px]"
           />
 
           {/* PARAGRAPHE */}
           <img
             src="/assets/La plateforme de compétition mo....png"
+            alt="Paragraphe"
             className="absolute left-[349px] top-[51px]"
           />
 
           {/* BOUTON JAUNE */}
           <img
             src="/assets/Buttonjaune.png"
+            alt="Jouez Maintenant"
             className="absolute left-[246.41px] top-[47.92px] cursor-pointer hover:opacity-90 transition"
           />
 
           {/* BOUTON DISCORD */}
           <img
             src="/assets/Buttondiscord.png"
+            alt="Rejoindre Discord"
             className="absolute left-[238px] top-[48px] cursor-pointer hover:opacity-90 transition"
           />
 
           {/* PARAGRAPHE APPLICATION */}
           <img
             src="/assets/Paragraphapplication.png"
+            alt="Application"
             className="absolute left-[84px] top-[14px]"
           />
 
           {/* WINDOWS APPLICATION */}
           <img
             src="/assets/Containerapp.png"
+            alt="Application Windows"
             className="absolute left-[86.19px] top-[51px]"
           />
 
           {/* BOUTON INSTALLER */}
           <img
             src="/assets/Buttonapp.png"
+            alt="Installer"
             className="absolute left-[202px] top-[34.8px] cursor-pointer hover:opacity-90 transition"
           />
 
