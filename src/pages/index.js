@@ -38,89 +38,94 @@ export default function Home() {
       </div>
 
       {/* HEADER */}
-      <header className="relative z-10 flex justify-between items-center">
+      <header className="relative z-10 flex justify-between items-center px-10 py-6">
         <img src="/assets/SixSenceLogo.png" alt="Six Sence" className="h-12" />
 
-        {/* ✔ Bouton Discord EN HAUT */}
+        {/* Bouton Discord EN HAUT */}
         <a href="https://sixsence-backend.onrender.com/auth/discord">
           <img
             src="/assets/Buttondiscord.png"
             alt="Rejoindre Discord"
-            className="absolute left-[110px] top-[37px] h-12 hover:opacity-90 transition"
+            className="h-12 hover:opacity-90 transition"
           />
         </a>
       </header>
 
       {/* MAIN */}
-      <main className="relative z-10 flex justify-center">
+      <main className="relative z-10 w-full overflow-x-auto flex justify-center">
 
-        <div className="relative mx-auto w-[2189px] h-[1304px]">
+        {/* Empêche le shrink */}
+        <div className="min-w-[2189px] min-h-[1304px] flex justify-center">
 
-          {/* SAISON */}
-          <img
-            src="/assets/Saison 1 — Compétition Ouverte.png"
-            alt="Saison"
-            className="absolute left-[254px] top-[28px]"
-          />
+          {/* Conteneur Figma */}
+          <div className="relative w-[2189px] h-[1304px]">
 
-          {/* TITRE SIX SENCE */}
-          <img
-            src="/assets/SIX SENCE.png"
-            alt="Six Sence"
-            className="absolute left-[730px] top-[148px]"
-          />
-
-          {/* SOUS-TITRE */}
-          <img
-            src="/assets/Matchmaking structuré, mode Ra....png"
-            alt="Sous titre"
-            className="absolute left-[857px] top-[24px]"
-          />
-
-          {/* PARAGRAPHE */}
-          <img
-            src="/assets/La plateforme de compétition mo....png"
-            alt="Paragraphe"
-            className="absolute left-[349px] top-[51px]"
-          />
-
-          {/* ✔ BOUTON JAUNE */}
-          <img
-            src="/assets/Buttonjaune.png"
-            alt="Jouez Maintenant"
-            className="absolute left-[246.41px] top-[47.92px] cursor-pointer hover:opacity-90 transition"
-          />
-
-          {/* ✔ BOUTON BLEU À CÔTÉ DU JAUNE */}
-          <a href="https://sixsence-backend.onrender.com/auth/discord">
+            {/* SAISON */}
             <img
-              src="/assets/Buttonbleu.png"
-              alt="Discord"
-              className="absolute left-[246.41px] top-[120px] cursor-pointer hover:opacity-90 transition"
+              src="/assets/Saison 1 — Compétition Ouverte.png"
+              alt="Saison"
+              className="absolute left-[254px] top-[28px]"
             />
-          </a>
 
-          {/* PARAGRAPHE APPLICATION */}
-          <img
-            src="/assets/Paragraphapplication.png"
-            alt="Application"
-            className="absolute left-[84px] top-[14px]"
-          />
+            {/* TITRE SIX SENCE */}
+            <img
+              src="/assets/SIX SENCE.png"
+              alt="Six Sence"
+              className="absolute left-[730px] top-[148px]"
+            />
 
-          {/* WINDOWS APPLICATION */}
-          <img
-            src="/assets/Containerapp.png"
-            alt="Application Windows"
-            className="absolute left-[86.19px] top-[51px]"
-          />
+            {/* SOUS-TITRE */}
+            <img
+              src="/assets/Matchmaking structuré, mode Ra....png"
+              alt="Sous titre"
+              className="absolute left-[857px] top-[24px]"
+            />
 
-          {/* BOUTON INSTALLER */}
-          <img
-            src="/assets/Buttonapp.png"
-            alt="Installer"
-            className="absolute left-[202px] top-[34.8px] cursor-pointer hover:opacity-90 transition"
-          />
+            {/* PARAGRAPHE */}
+            <img
+              src="/assets/La plateforme de compétition mo....png"
+              alt="Paragraphe"
+              className="absolute left-[349px] top-[51px]"
+            />
 
+            {/* BOUTON JAUNE */}
+            <img
+              src="/assets/Buttonjaune.png"
+              alt="Jouez Maintenant"
+              className="absolute left-[246.41px] top-[47.92px] cursor-pointer hover:opacity-90 transition"
+            />
+
+            {/* BOUTON BLEU À CÔTÉ DU JAUNE */}
+            <a href="https://sixsence-backend.onrender.com/auth/discord">
+              <img
+                src="/assets/Buttonbleu.png"
+                alt="Discord"
+                className="absolute left-[246.41px] top-[120px] cursor-pointer hover:opacity-90 transition"
+              />
+            </a>
+
+            {/* PARAGRAPHE APPLICATION */}
+            <img
+              src="/assets/Paragraphapplication.png"
+              alt="Application"
+              className="absolute left-[84px] top-[14px]"
+            />
+
+            {/* WINDOWS APPLICATION */}
+            <img
+              src="/assets/Containerapp.png"
+              alt="Application Windows"
+              className="absolute left-[86.19px] top-[51px]"
+            />
+
+            {/* BOUTON INSTALLER */}
+            <img
+              src="/assets/Buttonapp.png"
+              alt="Installer"
+              className="absolute left-[202px] top-[34.8px] cursor-pointer hover:opacity-90 transition"
+            />
+
+          </div>
         </div>
       </main>
     </div>
