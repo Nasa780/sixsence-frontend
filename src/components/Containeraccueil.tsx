@@ -103,6 +103,9 @@ const Containeraccueil = ({ className = "" }: ContainerProps) => {
               </div>
             </div>
 
+{/* Trait jaune du bas */}
+<div className="w-full h-[2px] bg-[linear-gradient(90deg,rgba(0,0,0,0)_0%,rgba(232,160,32,0.27)_50%,rgba(0,0,0,0)_100%)]"></div>
+
             {/* Ligne */}
             <div className="h-px bg-[rgba(58,140,255,0.1)] mx-5" />
 
