@@ -32,25 +32,16 @@ const Container: NextPage = () => {
         />
 
         <div className="flex flex-col items-start">
-
-          {/* SVG Application */}
-          <Image
-            src="/assets/Application.svg"
-            alt="Application"
-            width={120}
-            height={20}
-            className="select-none"
-          />
-
-          {/* SVG Windows */}
-          <Image
-            src="/assets/Windows.svg"
-            alt="Windows"
-            width={120}
-            height={20}
-            className="select-none opacity-40"
-          />
-
+          <div className="flex flex-col items-start">
+            <b className="relative tracking-[2.46px] leading-[14px] uppercase">
+              Application
+            </b>
+          </div>
+          <div className="self-stretch flex flex-col items-start text-[rgba(255,255,255,0.4)]">
+            <div className="relative tracking-[2.46px] leading-[14px] uppercase font-semibold">
+              Windows
+            </div>
+          </div>
         </div>
       </div>
 
