@@ -35,7 +35,7 @@ const Container: NextPage = () => {
 
           {/* SVG Application */}
           <Image
-            src="/assets/application.svg"
+            src="/assets/Application.svg"
             alt="Application"
             width={120}
             height={20}
@@ -44,7 +44,7 @@ const Container: NextPage = () => {
 
           {/* SVG Windows */}
           <Image
-            src="/assets/windows.svg"
+            src="/assets/Windows.svg"
             alt="Windows"
             width={120}
             height={20}
