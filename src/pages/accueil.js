@@ -28,9 +28,9 @@ export default function Accueil() {
       
       <Navigationaccueil />
       <Containeraccueil />  
+      <Containeraccueil2 />  
       <Sectionaccueil />  
       <Appaccueil />  
-      <Containeraccueil2 />  
       {/* reste de ta page */}
     </div>
   );
