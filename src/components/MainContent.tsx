@@ -54,14 +54,16 @@ const MainContent: NextPage = () => {
   />
 </div>
 
-      {/* Description */}
-      <div className="flex flex-col items-start pb-10 text-[14.1px] text-[rgba(175,175,200,0.6)] font-[Inter]">
-        <div className="leading-[25.1px]">
-          La plateforme de compétition nouvelle génération.
-          <br />
-          Matchmaking en temps réel, classement dynamique.
-        </div>
-      </div>
+{/* Description */}
+<div className="flex flex-col items-center pb-10">
+  <Image
+    src="/assets/description.svg"
+    alt="Description"
+    width={700}
+    height={120}
+    className="select-none"
+  />
+</div>
 
       {/* Buttons */}
       <div className="w-[501.5px] flex gap-4">
