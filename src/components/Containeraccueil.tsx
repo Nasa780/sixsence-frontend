@@ -54,7 +54,7 @@ const Containeraccueil = ({ className = "" }: ContainerProps) => {
           <div className="flex items-start pt-5 px-5 pb-3 gap-4 mq450:flex-wrap">
             <button className="h-12 w-12 bg-gradient-to-br from-[#1a6fe0] to-[#3a8cff] shadow-[0_0_16px_rgba(58,140,255,0.45)] flex items-center justify-center">
               <Image
-                src="/Icon.svg"
+                src="/assets/Icontrophee.svg"
                 alt=""
                 width={22}
                 height={22}
@@ -101,7 +101,7 @@ const Containeraccueil = ({ className = "" }: ContainerProps) => {
             {/* Header Classements */}
             <div className="flex items-center py-4 px-5 gap-[13px] mq450:flex-wrap">
               <button className="h-10 w-10 border border-[rgba(58,140,255,0.28)] bg-[rgba(58,140,255,0.1)] flex items-center justify-center">
-                <Image src="/Icon.svg" alt="" width={18} height={18} />
+                <Image src="/assets/Iconclassement.svg" alt="" width={18} height={18} />
               </button>
 
               <div className="tracking-[3.52px] leading-6 uppercase font-black">
@@ -116,7 +116,7 @@ const Containeraccueil = ({ className = "" }: ContainerProps) => {
             <div className="pt-3 px-5 pb-4 text-xs text-[#7a7870]">
               <div className="flex items-center gap-2.5">
                 <button className="h-7 w-7 border border-[rgba(58,140,255,0.18)] bg-[rgba(58,140,255,0.07)] flex items-center justify-center opacity-85">
-                  <Image src="/Icon.svg" alt="" width={13} height={13} />
+                  <Image src="/assets/Icontop10.svg" alt="" width={13} height={13} />
                 </button>
 
                 <b className="tracking-[2.4px] leading-4 uppercase">
