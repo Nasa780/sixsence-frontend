@@ -21,7 +21,7 @@ const MainContent: NextPage = () => {
         {/* Replace H1 with your SVG */}
         <div className="self-stretch flex flex-col items-center">
           <Image
-            src="/assets/title.svg"
+            src="/assets/Sixsence.svg"
             alt="Six Sence Title"
             width={733}
             height={200}
@@ -69,7 +69,7 @@ const MainContent: NextPage = () => {
         {/* Yellow Button SVG */}
         <button className="cursor-pointer flex items-center justify-center">
           <Image
-            src="/assets/button-yellow.svg"
+            src="/assets/buttonyellow.svg"
             alt="Jouez gratuitement"
             width={250}
             height={70}
@@ -80,7 +80,7 @@ const MainContent: NextPage = () => {
         {/* Blue Button SVG */}
         <button className="cursor-pointer flex items-center justify-center">
           <Image
-            src="/assets/button-blue.svg"
+            src="/assets/buttonblue.svg"
             alt="Rejoindre Discord"
             width={250}
             height={70}
