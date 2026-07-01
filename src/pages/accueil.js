@@ -1,6 +1,7 @@
 import Navigationaccueil from "../components/Navigationaccueil";
 import Containeraccueil from "../components/Containeraccueil";
-import Appaccueil from "@/components/Appaccueil";
+import Sectionaccueil from "../components/Sectionaccueil";
+import Appaccueil from "../components/Appaccueil";
 
 export default function Accueil() {
   return (
