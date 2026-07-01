@@ -3,7 +3,7 @@ import Image from "next/image";
 
 const MainContent: NextPage = () => {
   return (
-    <div className="w-full h-[1259.3px] relative flex flex-col items-center justify-center pt-0 px-6 pb-20 box-border leading-[normal] tracking-[normal] text-center text-[10.1px] text-[#ffa800] font-[Rajdhani]">
+    <div className="w-full h-auto relative flex flex-col items-center justify-center pt-0 px-6 pb-20 box-border leading-[normal] tracking-[normal] text-center text-[10.1px] text-[#ffa800] font-[Rajdhani]">
 
       {/* Eyebrow */}
       <div className="flex flex-col items-start pt-0 px-0 pb-7">
