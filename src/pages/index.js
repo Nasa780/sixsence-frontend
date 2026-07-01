@@ -16,10 +16,7 @@ style={{
       {/* Header en haut */}
       <Header />
 
-      {/* Bloc central parfaitement centré */}
-      <div className="flex-1 flex items-center justify-center">
-        <MainContent />
-      </div>
+      <MainContent />
 
       {/* Card APPLICATION WINDOWS en bas à gauche */}
       <div className="absolute bottom-8 left-8">
