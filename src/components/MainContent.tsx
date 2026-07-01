@@ -43,12 +43,16 @@ const MainContent: NextPage = () => {
         </div>
       </section>
 
-      {/* Tagline */}
-      <div className="flex flex-col items-start pt-4 pb-5 text-[15.7px] text-[rgba(255,255,255,0.45)]">
-        <div className="tracking-[8.15px] leading-[23.5px] uppercase font-semibold">
-          Matchmaking structuré, mode Ranked, progression réelle.
-        </div>
-      </div>
+{/* Tagline */}
+<div className="flex flex-col items-center pt-4 pb-5">
+  <Image
+    src="/assets/tagline.svg"
+    alt="Tagline"
+    width={700}
+    height={80}
+    className="select-none"
+  />
+</div>
 
       {/* Description */}
       <div className="flex flex-col items-start pb-10 text-[14.1px] text-[rgba(175,175,200,0.6)] font-[Inter]">
