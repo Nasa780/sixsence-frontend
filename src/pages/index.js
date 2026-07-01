@@ -5,7 +5,7 @@ import Container from "../components/Container";
 export default function Home() {
   return (
     <div
-      className="w-full min-h-screen text-white relative"
+      className="relative w-full min-h-screen text-white overflow-hidden"
       style={{
         backgroundImage: "url('/assets/Background.png')",
         backgroundSize: "cover",
@@ -16,12 +16,12 @@ export default function Home() {
       <Header />
 
       {/* Bloc central parfaitement centré */}
-      <div className="flex justify-center items-center w-full">
+      <div className="flex justify-center items-center w-full pt-[80px]">
         <MainContent />
       </div>
 
       {/* Card APPLICATION WINDOWS — position Figma */}
-      <div className="absolute bottom-8 left-8">
+      <div className="absolute bottom-[40px] left-[40px]">
         <Container />
       </div>
     </div>
