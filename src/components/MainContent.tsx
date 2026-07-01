@@ -3,12 +3,12 @@ import Image from "next/image";
 
 const MainContent: NextPage = () => {
   return (
-    <div className="relative h-[1259.3px] w-[733.5px] mx-auto flex flex-col items-center pt-0 px-6 pb-20 box-border leading-[normal] tracking-[normal] text-center text-[10.1px] text-[#ffa800] font-[Rajdhani]">
+    <div className="w-full h-[1259.3px] relative flex flex-col items-center justify-center pt-0 px-6 pb-20 box-border leading-[normal] tracking-[normal] text-center text-[10.1px] text-[#ffa800] font-[Rajdhani]">
 
       {/* Eyebrow */}
-      <div className="flex flex-col items-start pb-7">
-        <div className="rounded-[3px] bg-[rgba(255,168,0,0.07)] border border-[rgba(255,168,0,0.2)] flex items-center py-[5px] px-3.5 gap-[5px]">
-          <div className="h-1.5 w-1.5 shadow-[0px_0px_7px_#ffa800] rounded-[3px] bg-[#ffa800] opacity-[0.6]" />
+      <div className="flex flex-col items-start pt-0 px-0 pb-7">
+        <div className="rounded-[3px] bg-[rgba(255,168,0,0.07)] border-[rgba(255,168,0,0.2)] border-solid border-[1px] flex items-center py-[5px] px-3.5 gap-[5px]">
+          <div className="h-1.5 w-1.5 relative shadow-[0px_0px_7px_#ffa800] rounded-[3px] bg-[#ffa800] opacity-[0.6]" />
           <b className="tracking-[2.42px] leading-[15.1px] uppercase">
             Saison 1 — Compétition Ouverte
           </b>
@@ -16,10 +16,12 @@ const MainContent: NextPage = () => {
       </div>
 
       {/* Title Section */}
-      <section className="w-full flex flex-col items-center pb-1.5">
-        <div className="w-full flex flex-col items-center">
+      <section className="w-[733.5px] flex flex-col items-center pb-1.5">
+
+        {/* Replace H1 with your SVG */}
+        <div className="self-stretch flex flex-col items-center">
           <Image
-            src="/assets/Sixsence.svg"
+            src="/assets/title.svg"
             alt="Six Sence Title"
             width={733}
             height={200}
@@ -28,7 +30,8 @@ const MainContent: NextPage = () => {
           />
         </div>
 
-        <div className="w-full flex flex-col items-center pt-2">
+        {/* Decorative line */}
+        <div className="self-stretch flex flex-col items-center pt-2">
           <Image
             className="w-full h-3.5"
             loading="lazy"
@@ -40,16 +43,16 @@ const MainContent: NextPage = () => {
         </div>
       </section>
 
-      {/* Tagline */}
-      <div className="flex flex-col items-center pt-4 pb-5">
-        <Image
-          src="/assets/tagline.svg"
-          alt="Tagline"
-          width={700}
-          height={80}
-          className="select-none"
-        />
-      </div>
+{/* Tagline */}
+<div className="flex flex-col items-center pt-4 pb-5">
+  <Image
+    src="/assets/tagline.svg"
+    alt="Tagline"
+    width={700}
+    height={80}
+    className="select-none"
+  />
+</div>
 
       {/* Description */}
       <div className="flex flex-col items-start pb-10 text-[14.1px] text-[rgba(175,175,200,0.6)] font-[Inter]">
@@ -62,9 +65,11 @@ const MainContent: NextPage = () => {
 
       {/* Buttons */}
       <div className="w-[501.5px] flex gap-4">
+
+        {/* Yellow Button SVG */}
         <button className="cursor-pointer flex items-center justify-center">
           <Image
-            src="/assets/buttonyellow.svg"
+            src="/assets/button-yellow.svg"
             alt="Jouez gratuitement"
             width={250}
             height={70}
@@ -72,9 +77,10 @@ const MainContent: NextPage = () => {
           />
         </button>
 
+        {/* Blue Button SVG */}
         <button className="cursor-pointer flex items-center justify-center">
           <Image
-            src="/assets/buttonblue.svg"
+            src="/assets/button-blue.svg"
             alt="Rejoindre Discord"
             width={250}
             height={70}
