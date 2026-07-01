@@ -67,15 +67,18 @@ const MainContent: NextPage = () => {
       <div className="w-[501.5px] flex gap-4">
 
         {/* Yellow Button SVG */}
-        <button className="cursor-pointer flex items-center justify-center">
-          <Image
-            src="/assets/buttonyellow.svg"
-            alt="Jouez gratuitement"
-            width={250}
-            height={70}
-            className="select-none"
-          />
-        </button>
+<button
+  onClick={() => window.location.href = "/accueil"}
+  className="cursor-pointer flex items-center justify-center"
+>
+  <Image
+    src="/assets/buttonyellow.svg"
+    alt="Jouez gratuitement"
+    width={250}
+    height={70}
+    className="select-none"
+  />
+</button>
 
         {/* Blue Button SVG */}
 <button

@@ -46,31 +46,33 @@ const MainContentMobile = () => {
         Matchmaking en temps réel, classement dynamique.
       </p>
 
-      {/* Boutons */}
-      <div className="w-full flex flex-col gap-4 mt-8 max-w-[360px]">
-        <button>
-          <Image
-            src="/assets/buttonyellow.svg"
-            alt="Jouez gratuitement"
-            width={360}
-            height={70}
-            className="w-full"
-          />
-        </button>
+      {/* Bouton jaune */}
+      <button
+        onClick={() => window.location.href = "/accueil"}
+        className="w-full flex justify-center mt-6"
+      >
+        <Image
+          src="/assets/buttonyellow.svg"
+          alt="Jouez gratuitement"
+          width={360}
+          height={70}
+          className="w-full"
+        />
+      </button>
 
-<button
-  onClick={() => window.location.href = "https://sixsence-backend.onrender.com/auth/discord"}
-  className="w-full flex justify-center"
->
-  <Image
-    src="/assets/buttonblue.svg"
-    alt="Rejoindre Discord"
-    width={360}
-    height={70}
-    className="w-full"
-  />
-</button>
-      </div>
+      {/* Bouton Discord */}
+      <button
+        onClick={() => window.location.href = "https://sixsence-backend.onrender.com/auth/discord"}
+        className="w-full flex justify-center mt-4"
+      >
+        <Image
+          src="/assets/buttonblue.svg"
+          alt="Rejoindre Discord"
+          width={360}
+          height={70}
+          className="w-full"
+        />
+      </button>
 
       {/* Scroll indicator */}
       <div className="mt-10 flex flex-col items-center opacity-30">
@@ -83,6 +85,7 @@ const MainContentMobile = () => {
           className="mt-1"
         />
       </div>
+
     </div>
   );
 };
