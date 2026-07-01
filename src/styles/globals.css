@@ -2,17 +2,21 @@
 @import "tailwindcss/theme.css" layer(theme);
 @import "tailwindcss/utilities.css" layer(utilities);
 
+/* Fonts */
 @import url("https://fonts.googleapis.com/css2?family=Cousine:ital,wght@0,700&display=swap");
 @import url("https://fonts.googleapis.com/css2?family=Inter:ital,wght@0,400;0,600&display=swap");
 @import url("https://fonts.googleapis.com/css2?family=Rajdhani:ital,wght@0,600;0,700&display=swap");
 
+/* Layers */
 @layer theme, base, components, utilities;
 
+/* Global body reset */
 body {
   margin: 0;
   line-height: normal;
 }
 
+/* Base reset */
 @layer base {
   *,
   *::before,

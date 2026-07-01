@@ -45,13 +45,13 @@ const MainContent: NextPage = () => {
 
 {/* Tagline */}
 <div className="flex flex-col items-center pt-4 pb-5">
-  <Image
-    src="/assets/tagline.svg"
-    alt="Tagline"
-    width={700}
-    height={80}
-    className="select-none w-[760px] h-auto"
-  />
+<Image
+  src="/assets/tagline.svg"
+  alt="Tagline"
+  width={700}
+  height={80}
+  className="select-none"
+/>
 </div>
 
 {/* Description */}
