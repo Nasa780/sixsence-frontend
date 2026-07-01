@@ -7,9 +7,9 @@ type Section1Props = {
 
 const Sectionaccueil: NextPage<Section1Props> = ({ className = "" }) => {
   return (
-    <div
-      className={`w-[2174px] max-w-full flex items-start justify-center py-20 px-6 box-border leading-[normal] tracking-[normal] text-center text-[10px] text-[#e8a020] font-['JetBrains_Mono'] ${className}`}
-    >
+<div
+  className={`w-full max-w-[2174px] flex items-center justify-center py-20 px-6 box-border leading-[normal] tracking-[normal] text-center text-[10px] text-[#e8a020] font-['JetBrains_Mono'] ${className}`}
+>
       <div className="w-[672px] shadow-[0px_0px_80px_rgba(0,_0,_0,_0.6),_0px_0px_40px_rgba(232,_160,_32,_0.05)] [background:linear-gradient(145deg,_#141311,_#0f0e0c)] border-[rgba(232,160,32,0.18)] border-solid border-[1px] box-border flex flex-col items-center py-14 px-10 max-w-[672px] mq450:pt-9 mq450:pb-9 mq450:box-border mq750:max-w-full">
         <div className="flex flex-col items-start pt-0 px-0 pb-6">
           <div className="w-16 h-16 bg-[rgba(232,160,32,0.07)] border-[rgba(232,160,32,0.22)] border-solid border-[1px] box-border flex items-center justify-center">
