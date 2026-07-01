@@ -1,14 +1,14 @@
 import Navigationaccueil from "../components/Navigationaccueil";
 import Containeraccueil from "../components/Containeraccueil";
+import Containeraccueil2 from "../components/Containeraccueil2";
 import Sectionaccueil from "../components/Sectionaccueil";
 import Appaccueil from "../components/Appaccueil";
-import Containeraccueil2 from "../components/Containeraccueil2";
 
 export default function Accueil() {
   return (
     <div className="relative min-h-screen overflow-hidden">
 
-      {/* BACKGROUND DÉGRADÉ */}
+      {/* BACKGROUND */}
       <div
         className="absolute inset-0 -z-20"
         style={{
@@ -25,13 +25,17 @@ export default function Accueil() {
           className="w-full h-full object-cover opacity-[0.45]"
         />
       </div>
-      
-      <Navigationaccueil />
-      <Containeraccueil />  
-      <Containeraccueil2 />  
-      <Sectionaccueil />  
-      <Appaccueil />  
-      {/* reste de ta page */}
+
+      {/* CONTENU CENTRÉ */}
+      <div className="w-full flex flex-col items-center justify-center">
+
+        <Navigationaccueil />
+        <Containeraccueil />
+        <Containeraccueil2 />
+        <Sectionaccueil />
+        <Appaccueil />
+
+      </div>
     </div>
   );
 }
