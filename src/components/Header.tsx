@@ -46,7 +46,7 @@ const Header: NextPage<HeaderType> = ({ className = "" }) => {
         </button>
 
 <button
-  onClick={() => window.location.href = "https://sixsence-backend.onrender.com/auth/discord"}}
+  onClick={() => window.location.href = "https://sixsence-backend.onrender.com/auth/discord"}
   className="cursor-pointer py-[9px] px-[18px] bg-[#5865f2] shadow-[0px_0px_16px_rgba(88,_101,_242,_0.32)] rounded flex items-center gap-[7px] hover:bg-[#7080ff]"
 >
   <Image

@@ -59,7 +59,7 @@ const MainContentMobile = () => {
         </button>
 
 <button
-  onClick={() => window.location.href = "https://sixsence-backend.onrender.com/auth/discord"}}
+  onClick={() => window.location.href = "https://sixsence-backend.onrender.com/auth/discord"}
   className="w-full flex justify-center"
 >
   <Image

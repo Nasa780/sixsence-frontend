@@ -19,7 +19,7 @@ const HeaderMobile = () => {
 
       {/* Discord */}
 <button
-  onClick={() => window.location.href = "https://sixsence-backend.onrender.com/auth/discord"}}
+  onClick={() => window.location.href = "https://sixsence-backend.onrender.com/auth/discord"}
   className="flex items-center gap-2 bg-[#5865f2] px-3 py-2 rounded"
 >
   <Image

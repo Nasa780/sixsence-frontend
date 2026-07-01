@@ -79,7 +79,7 @@ const MainContent: NextPage = () => {
 
         {/* Blue Button SVG */}
 <button
-  onClick={() => window.location.href = "https://sixsence-backend.onrender.com/auth/discord"}}
+  onClick={() => window.location.href = "https://sixsence-backend.onrender.com/auth/discord"}
   className="cursor-pointer flex items-center justify-center"
 >
   <Image
