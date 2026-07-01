@@ -20,23 +20,14 @@ const Containeraccueil = ({ className = "" }: ContainerProps) => {
 
       {/* LOGO SIX + LOGO SENCE */}
       <div className="w-[728.9px] flex items-center justify-center gap-[34.9px] relative isolate">
-        <Image
-          src="/assets/SIX.svg"
-          alt="Logo SIX"
-          width={222}
-          height={112}
-          className="select-none mq750:text-[56px] mq450:text-[34px]"
-          priority
-        />
-
-        <Image
-          src="/assets/SENCE.svg"
-          alt="Logo SENCE"
-          width={472}
-          height={112}
-          className="select-none mq750:text-[56px] mq450:text-[34px]"
-          priority
-        />
+<Image
+  src="/assets/LogoSixsence.svg"
+  alt="Logo Six Sence"
+  width={728}
+  height={112}
+  className="select-none drop-shadow-[0_0_35px_rgba(255,200,100,0.8)]"
+  priority
+/>
       </div>
 
       {/* Séparateur décoratif */}
