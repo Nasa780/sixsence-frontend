@@ -12,7 +12,7 @@ const Containeraccueil2: NextPage = () => {
         height={18}
         sizes="100vw"
         alt=""
-        src="/assets/iconfleche2.svg"
+        src="/assets/Iconfleche2.svg"
       />
 
       {/* Trait jaune */}
