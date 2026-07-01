@@ -50,7 +50,7 @@ const MainContent: NextPage = () => {
     alt="Tagline"
     width={700}
     height={80}
-    className="select-none"
+    className="select-none w-[760px] h-auto"
   />
 </div>
 
