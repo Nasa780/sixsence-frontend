@@ -7,9 +7,9 @@ type App2Props = {
 
 const Appaccueil: FC<App2Props> = ({ className = "" }) => {
   return (
-    <div
-      className={`max-w-full flex flex-col items-center pt-0 px-6 pb-20 box-border leading-[normal] tracking-[normal] text-left text-sm text-[#f0ede8] font-[Barlow] ${className}`}
-    >
+<div
+  className={`relative overflow-visible max-w-full flex flex-col items-center pt-0 px-6 pb-20 box-border leading-[normal] tracking-[normal] text-left text-sm text-[#f0ede8] font-[Barlow] ${className}`}
+>
       <div className="w-[1024px] flex items-start pt-0 px-0 pb-0 box-border gap-[15.6px] max-w-[1024px] mq450:max-w-full">
         <div className="[background:linear-gradient(145deg,_#111110,_#0e0d0b)] border-[rgba(232,160,32,0.18)] border-solid border-[1px] flex flex-col items-start py-7 pl-7 pr-5">
           <div className="flex flex-col items-start pt-0 px-0 pb-5">
