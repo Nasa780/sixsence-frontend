@@ -45,19 +45,23 @@ const Header: NextPage<HeaderType> = ({ className = "" }) => {
           </div>
         </button>
 
-        <button className="cursor-pointer py-[9px] px-[18px] bg-[#5865f2] shadow-[0px_0px_16px_rgba(88,_101,_242,_0.32)] rounded flex items-center gap-[7px] hover:bg-[#7080ff]">
-          <Image
-            className="h-4 w-4"
-            loading="lazy"
-            width={16}
-            height={16}
-            alt="Discord Icon"
-            src="/assets/Icondiscord.svg" // tu changeras quand tu auras l’icône Discord
-          />
-          <div className="text-[12.5px] tracking-[0.5px] leading-[18.7px] font-semibold font-[Inter] text-[#fff] text-center">
-            Discord
-          </div>
-        </button>
+<button
+  onClick={() => window.location.href = "http://localhost:3001/auth/discord"}
+  className="cursor-pointer py-[9px] px-[18px] bg-[#5865f2] shadow-[0px_0px_16px_rgba(88,_101,_242,_0.32)] rounded flex items-center gap-[7px] hover:bg-[#7080ff]"
+>
+  <Image
+    className="h-4 w-4"
+    loading="lazy"
+    width={16}
+    height={16}
+    alt="Discord Icon"
+    src="/assets/Icondiscord.svg"
+  />
+  <div className="text-[12.5px] tracking-[0.5px] leading-[18.7px] font-semibold font-[Inter] text-[#fff] text-center">
+    Discord
+  </div>
+</button>
+
       </div>
     </div>
   );

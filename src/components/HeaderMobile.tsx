@@ -18,15 +18,19 @@ const HeaderMobile = () => {
       </div>
 
       {/* Discord */}
-      <button className="flex items-center gap-2 bg-[#5865f2] px-3 py-2 rounded">
-        <Image
-          src="/assets/Icondiscord.svg"
-          alt="Discord"
-          width={16}
-          height={16}
-        />
-        <span className="text-white text-[12px] font-[Inter]">Discord</span>
-      </button>
+<button
+  onClick={() => window.location.href = "http://localhost:3001/auth/discord"}
+  className="flex items-center gap-2 bg-[#5865f2] px-3 py-2 rounded"
+>
+  <Image
+    src="/assets/Icondiscord.svg"
+    alt="Discord"
+    width={16}
+    height={16}
+  />
+  <span className="text-white text-[12px] font-[Inter]">Discord</span>
+</button>
+
     </div>
   );
 };

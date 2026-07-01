@@ -78,15 +78,19 @@ const MainContent: NextPage = () => {
         </button>
 
         {/* Blue Button SVG */}
-        <button className="cursor-pointer flex items-center justify-center">
-          <Image
-            src="/assets/buttonblue.svg"
-            alt="Rejoindre Discord"
-            width={250}
-            height={70}
-            className="select-none"
-          />
-        </button>
+<button
+  onClick={() => window.location.href = "http://localhost:3001/auth/discord"}
+  className="cursor-pointer flex items-center justify-center"
+>
+  <Image
+    src="/assets/buttonblue.svg"
+    alt="Rejoindre Discord"
+    width={250}
+    height={70}
+    className="select-none"
+  />
+</button>
+
       </div>
 
       {/* Scroll Indicator */}

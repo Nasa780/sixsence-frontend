@@ -58,15 +58,18 @@ const MainContentMobile = () => {
           />
         </button>
 
-        <button>
-          <Image
-            src="/assets/buttonblue.svg"
-            alt="Rejoindre Discord"
-            width={360}
-            height={70}
-            className="w-full"
-          />
-        </button>
+<button
+  onClick={() => window.location.href = "http://localhost:3001/auth/discord"}
+  className="w-full flex justify-center"
+>
+  <Image
+    src="/assets/buttonblue.svg"
+    alt="Rejoindre Discord"
+    width={360}
+    height={70}
+    className="w-full"
+  />
+</button>
       </div>
 
       {/* Scroll indicator */}
