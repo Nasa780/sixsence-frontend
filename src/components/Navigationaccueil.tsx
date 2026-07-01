@@ -28,7 +28,7 @@ const Navigationaccueil = ({ className = "" }: NavigationProps) => {
           width={12}
           height={12}
           alt=""
-          src="/Icondiscord2.svg"
+          src="/assets/Icondiscord2.svg"
         />
         <div className="text-xs tracking-[0.96px] leading-4 uppercase font-semibold text-[#8b9cf4] text-center">
           Discord
