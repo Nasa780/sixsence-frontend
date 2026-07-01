@@ -25,6 +25,7 @@ export default function Accueil() {
       
       <Navigationaccueil />
       <Containeraccueil />  
+      <Sectionaccueil />  
       {/* reste de ta page */}
     </div>
   );

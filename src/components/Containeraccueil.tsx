@@ -25,7 +25,10 @@ const Containeraccueil = ({ className = "" }: ContainerProps) => {
   alt="Logo Six Sence"
   width={728}
   height={112}
-  className="select-none drop-shadow-[0_0_35px_rgba(255,200,100,0.8)]"
+  className="
+  drop-shadow-[0_0_6px_rgba(255,200,100,0.18)]
+  drop-shadow-[0_0_12px_rgba(255,200,100,0.12)]
+"
   priority
 />
       </div>
