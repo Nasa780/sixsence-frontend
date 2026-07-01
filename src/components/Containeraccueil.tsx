@@ -83,7 +83,7 @@ const Containeraccueil = ({ className = "" }: ContainerProps) => {
               <b className="text-sm tracking-[2.52px] leading-5 uppercase text-white">
                 Jouer
               </b>
-              <Image src="/Icon1.svg" alt="" width={12} height={12} />
+              <Image src="/assets/Iconjouer.svg" alt="" width={12} height={12} />
             </button>
           </div>
         </div>

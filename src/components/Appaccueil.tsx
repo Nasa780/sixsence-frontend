@@ -68,7 +68,7 @@ const Appaccueil: FC<App2Props> = ({ className = "" }) => {
                 width={20}
                 height={20}
                 alt=""
-                src="/assets/Iconprofile.svg"
+                src="/assets/Iconprofil.svg"
               />
             </button>
           </div>

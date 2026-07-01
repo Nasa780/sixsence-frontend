@@ -2,6 +2,7 @@ import Navigationaccueil from "../components/Navigationaccueil";
 import Containeraccueil from "../components/Containeraccueil";
 import Sectionaccueil from "../components/Sectionaccueil";
 import Appaccueil from "../components/Appaccueil";
+import Containeraccueil2 from "../components/Containeraccueil2";
 
 export default function Accueil() {
   return (
@@ -29,6 +30,7 @@ export default function Accueil() {
       <Containeraccueil />  
       <Sectionaccueil />  
       <Appaccueil />  
+      <Containeraccueil2 />  
       {/* reste de ta page */}
     </div>
   );
