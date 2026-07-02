@@ -1,4 +1,5 @@
-import Navigationaccueil from "../components/Navigationaccueil";
+import Image from "next/image";
+
 
 // 🖥️ Version desktop Ranked
 import Appranked from "../components/Appranked";
