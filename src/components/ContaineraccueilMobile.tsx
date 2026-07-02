@@ -1,3 +1,4 @@
+import Link from "next/link";
 import Image from "next/image";
 
 const ContaineraccueilMobile = () => {
@@ -66,12 +67,14 @@ const ContaineraccueilMobile = () => {
 
           {/* BOUTON JOUER */}
           <div className="p-4">
-            <button className="w-full h-11 bg-gradient-to-br from-[#3a8cff] to-[#1a6fe0] flex items-center justify-center gap-2 rounded-md">
-              <b className="text-sm tracking-[2px] leading-5 uppercase text-white">
-                Jouer
-              </b>
-              <Image src="/assets/Iconjouer.svg" alt="" width={12} height={12} />
-            </button>
+<Link href="/ranked">
+  <button className="w-full h-11 bg-gradient-to-br from-[#3a8cff] to-[#1a6fe0] flex items-center justify-center gap-2 rounded-md cursor-pointer">
+    <b className="text-sm tracking-[2px] leading-5 uppercase text-white">
+      Jouer
+    </b>
+    <Image src="/assets/Iconjouer.svg" alt="" width={12} height={12} />
+  </button>
+</Link>
           </div>
         </div>
 

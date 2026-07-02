@@ -1,3 +1,4 @@
+import Link from "next/link";
 import Image from "next/image";
 
 type ContainerProps = {
@@ -79,12 +80,15 @@ const Containeraccueil = ({ className = "" }: ContainerProps) => {
 
           {/* Bouton Jouer */}
           <div className="p-4">
-            <button className="w-[542px] h-11 bg-gradient-to-br from-[#3a8cff] to-[#1a6fe0] flex items-center justify-center gap-1.5">
-              <b className="text-sm tracking-[2.52px] leading-5 uppercase text-white">
-                Jouer
-              </b>
-              <Image src="/assets/Iconjouer.svg" alt="" width={12} height={12} />
-            </button>
+<Link href="/ranked">
+  <button className="w-[542px] h-11 bg-gradient-to-br from-[#3a8cff] to-[#1a6fe0] flex items-center justify-center gap-1.5 cursor-pointer">
+    <b className="text-sm tracking-[2.52px] leading-5 uppercase text-white">
+      Jouer
+    </b>
+    <Image src="/assets/Iconjouer.svg" alt="" width={12} height={12} />
+  </button>
+</Link>
+
           </div>
         </div>
 
