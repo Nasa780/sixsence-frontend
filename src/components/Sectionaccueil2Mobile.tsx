@@ -3,81 +3,77 @@ import Image from "next/image";
 
 const Sectionaccueil2Mobile: NextPage = () => {
   return (
-    <div className="w-full flex flex-col items-center py-14 px-4 bg-[#0c0c0c] border-y border-[rgba(232,160,32,0.07)]">
+    <div className="w-full flex flex-col items-center py-12 px-4 bg-[#09090b] border-y border-[rgba(232,160,32,0.07)]">
 
-      {/* TITRE SECTION */}
-      <div className="flex flex-col items-center pb-8">
+      {/* WRAPPER GLOBAL */}
+      <div className="w-full max-w-[360px]">
 
-        {/* Ligne + texte */}
-        <div className="flex items-center gap-3 pb-3">
-          <div className="h-px w-12 bg-gradient-to-r from-transparent to-[rgba(232,160,32,0.5)]" />
-          <div className="tracking-[3px] leading-[14px] uppercase text-[#e8a020] font-['JetBrains_Mono']">
-            Plateforme Live
+        {/* TITRE */}
+        <div className="flex flex-col items-center pb-8">
+          <div className="flex items-center gap-3 pb-3">
+            <div className="h-px w-10 bg-gradient-to-r from-transparent to-[rgba(232,160,32,0.5)]" />
+            <div className="tracking-[3px] leading-[14px] uppercase text-[#e8a020] font-['JetBrains_Mono']">
+              Plateforme Live
+            </div>
+            <div className="h-px w-10 bg-gradient-to-r from-[rgba(232,160,32,0.5)] to-transparent" />
           </div>
-          <div className="h-px w-12 bg-gradient-to-r from-[rgba(232,160,32,0.5)] to-transparent" />
+
+          <h3 className="text-lg tracking-[2px] leading-6 uppercase font-black font-[Barlow] text-transparent bg-clip-text [background:linear-gradient(180deg,#fff,#f5e8a0_45%,#e8a020)]">
+            Statistiques du site
+          </h3>
         </div>
 
-        {/* Titre principal */}
-        <h3 className="text-xl tracking-[2px] leading-7 uppercase font-black font-[Barlow] text-transparent bg-clip-text [background:linear-gradient(180deg,#fff,#f5e8a0_45%,#e8a020)]">
-          Statistiques du site
-        </h3>
-      </div>
+        {/* BLOCS */}
+        <div className="flex flex-col gap-5 text-center text-[#6b6860] font-[Barlow]">
 
-      {/* BLOCS STATISTIQUES */}
-      <div className="w-full max-w-[360px] flex flex-col gap-6 text-center text-[#6b6860] font-[Barlow]">
+          {/* TEMPLATE BLOC */}
+          {[
+            {
+              icon: "/assets/Iconjoueur.svg",
+              value: "12,847",
+              label: "Joueurs actifs"
+            },
+            {
+              icon: "/assets/Iconmatch.svg",
+              value: "384,920",
+              label: "Matchs joués"
+            },
+            {
+              icon: "/assets/Iconvictoire.svg",
+              value: "201,506",
+              label: "Victoires"
+            },
+            {
+              icon: "/assets/Iconmmr.svg",
+              value: "1,342",
+              label: "MMR moyen"
+            }
+          ].map((item, i) => (
+            <div
+              key={i}
+              className="w-full bg-gradient-to-br from-[#111110] to-[#0e0d0b] 
+                         border border-[rgba(232,160,32,0.18)] rounded-lg 
+                         flex flex-col items-center py-5 px-3"
+            >
+              {/* ICON */}
+              <div className="w-9 h-9 bg-[rgba(232,160,32,0.07)] flex items-center justify-center rounded-md mb-2">
+                <Image src={item.icon} alt="" width={18} height={18} />
+              </div>
 
-        {/* BLOC 1 */}
-        <div className="w-full bg-gradient-to-br from-[#111110] to-[#0e0d0b] border border-[rgba(232,160,32,0.18)] rounded-lg flex flex-col items-center py-6 px-4">
-          <div className="w-10 h-10 bg-[rgba(232,160,32,0.07)] flex items-center justify-center rounded-md mb-3">
-            <Image src="/assets/Iconjoueur.svg" alt="" width={18} height={18} />
-          </div>
-          <h1 className="text-2xl font-black text-transparent bg-clip-text [background:linear-gradient(180deg,#fff,#f5e8a0_45%,#e8a020)]">
-            12,847
-          </h1>
-          <div className="pt-2 text-xs tracking-[2px] uppercase font-['JetBrains_Mono'] text-[#e8a020]">
-            Joueurs actifs
-          </div>
+              {/* VALUE */}
+              <h2 className="text-xl font-black text-transparent bg-clip-text 
+                             [background:linear-gradient(180deg,#fff,#f5e8a0_45%,#e8a020)]">
+                {item.value}
+              </h2>
+
+              {/* LABEL */}
+              <div className="pt-1 text-[11px] tracking-[2px] uppercase font-['JetBrains_Mono'] text-[#e8a020]">
+                {item.label}
+              </div>
+            </div>
+          ))}
+
         </div>
-
-        {/* BLOC 2 */}
-        <div className="w-full bg-gradient-to-br from-[#111110] to-[#0e0d0b] border border-[rgba(232,160,32,0.18)] rounded-lg flex flex-col items-center py-6 px-4">
-          <div className="w-10 h-10 bg-[rgba(232,160,32,0.07)] flex items-center justify-center rounded-md mb-3">
-            <Image src="/assets/Iconmatch.svg" alt="" width={18} height={18} />
-          </div>
-          <h2 className="text-2xl font-black text-transparent bg-clip-text [background:linear-gradient(180deg,#fff,#f5e8a0_45%,#e8a020)]">
-            384,920
-          </h2>
-          <div className="pt-2 text-xs tracking-[2px] uppercase font-['JetBrains_Mono'] text-[#e8a020]">
-            Matchs joués
-          </div>
-        </div>
-
-        {/* BLOC 3 */}
-        <div className="w-full bg-gradient-to-br from-[#111110] to-[#0e0d0b] border border-[rgba(232,160,32,0.18)] rounded-lg flex flex-col items-center py-6 px-4">
-          <div className="w-10 h-10 bg-[rgba(232,160,32,0.07)] flex items-center justify-center rounded-md mb-3">
-            <Image src="/assets/Iconvictoire.svg" alt="" width={18} height={18} />
-          </div>
-          <h2 className="text-2xl font-black text-transparent bg-clip-text [background:linearlinear-gradient(180deg,#fff,#f5e8a0_45%,#e8a020)]">
-            201,506
-          </h2>
-          <div className="pt-2 text-xs tracking-[2px] uppercase font-['JetBrains_Mono'] text-[#e8a020]">
-            Victoires
-          </div>
-        </div>
-
-        {/* BLOC 4 */}
-        <div className="w-full bg-gradient-to-br from-[#111110] to-[#0e0d0b] border border-[rgba(232,160,32,0.18)] rounded-lg flex flex-col items-center py-6 px-4">
-          <div className="w-10 h-10 bg-[rgba(232,160,32,0.07)] flex items-center justify-center rounded-md mb-3">
-            <Image src="/assets/Iconmmr.svg" alt="" width={18} height={18} />
-          </div>
-          <h2 className="text-2xl font-black text-transparent bg-clip-text [background:linear-gradient(180deg,#fff,#f5e8a0_45%,#e8a020)]">
-            1,342
-          </h2>
-          <div className="pt-2 text-xs tracking-[2px] uppercase font-['JetBrains_Mono'] text-[#e8a020]">
-            MMR moyen
-          </div>
-        </div>
-
       </div>
     </div>
   );
