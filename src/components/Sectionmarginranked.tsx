@@ -14,12 +14,18 @@ const Sectionmarginranked: NextPage = () => {
             </div>
           </div>
         </div>
-        <div className="self-stretch h-[63.8px] flex items-start pt-0 px-0 pb-[0.8px] box-border gap-[11.9px] max-w-full text-[58px] text-[#e8eaf0] font-[Rajdhani] mq750:h-auto mq750:flex-wrap">
-          <h1 className="mt-[-1px] m-0 h-16 w-[237px] relative text-[length:inherit] tracking-[-0.58px] leading-[63.8px] font-bold font-[inherit] inline-block mq1050:text-[46px] mq1050:leading-[51px] mq450:text-[35px] mq450:leading-[38px]">{`Saison 1 — `}</h1>
-          <h2 className="mt-[-1px] m-0 h-16 w-[486px] relative text-[length:inherit] tracking-[-0.58px] leading-[63.8px] font-bold font-[inherit] text-transparent !bg-clip-text [background:linear-gradient(90deg,_#1a6bdc,_#38bdf8)] [-webkit-background-clip:text] [-webkit-text-fill-color:transparent] inline-block max-w-full mq1050:text-[46px] mq1050:leading-[51px] mq450:text-[35px] mq450:leading-[38px]">
-            Compétition Ouverte
-          </h2>
-        </div>
+<div className="flex items-center gap-4 text-[58px] font-[Rajdhani] mq1050:text-[46px] mq450:text-[35px]">
+  <h1 className="m-0 font-bold text-[#e8eaf0] tracking-[-0.58px] leading-[63.8px] mq1050:leading-[51px] mq450:leading-[38px]">
+    Saison 1
+  </h1>
+
+  {/* TRAIT ENTRE LES DEUX */}
+  <div className="w-[60px] h-[3px] bg-[rgba(26,107,220,0.45)] rounded-full"></div>
+
+  <h2 className="m-0 font-bold tracking-[-0.58px] leading-[63.8px] text-transparent !bg-clip-text [background:linear-gradient(90deg,_#1a6bdc,_#38bdf8)] [-webkit-background-clip:text] [-webkit-text-fill-color:transparent] mq1050:leading-[51px] mq450:leading-[38px]">
+    Compétition Ouverte
+  </h2>
+</div>
         <div className="w-[560px] h-[43px] flex flex-col items-start pt-4 px-0 pb-0 box-border max-w-[560px] text-lg text-[#6b7d94] mq750:max-w-full">
           <div className="relative leading-[27px]">
             Affronte les meilleurs joueurs et grimpe les échelons
