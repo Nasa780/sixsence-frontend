@@ -74,3 +74,4 @@ const ContainermarginaccueilMobile = () => {
   );
 };
 
+export default ContainermarginaccueilMobile;
