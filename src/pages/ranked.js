@@ -32,15 +32,16 @@ export default function Ranked() {
             "linear-gradient(145deg, #06070F 6.17%, #080B14 36.85%, #0A0C10 63.15%, #07080C 93.83%)"
         }}
       />
+{/* APP EFFECT */}
+<div className="absolute inset-0 -z-10 pointer-events-none">
+  <Image
+    src="/App.svg"
+    alt=""
+    fill
+    className="object-cover opacity-[0.35]"
+  />
+</div>
 
-      {/* GEOMETRIC SHAPE */}
-      <div className="absolute inset-0 -z-10 pointer-events-none">
-        <img
-          src="/assets/GeometricBg.png"
-          alt=""
-          className="w-full h-full object-cover opacity-[0.45]"
-        />
-      </div>
 
       {/* 🖥️ DESKTOP */}
       <div className="hidden md:flex flex-col items-center justify-center w-full">
