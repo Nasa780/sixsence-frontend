@@ -4,7 +4,16 @@ import Containeraccueil2 from "../components/Containeraccueil2";
 import Sectionaccueil from "../components/Sectionaccueil";
 import Appaccueil from "../components/Appaccueil";
 import Sectionaccueil2 from "../components/Sectionaccueil2";
-import Containermarginaccueil from "../components/Containermarginaccueil";  
+import Containermarginaccueil from "../components/Containermarginaccueil";
+
+// 🔥 Version mobile optimisée
+import NavigationaccueilMobile from "../mobile/NavigationaccueilMobile";
+import ContaineraccueilMobile from "../mobile/ContaineraccueilMobile";
+import Containeraccueil2Mobile from "../mobile/Containeraccueil2Mobile";
+import SectionaccueilMobile from "../mobile/SectionaccueilMobile";
+import AppaccueilMobile from "../mobile/AppaccueilMobile";
+import Sectionaccueil2Mobile from "../mobile/Sectionaccueil2Mobile";
+import ContainermarginaccueilMobile from "../mobile/ContainermarginaccueilMobile";
 
 export default function Accueil() {
   return (
@@ -19,7 +28,7 @@ export default function Accueil() {
         }}
       />
 
-      {/* FORME GÉOMÉTRIQUE */}
+      {/* GEOMETRIC SHAPE */}
       <div className="absolute inset-0 -z-10 pointer-events-none">
         <img
           src="/assets/GeometricBg.png"
@@ -28,16 +37,28 @@ export default function Accueil() {
         />
       </div>
 
-      {/* CONTENU CENTRÉ */}
-      <div className="w-full flex flex-col items-center justify-center">
-
+      {/* DESKTOP */}
+      <div className="hidden md:flex flex-col items-center justify-center w-full">
         <Navigationaccueil />
         <Containeraccueil />
         <Containeraccueil2 />
         <Sectionaccueil />
         <Appaccueil />
-        <Sectionaccueil2/>
-        <Containermarginaccueil />  
+        <Sectionaccueil2 />
+        <Containermarginaccueil />
+      </div>
+
+      {/* MOBILE */}
+      <div className="flex md:hidden flex-col items-center justify-center w-full px-4">
+
+        <NavigationaccueilMobile />
+        <ContaineraccueilMobile />
+        <Containeraccueil2Mobile />
+        <SectionaccueilMobile />
+        <AppaccueilMobile />
+        <Sectionaccueil2Mobile />
+        <ContainermarginaccueilMobile />
+
       </div>
     </div>
   );
