@@ -3,7 +3,7 @@ import Containeraccueil from "../components/Containeraccueil";
 import Containeraccueil2 from "../components/Containeraccueil2";
 import Sectionaccueil from "../components/Sectionaccueil";
 import Appaccueil from "../components/Appaccueil";
-import Sectionaccueil2 from "@/components/Sectionaccueil2";
+import Sectionaccueil2 from "../components/Sectionaccueil2";
 
 export default function Accueil() {
   return (
