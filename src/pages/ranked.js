@@ -41,23 +41,18 @@ export default function Ranked() {
   return (
     <div className="relative min-h-screen overflow-hidden">
 
-{/* 🔷 MOTIF HEXAGONAL (.webp) */}
-<div
-  className="absolute inset-0 -z-30 bg-[url('/fond.webp')] bg-repeat bg-center bg-[length:180px_180px]"
-/>
+      {/* BACKGROUND */}
+      <div
+        className="absolute inset-0 -z-20"
+        style={{
+          background:
+            "linear-gradient(145deg, #06070F 6.17%, #080B14 36.85%, #0A0C10 63.15%, #07080C 93.83%)"
+        }}
+      />
 
       {/* 🔵 HALO BLEU (oréol) */}
       <div className="absolute inset-0 -z-15 pointer-events-none bg-[radial-gradient(circle_at_center,_rgba(26,107,220,0.35),_transparent_70%)]" />
 
-      {/* 🔷 OVERLAY APP (ton effet actuel) */}
-      <div className="absolute inset-0 -z-10 pointer-events-none">
-        <Image
-          src="/App.svg"
-          alt=""
-          fill
-          className="object-cover opacity-[0.35]"
-        />
-      </div>
 
       {/* 🖥️ DESKTOP */}
       <div className="hidden md:flex flex-col items-center justify-center w-full">
