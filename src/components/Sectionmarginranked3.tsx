@@ -105,113 +105,123 @@ const Sectionmarginranked3: NextPage = () => {
            ============================ */}
 
 {isConnected && (
-  <div className="self-stretch flex flex-col items-start pt-5 px-0 pb-0 box-border max-w-full text-[28px] text-[#e8eaf0]">
+  <div className="self-stretch bg-[rgba(26,107,220,0.25)] p-px box-border max-w-full">
+    <div className="w-full relative bg-gradient-to-br from-[#0d1520] to-[#0a1628] py-10 px-11 flex gap-10">
 
-    {/* FOND BLEU + GRADIENT */}
-    <div className="self-stretch bg-[rgba(26,107,220,0.25)] flex flex-col items-start p-px box-border max-w-full">
-      <div className="self-stretch [background:linear-gradient(135deg,_#0d1520,_#0a1628)] flex flex-col items-start py-10 px-11 box-border relative isolate max-w-full">
+      {/* Barre verticale gauche */}
+      <div className="absolute top-0 left-0 w-[3px] h-full bg-gradient-to-b from-[#1a6bdc] to-transparent" />
 
-        {/* HEADER */}
-        <div className="flex items-center gap-[13.5px]">
-          <button className="cursor-pointer border-[rgba(26,107,220,0.3)] border-solid border-[1px] p-0 bg-[rgba(26,107,220,0.15)] h-11 w-11 box-border flex items-center justify-center">
-            <Image
-              className="h-[22px] w-full relative"
-              width={22}
-              height={22}
-              sizes="100vw"
-              alt=""
-              src="/assets/IconRD.svg"
-            />
-          </button>
-          <h1 className="m-0 tracking-[0.28px] leading-[30.8px] font-bold">
+      {/* Colonne gauche : tout le contenu */}
+      <div className="flex-1 flex flex-col gap-8">
+
+        {/* Header */}
+        <div className="flex items-center gap-4">
+          <div className="h-11 w-11 bg-[rgba(26,107,220,0.15)] border border-[rgba(26,107,220,0.3)] flex items-center justify-center rounded">
+            {/* Icône placeholder, remplace par ton vrai SVG si besoin */}
+            <div className="w-[22px] h-[22px] border-2 border-[#1a6bdc] rounded-sm" />
+          </div>
+          <h1 className="text-[28px] font-bold text-[#e8eaf0] tracking-[0.28px]">
             Rechercher un match
           </h1>
         </div>
 
-        {/* DESCRIPTION */}
-        <div className="pt-3 text-sm text-[#6b7d94] font-[Inter]">
+        {/* Description */}
+        <p className="text-sm text-[#6b7d94] font-[Inter]">
           Tu es prêt à jouer en mode classé. Lance une recherche pour trouver un match compétitif.
-        </div>
+        </p>
 
-        {/* STATUT DE LA FILE */}
-        <div className="flex flex-col items-start pt-5 text-sm font-[Inter] text-[#a0b0c8] gap-2">
-          <div className="flex items-center gap-2">
-            <div className="h-2 w-2 rounded-full bg-[#3a8cff]" />
-            <span>{queueStatus.playersInQueue} joueur(s) en recherche</span>
-          </div>
-        </div>
-
-        {/* MODE DE JEU SÉLECTIONNÉ */}
-        <div className="mt-6 flex flex-col items-start text-sm font-[Inter] text-[#a0b0c8]">
-          <b className="uppercase text-[#6b7d94]">Mode de jeu sélectionné</b>
-          <div className="mt-2 bg-[rgba(26,107,220,0.15)] border border-[rgba(26,107,220,0.25)] py-3 px-4 flex flex-col gap-1">
-            <span className="text-[#e8eaf0] font-semibold">Recherche & Destruction</span>
-            <span className="text-[#6b7d94]">Mode compétitif classé – 5v5</span>
-            <span className="text-[#22c55e] font-semibold">Actif</span>
-          </div>
-        </div>
-
-        {/* OBJETS UTILISABLES */}
-        <div className="mt-6 flex flex-col items-start text-sm font-[Inter] text-[#a0b0c8]">
-          <b className="uppercase text-[#6b7d94]">Objets utilisables</b>
-          <div className="mt-2 bg-[rgba(34,197,94,0.12)] border border-[rgba(34,197,94,0.3)] py-3 px-4 flex flex-col gap-1">
-            <span className="text-[#22c55e] font-semibold">Points doublés</span>
-            <span className="text-[#6b7d94]">3 matchs restants – Actif</span>
-            <span className="text-[#22c55e]">+2 XP</span>
-          </div>
-        </div>
-
-        {/* RÉCOMPENSES */}
-        <div className="mt-6 flex flex-col items-start text-sm font-[Inter] text-[#a0b0c8]">
-          <b className="uppercase text-[#6b7d94]">Récompenses en cas de victoire (par mode)</b>
-          <div className="mt-2 grid grid-cols-3 gap-3">
-            <div className="bg-[rgba(26,107,220,0.15)] border border-[rgba(26,107,220,0.25)] py-3 px-4 flex flex-col gap-1">
-              <span className="text-[#e8eaf0] font-semibold">Duel</span>
-              <span>+10 pts • 💎 +150 • 💰 100–200</span>
+        {/* Statut de la file */}
+        <div>
+          <h3 className="uppercase text-[#6b7d94] text-xs font-bold tracking-wide">
+            Statut de la file
+          </h3>
+          <div className="mt-3 flex flex-col gap-2 text-sm text-[#a0b0c8] font-[Inter]">
+            <div className="flex items-center gap-2">
+              <span className="h-2 w-2 rounded-full bg-[#3a8cff]" />
+              <span>{queueStatus.playersInQueue} joueur(s) en recherche</span>
             </div>
-            <div className="bg-[rgba(26,107,220,0.15)] border border-[rgba(26,107,220,0.25)] py-3 px-4 flex flex-col gap-1">
-              <span className="text-[#e8eaf0] font-semibold">Mêlée</span>
-              <span>+10 pts • 💎 +150 • 💰 100–200</span>
+            <div className="flex items-center gap-2">
+              <span className="h-2 w-2 rounded-full bg-[#e8a020]" />
+              <span>{queueStatus.matchesInProgress} match(s) en cours</span>
             </div>
-            <div className="bg-[rgba(26,107,220,0.15)] border border-[rgba(26,107,220,0.25)] py-3 px-4 flex flex-col gap-1">
-              <span className="text-[#e8eaf0] font-semibold">S&D</span>
-              <span>+30 pts • 💎 +500 • 💰 650–700</span>
+            <div className="flex items-center gap-2">
+              <span className="h-2 w-2 rounded-full bg-[#22c55e]" />
+              <span>{queueStatus.playersOnline} joueur(s) en ligne</span>
             </div>
           </div>
         </div>
 
-        {/* AVERTISSEMENT */}
-        <div className="mt-6 bg-[rgba(234,179,8,0.08)] border border-[rgba(234,179,8,0.25)] py-3 px-4 text-sm text-[#facc15] font-[Inter]">
-          ⚠️ En lançant un match classé, vous vous engagez à le jouer. Ne pas jouer un match après l’avoir lancé peut entraîner des sanctions si cela se reproduit plusieurs fois.
+        {/* Mode de jeu sélectionné */}
+        <div>
+          <h3 className="uppercase text-[#6b7d94] text-xs font-bold tracking-wide">
+            Mode de jeu sélectionné
+          </h3>
+          <div className="mt-3 bg-[rgba(26,107,220,0.15)] border border-[rgba(26,107,220,0.25)] p-4 rounded-md">
+            <p className="text-[#e8eaf0] font-semibold">Recherche &amp; Destruction</p>
+            <p className="text-[#6b7d94] text-sm">Mode compétitif classé - 5v5</p>
+            <p className="text-[#22c55e] text-sm font-semibold">Actif</p>
+          </div>
         </div>
 
-        {/* BOUTONS */}
-        <div className="mt-6 flex flex-col items-start gap-3">
-          <button className="cursor-pointer py-2.5 px-6 bg-[transparent] [background:linear-gradient(90deg,#1a6bdc,#1559b8)] flex items-center justify-center gap-2">
-            <b className="text-sm tracking-[0.56px] leading-[21px] font-[Inter] text-white text-center">
-              Rejoindre / Chercher un match
-            </b>
-          </button>
-
-          <button className="cursor-pointer py-2.5 px-6 bg-[rgba(220,38,38,0.08)] border border-[rgba(220,38,38,0.35)] flex items-center justify-center gap-2 hover:bg-[rgba(248,113,113,0.08)] hover:border-[rgba(248,113,113,0.35)]">
-            <b className="text-sm tracking-[0.56px] leading-[21px] font-[Inter] text-[#fecaca] text-center">
-              Quitter la file d’attente
-            </b>
-          </button>
+        {/* Objets utilisables */}
+        <div>
+          <h3 className="uppercase text-[#6b7d94] text-xs font-bold tracking-wide">
+            Objets utilisables
+          </h3>
+          <div className="mt-3 bg-[rgba(34,197,94,0.12)] border border-[rgba(34,197,94,0.3)] p-4 rounded-md">
+            <p className="text-[#22c55e] font-semibold">Points doublés</p>
+            <p className="text-[#6b7d94] text-sm">3 matchs restants - Actif</p>
+            <p className="text-[#22c55e] text-sm">+2 XP</p>
+          </div>
         </div>
 
-        {/* MATCHS EN COURS (DÉPLACÉ) */}
-        <div className="mt-6 flex items-center gap-2 text-sm font-[Inter] text-[#a0b0c8]">
-          <div className="h-2 w-2 rounded-full bg-[#e8a020]" />
-          <span>{queueStatus.matchesInProgress} match(s) en cours</span>
+        {/* Récompenses en cas de victoire */}
+        <div>
+          <h3 className="uppercase text-[#6b7d94] text-xs font-bold tracking-wide">
+            Récompenses en cas de victoire (par mode)
+          </h3>
+          <div className="mt-3 bg-[rgba(26,107,220,0.15)] border border-[rgba(26,107,220,0.25)] p-4 rounded-md">
+            <p className="text-[#e8eaf0] font-semibold">S&amp;D</p>
+            <p className="text-sm text-[#a0b0c8]">Points +30 pts</p>
+            <p className="text-sm text-[#a0b0c8]">Expérience +500 XP</p>
+            <p className="text-sm text-[#a0b0c8]">
+              Bonus actif : XP x2 = +1000 XP ce match
+            </p>
+          </div>
         </div>
 
-        {/* BARRE VERTICALE */}
-        <div className="w-[3px] h-[233px] absolute top-0 left-0 [background:linear-gradient(180deg,_#1a6bdc,_rgba(0,_0,_0,_0))] z-[2]" />
+        {/* Mode classé uniquement */}
+        <div className="text-sm text-[#6b7d94] font-[Inter]">
+          <p className="font-semibold">Mode classé uniquement</p>
+          <p>
+            Les points et récompenses ne sont attribués qu’en cas de victoire en mode classé.
+          </p>
+        </div>
+
+        {/* Engagement requis */}
+        <div className="bg-[rgba(234,179,8,0.08)] border border-[rgba(234,179,8,0.25)] p-4 rounded-md text-[#facc15] text-sm font-[Inter]">
+          <p className="font-semibold">Engagement requis.</p>
+          <p>
+            En lançant un match classé, vous vous engagez à le jouer. Ne pas jouer un match
+            après l’avoir lancé peut entraîner des sanctions si cela se reproduit plusieurs fois.
+          </p>
+        </div>
+      </div>
+
+      {/* Colonne droite : boutons */}
+      <div className="w-[260px] flex flex-col gap-3 items-stretch">
+        <button className="py-3 px-6 bg-gradient-to-r from-[#1a6bdc] to-[#1559b8] text-white font-[Inter] text-sm font-semibold rounded-md">
+          Rejoindre / Chercher un match
+        </button>
+        <button className="py-3 px-6 bg-[rgba(220,38,38,0.08)] border border-[rgba(220,38,38,0.35)] text-[#fecaca] font-[Inter] text-sm font-semibold rounded-md">
+          Quitter la file d’attente
+        </button>
       </div>
     </div>
   </div>
 )}
+
+
 
 
 
