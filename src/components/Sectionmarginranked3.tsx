@@ -206,11 +206,12 @@ const Sectionmarginranked3: NextPage = () => {
                         src="/assets/IconRD6.svg"
                       />
                       <div className="h-[43px] flex flex-col items-start gap-0.5">
-                        <div className="w-[165px] h-[23px] flex flex-col items-start">
-                          <b className="relative tracking-[0.6px] leading-[22.5px]">
-                            Recherche & Destruction
-                          </b>
-                        </div>
+<div className="flex flex-col items-start whitespace-nowrap">
+  <b className="tracking-[0.6px] leading-[22.5px]">
+    Recherche & Destruction
+  </b>
+</div>
+
                         <div className="flex flex-col items-start text-xs text-[#5b7fa8] font-[Inter]">
                           <div className="relative leading-[18px]">
                             Mode compétitif classé · 5v5
@@ -251,11 +252,12 @@ const Sectionmarginranked3: NextPage = () => {
                         src="/assets/Iconetoile.svg"
                       />
                       <div className="h-[43px] flex flex-col items-start gap-0.5">
-                        <div className="w-[100px] h-[23px] flex flex-col items-start">
-                          <b className="relative tracking-[0.6px] leading-[22.5px]">
-                            Points doublés
-                          </b>
-                        </div>
+<div className="flex flex-col items-start whitespace-nowrap">
+  <b className="tracking-[0.6px] leading-[22.5px]">
+    Points doublés
+  </b>
+</div>
+
                         <div className="flex flex-col items-start text-xs text-[#4ade80] font-[Inter]">
                           <div className="relative leading-[18px]">
                             3 matchs restants · Actif
