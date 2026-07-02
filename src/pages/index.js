@@ -1,3 +1,5 @@
+import { useEffect } from "react";
+
 import Header from "../components/Header";
 import HeaderMobile from "../components/HeaderMobile";
 
@@ -8,6 +10,21 @@ import Container from "../components/Container";
 import ContainerMobile from "../components/ContainerMobile";
 
 export default function Home() {
+
+  // 🔥 Récupération du token Discord dans l’URL
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const token = params.get("token");
+
+    if (token) {
+      // Stocker le token
+      localStorage.setItem("discord_token", token);
+
+      // Nettoyer l’URL (enlever ?token=...)
+      window.history.replaceState({}, "", window.location.pathname);
+    }
+  }, []);
+
   return (
     <div
       className="w-full min-h-screen text-white flex flex-col relative"

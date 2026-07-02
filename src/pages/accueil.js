@@ -1,3 +1,5 @@
+import { useEffect } from "react";
+
 import Navigationaccueil from "../components/Navigationaccueil";
 import Containeraccueil from "../components/Containeraccueil";
 import Containeraccueil2 from "../components/Containeraccueil2";
@@ -16,6 +18,21 @@ import Sectionaccueil2Mobile from "../components/Sectionaccueil2Mobile";
 import ContainermarginaccueilMobile from "../components/ContainermarginaccueilMobile";
 
 export default function Accueil() {
+
+  // 🔥 Récupération du token Discord dans l’URL
+  useEffect(() => {
+    const params = new URLSearchParams(window.location.search);
+    const token = params.get("token");
+
+    if (token) {
+      // Stocker le token
+      localStorage.setItem("discord_token", token);
+
+      // Nettoyer l’URL (enlever ?token=...)
+      window.history.replaceState({}, "", window.location.pathname);
+    }
+  }, []);
+
   return (
     <div className="relative min-h-screen overflow-hidden">
 
