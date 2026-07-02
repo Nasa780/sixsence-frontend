@@ -344,7 +344,7 @@ const Sectionmarginranked3: NextPage = () => {
                     <div className="h-4 w-1 relative rounded-[33554400px] [background:linear-gradient(180deg,_#1a6bdc,_rgba(26,_107,_220,_0.53))]" />
                     <div className="h-5 flex-1 flex flex-col items-start">
                       <b className="relative tracking-[1.04px] leading-[19.5px] uppercase">
-                        Récompenses en cas de victoire (par mode)
+                        Récompenses en cas de victoire 
                       </b>
                     </div>
                   </div>

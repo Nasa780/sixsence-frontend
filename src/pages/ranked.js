@@ -41,16 +41,15 @@ export default function Ranked() {
   return (
     <div className="relative min-h-screen overflow-hidden">
 
-      {/* BACKGROUND */}
+      {/* 🔷 MOTIF HEXAGONAL (répété sur tout le fond) */}
       <div
-        className="absolute inset-0 -z-20"
-        style={{
-          background:
-            "linear-gradient(145deg, #06070F 6.17%, #080B14 36.85%, #0A0C10 63.15%, #07080C 93.83%)"
-        }}
+        className="absolute inset-0 -z-20 bg-[url('/App.svg')] bg-repeat bg-center bg-[length:300px_300px]"
       />
 
-      {/* APP EFFECT */}
+      {/* 🔵 HALO BLEU (oréol) */}
+      <div className="absolute inset-0 -z-15 pointer-events-none bg-[radial-gradient(circle_at_center,_rgba(26,107,220,0.35),_transparent_70%)]" />
+
+      {/* 🔷 OVERLAY APP (ton effet actuel) */}
       <div className="absolute inset-0 -z-10 pointer-events-none">
         <Image
           src="/App.svg"
