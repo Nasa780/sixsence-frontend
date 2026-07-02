@@ -111,7 +111,7 @@ const Sectionmarginranked3: NextPage = () => {
                   height={44}
                   sizes="100vw"
                   alt=""
-                  src="/assets/Iconfleche4.svg"
+                  src="/assets/IconRD4.svg"
                 />
                 <div className="flex-1 flex flex-col items-start gap-1 min-w-[584px] max-w-full mq825:min-w-full">
                   <div className="self-stretch flex flex-col items-start">
@@ -203,7 +203,7 @@ const Sectionmarginranked3: NextPage = () => {
                         height={36}
                         sizes="100vw"
                         alt=""
-                        src="/assets/IconRD2.svg"
+                        src="/assets/IconRD6.svg"
                       />
                       <div className="h-[43px] flex flex-col items-start gap-0.5">
                         <div className="w-[165px] h-[23px] flex flex-col items-start">
@@ -316,7 +316,7 @@ const Sectionmarginranked3: NextPage = () => {
                     height={18}
                     sizes="100vw"
                     alt=""
-                    src="/assets/Iconfleche5.svg"
+                    src="/assets/Iconfleche4.svg"
                   />
                 </button>
                 <button className="cursor-pointer border-[rgba(220,38,38,0.25)] border-solid border-[1px] py-3 px-5 bg-[rgba(220,38,38,0.06)] self-stretch h-[49px] rounded-[10px] box-border flex items-center justify-between gap-0 [row-gap:20px]">
@@ -331,7 +331,7 @@ const Sectionmarginranked3: NextPage = () => {
                     height={16}
                     sizes="100vw"
                     alt=""
-                    src="/assets/IconRD3.svg"
+                    src="/assets/Iconfleche5.svg"
                   />
                 </button>
                 <div className="self-stretch flex flex-col items-start py-1 px-0">
@@ -355,7 +355,7 @@ const Sectionmarginranked3: NextPage = () => {
                           height={28}
                           sizes="100vw"
                           alt=""
-                          src="/assets/IconRD3.svg"
+                          src="/assets/IconRD5.svg"
                         />
                         <div className="h-5 flex flex-col items-start">
                           <b className="relative tracking-[0.65px] leading-[19.5px]">
@@ -378,7 +378,7 @@ const Sectionmarginranked3: NextPage = () => {
                               height={11}
                               sizes="100vw"
                               alt=""
-                              src="/assets/Iconstar.svg"
+                              src="/assets/Iconxp.svg"
                             />
                             <div className="h-6 flex flex-col items-start">
                               <b className="relative leading-6">+30 pts</b>
@@ -399,7 +399,7 @@ const Sectionmarginranked3: NextPage = () => {
                               height={11}
                               sizes="100vw"
                               alt=""
-                              src="/assets/Icon1.svg"
+                              src="/assets/Iconstar.svg"
                             />
                             <div className="h-6 flex flex-col items-start">
                               <b className="relative leading-6">+500 XP</b>
@@ -416,7 +416,7 @@ const Sectionmarginranked3: NextPage = () => {
                         height={12}
                         sizes="100vw"
                         alt=""
-                        src="/assets/Icon1.svg"
+                        src="/assets/Iconstar2.svg"
                       />
                       <div className="h-[18px] flex flex-col items-start">
                         <div className="relative leading-[18px]">
