@@ -29,11 +29,15 @@ const SectionaccueilMobile: NextPage = () => {
         </div>
 
         {/* MAIN TITLE */}
-        <div className="pb-2 text-2xl font-[Barlow]">
-          <h1 className="m-0 tracking-[2px] leading-7 uppercase font-black text-transparent bg-clip-text [background:linear-gradient(180deg,#fff,#f5e8a0_45%,#e8a020)]">
-            Application Windows
-          </h1>
-        </div>
+<h1
+  className="m-0 tracking-[2px] leading-7 uppercase font-black font-[Barlow]
+             text-transparent !bg-clip-text
+             [background:linear-gradient(180deg,#fff,#f5e8a0_45%,#e8a020)]
+             [-webkit-background-clip:text]
+             [-webkit-text-fill-color:transparent]"
+>
+  Application Windows
+</h1>
 
         {/* SUBTEXT */}
         <div className="pb-6 text-sm text-[#6b6860] font-[Inter]">
