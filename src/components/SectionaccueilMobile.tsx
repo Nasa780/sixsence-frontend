@@ -49,7 +49,7 @@ const SectionaccueilMobile: NextPage = () => {
             width={14}
             height={14}
             alt=""
-            src="/Icon.svg"
+            src="/assets/Icontelecharger.svg"
           />
           <b className="text-sm tracking-[1.5px] leading-5 uppercase font-[Barlow] text-[#09090b]">
             Télécharger
