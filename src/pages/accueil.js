@@ -3,6 +3,7 @@ import Containeraccueil from "../components/Containeraccueil";
 import Containeraccueil2 from "../components/Containeraccueil2";
 import Sectionaccueil from "../components/Sectionaccueil";
 import Appaccueil from "../components/Appaccueil";
+import Sectionaccueil2 from "@/components/Sectionaccueil2";
 
 export default function Accueil() {
   return (
@@ -34,6 +35,7 @@ export default function Accueil() {
         <Containeraccueil2 />
         <Sectionaccueil />
         <Appaccueil />
+        <Sectionaccueil2/>
 
       </div>
     </div>
