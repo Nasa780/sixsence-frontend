@@ -7,13 +7,13 @@ import Sectionaccueil2 from "../components/Sectionaccueil2";
 import Containermarginaccueil from "../components/Containermarginaccueil";
 
 // 🔥 Version mobile optimisée
-import NavigationaccueilMobile from "../mobile/NavigationaccueilMobile";
-import ContaineraccueilMobile from "../mobile/ContaineraccueilMobile";
-import Containeraccueil2Mobile from "../mobile/Containeraccueil2Mobile";
-import SectionaccueilMobile from "../mobile/SectionaccueilMobile";
-import AppaccueilMobile from "../mobile/AppaccueilMobile";
-import Sectionaccueil2Mobile from "../mobile/Sectionaccueil2Mobile";
-import ContainermarginaccueilMobile from "../mobile/ContainermarginaccueilMobile";
+import NavigationaccueilMobile from "../components/NavigationaccueilMobile";
+import ContaineraccueilMobile from "../components/ContaineraccueilMobile";
+import Containeraccueil2Mobile from "../components/Containeraccueil2Mobile";
+import SectionaccueilMobile from "../components/SectionaccueilMobile";
+import AppaccueilMobile from "../components/AppaccueilMobile";
+import Sectionaccueil2Mobile from "../components/Sectionaccueil2Mobile";
+import ContainermarginaccueilMobile from "../components/ContainermarginaccueilMobile";
 
 export default function Accueil() {
   return (
