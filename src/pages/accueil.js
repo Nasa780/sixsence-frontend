@@ -4,6 +4,7 @@ import Containeraccueil2 from "../components/Containeraccueil2";
 import Sectionaccueil from "../components/Sectionaccueil";
 import Appaccueil from "../components/Appaccueil";
 import Sectionaccueil2 from "../components/Sectionaccueil2";
+import Containermarginaccueil from "../components/Containermarginaccueil";  
 
 export default function Accueil() {
   return (
@@ -36,7 +37,7 @@ export default function Accueil() {
         <Sectionaccueil />
         <Appaccueil />
         <Sectionaccueil2/>
-
+        <Containermarginaccueil />  
       </div>
     </div>
   );
