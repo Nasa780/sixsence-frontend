@@ -22,18 +22,6 @@ const Appaccueil3: NextPage = () => {
   {/* Overlay bleu */}
   <div className="absolute inset-0 z-[2] bg-[linear-gradient(90deg,rgba(10,26,47,0.85),rgba(10,26,47,0.2)_50%,rgba(10,26,47,0.85))]" />
 
-{/* Trait doré haut */}
-<div className="absolute top-[1px] w-full h-px z-[3] bg-[linear-gradient(90deg,#ffa040,rgba(0,0,0,0)_60%)]" />
-
-{/* Trait doré bas */}
-<div className="absolute bottom-[1px] w-full h-px z-[3] bg-[linear-gradient(270deg,#ffa040,rgba(0,0,0,0)_60%)]" />
-
-{/* Trait diagonal */}
-<div
-  className="absolute bottom-[1px] right-[1px] z-[3] bg-[#ffa040] w-4 h-px"
-  style={{ transformOrigin: "0% 100%", transform: "rotate(-45deg)" }}
-/>
-
   {/* Contenu centré */}
   <div className="relative z-[4] flex flex-col items-center gap-2">
 
