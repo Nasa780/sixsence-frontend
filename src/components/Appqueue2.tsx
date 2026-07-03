@@ -1,6 +1,6 @@
 import type { NextPage } from "next";
 
-const Appaccueil2: NextPage = () => {
+const Appqueue2: NextPage = () => {
   return (
     <div className="w-[2189px] h-[43px] bg-[rgba(10,26,47,0.7)] border-[rgba(255,160,64,0.12)] border-solid border-b-[1px] box-border max-w-full overflow-x-auto shrink-0 flex items-start py-0 pl-6 pr-0 leading-[normal] tracking-[normal]">
       <button className="cursor-pointer [border:none] py-[11px] px-[21px] bg-[transparent] self-stretch border-[#ffa040] border-solid border-b-[2px] flex flex-col items-center justify-center hover:bg-[rgba(204,110,13,0.09)]">
@@ -22,4 +22,4 @@ const Appaccueil2: NextPage = () => {
   );
 };
 
-export default Appaccueil2;
+export default Appqueue2;

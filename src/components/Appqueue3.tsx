@@ -11,11 +11,21 @@ const Appaccueil3: NextPage = () => {
           <div className="absolute top-[0px] left-[calc(50%_-_635px)] [background:linear-gradient(90deg,_#ffa040,_rgba(0,_0,_0,_0)_60%)] w-[1270px] h-0.5" />
           <div className="absolute bottom-[0px] left-[calc(50%_-_635px)] [background:linear-gradient(270deg,_#ffa040,_rgba(0,_0,_0,_0)_60%)] w-[1270px] h-0.5" />
           <div className="absolute top-[calc(50%_-_100px)] left-[calc(50%_-_635px)] w-full h-full flex flex-col items-center justify-center gap-1.5 max-w-full">
-            <div className="self-stretch flex flex-col items-center">
-              <h1 className="m-0 relative text-[length:inherit] tracking-[7.92px] leading-[44px] uppercase font-bold font-[inherit] mq800:text-[35px] mq800:leading-[35px] mq450:text-[26px] mq450:leading-[26px]">
-                MELTDOWN
-              </h1>
-            </div>
+  {/* FOND ROSE DERRIÈRE LE NOM DE LA MAP */}
+  <div className="absolute inset-0 -z-10">
+    <Image
+      src="/fond-rose.png"
+      alt="map background"
+      fill
+      className="object-cover opacity-60"
+    />
+  </div>
+
+  <div className="self-stretch flex flex-col items-center">
+    <h1 className="m-0 relative text-[length:inherit] tracking-[7.92px] leading-[44px] uppercase font-bold font-[inherit] mq800:text-[35px] mq800:leading-[35px] mq450:text-[26px] mq450:leading-[26px]">
+      MELTDOWN
+    </h1>
+  </div>
             <div className="w-[228px] h-[31px] flex items-center gap-4 text-sm text-[#ffa040] font-['Barlow_Condensed']">
               <div className="h-[31px] bg-[rgba(255,160,64,0.15)] border-[rgba(255,160,64,0.5)] border-solid border-[1px] box-border flex items-center py-1 px-3.5 gap-1">
                 <Image
@@ -25,7 +35,7 @@ const Appaccueil3: NextPage = () => {
                   height={12}
                   sizes="100vw"
                   alt=""
-                  src="/Icon.svg"
+                  src="/assets/Icon5v5.svg"
                 />
                 <b className="relative tracking-[1.96px] leading-[21px] uppercase">
                   5 v 5
@@ -38,7 +48,7 @@ const Appaccueil3: NextPage = () => {
                   height={11}
                   sizes="100vw"
                   alt=""
-                  src="/Icon.svg"
+                  src="/assets/Iconheure.svg"
                 />
                 <div className="relative tracking-[1.3px] leading-[19.5px] font-semibold">
                   23 janv., 23:47
@@ -59,7 +69,7 @@ const Appaccueil3: NextPage = () => {
                 height={11}
                 sizes="100vw"
                 alt=""
-                src="/Text.svg"
+                src="/assets/Iconshield.svg"
               />
               <b className="relative tracking-[1.98px] leading-[16.5px] uppercase">
                 Équipe 1
@@ -380,9 +390,9 @@ const Appaccueil3: NextPage = () => {
                 />
               </div>
               <Image
-                className="cursor-pointer [border:none] p-0 bg-[transparent] h-[34px] w-[34px] relative"
-                width={34}
-                height={34}
+                className="cursor-pointer [border:none] p-0 bg-[transparent] h-[13px] w-[13px] relative"
+                width={13}
+                height={13}
                 sizes="100vw"
                 alt=""
                 src="/assets/Iconbuttom.svg"
@@ -422,7 +432,7 @@ const Appaccueil3: NextPage = () => {
                       height={9}
                       sizes="100vw"
                       alt=""
-                      src="/Icon.svg"
+                      src="/assets/Iconpc.svg"
                     />
                     <div className="relative tracking-[0.8px] leading-[15px] uppercase font-semibold">
                       PC
