@@ -20,7 +20,7 @@ const Sectionmarginranked: NextPage = () => {
   </h1>
 
   {/* TRAIT ENTRE LES DEUX */}
-  <div className="w-[40px] h-[5px] bg-white rounded-full"></div>
+  <div className="w-[35px] h-[5px] bg-white rounded-full"></div>
 
   <h2 className="m-0 font-bold tracking-[-0.58px] leading-[63.8px] text-transparent !bg-clip-text [background:linear-gradient(90deg,_#1a6bdc,_#38bdf8)] [-webkit-background-clip:text] [-webkit-text-fill-color:transparent] mq1050:leading-[51px] mq450:leading-[38px]">
     Compétition Ouverte
