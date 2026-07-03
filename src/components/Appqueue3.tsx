@@ -6,28 +6,28 @@ const Appaccueil3: NextPage = () => {
 <div className="w-full relative flex flex-col items-center pt-5 px-6 pb-10 box-border max-w-[1320px] mx-auto">
 <section className="w-full h-[202px] relative bg-[#111d2a] border border-[rgba(255,160,64,0.4)] overflow-hidden flex flex-col items-center justify-center">
 
+  {/* Fond rose derrière tout le rectangle */}
+  <div className="absolute inset-0 z-[1] pointer-events-none">
+    <Image
+      src="/assets/fond-rose.png"
+      alt="map background"
+      fill
+      className="object-cover opacity-60"
+    />
+  </div>
+
   {/* Image de fond */}
   <div className="absolute inset-0 z-[0] bg-[url('/App@3x.png')] bg-cover bg-no-repeat bg-top" />
 
   {/* Overlay bleu */}
-  <div className="absolute inset-0 z-[0] bg-[linear-gradient(90deg,rgba(10,26,47,0.85),rgba(10,26,47,0.2)_50%,rgba(10,26,47,0.85))]" />
+  <div className="absolute inset-0 z-[2] bg-[linear-gradient(90deg,rgba(10,26,47,0.85),rgba(10,26,47,0.2)_50%,rgba(10,26,47,0.85))]" />
 
-  {/* Traits */}
-  <div className="absolute bottom-2 right-2 bg-[#ffa040] w-4 h-px rotate-[-45deg]" />
-  <div className="absolute bottom-0 w-full h-0.5 bg-[linear-gradient(270deg,#ffa040,rgba(0,0,0,0)_60%)]" />
+  {/* Traits dorés */}
+  <div className="absolute bottom-2 right-2 z-[3] bg-[#ffa040] w-4 h-px rotate-[-45deg]" />
+  <div className="absolute bottom-0 w-full h-0.5 z-[3] bg-[linear-gradient(270deg,#ffa040,rgba(0,0,0,0)_60%)]" />
 
   {/* Contenu centré */}
-  <div className="relative z-[2] flex flex-col items-center gap-2">
-
-    {/* Fond rose derrière le titre */}
-    <div className="absolute inset-0 -z-[1] pointer-events-none">
-      <Image
-        src="/assets/fond-rose.png"
-        alt="map background"
-        fill
-        className="object-cover opacity-60"
-      />
-    </div>
+  <div className="relative z-[4] flex flex-col items-center gap-2">
 
     <h1 className="text-[44px] tracking-[7.92px] leading-[44px] uppercase font-bold text-[#f5f5f5]">
       MELTDOWN
