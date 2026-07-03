@@ -22,14 +22,14 @@ const Appaccueil3: NextPage = () => {
   {/* Overlay bleu */}
   <div className="absolute inset-0 z-[2] bg-[linear-gradient(90deg,rgba(10,26,47,0.85),rgba(10,26,47,0.2)_50%,rgba(10,26,47,0.85))]" />
 
-  {/* Trait doré haut */}
-  <div className="absolute top-0 w-full h-0.5 z-[3] bg-[linear-gradient(90deg,#ffa040,rgba(0,0,0,0)_60%)]" />
+{/* Trait doré haut */}
+<div className="absolute top-[1px] w-full h-px z-[3] bg-[linear-gradient(90deg,#ffa040,rgba(0,0,0,0)_60%)]" />
 
-  {/* Trait doré bas */}
-  <div className="absolute bottom-0 w-full h-0.5 z-[3] bg-[linear-gradient(270deg,#ffa040,rgba(0,0,0,0)_60%)]" />
+{/* Trait doré bas */}
+<div className="absolute bottom-[1px] w-full h-px z-[3] bg-[linear-gradient(270deg,#ffa040,rgba(0,0,0,0)_60%)]" />
 
-  {/* Trait diagonal */}
-  <div className="absolute bottom-0 right-0 z-[3] bg-[#ffa040] w-4 h-px rotate-[-45deg] origin-bottom-right" />
+{/* Trait diagonal */}
+<div className="absolute bottom-[1px] right-[1px] z-[3] bg-[#ffa040] w-4 h-px rotate-[-45deg] origin-bottom-right" />
 
   {/* Contenu centré */}
   <div className="relative z-[4] flex flex-col items-center gap-2">
@@ -388,9 +388,9 @@ const Appaccueil3: NextPage = () => {
                 />
               </div>
               <Image
-                className="cursor-pointer [border:none] p-0 bg-[transparent] h-[30px] w-[30px] relative"
-                width={30}
-                height={30}
+                className="cursor-pointer [border:none] p-0 bg-[transparent] h-[26px] w-[26px] relative"
+                width={26}
+                height={26}
                 sizes="100vw"
                 alt=""
                 src="/assets/Iconbuttom.svg"
