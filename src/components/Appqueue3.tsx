@@ -387,7 +387,6 @@ const Appaccueil3: NextPage = () => {
                 src="/assets/Iconbuttom.svg"
               />
             </div>
-            <div className="w-4 h-px absolute !!m-[0 important] right-[2px] bottom-[-7.89px] bg-[#ffa040] [transform:_rotate(-45deg)] [transform-origin:0_0] z-[3]" />
           </section>
           <section className="flex-1 bg-[#111d2a] border-[rgba(255,160,64,0.18)] border-solid border-[1px] box-border flex flex-col items-start relative isolate min-w-[232px] max-w-full text-left text-[10px] text-[#ffa040] font-[Rajdhani]">
             <div className="self-stretch h-[33.5px] bg-[rgba(255,160,64,0.07)] border-[rgba(255,160,64,0.2)] border-solid border-b-[1px] box-border flex items-center pt-2 px-3.5 pb-1.5 gap-2 z-[0] text-[11px]">
