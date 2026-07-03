@@ -22,9 +22,14 @@ const Appaccueil3: NextPage = () => {
   {/* Overlay bleu */}
   <div className="absolute inset-0 z-[2] bg-[linear-gradient(90deg,rgba(10,26,47,0.85),rgba(10,26,47,0.2)_50%,rgba(10,26,47,0.85))]" />
 
-  {/* Traits dorés */}
-  <div className="absolute bottom-2 right-2 z-[3] bg-[#ffa040] w-4 h-px rotate-[-45deg]" />
+  {/* Trait doré haut */}
+  <div className="absolute top-0 w-full h-0.5 z-[3] bg-[linear-gradient(90deg,#ffa040,rgba(0,0,0,0)_60%)]" />
+
+  {/* Trait doré bas */}
   <div className="absolute bottom-0 w-full h-0.5 z-[3] bg-[linear-gradient(270deg,#ffa040,rgba(0,0,0,0)_60%)]" />
+
+  {/* Trait diagonal */}
+  <div className="absolute bottom-0 right-0 z-[3] bg-[#ffa040] w-4 h-px rotate-[-45deg] origin-bottom-right" />
 
   {/* Contenu centré */}
   <div className="relative z-[4] flex flex-col items-center gap-2">
@@ -50,6 +55,7 @@ const Appaccueil3: NextPage = () => {
   </div>
 
 </section>
+
       <main className="self-stretch flex flex-col items-start pt-5 px-0 pb-0 box-border max-w-full">
         <div className="self-stretch flex items-start flex-wrap content-start gap-4 max-w-full">
           <section className="flex-1 bg-[#111d2a] border-[rgba(255,160,64,0.18)] border-solid border-[1px] box-border flex flex-col items-start relative isolate min-w-[220px] max-w-full text-left text-[11px] text-[#ffa040] font-[Rajdhani]">
@@ -382,9 +388,9 @@ const Appaccueil3: NextPage = () => {
                 />
               </div>
               <Image
-                className="cursor-pointer [border:none] p-0 bg-[transparent] h-[13px] w-[13px] relative"
-                width={13}
-                height={13}
+                className="cursor-pointer [border:none] p-0 bg-[transparent] h-[30px] w-[30px] relative"
+                width={30}
+                height={30}
                 sizes="100vw"
                 alt=""
                 src="/assets/Iconbuttom.svg"
