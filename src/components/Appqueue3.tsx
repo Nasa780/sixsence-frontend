@@ -7,27 +7,28 @@ const Appaccueil3: NextPage = () => {
 <section className="w-full h-[202px] relative bg-[#111d2a] border border-[rgba(255,160,64,0.4)] overflow-hidden flex flex-col items-center justify-center">
 
   {/* Image de fond */}
-  <div className="absolute inset-0 bg-[url('/App@3x.png')] bg-cover bg-no-repeat bg-top" />
+  <div className="absolute inset-0 z-[0] bg-[url('/App@3x.png')] bg-cover bg-no-repeat bg-top" />
 
   {/* Overlay bleu */}
-  <div className="absolute inset-0 bg-[linear-gradient(90deg,rgba(10,26,47,0.85),rgba(10,26,47,0.2)_50%,rgba(10,26,47,0.85))]" />
+  <div className="absolute inset-0 z-[0] bg-[linear-gradient(90deg,rgba(10,26,47,0.85),rgba(10,26,47,0.2)_50%,rgba(10,26,47,0.85))]" />
 
-  {/* Fond rose derrière le titre */}
-  <div className="absolute inset-0 -z-10">
-    <Image
-      src="/assets/fond-rose.png"
-      alt="map background"
-      fill
-      className="object-cover opacity-60"
-    />
-  </div>
-
-  {/* Lignes dorées */}
-  <div className="absolute top-0 w-full h-0.5 bg-[linear-gradient(90deg,#ffa040,rgba(0,0,0,0)_60%)]" />
+  {/* Traits */}
+  <div className="absolute bottom-2 right-2 bg-[#ffa040] w-4 h-px rotate-[-45deg]" />
   <div className="absolute bottom-0 w-full h-0.5 bg-[linear-gradient(270deg,#ffa040,rgba(0,0,0,0)_60%)]" />
 
   {/* Contenu centré */}
-  <div className="relative flex flex-col items-center gap-2">
+  <div className="relative z-[2] flex flex-col items-center gap-2">
+
+    {/* Fond rose derrière le titre */}
+    <div className="absolute inset-0 -z-[1] pointer-events-none">
+      <Image
+        src="/assets/fond-rose.png"
+        alt="map background"
+        fill
+        className="object-cover opacity-60"
+      />
+    </div>
+
     <h1 className="text-[44px] tracking-[7.92px] leading-[44px] uppercase font-bold text-[#f5f5f5]">
       MELTDOWN
     </h1>
@@ -45,6 +46,7 @@ const Appaccueil3: NextPage = () => {
         </div>
       </div>
     </div>
+
   </div>
 
 </section>
