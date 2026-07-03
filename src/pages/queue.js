@@ -6,14 +6,11 @@ import Appqueue from "../components/Appqueue";
 import Appqueue2 from "../components/Appqueue2";
 import Appqueue3 from "../components/Appqueue3"; 
 
-/*
 // 📱 Version mobile Queue
 import AppqueueMobile from "../components/AppqueueMobile";
-import SectionqueueMobile from "../components/SectionqueueMobile";
-import Sectionqueue2Mobile from "../components/Sectionqueue2Mobile";
-import Sectionqueue3Mobile from "../components/Sectionqueue3Mobile";
-import FooterqueueMobile from "../components/FooterqueueMobile";
-*/
+import Appqueue2Mobile from "../components/Appqueue2Mobile";
+import Appqueue3Mobile from "../components/Appqueue3Mobile"; 
+
 
 export default function Queue() {
 
@@ -42,15 +39,12 @@ export default function Queue() {
       </div>
 
       {/* 📱 MOBILE */}
-      {/*
+
       <div className="flex md:hidden flex-col items-center justify-center w-full px-4">
         <AppqueueMobile />
-        <SectionqueueMobile />
-        <Sectionqueue2Mobile />
-        <Sectionqueue3Mobile />
-        <FooterqueueMobile />
+        <Appqueue2Mobile />
+        <Appqueue3Mobile />
       </div>
-      */}
     </div>
   );
 }
