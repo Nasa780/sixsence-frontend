@@ -403,55 +403,74 @@ const leaveQueue = async () => {
                 </div>
               </section>
 
-              {/* Colonne droite */}
-              <section className="h-[564px] flex-1 flex flex-col items-start gap-4 min-w-[221px] max-w-[340px] text-left text-[13px] text-[#5b7fa8] font-[Rajdhani]">
-<button
-  className="cursor-pointer [border:none] py-3.5 px-5 bg-[transparent] self-stretch rounded-[10px] [background:linear-gradient(90deg,_#1a6bdc,_#1559b8)] flex items-center justify-between gap-0 [row-gap:20px] disabled:opacity-60"
-  onClick={joinQueue}
-  disabled={queueState.loading || queueState.inQueue}
->
-  <div className="h-[26px] flex flex-col items-center">
-    <b className="relative text-[17px] tracking-[0.68px] leading-[25.5px] font-[Rajdhani] text-[#fff] text-left">
-      {queueState.loading
-        ? "Chargement..."
-        : queueState.inQueue
-        ? "Déjà dans la file"
-        : "Rejoindre / Chercher un match"}
-    </b>
-  </div>
-  <Image
-    className="h-[18px] w-[18px] relative"
-    width={18}
-    height={18}
-    sizes="100vw"
-    alt=""
-    src="/assets/Iconfleche4.svg"
-  />
-</button>
+{/* Colonne droite */}
+<section className="h-[564px] flex-1 flex flex-col items-start gap-4 min-w-[221px] max-w-[340px] text-left text-[13px] text-[#5b7fa8] font-[Rajdhani]">
 
-<button
-  className="cursor-pointer border-[rgba(220,38,38,0.25)] border-solid border-[1px] py-3 px-5 bg-[rgba(220,38,38,0.06)] self-stretch h-[49px] rounded-[10px] box-border flex items-center justify-between gap-0 [row-gap:20px] disabled:opacity-60"
-  onClick={leaveQueue}
-  disabled={queueState.loading || !queueState.inQueue}
->
-  <div className="h-[23px] flex flex-col items-center">
-    <b className="relative text-[15px] tracking-[0.6px] leading-[22.5px] font-[Rajdhani] text-[#fecaca] text-left">
-      {queueState.loading
-        ? "Chargement..."
-        : queueState.inQueue
-        ? "Quitter la file d'attente"
-        : "Pas dans la file"}
-    </b>
-  </div>
-  <Image
-    className="h-4 w-4 relative"
-    width={16}
-    height={16}
-    sizes="100vw"
-    alt=""
-    src="/assets/Iconfleche5.svg"
-  />
-</button>
+  {/* BOUTON 1 — rejoindre */}
+  <button
+    className="cursor-pointer [border:none] py-3.5 px-5 bg-[transparent] self-stretch rounded-[10px] [background:linear-gradient(90deg,_#1a6bdc,_#1559b8)] flex items-center justify-between gap-0 [row-gap:20px] disabled:opacity-60"
+    onClick={joinQueue}
+    disabled={queueState.loading || queueState.inQueue}
+  >
+    <div className="h-[26px] flex flex-col items-center">
+      <b className="relative text-[17px] tracking-[0.68px] leading-[25.5px] font-[Rajdhani] text-[#fff] text-left">
+        {queueState.loading
+          ? "Chargement..."
+          : queueState.inQueue
+          ? "Déjà dans la file"
+          : "Rejoindre / Chercher un match"}
+      </b>
+    </div>
+
+    <Image
+      className="h-[18px] w-[18px] relative"
+      width={18}
+      height={18}
+      sizes="100vw"
+      alt=""
+      src="/assets/Iconfleche4.svg"
+    />
+  </button>
+
+  {/* PETIT TEXTE — message + timer */}
+  {queueState.message && (
+    <div className="text-xs text-[#a0b0c8] font-[Inter] mt-2">
+      {queueState.message}
+
+      {queueState.inQueue && queueState.timeLeft !== null && (
+        <span className="ml-1 text-[#4a90d9]">
+          · Temps restant : {Math.floor(queueState.timeLeft / 60)} min {queueState.timeLeft % 60}s
+        </span>
+      )}
+    </div>
+  )}
+
+  {/* BOUTON 2 — quitter */}
+  <button
+    className="cursor-pointer border-[rgba(220,38,38,0.25)] border-solid border-[1px] py-3 px-5 bg-[rgba(220,38,38,0.06)] self-stretch h-[49px] rounded-[10px] box-border flex items-center justify-between gap-0 [row-gap:20px] disabled:opacity-60"
+    onClick={leaveQueue}
+    disabled={queueState.loading || !queueState.inQueue}
+  >
+    <div className="h-[23px] flex flex-col items-center">
+      <b className="relative text-[15px] tracking-[0.6px] leading-[22.5px] font-[Rajdhani] text-[#fecaca] text-left">
+        {queueState.loading
+          ? "Chargement..."
+          : queueState.inQueue
+          ? "Quitter la file d'attente"
+          : "Pas dans la file"}
+      </b>
+    </div>
+
+    <Image
+      className="h-4 w-4 relative"
+      width={16}
+      height={16}
+      sizes="100vw"
+      alt=""
+      src="/assets/Iconfleche5.svg"
+    />
+  </button>
+
 
                 <div className="self-stretch flex flex-col items-start py-1 px-0">
                   <div className="self-stretch h-px relative bg-[rgba(26,107,220,0.12)]" />
