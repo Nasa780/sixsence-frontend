@@ -4,7 +4,7 @@ import Image from "next/image";
 // 🖥️ Version desktop Queue
 import Appqueue from "../components/Appqueue";
 import Appqueue2 from "../components/Appqueue2";
-import Appqueue3 from "../components/Appqueue3";
+/*import Appqueue3 from "../components/Appqueue3"; */
 
 /*
 // 📱 Version mobile Queue
@@ -38,7 +38,6 @@ export default function Queue() {
       <div className="hidden md:flex flex-col items-center justify-center w-full">
         <Appqueue />
         <Appqueue2 />
-        <Appqueue3 />
       </div>
 
       {/* 📱 MOBILE */}
