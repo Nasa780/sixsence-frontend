@@ -3,6 +3,7 @@ import Image from "next/image";
 
 // 🖥️ Version desktop Queue
 import Appqueue from "../components/Appqueue";
+import Appqueue2 from "../components/Appqueue2";
 
 /*
 // 📱 Version mobile Queue
@@ -27,33 +28,15 @@ export default function Queue() {
   }, []);
 
   return (
-    <div className="relative min-h-screen overflow-hidden">
-
-      {/* BACKGROUND GRADIENT */}
-      <div
-        className="absolute inset-0 -z-20"
-        style={{
-          background:
-            "linear-gradient(145deg, #06070F 6.17%, #080B14 36.85%, #0A0C10 63.15%, #07080C 93.83%)"
-        }}
-      />
-
-      {/* PATTERN HEXAGONAL (ton image Figma) */}
-      <div
-        className="absolute inset-0 -z-10 opacity-[0.25]"
-        style={{
-          backgroundImage: "url('/pattern-hex.png')",
-          backgroundRepeat: "repeat",
-          backgroundSize: "auto"
-        }}
-      />
-
-      {/* 🔵 HALO BLEU */}
-      <div className="absolute inset-0 -z-5 pointer-events-none bg-[radial-gradient(circle_at_center,_rgba(26,107,220,0.25),_transparent_70%)]" />
+    <div
+      className="relative min-h-screen overflow-hidden"
+      style={{ background: "#0F1923" }}   
+    >
 
       {/* 🖥️ DESKTOP */}
       <div className="hidden md:flex flex-col items-center justify-center w-full">
         <Appqueue />
+        <Appqueue2 />
       </div>
 
       {/* 📱 MOBILE */}
