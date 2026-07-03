@@ -10,6 +10,7 @@ import Sectionmarginranked4 from "../components/Sectionmarginranked4";
 import Sectionmarginranked5 from "../components/Sectionmarginranked5";
 import Sectionmarginranked6 from "../components/Sectionmarginranked6";
 import Footerranked from "../components/Footerranked";
+import Background from "../components/Background";
 
 /*
 // 📱 Version mobile Ranked
@@ -50,8 +51,8 @@ export default function Ranked() {
         }}
       />
 
-      {/* 🔵 HALO BLEU (oréol) */}
-      <div className="absolute inset-0 -z-15 pointer-events-none bg-[radial-gradient(circle_at_center,_rgba(26,107,220,0.35),_transparent_70%)]" />
+{/* HEXAGONAL BACKGROUND */}
+<Background />
 
 
       {/* 🖥️ DESKTOP */}
