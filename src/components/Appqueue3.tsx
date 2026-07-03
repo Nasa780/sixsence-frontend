@@ -270,7 +270,6 @@ const Appaccueil3: NextPage = () => {
                 </div>
               </div>
             </div>
-            <div className="w-4 h-px absolute !!m-[0 important] right-[2px] bottom-[-7.89px] bg-[rgba(255,160,64,0.4)] [transform:_rotate(-45deg)] [transform-origin:0_0] z-[3]" />
           </section>
           <section className="flex-1 bg-[#111d2a] border-[rgba(255,160,64,0.4)] border-solid border-[1px] box-border flex flex-col items-start relative isolate gap-2 min-w-[275px] max-w-[340px] text-left text-[11px] text-[#ffa040] font-[Rajdhani] mq800:max-w-full">
             <div className="self-stretch h-[34px] bg-[rgba(255,160,64,0.07)] border-[rgba(255,160,64,0.2)] border-solid border-b-[1px] box-border flex items-center py-2 px-3.5 z-[0]">
@@ -609,7 +608,6 @@ const Appaccueil3: NextPage = () => {
                 </div>
               </div>
             </div>
-            <div className="w-4 h-px absolute !!m-[0 important] right-[2px] bottom-[-7.89px] bg-[rgba(255,160,64,0.4)] [transform:_rotate(-45deg)] [transform-origin:0_0] z-[3]" />
           </section>
         </div>
       </main>
@@ -664,7 +662,6 @@ const Appaccueil3: NextPage = () => {
               </button>
             </div>
           </div>
-          <div className="w-4 h-px absolute !!m-[0 important] right-[2px] bottom-[-7.89px] bg-[#ffa040] [transform:_rotate(-45deg)] [transform-origin:0_0] z-[2]" />
         </div>
       </section>
     </div>
