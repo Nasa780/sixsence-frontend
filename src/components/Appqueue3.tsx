@@ -3,15 +3,16 @@ import Image from "next/image";
 
 const Appaccueil3: NextPage = () => {
   return (
-    <div className="w-full relative flex flex-col items-start pt-5 px-6 pb-10 box-border max-w-[1320px] leading-[normal] tracking-[normal]">
-      <section className="self-stretch h-[202px] relative bg-[#111d2a] border-[rgba(255,160,64,0.4)] border-solid border-[1px] box-border overflow-hidden shrink-0 max-w-full text-left text-[44px] text-[#f5f5f5] font-[Rajdhani]">
-        <div className="absolute top-[197.89px] left-[1258px] bg-[#ffa040] w-4 h-px [transform:_rotate(-45deg)] [transform-origin:0_0]" />
-        <div className="absolute top-[1px] left-[1px] w-full h-full overflow-hidden bg-[url('/App@3x.png')] bg-cover bg-no-repeat bg-[top] max-w-full">
-          <div className="absolute top-[calc(50%_-_100px)] left-[calc(50%_-_635px)] [background:linear-gradient(90deg,_rgba(10,_26,_47,_0.85),_rgba(10,_26,_47,_0.2)_50%,_rgba(10,_26,_47,_0.85))] w-full h-full" />
-          <div className="absolute top-[0px] left-[calc(50%_-_635px)] [background:linear-gradient(90deg,_#ffa040,_rgba(0,_0,_0,_0)_60%)] w-[1270px] h-0.5" />
-          <div className="absolute bottom-[0px] left-[calc(50%_-_635px)] [background:linear-gradient(270deg,_#ffa040,_rgba(0,_0,_0,_0)_60%)] w-[1270px] h-0.5" />
-          <div className="absolute top-[calc(50%_-_100px)] left-[calc(50%_-_635px)] w-full h-full flex flex-col items-center justify-center gap-1.5 max-w-full">
-  {/* FOND ROSE DERRIÈRE LE NOM DE LA MAP */}
+<div className="w-full relative flex flex-col items-center pt-5 px-6 pb-10 box-border max-w-[1320px] mx-auto">
+<section className="w-full h-[202px] relative bg-[#111d2a] border border-[rgba(255,160,64,0.4)] overflow-hidden flex flex-col items-center justify-center">
+
+  {/* Image de fond */}
+  <div className="absolute inset-0 bg-[url('/App@3x.png')] bg-cover bg-no-repeat bg-top" />
+
+  {/* Overlay bleu */}
+  <div className="absolute inset-0 bg-[linear-gradient(90deg,rgba(10,26,47,0.85),rgba(10,26,47,0.2)_50%,rgba(10,26,47,0.85))]" />
+
+  {/* Fond rose derrière le titre */}
   <div className="absolute inset-0 -z-10">
     <Image
       src="/assets/fond-rose.png"
@@ -21,43 +22,32 @@ const Appaccueil3: NextPage = () => {
     />
   </div>
 
-  <div className="self-stretch flex flex-col items-center">
-    <h1 className="m-0 relative text-[length:inherit] tracking-[7.92px] leading-[44px] uppercase font-bold font-[inherit] mq800:text-[35px] mq800:leading-[35px] mq450:text-[26px] mq450:leading-[26px]">
+  {/* Lignes dorées */}
+  <div className="absolute top-0 w-full h-0.5 bg-[linear-gradient(90deg,#ffa040,rgba(0,0,0,0)_60%)]" />
+  <div className="absolute bottom-0 w-full h-0.5 bg-[linear-gradient(270deg,#ffa040,rgba(0,0,0,0)_60%)]" />
+
+  {/* Contenu centré */}
+  <div className="relative flex flex-col items-center gap-2">
+    <h1 className="text-[44px] tracking-[7.92px] leading-[44px] uppercase font-bold text-[#f5f5f5]">
       MELTDOWN
     </h1>
-  </div>
-            <div className="w-[228px] h-[31px] flex items-center gap-4 text-sm text-[#ffa040] font-['Barlow_Condensed']">
-              <div className="h-[31px] bg-[rgba(255,160,64,0.15)] border-[rgba(255,160,64,0.5)] border-solid border-[1px] box-border flex items-center py-1 px-3.5 gap-1">
-                <Image
-                  className="h-3 w-3 relative"
-                  loading="lazy"
-                  width={12}
-                  height={12}
-                  sizes="100vw"
-                  alt=""
-                  src="/assets/Icon5v5.svg"
-                />
-                <b className="relative tracking-[1.96px] leading-[21px] uppercase">
-                  5 v 5
-                </b>
-              </div>
-              <div className="h-[30px] bg-[rgba(15,42,74,0.7)] border-[rgba(200,200,200,0.2)] border-solid border-[1px] box-border flex items-center py-1 px-3.5 gap-1 text-[13px] text-[#c8c8c8]">
-                <Image
-                  className="h-[11px] w-[11px] relative"
-                  width={11}
-                  height={11}
-                  sizes="100vw"
-                  alt=""
-                  src="/assets/Iconheure.svg"
-                />
-                <div className="relative tracking-[1.3px] leading-[19.5px] font-semibold">
-                  23 janv., 23:47
-                </div>
-              </div>
-            </div>
-          </div>
+
+    <div className="flex items-center gap-4 text-sm text-[#ffa040] font-['Barlow_Condensed']">
+      <div className="h-[31px] bg-[rgba(255,160,64,0.15)] border border-[rgba(255,160,64,0.5)] px-3.5 flex items-center gap-1">
+        <Image src="/assets/Icon5v5.svg" width={12} height={12} alt="" />
+        <b className="tracking-[1.96px] leading-[21px] uppercase">5 v 5</b>
+      </div>
+
+      <div className="h-[30px] bg-[rgba(15,42,74,0.7)] border border-[rgba(200,200,200,0.2)] px-3.5 flex items-center gap-1 text-[#c8c8c8]">
+        <Image src="/assets/Iconheure.svg" width={11} height={11} alt="" />
+        <div className="tracking-[1.3px] leading-[19.5px] font-semibold">
+          23 janv., 23:47
         </div>
-      </section>
+      </div>
+    </div>
+  </div>
+
+</section>
       <main className="self-stretch flex flex-col items-start pt-5 px-0 pb-0 box-border max-w-full">
         <div className="self-stretch flex items-start flex-wrap content-start gap-4 max-w-full">
           <section className="flex-1 bg-[#111d2a] border-[rgba(255,160,64,0.18)] border-solid border-[1px] box-border flex flex-col items-start relative isolate min-w-[220px] max-w-full text-left text-[11px] text-[#ffa040] font-[Rajdhani]">
