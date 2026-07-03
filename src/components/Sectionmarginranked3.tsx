@@ -33,24 +33,19 @@ const [queueState, setQueueState] = useState({
   // ⭐ FIN COMPTEURS DYNAMIQUES
 
   // Vérification du token Discord + appel /me
-  useEffect(() => {
-    const token = localStorage.getItem("discord_token");
-    if (!token) return;
-
-    fetch("https://sixsence-backend.onrender.com/me", {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
+useEffect(() => {
+  fetch("https://sixsence-backend.onrender.com/me", {
+    credentials: "include",
+  })
+    .then((res) => {
+      if (res.ok) {
+        setIsConnected(true);
+      } else {
+        setIsConnected(false);
+      }
     })
-      .then((res) => {
-        if (res.ok) {
-          setIsConnected(true);
-        } else {
-          setIsConnected(false);
-        }
-      })
-      .catch(() => setIsConnected(false));
-  }, []);
+    .catch(() => setIsConnected(false));
+}, []);
 
   // Récupération du statut + timer local
 useEffect(() => {
