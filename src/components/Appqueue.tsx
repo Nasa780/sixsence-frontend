@@ -19,7 +19,7 @@ const Appqueue: NextPage<App3Type> = ({ className = "" }) => {
             height={13}
             sizes="100vw"
             alt=""
-            src="/Icon.svg"
+            src="/assets/Iconepee.svg"
           />
         </button>
         <div className="flex flex-col items-start">
@@ -34,7 +34,7 @@ const Appqueue: NextPage<App3Type> = ({ className = "" }) => {
           height={12}
           sizes="100vw"
           alt=""
-          src="/Icon1.svg"
+          src="/assets/Iconfleche7.svg"
         />
         <div className="flex flex-col items-start text-xs text-[#6b7f94] font-['Barlow_Condensed']">
           <div className="relative tracking-[1.2px] leading-[18px] uppercase">
@@ -49,7 +49,7 @@ const Appqueue: NextPage<App3Type> = ({ className = "" }) => {
           height={10}
           sizes="100vw"
           alt=""
-          src="/Icon.svg"
+          src="/assets/Icondirect.svg"
         />
         <div className="flex flex-col items-start">
           <div className="relative text-[11px] tracking-[1.32px] leading-[16.5px] uppercase font-semibold font-['Barlow_Condensed'] text-[#4caf50] text-left">

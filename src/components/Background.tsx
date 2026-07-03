@@ -27,15 +27,17 @@ export default function App() {
   const cy3 = r * 2.5;
 
   return (
-    <div
-      style={{
-        width: "100vw",
-        height: "100vh",
-        position: "relative",
-        overflow: "hidden",
-        background: "#06070F",
-      }}
-    >
+<div
+  style={{
+    position: "absolute",
+    inset: 0,
+    zIndex: -10,
+    width: "100%",
+    height: "100%",
+    overflow: "hidden",
+    background: "#06070F",
+  }}
+>
       {/* ── 1. Base gradient — very subtle diagonal variation ── */}
       <div
         style={{
