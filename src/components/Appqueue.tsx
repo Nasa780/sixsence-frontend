@@ -7,9 +7,9 @@ export type App3Type = {
 
 const Appqueue: NextPage<App3Type> = ({ className = "" }) => {
   return (
-    <div
-      className={`w-full h-[52px] !!m-[0 important] absolute top-[0px] left-[0px] bg-[rgba(10,26,47,0.95)] border-[rgba(255,160,64,0.25)] border-solid border-b-[1px] box-border flex items-center justify-between py-0 px-6 gap-5 z-[2] text-left text-base text-[#f5f5f5] font-[Rajdhani] ${className}`}
-    >
+<div
+  className={`w-full h-[52px] !!m-[0 important] bg-[rgba(10,26,47,0.95)] border-[rgba(255,160,64,0.25)] border-solid border-b-[1px] box-border flex items-center justify-between py-0 px-6 gap-5 z-[2] text-left text-base text-[#f5f5f5] font-[Rajdhani] ${className}`}
+>
       <div className="flex items-center gap-[11px]">
         <button className="cursor-pointer [border:none] p-0 bg-[#ffa040] h-7 w-7 flex items-center justify-center">
           <Image
