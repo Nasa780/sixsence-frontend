@@ -22,7 +22,12 @@ const Navigationaccueil = ({ className = "" }: NavigationProps) => {
         </div>
       </div>
 
-      <button className="cursor-pointer border-[rgba(88,101,242,0.33)] border-solid border-[1px] py-2 px-4 bg-[rgba(88,101,242,0.15)] rounded-md flex items-center gap-[7px] hover:bg-[rgba(112,128,255,0.15)] hover:border-[rgba(112,128,255,0.33)]">
+<button
+  onClick={() => {
+    window.location.href = "https://sixsence-backend.onrender.com/auth/discord";
+  }}
+  className="cursor-pointer border-[rgba(88,101,242,0.33)] border-solid border-[1px] py-2 px-4 bg-[rgba(88,101,242,0.15)] rounded-md flex items-center gap-[7px] hover:bg-[rgba(112,128,255,0.15)] hover:border-[rgba(112,128,255,0.33)]"
+>
         <Image
           className="h-3 w-3"
           width={12}
