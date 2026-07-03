@@ -14,7 +14,7 @@ const Appaccueil3: NextPage = () => {
   {/* FOND ROSE DERRIÈRE LE NOM DE LA MAP */}
   <div className="absolute inset-0 -z-10">
     <Image
-      src="/fond-rose.png"
+      src="/assets/fond-rose.png"
       alt="map background"
       fill
       className="object-cover opacity-60"
