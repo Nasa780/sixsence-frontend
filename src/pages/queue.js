@@ -11,16 +11,18 @@ import AppqueueMobile from "../components/AppqueueMobile";
 import Appqueue2Mobile from "../components/Appqueue2Mobile";
 import Appqueue3Mobile from "../components/Appqueue3Mobile"; 
 
-
 export default function Queue() {
 
-  // 🔥 Récupération du token Discord dans l’URL
+  // 🔥 Récupération du token JWT dans l’URL
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
     const token = params.get("token");
 
     if (token) {
-        localStorage.setItem("discord_token", token);
+      // Stocker le token JWT du backend
+      localStorage.setItem("session", token);
+
+      // Nettoyer l’URL
       window.history.replaceState({}, "", window.location.pathname);
     }
   }, []);
@@ -39,7 +41,6 @@ export default function Queue() {
       </div>
 
       {/* 📱 MOBILE */}
-
       <div className="flex md:hidden flex-col items-center justify-center w-full px-4">
         <AppqueueMobile />
         <Appqueue2Mobile />

@@ -1,8 +1,13 @@
 export async function isAuthenticated() {
   try {
+    const token = localStorage.getItem("session");
+    if (!token) return false;
+
     const res = await fetch("https://sixsence-backend.onrender.com/me", {
       method: "GET",
-      credentials: "include",
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
     });
 
     if (!res.ok) return false;
@@ -15,9 +20,14 @@ export async function isAuthenticated() {
 }
 
 export async function getUser() {
+  const token = localStorage.getItem("session");
+  if (!token) return null;
+
   const res = await fetch("https://sixsence-backend.onrender.com/me", {
     method: "GET",
-    credentials: "include",
+    headers: {
+      Authorization: `Bearer ${token}`,
+    },
   });
 
   if (!res.ok) return null;

@@ -11,20 +11,26 @@ import ContainerMobile from "../components/ContainerMobile";
 
 export default function Home() {
 
-  // 🔥 Vérifier la session dès l'arrivée sur la Home
   useEffect(() => {
+    const token = localStorage.getItem("session");
+
+    if (!token) {
+      console.log("❌ PAS CONNECTÉ");
+      return;
+    }
+
     fetch("https://sixsence-backend.onrender.com/me", {
-      credentials: "include",
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
     })
-      .then(res => {
-        if (!res.ok) throw new Error("Not logged");
-        return res.json();
-      })
+      .then(res => res.ok ? res.json() : Promise.reject())
       .then(user => {
         console.log("🔥 USER CONNECTÉ :", user);
       })
       .catch(() => {
-        console.log("❌ PAS CONNECTÉ");
+        console.log("❌ Token invalide");
+        localStorage.removeItem("session");
       });
   }, []);
 

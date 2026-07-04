@@ -19,17 +19,25 @@ import ContainermarginaccueilMobile from "../components/ContainermarginaccueilMo
 
 export default function Accueil() {
 
-  // 🔥 Récupération des infos utilisateur (avatar + pseudo)
   const [user, setUser] = useState(null);
 
   useEffect(() => {
+    const token = localStorage.getItem("session");
+
+    if (!token) {
+      setUser(null);
+      return;
+    }
+
     fetch("https://sixsence-backend.onrender.com/me", {
-      credentials: "include",
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
     })
       .then(async (res) => {
         if (!res.ok) return setUser(null);
         const data = await res.json();
-        setUser(data); // { username, discriminator, avatar, discordId }
+        setUser(data);
       })
       .catch(() => setUser(null));
   }, []);

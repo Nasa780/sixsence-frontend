@@ -3,26 +3,23 @@ import { useEffect, useState } from "react";
 import Image from "next/image";
 import { isAuthenticated } from "../utils/auth";
 
-
 const Sectionmarginranked3: NextPage = () => {
-  // État réel basé sur ton backend Discord
   const [isConnected, setIsConnected] = useState(false);
 
-  // File d’attente complète
-const [queueState, setQueueState] = useState({
-  inQueue: false,
-  timeLeft: null,
-  message: null,
-  loading: false,
-});
+  const [queueState, setQueueState] = useState({
+    inQueue: false,
+    timeLeft: null,
+    message: null,
+    loading: false,
+  });
 
-  // ⭐ COMPTEURS DYNAMIQUES — À METTRE ICI
   const [queueStatus, setQueueStatus] = useState({
     playersInQueue: 0,
     matchesInProgress: 0,
     playersOnline: 0,
   });
 
+  // COMPTEURS DYNAMIQUES
   useEffect(() => {
     const interval = setInterval(() => {
       fetch("https://sixsence-backend.onrender.com/queue/status")
@@ -32,107 +29,121 @@ const [queueState, setQueueState] = useState({
 
     return () => clearInterval(interval);
   }, []);
-  // ⭐ FIN COMPTEURS DYNAMIQUES
 
-useEffect(() => {
-  isAuthenticated().then(setIsConnected);
-}, []);
-
+  // Vérifier si connecté
+  useEffect(() => {
+    isAuthenticated().then(setIsConnected);
+  }, []);
 
   // Récupération du statut + timer local
-useEffect(() => {
-  let intervalStatus;
-  let intervalTimer;
+  useEffect(() => {
+    let intervalStatus;
+    let intervalTimer;
 
-  const fetchStatus = async () => {
+    const fetchStatus = async () => {
+      try {
+        const token = localStorage.getItem("session");
+
+        const res = await fetch("https://sixsence-backend.onrender.com/queue/status", {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+
+        const data = await res.json();
+
+        setQueueState((prev) => ({
+          ...prev,
+          inQueue: data.inQueue ?? false,
+          timeLeft: data.timeLeft ?? null,
+          message: data.message ?? null,
+        }));
+      } catch (err) {
+        console.error("Erreur statut file :", err);
+      }
+    };
+
+    const startTimer = () => {
+      intervalTimer = setInterval(() => {
+        setQueueState((prev) => {
+          if (!prev.inQueue || prev.timeLeft === null) return prev;
+          if (prev.timeLeft <= 0) return { ...prev, inQueue: false, timeLeft: null };
+          return { ...prev, timeLeft: prev.timeLeft - 1 };
+        });
+      }, 1000);
+    };
+
+    fetchStatus();
+    intervalStatus = setInterval(fetchStatus, 5000);
+    startTimer();
+
+    return () => {
+      clearInterval(intervalStatus);
+      clearInterval(intervalTimer);
+    };
+  }, []);
+
+  const joinQueue = async () => {
+    setQueueState((prev) => ({ ...prev, loading: true }));
+
     try {
-      const res = await fetch("https://sixsence-backend.onrender.com/queue/status", {
-        credentials: "include",
+      const token = localStorage.getItem("session");
+
+      const res = await fetch("https://sixsence-backend.onrender.com/queue/join", {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
       });
+
       const data = await res.json();
 
-      setQueueState((prev) => ({
-        ...prev,
+      setQueueState({
         inQueue: data.inQueue ?? false,
         timeLeft: data.timeLeft ?? null,
         message: data.message ?? null,
-      }));
+        loading: false,
+      });
     } catch (err) {
-      console.error("Erreur statut file :", err);
+      console.error(err);
+      setQueueState((prev) => ({
+        ...prev,
+        loading: false,
+        message: "Erreur lors de la connexion à la file",
+      }));
     }
   };
 
-  const startTimer = () => {
-    intervalTimer = setInterval(() => {
-      setQueueState((prev) => {
-        if (!prev.inQueue || prev.timeLeft === null) return prev;
-        if (prev.timeLeft <= 0) return { ...prev, inQueue: false, timeLeft: null };
-        return { ...prev, timeLeft: prev.timeLeft - 1 };
+  const leaveQueue = async () => {
+    setQueueState((prev) => ({ ...prev, loading: true }));
+
+    try {
+      const token = localStorage.getItem("session");
+
+      const res = await fetch("https://sixsence-backend.onrender.com/queue/leave", {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
       });
-    }, 1000);
+
+      const data = await res.json();
+
+      setQueueState({
+        inQueue: false,
+        timeLeft: null,
+        message: data.message ?? null,
+        loading: false,
+      });
+    } catch (err) {
+      console.error(err);
+      setQueueState((prev) => ({
+        ...prev,
+        loading: false,
+        message: "Erreur lors de la sortie de la file",
+      }));
+    }
   };
-
-  fetchStatus();
-  intervalStatus = setInterval(fetchStatus, 5000);
-  startTimer();
-
-  return () => {
-    clearInterval(intervalStatus);
-    clearInterval(intervalTimer);
-  };
-}, []);
-
-const joinQueue = async () => {
-  setQueueState((prev) => ({ ...prev, loading: true }));
-
-  try {
-    const res = await fetch("https://sixsence-backend.onrender.com/queue/join", {
-      method: "POST",
-      credentials: "include",
-    });
-    const data = await res.json();
-
-    setQueueState({
-      inQueue: data.inQueue ?? false,
-      timeLeft: data.timeLeft ?? null,
-      message: data.message ?? null,
-      loading: false,
-    });
-  } catch (err) {
-    console.error(err);
-    setQueueState((prev) => ({
-      ...prev,
-      loading: false,
-      message: "Erreur lors de la connexion à la file",
-    }));
-  }
-};
-
-const leaveQueue = async () => {
-  setQueueState((prev) => ({ ...prev, loading: true }));
-
-  try {
-    const res = await fetch("https://sixsence-backend.onrender.com/queue/leave", {
-      method: "POST",
-      credentials: "include",
-    });
-    const data = await res.json();
-
-    setQueueState({
-      inQueue: false,
-      timeLeft: null,
-      message: data.message ?? null,
-      loading: false,
-    });
-  } catch (err) {
-    console.error(err);
-    setQueueState((prev) => ({
-      ...prev,
-      loading: false,
-      message: "Erreur lors de la sortie de la file",
-    }));
-  }
-};
 
   return (
     <div className="w-[2174px] max-w-full flex flex-col items-center leading-[normal] tracking-[normal] text-left text-xl text-[#e8eaf0] font-[Rajdhani]">
