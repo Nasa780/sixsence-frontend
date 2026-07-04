@@ -18,18 +18,23 @@ const SectionmarginrankedMobile: NextPage = () => {
       {/* TITRE SAISON + COMPÉTITION */}
       <div className="w-full flex flex-col items-start gap-3">
 
-        <div className="flex items-center gap-3">
-          <h1 className="m-0 text-[32px] font-bold text-[#e8eaf0] tracking-[-0.4px] leading-[36px]">
-            Saison 1
-          </h1>
+{/* TITRE MOBILE OPTIMISÉ */}
+<div className="w-full flex flex-col items-center text-center">
 
-          {/* TRAIT ENTRE LES DEUX */}
-          <div className="w-[28px] h-[4px] bg-white rounded-full"></div>
+  {/* Compétition Ouverte */}
+  <h2 className="text-[32px] font-bold tracking-[-0.4px] leading-[36px] 
+    text-transparent bg-clip-text 
+    [background:linear-gradient(90deg,#1a6bdc,#38bdf8)]
+    [-webkit-background-clip:text] [-webkit-text-fill-color:transparent]">
+    Compétition Ouverte
+  </h2>
 
-          <h2 className="m-0 text-[32px] font-bold tracking-[-0.4px] leading-[36px] text-transparent bg-clip-text [background:linear-gradient(90deg,_#1a6bdc,_#38bdf8)] [-webkit-background-clip:text] [-webkit-text-fill-color:transparent]">
-            Compétition Ouverte
-          </h2>
-        </div>
+  {/* Saison 1 */}
+  <h1 className="mt-1 text-[20px] font-bold text-[#e8eaf0] tracking-[0.3px]">
+    Saison 1
+  </h1>
+
+</div>
 
         {/* SOUS-TEXTE */}
         <p className="text-[14px] text-[#6b7d94] leading-[22px] pt-2">
