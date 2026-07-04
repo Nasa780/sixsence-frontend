@@ -22,10 +22,10 @@ const SectionmarginrankedMobile: NextPage = () => {
 <div className="w-full flex flex-col items-center text-center">
 
   {/* Compétition Ouverte */}
-  <h2 className="text-[32px] font-bold tracking-[-0.4px] leading-[36px] 
-    text-transparent bg-clip-text 
-    [background:linear-gradient(90deg,#1a6bdc,#38bdf8)]
-    [-webkit-background-clip:text] [-webkit-text-fill-color:transparent]">
+  <h2
+    className="text-[32px] font-bold tracking-[-0.4px] leading-[36px]
+               bg-gradient-to-r from-[#1a6bdc] to-[#38bdf8]
+               bg-clip-text text-transparent">
     Compétition Ouverte
   </h2>
 
