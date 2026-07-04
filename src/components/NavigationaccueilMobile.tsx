@@ -1,11 +1,21 @@
 import Image from "next/image";
+import useUser from "../hooks/useUser";
 
 type NavigationProps = {
   className?: string;
-  user?: any; // { username, discriminator, avatar, discordId }
 };
 
-const NavigationaccueilMobile = ({ className = "", user }: NavigationProps) => {
+const NavigationaccueilMobile = ({ className = "" }: NavigationProps) => {
+  const user = useUser(); // 🔥 Récupération automatique de l’utilisateur
+
+  // Normalisation des données
+  const avatar =
+    user?.avatar && user.avatar.startsWith("http")
+      ? user.avatar
+      : "/assets/default-avatar.png"; // fallback si avatar null
+
+  const username = user?.username || "Utilisateur";
+
   return (
     <div
       className={`w-full max-w-[360px] flex items-center justify-between py-5 px-4 
@@ -26,14 +36,13 @@ const NavigationaccueilMobile = ({ className = "", user }: NavigationProps) => {
       {user ? (
         <div className="flex items-center gap-3 bg-[#1a1b22] px-3 py-2 rounded-md border border-[#333]">
           <img
-            src={`https://cdn.discordapp.com/avatars/${user.discordId}/${user.avatar}.png`}
+            src={avatar}
             alt="avatar"
             className="w-8 h-8 rounded-full"
           />
 
-          <div className="text-sm font-semibold">
-            {user.username}
-            <span className="text-[#888]">#{user.discriminator}</span>
+          <div className="text-sm font-semibold text-white">
+            {username}
           </div>
         </div>
       ) : (

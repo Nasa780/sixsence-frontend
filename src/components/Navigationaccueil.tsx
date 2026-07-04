@@ -1,16 +1,13 @@
 import Image from "next/image";
+import useUser from "../hooks/useUser";
 
-type NavigationProps = {
-  className?: string;
-  user?: any; // { discord_id, username, avatar }
-};
+const Navigationaccueil = ({ className = "" }) => {
+  const user = useUser();
 
-const Navigationaccueil = ({ className = "", user }: NavigationProps) => {
-  // Normalisation des données
   const avatar =
     user?.avatar && user.avatar.startsWith("http")
       ? user.avatar
-      : "/assets/default-avatar.png"; // fallback si avatar null
+      : "/assets/default-avatar.png";
 
   const username = user?.username || "Utilisateur";
 
@@ -35,7 +32,7 @@ const Navigationaccueil = ({ className = "", user }: NavigationProps) => {
             className="w-8 h-8 rounded-full"
             alt="avatar"
           />
-          <div className="text-sm font-semibold">
+          <div className="text-sm font-semibold text-white">
             {username}
           </div>
         </div>
