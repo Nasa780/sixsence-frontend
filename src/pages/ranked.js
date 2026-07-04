@@ -59,7 +59,7 @@ export default function Ranked() {
         <Sectionmarginranked3 />
         <Sectionmarginranked4 />
         <Sectionmarginranked5 />
-        <Sectionmarginrankranked6 />
+        <Sectionmarginranked6 />
         <Footerranked />
       </div>
 
