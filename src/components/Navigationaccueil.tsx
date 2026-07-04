@@ -2,43 +2,56 @@ import Image from "next/image";
 
 type NavigationProps = {
   className?: string;
+  user?: any; // { username, discriminator, avatar }
 };
 
-const Navigationaccueil = ({ className = "" }: NavigationProps) => {
+const Navigationaccueil = ({ className = "", user }: NavigationProps) => {
   return (
-    <div
-      className={`w-[2174px] max-w-full flex items-center justify-between pt-5 px-8 pb-4 box-border gap-5 leading-[normal] tracking-[normal] text-left text-lg text-[#fff] font-[Barlow] mq359:flex-wrap mq359:gap-5 ${className}`}
-    >
+    <div className={`w-[2174px] max-w-full flex items-center justify-between pt-5 px-8 pb-4 ${className}`}>
+
+      {/* LOGO */}
       <div className="flex flex-col items-start">
-        <div className="self-stretch flex flex-col items-start">
-          <h3 className="m-0 relative tracking-[4.5px] leading-7 uppercase font-black">
-            SIXSENCE
-          </h3>
-        </div>
-        <div className="self-stretch flex flex-col items-start text-[9px] text-[#ffb347] font-['JetBrains_Mono']">
-          <div className="tracking-[3.15px] leading-[11.3px] uppercase">
-            Competitive Platform
-          </div>
+        <h3 className="m-0 tracking-[4.5px] leading-7 uppercase font-black">
+          SIXSENCE
+        </h3>
+        <div className="text-[9px] text-[#ffb347] font-['JetBrains_Mono'] tracking-[3.15px] uppercase">
+          Competitive Platform
         </div>
       </div>
 
-<button
-  onClick={() => {
-    window.location.href = "https://sixsence-backend.onrender.com/auth/discord";
-  }}
-  className="cursor-pointer border-[rgba(88,101,242,0.33)] border-solid border-[1px] py-2 px-4 bg-[rgba(88,101,242,0.15)] rounded-md flex items-center gap-[7px] hover:bg-[rgba(112,128,255,0.15)] hover:border-[rgba(112,128,255,0.33)]"
->
-        <Image
-          className="h-3 w-3"
-          width={12}
-          height={12}
-          alt=""
-          src="/assets/Icondiscord2.svg"
-        />
-        <div className="text-xs tracking-[0.96px] leading-4 uppercase font-semibold text-[#8b9cf4] text-center">
-          Discord
+      {/* SI CONNECTÉ → AVATAR + PSEUDO */}
+      {user ? (
+        <div className="flex items-center gap-3 bg-[#1a1b22] px-3 py-2 rounded-md border border-[#333]">
+          <img
+            src={`https://cdn.discordapp.com/avatars/${user.discordId}/${user.avatar}.png`}
+            className="w-8 h-8 rounded-full"
+            alt="avatar"
+          />
+          <div className="text-sm font-semibold">
+            {user.username}
+            <span className="text-[#888]">#{user.discriminator}</span>
+          </div>
         </div>
-      </button>
+      ) : (
+        /* SINON → BOUTON DISCORD */
+        <button
+          onClick={() => {
+            window.location.href = "https://sixsence-backend.onrender.com/auth/discord";
+          }}
+          className="cursor-pointer border-[rgba(88,101,242,0.33)] border-solid border-[1px] py-2 px-4 bg-[rgba(88,101,242,0.15)] rounded-md flex items-center gap-[7px] hover:bg-[rgba(112,128,255,0.15)] hover:border-[rgba(112,128,255,0.33)]"
+        >
+          <Image
+            className="h-3 w-3"
+            width={12}
+            height={12}
+            alt=""
+            src="/assets/Icondiscord2.svg"
+          />
+          <div className="text-xs tracking-[0.96px] leading-4 uppercase font-semibold text-[#8b9cf4] text-center">
+            Discord
+          </div>
+        </button>
+      )}
     </div>
   );
 };

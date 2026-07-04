@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 
 import Navigationaccueil from "../components/Navigationaccueil";
 import Containeraccueil from "../components/Containeraccueil";
@@ -19,18 +19,19 @@ import ContainermarginaccueilMobile from "../components/ContainermarginaccueilMo
 
 export default function Accueil() {
 
-  // 🔥 Récupération du token Discord dans l’URL
+  // 🔥 Récupération des infos utilisateur (avatar + pseudo)
+  const [user, setUser] = useState(null);
+
   useEffect(() => {
-    const params = new URLSearchParams(window.location.search);
-    const token = params.get("token");
-
-    if (token) {
-      // Stocker le token
-      localStorage.setItem("discord_token", token);
-
-      // Nettoyer l’URL (enlever ?token=...)
-      window.history.replaceState({}, "", window.location.pathname);
-    }
+    fetch("https://sixsence-backend.onrender.com/me", {
+      credentials: "include",
+    })
+      .then(async (res) => {
+        if (!res.ok) return setUser(null);
+        const data = await res.json();
+        setUser(data); // { username, discriminator, avatar, discordId }
+      })
+      .catch(() => setUser(null));
   }, []);
 
   return (
@@ -56,7 +57,7 @@ export default function Accueil() {
 
       {/* DESKTOP */}
       <div className="hidden md:flex flex-col items-center justify-center w-full">
-        <Navigationaccueil />
+        <Navigationaccueil user={user} />
         <Containeraccueil />
         <Containeraccueil2 />
         <Sectionaccueil />
@@ -67,15 +68,13 @@ export default function Accueil() {
 
       {/* MOBILE */}
       <div className="flex md:hidden flex-col items-center justify-center w-full px-4">
-
-        <NavigationaccueilMobile />
+        <NavigationaccueilMobile user={user} />
         <ContaineraccueilMobile />
         <Containeraccueil2Mobile />
         <SectionaccueilMobile />
         <AppaccueilMobile />
         <Sectionaccueil2Mobile />
         <ContainermarginaccueilMobile />
-
       </div>
     </div>
   );
