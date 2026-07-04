@@ -2,9 +2,10 @@ import Image from "next/image";
 
 type NavigationProps = {
   className?: string;
+  user?: any; // { username, discriminator, avatar, discordId }
 };
 
-const NavigationaccueilMobile = ({ className = "" }: NavigationProps) => {
+const NavigationaccueilMobile = ({ className = "", user }: NavigationProps) => {
   return (
     <div
       className={`w-full max-w-[360px] flex items-center justify-between py-5 px-4 
@@ -21,24 +22,43 @@ const NavigationaccueilMobile = ({ className = "" }: NavigationProps) => {
         </div>
       </div>
 
-      {/* DISCORD BUTTON */}
-      <button
-        className="cursor-pointer border border-[rgba(88,101,242,0.33)] 
-                   bg-[rgba(88,101,242,0.15)] py-2 px-3 rounded-md 
-                   flex items-center gap-2"
-      >
-        <Image
-          src="/assets/Icondiscord2.svg"
-          alt="discord"
-          width={12}
-          height={12}
-          className="h-3 w-3"
-        />
+      {/* SI CONNECTÉ → AVATAR + PSEUDO */}
+      {user ? (
+        <div className="flex items-center gap-3 bg-[#1a1b22] px-3 py-2 rounded-md border border-[#333]">
+          <img
+            src={`https://cdn.discordapp.com/avatars/${user.discordId}/${user.avatar}.png`}
+            alt="avatar"
+            className="w-8 h-8 rounded-full"
+          />
 
-        <span className="text-[10px] tracking-[1px] leading-4 uppercase font-semibold text-[#8b9cf4]">
-          Discord
-        </span>
-      </button>
+          <div className="text-sm font-semibold">
+            {user.username}
+            <span className="text-[#888]">#{user.discriminator}</span>
+          </div>
+        </div>
+      ) : (
+        /* SINON → BOUTON DISCORD */
+        <button
+          onClick={() => {
+            window.location.href = "https://sixsence-backend.onrender.com/auth/discord";
+          }}
+          className="cursor-pointer border border-[rgba(88,101,242,0.33)] 
+                     bg-[rgba(88,101,242,0.15)] py-2 px-3 rounded-md 
+                     flex items-center gap-2"
+        >
+          <Image
+            src="/assets/Icondiscord2.svg"
+            alt="discord"
+            width={12}
+            height={12}
+            className="h-3 w-3"
+          />
+
+          <span className="text-[10px] tracking-[1px] leading-4 uppercase font-semibold text-[#8b9cf4]">
+            Discord
+          </span>
+        </button>
+      )}
     </div>
   );
 };
