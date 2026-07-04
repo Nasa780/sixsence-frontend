@@ -10,6 +10,17 @@ import Sectionmarginranked4 from "../components/Sectionmarginranked4";
 import Sectionmarginranked5 from "../components/Sectionmarginranked5";
 import Sectionmarginranked6 from "../components/Sectionmarginranked6";
 import Footerranked from "../components/Footerranked";
+
+// 📱 Version mobile Ranked
+import HeaderMobile from "../components/HeaderMobile";
+import SectionmarginrankedMobile from "../components/SectionmarginrankedMobile";
+import Sectionmarginranked2Mobile from "../components/Sectionmarginranked2Mobile";
+import Sectionmarginranked3Mobile from "../components/Sectionmarginranked3Mobile";
+import Sectionmarginranked4Mobile from "../components/Sectionmarginranked4Mobile";
+import Sectionmarginranked5Mobile from "../components/Sectionmarginranked5Mobile";
+import Sectionmarginranked6Mobile from "../components/Sectionmarginranked6Mobile";
+import FooterrankedMobile from "../components/FooterrankedMobile";
+
 import Background from "../components/Background";
 
 export default function Ranked() {
@@ -20,10 +31,7 @@ export default function Ranked() {
     const token = params.get("token");
 
     if (token) {
-      // Stocker le token JWT du backend
       localStorage.setItem("session", token);
-
-      // Nettoyer l’URL
       window.history.replaceState({}, "", window.location.pathname);
     }
   }, []);
@@ -51,9 +59,22 @@ export default function Ranked() {
         <Sectionmarginranked3 />
         <Sectionmarginranked4 />
         <Sectionmarginranked5 />
-        <Sectionmarginranked6 />
+        <Sectionmarginrankranked6 />
         <Footerranked />
       </div>
+
+      {/* 📱 MOBILE */}
+      <div className="flex md:hidden flex-col items-center justify-center w-full px-4">
+        <HeaderMobile />
+        <SectionmarginrankedMobile />
+        <Sectionmarginranked2Mobile />
+        <Sectionmarginranked3Mobile />
+        <Sectionmarginranked4Mobile />
+        <Sectionmarginranked5Mobile />
+        <Sectionmarginranked6Mobile />
+        <FooterrankedMobile />
+      </div>
+
     </div>
   );
 }
