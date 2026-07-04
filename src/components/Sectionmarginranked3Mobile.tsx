@@ -140,25 +140,85 @@ const Sectionmarginranked3Mobile: NextPage = () => {
   return (
     <div className="w-full flex flex-col items-center px-4 py-10 text-left font-[Rajdhani]">
 
+
+{/* RECHERCHER UN MATCH */}
+<div className="w-full flex flex-col gap-4 mb-6">
+
+  {/* Ligne principale */}
+  <div className="flex items-start gap-4">
+
+    {/* Icône RD */}
+    <Image
+      src="/assets/IconRD4.svg"
+      alt="RD"
+      width={44}
+      height={44}
+      className="rounded-[10px]"
+    />
+
+    {/* Texte */}
+    <div className="flex flex-col gap-1">
+      <h1 className="text-[24px] font-bold tracking-[0.3px] text-[#e8f0fa]">
+        Rechercher un match
+      </h1>
+
+      <p className="text-sm text-[#6b7d94] font-[Inter] leading-[21px]">
+        Tu es prêt à jouer en mode classé. Lance une recherche pour trouver un match compétitif.
+      </p>
+    </div>
+  </div>
+
+  {/* Badge joueur(s) en ligne */}
+  <div className="flex items-center gap-2 bg-[rgba(26,107,220,0.1)] border border-[rgba(26,107,220,0.2)] px-3 py-1.5 rounded-full w-fit">
+    <div className="h-2 w-2 rounded-full bg-[#22c55e] shadow-[0_0_6px_rgba(34,197,94,0.53)]" />
+    <span className="text-[13px] text-[#a0b0c8] font-[Inter]">
+      {queueStatus.playersOnline} joueur(s) en ligne
+    </span>
+  </div>
+
+</div>
+
       {/* ============================
           PARTIE 1 — COMPTEURS
       ============================ */}
-      <div className="w-full bg-[rgba(26,107,220,0.12)] border border-[rgba(26,107,220,0.3)] rounded-md p-4 flex flex-col gap-3 text-sm font-[Inter] text-[#94a3b8]">
-        <div className="flex justify-between">
-          <span>Joueurs en file</span>
-          <span className="text-[#22d3ee] font-bold">{queueStatus.playersInQueue}</span>
-        </div>
+{/* STATUT DE LA FILE */}
+<div className="w-full rounded-[10px] bg-[rgba(10,22,40,0.6)] border border-[rgba(26,107,220,0.15)] p-4 flex flex-col gap-3">
 
-        <div className="flex justify-between">
-          <span>Matchs en cours</span>
-          <span className="text-[#22d3ee] font-bold">{queueStatus.matchesInProgress}</span>
-        </div>
+  <div className="flex items-center gap-2 mb-2">
+    <div className="h-4 w-1 rounded bg-[linear-gradient(180deg,#1a6bdc,rgba(26,107,220,0.53))]" />
+    <b className="uppercase tracking-[1px] text-[15px] text-[#e8eaf0]">
+      Statut de la file
+    </b>
+  </div>
 
-        <div className="flex justify-between">
-          <span>Joueurs en ligne</span>
-          <span className="text-[#22d3ee] font-bold">{queueStatus.playersOnline}</span>
-        </div>
-      </div>
+  {/* Joueurs en file */}
+  <div className="flex justify-between items-center text-sm font-[Inter] text-[#a0b0c8]">
+    <div className="flex items-center gap-2">
+      <div className="h-2 w-2 rounded-full bg-[#3b82f6] shadow-[0_0_6px_rgba(59,130,246,0.53)]" />
+      <span>Joueurs en file</span>
+    </div>
+    <span className="text-[#22d3ee] font-bold">{queueStatus.playersInQueue}</span>
+  </div>
+
+  {/* Matchs en cours */}
+  <div className="flex justify-between items-center text-sm font-[Inter] text-[#a0b0c8]">
+    <div className="flex items-center gap-2">
+      <div className="h-2 w-2 rounded-full bg-[#f97316] shadow-[0_0_6px_rgba(249,115,22,0.53)]" />
+      <span>Matchs en cours</span>
+    </div>
+    <span className="text-[#22d3ee] font-bold">{queueStatus.matchesInProgress}</span>
+  </div>
+
+  {/* Joueurs en ligne */}
+  <div className="flex justify-between items-center text-sm font-[Inter] text-[#a0b0c8]">
+    <div className="flex items-center gap-2">
+      <div className="h-2 w-2 rounded-full bg-[#22c55e] shadow-[0_0_6px_rgba(34,197,94,0.53)]" />
+      <span>Joueurs en ligne</span>
+    </div>
+    <span className="text-[#22d3ee] font-bold">{queueStatus.playersOnline}</span>
+  </div>
+
+</div>
 
       {/* ============================
           PARTIE 2 — MODE + OBJETS + ENGAGEMENT
