@@ -1,3 +1,5 @@
+import { useEffect } from "react";
+
 import Header from "../components/Header";
 import HeaderMobile from "../components/HeaderMobile";
 
@@ -8,6 +10,23 @@ import Container from "../components/Container";
 import ContainerMobile from "../components/ContainerMobile";
 
 export default function Home() {
+
+  // 🔥 Vérifier la session dès l'arrivée sur la Home
+  useEffect(() => {
+    fetch("https://sixsence-backend.onrender.com/me", {
+      credentials: "include",
+    })
+      .then(res => {
+        if (!res.ok) throw new Error("Not logged");
+        return res.json();
+      })
+      .then(user => {
+        console.log("🔥 USER CONNECTÉ :", user);
+      })
+      .catch(() => {
+        console.log("❌ PAS CONNECTÉ");
+      });
+  }, []);
 
   return (
     <div
