@@ -1,6 +1,8 @@
 import type { NextPage } from "next";
 import { useEffect, useState } from "react";
 import Image from "next/image";
+import { isAuthenticated } from "../utils/auth";
+
 
 const Sectionmarginranked3: NextPage = () => {
   // État réel basé sur ton backend Discord
@@ -32,20 +34,10 @@ const [queueState, setQueueState] = useState({
   }, []);
   // ⭐ FIN COMPTEURS DYNAMIQUES
 
-  // Vérification du token Discord + appel /me
 useEffect(() => {
-  fetch("https://sixsence-backend.onrender.com/me", {
-    credentials: "include",
-  })
-    .then((res) => {
-      if (res.ok) {
-        setIsConnected(true);
-      } else {
-        setIsConnected(false);
-      }
-    })
-    .catch(() => setIsConnected(false));
+  isAuthenticated().then(setIsConnected);
 }, []);
+
 
   // Récupération du statut + timer local
 useEffect(() => {

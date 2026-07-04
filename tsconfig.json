@@ -18,11 +18,13 @@
     "incremental": true,
     "esModuleInterop": true
   },
-  "include": [
-    "next-env.d.ts",
-    "**/*.ts",
-    "**/*.tsx"
-  ],
+"include": [
+  "next-env.d.ts",
+  "**/*.ts",
+  "**/*.tsx",
+  "**/*.js"
+]
+,
   "exclude": [
     "node_modules"
   ]
