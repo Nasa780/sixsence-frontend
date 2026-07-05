@@ -1,6 +1,6 @@
 import { useEffect } from "react";
 import Image from "next/image";
-
+{/*
 // 🖥️ Version desktop Profile
 import Profile1 from "../components/profile1";
 import Profile2 from "../components/Profile2";
@@ -11,7 +11,8 @@ import Profile6 from "../components/Profile6";
 import Profile7 from "../components/Profile7";
 import Profile8 from "../components/Profile8";
 import Profile9 from "../components/Profile9";
-import Profile10 from "../components/Profile10";
+import Profile10 from "../components/Profile10"; */}
+import Profile10 from "../components/Profile11";
  {/*
 // 📱 Version mobile Profile
 import Profile1Mobile from "../components/Profile1Mobile";
@@ -48,17 +49,18 @@ export default function Profile() {
     >
 
       {/* 🖥️ DESKTOP */}
-      <div className="hidden md:flex flex-col items-center justify-center w-full">
-        <Profile1 />
+   <div className="hidden md:flex flex-col items-center justify-center w-full">
+  {/*<Profile1 />
         <Profile2 />
-        <Profile3 />
+     <Profile3 />
         <Profile4 />
         <Profile5 />
         <Profile6 />
         <Profile7 />
         <Profile8 />
         <Profile9 />
-        <Profile10 />
+        <Profile10 /> */}
+        <Profile11 />
       </div>
 
       {/* 📱 MOBILE */}
