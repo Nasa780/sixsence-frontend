@@ -20,168 +20,177 @@ const Profile11: NextPage = () => {
         </div>
       </div>
 
-      <header className="self-stretch rounded-xl bg-[#18181c] border-[#2a2a30] border-solid border-[1px] flex flex-col items-start pt-10 px-6 pb-8 relative isolate gap-2.5 text-left text-xs text-[#6b7280] font-[Inter] mq450:pt-[26px] mq450:pb-[21px] mq450:box-border">
+<header className="self-stretch rounded-xl bg-[#18181c] border-[#2a2a30] border-solid border-[1px] 
+flex flex-col items-center pt-10 px-6 pb-8 relative isolate gap-2.5 
+text-left text-xs text-[#6b7280] font-[Inter] mq450:pt-[26px] mq450:pb-[21px] mq450:box-border">
 
-        <button className="cursor-pointer border-[#2a2a30] border-solid border-[1px] py-1.5 pl-3 pr-[11px] bg-[#1c1c22] h-8 absolute top-[16px] right-[18.2px] rounded-[7px] box-border flex items-start gap-1.5 whitespace-nowrap z-[0] shrink-0 hover:bg-[#4f4f54] hover:border-[#5e5e63]">
-          <Image
-            className="h-3 w-3 relative"
-            loading="lazy"
-            width={12}
-            height={12}
-            sizes="100vw"
-            alt=""
-            src="/Icon.svg"
-          />
-          <div className="relative text-xs leading-[18px] font-medium text-[#94a3b8] text-left inline-block min-w-[110px]">
-            Modifier mon profil
-          </div>
-        </button>
+  <button className="cursor-pointer border-[#2a2a30] border-solid border-[1px] py-1.5 pl-3 pr-[11px] 
+  bg-[#1c1c22] h-8 absolute top-[16px] right-[18.2px] rounded-[7px] box-border 
+  flex items-start gap-1.5 whitespace-nowrap z-[0] shrink-0 hover:bg-[#4f4f54] hover:border-[#5e5e63]">
+    <Image
+      className="h-3 w-3 relative"
+      loading="lazy"
+      width={12}
+      height={12}
+      sizes="100vw"
+      alt=""
+      src="/Icon.svg"
+    />
+    <div className="relative text-xs leading-[18px] font-medium text-[#94a3b8] inline-block min-w-[110px]">
+      Modifier mon profil
+    </div>
+  </button>
 
-        <Image
-          className="w-[100px] h-[100px] relative rounded-[50px] object-cover z-[1]"
-          loading="lazy"
-          width={100}
-          height={100}
-          sizes="100vw"
-          alt=""
-          src="/Container@2x.png"
-        />
+  <Image
+    className="w-[100px] h-[100px] relative rounded-[50px] object-cover z-[1]"
+    loading="lazy"
+    width={100}
+    height={100}
+    sizes="100vw"
+    alt=""
+    src="/Container@2x.png"
+  />
 
-        <h3 className="m-0 relative text-[22px] leading-[33px] font-bold text-[#fff] z-[2]">
-          NASA
-        </h3>
+  <h3 className="m-0 relative text-[22px] leading-[33px] font-bold text-[#fff] z-[2]">
+    NASA
+  </h3>
 
-        <div className="w-[81px] h-5 flex items-start gap-1.5 z-[3] text-[13px] text-[#4fc3f7]">
-          <Image
-            className="h-4 w-4 relative"
-            loading="lazy"
-            width={16}
-            height={16}
-            sizes="100vw"
-            alt=""
-            src="/Icon.svg"
-          />
-          <div className="h-5 flex flex-col items-start">
-            <div className="relative tracking-[0.39px] leading-[19.5px] font-semibold">
-              Diamond
-            </div>
-          </div>
+  <div className="w-[81px] h-5 flex items-center justify-center gap-1.5 z-[3] text-[13px] text-[#4fc3f7]">
+    <Image
+      className="h-4 w-4 relative"
+      loading="lazy"
+      width={16}
+      height={16}
+      sizes="100vw"
+      alt=""
+      src="/Icon.svg"
+    />
+    <div className="h-5 flex flex-col items-center">
+      <div className="relative tracking-[0.39px] leading-[19.5px] font-semibold">
+        Diamond
+      </div>
+    </div>
+  </div>
+
+  <div className="w-[153px] h-6 flex items-center justify-center gap-2.5 z-[4]">
+    <div className="h-[18px] flex items-center gap-[5px]">
+      <Image
+        className="h-3.5 w-3.5 relative"
+        loading="lazy"
+        width={14}
+        height={14}
+        sizes="100vw"
+        alt=""
+        src="/DiamondIcon.svg"
+      />
+      <div className="h-[18px] flex flex-col items-center">
+        <div className="relative leading-[18px]">435 pts</div>
+      </div>
+    </div>
+
+    <div className="h-6 flex flex-col items-center text-base text-[#2a2a30]">
+      <h2 className="m-0 leading-6 font-normal">|</h2>
+    </div>
+
+    <div className="h-5 flex flex-col items-center text-[13px] text-[#4fc3f7]">
+      <div className="relative leading-[19.5px] font-semibold">
+        Niveau 42
+      </div>
+    </div>
+  </div>
+
+  <div className="flex items-center justify-center pt-1 px-0 pb-0 gap-2 z-[5] text-[#4ade80]">
+
+    <div className="rounded-md bg-[#14532d] border-[#166534] border-solid border-[1px] 
+    flex items-center py-[5px] px-3 gap-[5px]">
+      <Image
+        className="h-3 w-3 relative"
+        loading="lazy"
+        width={12}
+        height={12}
+        sizes="100vw"
+        alt=""
+        src="/Icon.svg"
+      />
+      <div className="h-[18px] flex flex-col items-center">
+        <div className="relative leading-[18px] font-semibold">
+          15461 XP
         </div>
+      </div>
+    </div>
 
-        <div className="w-[153px] h-6 flex items-start gap-2.5 z-[4]">
-          <div className="h-[18px] flex items-start gap-[5px]">
-            <Image
-              className="h-3.5 w-3.5 relative"
-              loading="lazy"
-              width={14}
-              height={14}
-              sizes="100vw"
-              alt=""
-              src="/DiamondIcon.svg"
-            />
-            <div className="h-[18px] flex flex-col items-start">
-              <div className="relative leading-[18px]">435 pts</div>
-            </div>
-          </div>
-
-          <div className="h-6 flex flex-col items-start text-base text-[#2a2a30]">
-            <h2 className="m-0 leading-6 font-normal">|</h2>
-          </div>
-
-          <div className="h-5 flex flex-col items-start text-[13px] text-[#4fc3f7]">
-            <div className="relative leading-[19.5px] font-semibold">
-              Niveau 42
-            </div>
-          </div>
+    <button className="cursor-pointer border-[#2a2a30] border-solid border-[1px] py-[5px] px-3 
+    bg-[#1c1c22] flex-1 rounded-md flex items-center gap-[5px]">
+      <Image
+        className="h-3 w-3 relative"
+        width={12}
+        height={12}
+        sizes="100vw"
+        alt=""
+        src="/Icon.svg"
+      />
+      <div className="h-[18px] flex flex-col items-center">
+        <div className="relative text-xs leading-[18px] text-[#cbd5e1]">
+          Six Sence
         </div>
-
-        <div className="flex items-start justify-start pt-1 px-0 pb-0 gap-2 z-[5] text-[#4ade80]">
-
-          <div className="self-stretch rounded-md bg-[#14532d] border-[#166534] border-solid border-[1px] flex items-start py-[5px] px-3 gap-[5px]">
-            <Image
-              className="h-3 w-3 relative"
-              loading="lazy"
-              width={12}
-              height={12}
-              sizes="100vw"
-              alt=""
-              src="/Icon.svg"
-            />
-            <div className="h-[18px] flex flex-col items-start">
-              <div className="relative leading-[18px] font-semibold">
-                15461 XP
-              </div>
-            </div>
-          </div>
-
-          <button className="cursor-pointer border-[#2a2a30] border-solid border-[1px] py-[5px] px-3 bg-[#1c1c22] self-stretch flex-1 rounded-md flex items-start gap-[5px]">
-            <Image
-              className="h-3 w-3 relative"
-              width={12}
-              height={12}
-              sizes="100vw"
-              alt=""
-              src="/Icon.svg"
-            />
-            <div className="h-[18px] flex flex-col items-start">
-              <div className="relative text-xs leading-[18px] text-[#cbd5e1]">
-                Six Sence
-              </div>
-            </div>
-            <div className="h-[15px] flex flex-col items-start">
-              <div className="relative text-[10px] leading-[15px] text-[#6b7280]">
-                [5K]
-              </div>
-            </div>
-          </button>
-
-          <div className="self-stretch rounded-md bg-[#1c1c22] border-[#2a2a30] border-solid border-[1px] flex items-start py-[5px] px-3 gap-[5px] text-[#cbd5e1]">
-            <Image
-              className="h-3 w-3 relative"
-              loading="lazy"
-              width={12}
-              height={12}
-              sizes="100vw"
-              alt=""
-              src="/Icon1.svg"
-            />
-            <div className="h-[18px] flex flex-col items-start">
-              <div className="relative leading-[18px]">PC</div>
-            </div>
-          </div>
-
+      </div>
+      <div className="h-[15px] flex flex-col items-center">
+        <div className="relative text-[10px] leading-[15px] text-[#6b7280]">
+          [5K]
         </div>
+      </div>
+    </button>
 
-        <div className="w-[177px] h-10 flex flex-col items-start pt-1 px-0 pb-0 z-[6]">
-          <button className="cursor-pointer border-[#2a2a30] border-solid border-[1px] py-[7px] px-3.5 bg-[#1c1c22] w-[177px] h-9 rounded-lg flex items-start gap-2">
-            <div className="h-5 flex flex-col items-start">
-              <div className="relative text-[13px] leading-[19.5px] text-[#6b7280]">
-                —
-              </div>
-            </div>
-            <div className="h-5 flex flex-col items-start">
-              <div className="relative text-[13px] leading-[19.5px] font-medium text-[#cbd5e1]">
-                zNaSa#9589474
-              </div>
-            </div>
-            <Image
-              className="h-[13px] w-[13px] relative"
-              width={13}
-              height={13}
-              sizes="100vw"
-              alt=""
-              src="/Button.svg"
-            />
-          </button>
+    <div className="rounded-md bg-[#1c1c22] border-[#2a2a30] border-solid border-[1px] 
+    flex items-center py-[5px] px-3 gap-[5px] text-[#cbd5e1]">
+      <Image
+        className="h-3 w-3 relative"
+        loading="lazy"
+        width={12}
+        height={12}
+        sizes="100vw"
+        alt=""
+        src="/Icon1.svg"
+      />
+      <div className="h-[18px] flex flex-col items-center">
+        <div className="relative leading-[18px]">PC</div>
+      </div>
+    </div>
+
+  </div>
+
+  <div className="w-[177px] h-10 flex flex-col items-center pt-1 px-0 pb-0 z-[6]">
+    <button className="cursor-pointer border-[#2a2a30] border-solid border-[1px] py-[7px] px-3.5 
+    bg-[#1c1c22] w-[177px] h-9 rounded-lg flex items-center gap-2">
+      <div className="h-5 flex flex-col items-center">
+        <div className="relative text-[13px] leading-[19.5px] text-[#6b7280]">
+          —
         </div>
-
-        <div className="w-[214px] h-5 flex flex-col items-start pt-0.5 px-0 pb-0 z-[7]">
-          <div className="relative leading-[18px]">
-            Membre depuis le 30 décembre 2025
-          </div>
+      </div>
+      <div className="h-5 flex flex-col items-center">
+        <div className="relative text-[13px] leading-[19.5px] font-medium text-[#cbd5e1]">
+          zNaSa#9589474
         </div>
+      </div>
+      <Image
+        className="h-[13px] w-[13px] relative"
+        width={13}
+        height={13}
+        sizes="100vw"
+        alt=""
+        src="/Button.svg"
+      />
+    </button>
+  </div>
 
-      </header>
+  <div className="w-[214px] h-5 flex flex-col items-center pt-0.5 px-0 pb-0 z-[7]">
+    <div className="relative leading-[18px]">
+      Membre depuis le 30 décembre 2025
+    </div>
+  </div>
+
+</header>
+
       <section className="self-stretch rounded-xl bg-[#18181c] border-[#2a2a30] border-solid border-[1px] flex flex-col items-start py-5 px-6 text-left text-[11px] text-[#94a3b8] font-[Inter]">
         <div className="self-stretch flex items-center gap-2">
           <Image
