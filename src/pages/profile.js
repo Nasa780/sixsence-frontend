@@ -10,9 +10,9 @@ import Profile5 from "../components/Profile5";
 import Profile6 from "../components/Profile6";
 import Profile7 from "../components/Profile7";
 import Profile8 from "../components/Profile8";
-import Profile9 from "../components/Profile9";
-import Profile10 from "../components/Profile10"; */}
-import Profile10 from "../components/Profile11";
+import Profile9 from "../components/Profile9";*/}
+import Profile1 from "../components/profile1"; 
+import Profile11 from "../components/Profile11";
  {/*
 // 📱 Version mobile Profile
 import Profile1Mobile from "../components/Profile1Mobile";
@@ -58,8 +58,8 @@ export default function Profile() {
         <Profile6 />
         <Profile7 />
         <Profile8 />
-        <Profile9 />
-        <Profile10 /> */}
+        <Profile9 />*/}
+        <Profile1 /> 
         <Profile11 />
       </div>
 
