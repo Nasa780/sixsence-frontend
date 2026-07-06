@@ -45,7 +45,17 @@ export default function Profile() {
   return (
     <div
       className="relative min-h-screen overflow-hidden"
-      style={{ background: "#0F1923" }}
+      style={{
+  background: `
+    radial-gradient(96.04% 96.04% at 50% 18%, rgba(215, 165, 30, 0.22) 0%, rgba(190, 130, 15, 0.10) 30%, rgba(0, 0, 0, 0.00) 60%),
+    radial-gradient(74.33% 74.33% at 50% 55%, rgba(160, 100, 10, 0.07) 0%, rgba(0, 0, 0, 0.00) 55%),
+    radial-gradient(111.8% 111.8% at 0% 50%, rgba(0, 0, 0, 0.55) 0%, rgba(0, 0, 0, 0.00) 50%),
+    radial-gradient(111.8% 111.8% at 100% 50%, rgba(0, 0, 0, 0.55) 0%, rgba(0, 0, 0, 0.00) 50%),
+    radial-gradient(120.83% 120.83% at 50% 110%, rgba(0, 0, 0, 0.70) 0%, rgba(0, 0, 0, 0.00) 45%),
+    linear-gradient(180deg, #06070A 0%, #07090D 35%, #080B0F 70%, #090C10 100%)
+  `
+}}
+
     >
 
       {/* 🖥️ DESKTOP */}
