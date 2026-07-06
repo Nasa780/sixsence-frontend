@@ -16,7 +16,7 @@ module.exports = {
     screens: {
       /* -------------------- MOBILE -------------------- */
       mq359: { raw: "screen and (max-width: 359px)" },
-      mq402: { raw: "screen and (max-width: 402px)" }, // ajouté
+      mq402: { raw: "screen and (max-width: 402px)" },
       mq414: { raw: "screen and (max-width: 414px)" },
       mq450: { raw: "screen and (max-width: 450px)" },
 
@@ -33,7 +33,7 @@ module.exports = {
       mq751_800: { raw: "screen and (min-width: 751px) and (max-width: 800px)" },
 
       /* -------------------- DESKTOP LARGE -------------------- */
-      lg: { raw: "screen and (max-width: 1200px)" }, // ← celui de ton autre config
+      lg: { raw: "screen and (max-width: 1200px)" }, // intégré depuis ton autre config
     },
   },
 
