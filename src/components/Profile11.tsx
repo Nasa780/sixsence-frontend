@@ -420,7 +420,7 @@ text-left text-xs text-[#6b7280] font-[Inter] mq450:pt-[26px] mq450:pb-[21px] mq
       <div
         className="
         h-[75px] flex-1 rounded-[10px]
-        bg-[#18181c]
+        bg-[#060709]
         border border-[rgba(215,170,40,0.11)]
         shadow-[inset_0_0_12px_rgba(215,165,30,0.06)]
         box-border overflow-hidden 
@@ -449,7 +449,7 @@ text-left text-xs text-[#6b7280] font-[Inter] mq450:pt-[26px] mq450:pb-[21px] mq
       <div
         className="
         h-[75px] flex-1 rounded-[10px]
-        bg-[#18181c]
+        bg-[#060709]
         border border-[rgba(215,170,40,0.11)]
         shadow-[inset_0_0_12px_rgba(215,165,30,0.06)]
         box-border overflow-hidden 
@@ -478,7 +478,7 @@ text-left text-xs text-[#6b7280] font-[Inter] mq450:pt-[26px] mq450:pb-[21px] mq
       <div
         className="
         h-[75px] flex-1 rounded-[10px]
-        bg-[#18181c]
+        bg-[#060709]
         border border-[rgba(215,170,40,0.11)]
         shadow-[inset_0_0_12px_rgba(215,165,30,0.06)]
         box-border overflow-hidden 
@@ -507,7 +507,7 @@ text-left text-xs text-[#6b7280] font-[Inter] mq450:pt-[26px] mq450:pb-[21px] mq
       <div
         className="
         h-[75px] flex-1 rounded-[10px]
-        bg-[#18181c]
+        bg-[#060709]
         border border-[rgba(215,170,40,0.11)]
         shadow-[inset_0_0_12px_rgba(215,165,30,0.06)]
         box-border overflow-hidden 
@@ -536,7 +536,7 @@ text-left text-xs text-[#6b7280] font-[Inter] mq450:pt-[26px] mq450:pb-[21px] mq
       <div
         className="
         h-[75px] flex-1 rounded-[10px]
-        bg-[#18181c]
+        bg-[#060709]
         border border-[rgba(215,170,40,0.11)]
         shadow-[inset_0_0_12px_rgba(215,165,30,0.06)]
         box-border overflow-hidden 
@@ -565,7 +565,7 @@ text-left text-xs text-[#6b7280] font-[Inter] mq450:pt-[26px] mq450:pb-[21px] mq
       <div
         className="
         h-[75px] flex-1 rounded-[10px]
-        bg-[#18181c]
+        bg-[#060709]
         border border-[rgba(215,170,40,0.11)]
         shadow-[inset_0_0_12px_rgba(215,165,30,0.06)]
         box-border overflow-hidden 
