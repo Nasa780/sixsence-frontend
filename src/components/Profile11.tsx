@@ -476,6 +476,10 @@ const Profile11: NextPage = () => {
               <div className="flex-1 relative inline-block max-w-[29px]">
                 18 jan
               </div>
+                {/* ⭐ AJOUT DU 20 JAN */}
+              <div className="flex-1 relative inline-block max-w-[32px]">
+                20 jan
+              </div>
             </div>
             <div className="absolute top-[0.6px] left-[13px] w-[19px] flex flex-col items-start gap-[20.2px] text-left">
               <div className="self-stretch flex items-start pt-0 px-0 pb-[25.8px]">
