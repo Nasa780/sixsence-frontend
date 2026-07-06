@@ -3,7 +3,7 @@ import Image from "next/image";
 
 const Profile11: NextPage = () => {
   return (
-    <div className="max-w-[1200px] flex flex-col items-start py-5 px-6 box-border gap-4 leading-[normal] tracking-[normal] text-left text-[11px] text-[#94a3b8] font-[Inter]">
+    <div className="max-w-[1400px] flex flex-col items-start py-5 px-6 box-border gap-4 leading-[normal] tracking-[normal] text-left text-[11px] text-[#94a3b8] font-[Inter]">
       <div className="flex items-center gap-1.5 text-[13px]">
         <Image
           className="h-[15px] w-[15px] relative shrink-0"
