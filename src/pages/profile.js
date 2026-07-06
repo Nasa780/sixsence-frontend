@@ -44,15 +44,18 @@ export default function Profile() {
 
   return (
 
-<div    
-  className="relative min-h-screen overflow-hidden"
-  style={{
-    backgroundImage: "url('/images/gold1.jpg')",
-    backgroundSize: "cover",
-    backgroundPosition: "center",
-    backgroundRepeat: "no-repeat"
-  }}
->
+<div className="relative min-h-screen overflow-hidden">
+  <div
+    className="absolute inset-0"
+    style={{
+      backgroundImage: "url('/assets/images/gold1.jpg')",
+      backgroundSize: "cover",
+      backgroundPosition: "center",
+      backgroundRepeat: "no-repeat",
+      opacity: 0.35
+    }}
+  />
+  <div className="relative z-10"></div>
 
       {/* 🖥️ DESKTOP */}
    <div className="hidden md:flex flex-col items-center justify-center w-full">
