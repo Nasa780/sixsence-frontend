@@ -48,7 +48,7 @@ export default function Profile() {
   <div
     className="absolute inset-0"
     style={{
-      backgroundImage: "url('/assets/images/gold1.jpg')",
+      backgroundImage: "url('/images/gold1.jpg')",
       backgroundSize: "cover",
       backgroundPosition: "center",
       backgroundRepeat: "no-repeat",
