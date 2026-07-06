@@ -476,10 +476,6 @@ const Profile11: NextPage = () => {
               <div className="flex-1 relative inline-block max-w-[29px]">
                 18 jan
               </div>
-                {/* ⭐ AJOUT DU 20 JAN */}
-              <div className="flex-1 relative inline-block max-w-[32px]">
-                20 jan
-              </div>
             </div>
             <div className="absolute top-[0.6px] left-[13px] w-[19px] flex flex-col items-start gap-[20.2px] text-left">
               <div className="self-stretch flex items-start pt-0 px-0 pb-[25.8px]">
@@ -508,7 +504,7 @@ const Profile11: NextPage = () => {
           height={28}
           sizes="100vw"
           alt=""
-          src="/Icon4.svg"
+          src="/assets/Iconfire2.svg"
         />
         <div className="flex flex-col items-start">
           <div className="flex flex-col items-start">
@@ -527,7 +523,7 @@ const Profile11: NextPage = () => {
             height={18}
             sizes="100vw"
             alt=""
-            src="/Icon.svg"
+            src="/assets/Iconhistorique.svg"
           />
           <div className="h-[17px] flex flex-col items-start">
             <b className="relative tracking-[1.1px] leading-[16.5px] uppercase">
@@ -555,7 +551,7 @@ const Profile11: NextPage = () => {
                 height={14}
                 sizes="100vw"
                 alt=""
-                src="/ControllerIcon.svg"
+                src="/assets/ControllerIcon.svg"
               />
               <div className="h-[18px] flex flex-col items-start">
                 <div className="relative leading-[18px]">5v5</div>
@@ -578,7 +574,7 @@ const Profile11: NextPage = () => {
                 height={13}
                 sizes="100vw"
                 alt=""
-                src="/Icon.svg"
+                src="/assets/Iconplay2.svg"
               />
               <div className="h-[18px] flex flex-col items-start">
                 <div className="relative leading-[18px]">12 janv., 22:08</div>
@@ -608,7 +604,7 @@ const Profile11: NextPage = () => {
             height={18}
             sizes="100vw"
             alt=""
-            src="/Icon.svg"
+            src="/assets/Iconhistorique2.svg"
           />
           <div className="h-[17px] flex flex-col items-start">
             <b className="relative tracking-[1.1px] leading-[16.5px] uppercase">
