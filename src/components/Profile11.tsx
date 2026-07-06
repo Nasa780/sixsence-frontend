@@ -177,7 +177,7 @@ const Profile11: NextPage = () => {
                 height={28}
                 sizes="100vw"
                 alt=""
-                src="/CrossedSwordsIcon.svg"
+                src="/assets/CrossedSwordsIcon.svg"
               />
               <div className="w-[33px] h-[26px] flex flex-col items-start">
                 <b className="relative leading-[26px] mq450:text-[21px] mq450:leading-[21px]">
@@ -195,7 +195,7 @@ const Profile11: NextPage = () => {
                 height={28}
                 sizes="100vw"
                 alt=""
-                src="/TrophyStatIcon.svg"
+                src="/assets/TrophyStatIcon.svg"
               />
               <div className="w-[33px] h-[26px] flex flex-col items-start">
                 <b className="relative leading-[26px] mq450:text-[21px] mq450:leading-[21px]">
@@ -213,7 +213,7 @@ const Profile11: NextPage = () => {
                 height={28}
                 sizes="100vw"
                 alt=""
-                src="/HeartBrokenIcon.svg"
+                src="/assets/HeartBrokenIcon.svg"
               />
               <div className="w-[30px] h-[26px] flex flex-col items-start">
                 <b className="relative leading-[26px] mq450:text-[21px] mq450:leading-[21px]">
@@ -231,7 +231,7 @@ const Profile11: NextPage = () => {
                 height={28}
                 sizes="100vw"
                 alt=""
-                src="/TrendUpIcon.svg"
+                src="/assets/TrendUpIcon.svg"
               />
               <div className="w-[60px] h-[26px] flex flex-col items-start">
                 <b className="relative leading-[26px] inline-block min-w-[60px] mq450:text-[21px] mq450:leading-[21px]">
