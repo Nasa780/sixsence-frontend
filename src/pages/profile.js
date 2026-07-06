@@ -47,7 +47,7 @@ export default function Profile() {
 <div    
   className="relative min-h-screen overflow-hidden"
   style={{
-    backgroundImage: "url('/public/images/gold1.jpg')",
+    backgroundImage: "url('/images/gold1.jpg')",
     backgroundSize: "cover",
     backgroundPosition: "center",
     backgroundRepeat: "no-repeat"
