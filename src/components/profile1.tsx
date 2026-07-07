@@ -5,12 +5,10 @@ import useUser from "../hooks/useUser";
 const Profile1: NextPage = () => {
   const user = useUser();
 
-  // Avatar Discord réel
   const avatar = user?.avatar
     ? `https://cdn.discordapp.com/avatars/${user.discordId}/${user.avatar}.png`
     : "/assets/default-avatar.png";
 
-  // Pseudo Discord réel
   const username = user?.username || "Utilisateur";
 
   return (
@@ -20,14 +18,7 @@ const Profile1: NextPage = () => {
         {/* LOGO SIXSENCE */}
         <div className="flex items-center gap-2">
           <div className="h-8 w-8 rounded-lg [background:linear-gradient(135deg,_#ff4500,_#ff6b35)] flex items-center justify-center">
-            <Image
-              className="h-6 w-full relative"
-              width={22}
-              height={24}
-              sizes="100vw"
-              alt=""
-              src="/assets/IconS.svg"
-            />
+            <Image className="h-6 w-full" width={22} height={24} alt="" src="/assets/IconS.svg" />
           </div>
           <div className="w-[68.1px] flex flex-col items-start">
             <b className="tracking-[0.96px] leading-3">SIXSENCE</b>
@@ -58,14 +49,10 @@ const Profile1: NextPage = () => {
         {/* AVATAR + PSEUDO DISCORD */}
         <div className="flex items-center gap-2 text-[11px]">
 
-          {/* Bouton roue */}
           <button className="cursor-pointer py-1.5 px-3.5 bg-[transparent] rounded-md [background:linear-gradient(135deg,_#8b5cf6,_#7c3aed)] flex items-center justify-center">
-            <div className="text-xs leading-[18px] font-semibold text-[#fff] text-center">
-              Roue
-            </div>
+            <div className="text-xs leading-[18px] font-semibold text-[#fff] text-center">Roue</div>
           </button>
 
-          {/* Icônes */}
           <div className="rounded flex items-center p-1">
             <Image className="h-4 w-4" width={16} height={16} alt="" src="/assets/Iconmessage.svg" />
           </div>
