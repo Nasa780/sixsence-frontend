@@ -5,11 +5,13 @@ import useUser from "../hooks/useUser";
 const Profile1: NextPage = () => {
   const user = useUser();
 
-  const avatar = user?.avatar
-    ? `https://cdn.discordapp.com/avatars/${user.discordId}/${user.avatar}.png`
+const avatar =
+  user?.avatar && user.avatar.startsWith("http")
+    ? user.avatar
     : "/assets/default-avatar.png";
 
-  const username = user?.username || "Utilisateur";
+const username = user?.username || "Utilisateur";
+
 
   return (
     <div className="w-[2174px] max-w-full flex flex-col items-center leading-[normal] tracking-[normal] text-left text-xs text-[#fff] font-[Inter]">
