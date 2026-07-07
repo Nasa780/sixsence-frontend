@@ -1,7 +1,15 @@
 import type { NextPage } from "next";
 import Image from "next/image";
+import useUser from "../hooks/useUser";
 
 const Profile11: NextPage = () => {
+  const user = useUser();
+
+  const avatar =
+    user?.avatar && user.avatar.startsWith("http")
+      ? user.avatar
+      : "/assets/default-avatar.png";
+
   return (
     <div className="w-full max-w-[1400px] mx-auto flex flex-col items-start py-5 px-6 box-border gap-4 leading-[normal] tracking-[normal] text-left text-[11px] text-[#94a3b8] font-[Inter]">
       <div className="flex items-center gap-1.5 text-[13px]">
@@ -31,14 +39,11 @@ const Profile11: NextPage = () => {
             Modifier mon profil
           </div>
         </div>
-        <Image
-          className="w-[100px] h-[100px] relative rounded-[50px] object-cover z-[1] shrink-0"
-          width={100}
-          height={100}
-          sizes="100vw"
-          alt=""
-          src="/Container@2x.png"
-        />
+      <img
+        src={avatar}
+        alt="avatar discord"
+        className="w-[100px] h-[100px] relative rounded-[50px] object-cover z-[1] shrink-0"
+      />
         <b className="relative text-[22px] leading-[33px] text-[#fff] z-[2] shrink-0 mq450:text-lg mq450:leading-[26px]">
           NASA
         </b>
