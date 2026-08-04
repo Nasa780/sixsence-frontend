@@ -14,20 +14,22 @@ const Navigationaccueil = ({ className = "" }) => {
   return (
     <div className={`w-[2174px] max-w-full flex items-center justify-between pt-5 px-8 pb-4 ${className}`}>
 
-{/* LOGO SIXSENCE */}
-<div className="flex items-center gap-2">
-  <div className="h-8 w-8 rounded-lg [background:linear-gradient(135deg,_#ff4500,_#ff6b35)] flex items-center justify-center">
-    <Image className="h-6 w-full" width={22} height={24} alt="" src="/assets/IconS.svg" />
-  </div>
+{/* LOGO SIXSENCE — VERSION DU SECOND FICHIER */}
+<div className="h-[30px] w-[121.8px] flex flex-col items-start relative isolate">
+  <div className="w-full h-full absolute top-[0px] left-[-4px] flex flex-col items-start gap-px z-[0] shrink-0">
 
-  <div className="w-[68.1px] flex flex-col items-start">
-    <h3 className="m-0 tracking-[3.6px] leading-5 uppercase font-bold text-white">
-      SIXSENCE
-    </h3>
-
-    <div className="text-[8px] text-[#6b7280] tracking-[1.2px] leading-[8px] font-medium uppercase">
-      HARDCORE
+    <div className="flex flex-col items-start">
+      <h3 className="m-0 tracking-[3.6px] leading-5 uppercase font-bold text-white mq450:text-base mq450:leading-4">
+        SIXSENCE
+      </h3>
     </div>
+
+    <div className="flex flex-col items-start text-[9px] text-[#ffa040]">
+      <div className="tracking-[1.98px] leading-[9px] uppercase font-medium whitespace-nowrap">
+        Competitive Platform
+      </div>
+    </div>
+
   </div>
 </div>
 
