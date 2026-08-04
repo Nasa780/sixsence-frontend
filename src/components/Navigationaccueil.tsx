@@ -12,7 +12,7 @@ const Navigationaccueil = ({ className = "" }) => {
   const username = user?.username || "Utilisateur";
 
   return (
-    <div className={`w-[2174px] max-w-full flex items-center justify-between pt-5 px-8 pb-4 ${className}`}>
+<div className={`w-[2174px] max-w-full flex items-center justify-between pt-5 px-8 pb-4 font-rajdhani ${className}`}>
 
 {/* LOGO SIXSENCE — VERSION IDENTIQUE */}
 <div className="h-[30px] w-[121.8px] flex flex-col items-start relative isolate font-rajdhani">
