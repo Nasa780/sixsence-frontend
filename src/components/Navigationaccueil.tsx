@@ -19,12 +19,12 @@ const Navigationaccueil = ({ className = "" }) => {
   <div className="w-full h-full absolute top-[0px] left-[-4px] flex flex-col items-start gap-px z-[0] shrink-0">
 
     <div className="flex flex-col items-start">
-      <h3 className="m-0 tracking-[3.6px] leading-5 uppercase font-bold text-white mq450:text-base mq450:leading-4">
+      <h3 className="m-0 tracking-[3.6px] leading-5 uppercase font-bold text-white mq450:text-base mq450:leading-4 font-sans">
         SIXSENCE
       </h3>
     </div>
 
-    <div className="flex flex-col items-start text-[9px] text-[#ffa040]">
+    <div className="flex flex-col items-start text-[9px] text-[#ffa040] font-sans">
       <div className="tracking-[1.98px] leading-[9px] uppercase font-medium whitespace-nowrap">
         Competitive Platform
       </div>
