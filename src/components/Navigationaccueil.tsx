@@ -14,15 +14,15 @@ const Navigationaccueil = ({ className = "" }) => {
   return (
     <div className={`w-[2174px] max-w-full flex items-center justify-between pt-5 px-8 pb-4 ${className}`}>
 
-      {/* LOGO */}
-      <div className="flex flex-col items-start">
-        <h3 className="m-0 tracking-[4.5px] leading-7 uppercase font-black">
-          SIXSENCE
-        </h3>
-        <div className="text-[9px] text-[#ffb347] font-['JetBrains_Mono'] tracking-[3.15px] uppercase">
-          Competitive Platform
-        </div>
-      </div>
+{/* LOGO */}
+<div className="flex flex-col items-start">
+  <h3 className="m-0 tracking-[4.5px] leading-7 uppercase font-black text-white">
+    SIXSENCE
+  </h3>
+  <div className="text-[9px] text-[#ffb347] font-['JetBrains_Mono'] tracking-[3.15px] uppercase">
+    Competitive Platform
+  </div>
+</div>
 
       {/* SI CONNECTÉ */}
       {user ? (

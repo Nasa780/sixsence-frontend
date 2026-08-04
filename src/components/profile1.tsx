@@ -17,18 +17,21 @@ const username = user?.username || "Utilisateur";
     <div className="w-[2174px] max-w-full flex flex-col items-center leading-[normal] tracking-[normal] text-left text-xs text-[#fff] font-[Inter]">
       <div className="h-[52px] flex items-center flex-wrap content-center py-0 px-6 box-border gap-8 max-w-[1200px] lg:max-w-full mq750:gap-4 mq1050:h-auto">
 
-        {/* LOGO SIXSENCE */}
-        <div className="flex items-center gap-2">
-          <div className="h-8 w-8 rounded-lg [background:linear-gradient(135deg,_#ff4500,_#ff6b35)] flex items-center justify-center">
-            <Image className="h-6 w-full" width={22} height={24} alt="" src="/assets/IconS.svg" />
-          </div>
-          <div className="w-[68.1px] flex flex-col items-start">
-            <b className="tracking-[0.96px] leading-3">SIXSENCE</b>
-            <div className="text-[8px] text-[#6b7280] tracking-[1.2px] leading-[8px] font-medium">
-              HARDCORE
-            </div>
-          </div>
-        </div>
+{/* LOGO SIXSENCE */}
+<div className="flex items-center gap-2">
+  <div className="h-8 w-8 rounded-lg [background:linear-gradient(135deg,_#ff4500,_#ff6b35)] flex items-center justify-center">
+    <Image className="h-6 w-full" width={22} height={24} alt="" src="/assets/IconS.svg" />
+  </div>
+
+  <div className="w-[68.1px] flex flex-col items-start">
+    <b className="tracking-[0.96px] leading-3 text-white">
+      SIXSENCE
+    </b>
+    <div className="text-[8px] text-[#6b7280] tracking-[1.2px] leading-[8px] font-medium">
+      HARDCORE
+    </div>
+  </div>
+</div>
 
         {/* NAVIGATION */}
         <div className="flex-1 flex items-center gap-1 min-w-[335px] text-center text-[13px] text-[#94a3b8] mq450:flex-wrap">
