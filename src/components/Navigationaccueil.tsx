@@ -15,16 +15,16 @@ const Navigationaccueil = ({ className = "" }) => {
     <div className={`w-[2174px] max-w-full flex items-center justify-between pt-5 px-8 pb-4 ${className}`}>
 
 {/* LOGO SIXSENCE — VERSION IDENTIQUE */}
-<div className="h-[30px] w-[121.8px] flex flex-col items-start relative isolate font-Rajdhani">
+<div className="h-[30px] w-[121.8px] flex flex-col items-start relative isolate font-rajdhani">
   <div className="w-full h-full absolute top-[0px] left-[-4px] flex flex-col items-start gap-px z-[0] shrink-0">
 
     <div className="flex flex-col items-start">
-      <h3 className="m-0 tracking-[3.6px] leading-5 uppercase font-bold text-white mq450:text-base mq450:leading-4 font-Rajdhani">
+      <h3 className="m-0 tracking-[3.6px] leading-5 uppercase font-bold text-white mq450:text-base mq450:leading-4 font-rajdhani">
         SIXSENCE
       </h3>
     </div>
 
-    <div className="flex flex-col items-start text-[9px] text-[#ffa040] font-Rajdhani">
+    <div className="flex flex-col items-start text-[9px] text-[#ffa040] font-rajdhani">
       <div className="tracking-[1.98px] leading-[9px] uppercase font-medium whitespace-nowrap">
         Competitive Platform
       </div>

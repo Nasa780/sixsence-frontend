@@ -24,7 +24,7 @@ body {
 
 /* ⭐ AJOUTE ÇA ICI — EXACTEMENT ICI ⭐ */
 @layer utilities {
-  .font-Rajdhani {
+  .font-rajdhani {
     font-family: 'Rajdhani', sans-serif !important;
   }
 }
