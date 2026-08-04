@@ -13,6 +13,14 @@ module.exports = {
   ],
 
   theme: {
+    extend: {
+      fontFamily: {
+        rajdhani: ["Rajdhani", "sans-serif"],
+        inter: ["Inter", "sans-serif"],
+        jetbrains: ["JetBrains Mono", "monospace"],
+      },
+    },
+    
     screens: {
       /* -------------------- MOBILE -------------------- */
       mq359: { raw: "screen and (max-width: 359px)" },
