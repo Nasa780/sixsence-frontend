@@ -24,10 +24,11 @@ const username = user?.username || "Utilisateur";
   </div>
 
   <div className="w-[68.1px] flex flex-col items-start">
-    <b className="tracking-[0.96px] leading-3 text-white">
+    <h3 className="m-0 tracking-[3.6px] leading-5 uppercase font-bold text-white">
       SIXSENCE
-    </b>
-    <div className="text-[8px] text-[#6b7280] tracking-[1.2px] leading-[8px] font-medium">
+    </h3>
+
+    <div className="text-[8px] text-[#6b7280] tracking-[1.2px] leading-[8px] font-medium uppercase">
       HARDCORE
     </div>
   </div>
