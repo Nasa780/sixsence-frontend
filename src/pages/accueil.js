@@ -1,6 +1,5 @@
-import { useEffect, useState } from "react";
+import Head from "next/head";
 
-import Navigationaccueil from "../components/Navigationaccueil";
 import Containeraccueil from "../components/Containeraccueil";
 import Containeraccueil2 from "../components/Containeraccueil2";
 import Sectionaccueil from "../components/Sectionaccueil";
@@ -9,7 +8,6 @@ import Sectionaccueil2 from "../components/Sectionaccueil2";
 import Containermarginaccueil from "../components/Containermarginaccueil";
 
 // 🔥 Version mobile optimisée
-import NavigationaccueilMobile from "../components/NavigationaccueilMobile";
 import ContaineraccueilMobile from "../components/ContaineraccueilMobile";
 import Containeraccueil2Mobile from "../components/Containeraccueil2Mobile";
 import SectionaccueilMobile from "../components/SectionaccueilMobile";
@@ -17,33 +15,17 @@ import AppaccueilMobile from "../components/AppaccueilMobile";
 import Sectionaccueil2Mobile from "../components/Sectionaccueil2Mobile";
 import ContainermarginaccueilMobile from "../components/ContainermarginaccueilMobile";
 
+import SiteNav from "../components/site/SiteNav";
+import useIsDesktop from "../hooks/useIsDesktop";
+
 export default function Accueil() {
-
-  const [user, setUser] = useState(null);
-
-  useEffect(() => {
-    const token = localStorage.getItem("session");
-
-    if (!token) {
-      setUser(null);
-      return;
-    }
-
-    fetch("https://sixsence-backend.onrender.com/me", {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    })
-      .then(async (res) => {
-        if (!res.ok) return setUser(null);
-        const data = await res.json();
-        setUser(data);
-      })
-      .catch(() => setUser(null));
-  }, []);
+  const isDesktop = useIsDesktop();
 
   return (
     <div className="relative min-h-screen overflow-hidden">
+      <Head>
+        <title>Accueil — SixSence</title>
+      </Head>
 
       {/* BACKGROUND */}
       <div
@@ -63,27 +45,32 @@ export default function Accueil() {
         />
       </div>
 
+      {/* NAVIGATION (ordinateur et mobile) : accès à toutes les sections */}
+      <SiteNav active="accueil" />
+
       {/* DESKTOP */}
-      <div className="hidden md:flex flex-col items-center justify-center w-full">
-        <Navigationaccueil user={user} />
-        <Containeraccueil />
-        <Containeraccueil2 />
-        <Sectionaccueil />
-        <Appaccueil />
-        <Sectionaccueil2 />
-        <Containermarginaccueil />
-      </div>
+      {isDesktop !== false && (
+        <div className="hidden md:flex flex-col items-center justify-center w-full">
+          <Containeraccueil />
+          <Containeraccueil2 />
+          <Sectionaccueil />
+          <Appaccueil />
+          <Sectionaccueil2 />
+          <Containermarginaccueil />
+        </div>
+      )}
 
       {/* MOBILE */}
-      <div className="flex md:hidden flex-col items-center justify-center w-full px-4">
-        <NavigationaccueilMobile user={user} />
-        <ContaineraccueilMobile />
-        <Containeraccueil2Mobile />
-        <SectionaccueilMobile />
-        <AppaccueilMobile />
-        <Sectionaccueil2Mobile />
-        <ContainermarginaccueilMobile />
-      </div>
+      {isDesktop !== true && (
+        <div className="flex md:hidden flex-col items-center justify-center w-full px-4">
+          <ContaineraccueilMobile />
+          <Containeraccueil2Mobile />
+          <SectionaccueilMobile />
+          <AppaccueilMobile />
+          <Sectionaccueil2Mobile />
+          <ContainermarginaccueilMobile />
+        </div>
+      )}
     </div>
   );
 }

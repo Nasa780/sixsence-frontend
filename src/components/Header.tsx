@@ -1,6 +1,8 @@
 import type { NextPage } from "next";
 import Image from "next/image";
 import useUser from "../hooks/useUser";
+import { signInWithDiscord } from "../lib/auth";
+import { UserMenu } from "./site/SiteNav";
 
 export type HeaderType = {
   className?: string;
@@ -60,21 +62,11 @@ const Header: NextPage<HeaderType> = ({ className = "" }) => {
 
         {/* SI CONNECTÉ → AVATAR + PSEUDO */}
         {user ? (
-          <div className="flex items-center gap-3 bg-[#1a1b22] px-3 py-2 rounded-md border border-[#333]">
-            <img
-              src={avatar}
-              alt="avatar"
-              className="w-8 h-8 rounded-full"
-            />
-
-            <div className="text-sm font-semibold text-white">
-              {username}
-            </div>
-          </div>
+          <UserMenu user={user} />
         ) : (
           /* SINON → BOUTON DISCORD */
           <button
-            onClick={() => window.location.href = "https://sixsence-backend.onrender.com/auth/discord"}
+            onClick={() => signInWithDiscord()}
             className="cursor-pointer py-[9px] px-[18px] bg-[#5865f2] shadow-[0px_0px_16px_rgba(88,_101,_242,_0.32)] rounded flex items-center gap-[7px] hover:bg-[#7080ff]"
           >
             <Image

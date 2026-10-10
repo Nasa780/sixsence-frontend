@@ -1,11 +1,16 @@
 import Link from "next/link";
 import Image from "next/image";
+import useSiteStats from "../hooks/useSiteStats";
+import useTopPlayers from "../hooks/useTopPlayers";
 
 type ContainerProps = {
   className?: string;
 };
 
 const Containeraccueil = ({ className = "" }: ContainerProps) => {
+  const stats = useSiteStats();
+  const top = useTopPlayers(10);
+
   return (
     <div
       className={`w-full h-[1134.6px] relative flex flex-col items-center justify-center pt-20 px-4 pb-12 box-border leading-[normal] tracking-[normal] text-center text-[10px] text-[#e8a020] font-['JetBrains_Mono'] mq450:h-auto ${className}`}
@@ -62,7 +67,7 @@ const Containeraccueil = ({ className = "" }: ContainerProps) => {
                 MODE CLASSÉ
               </div>
               <div className="text-xs font-[Inter] leading-4">
-                Solo 4v4 & 5v5 – Affronte les meilleurs joueurs !
+                Solo 5v5 – Affronte les meilleurs joueurs !
               </div>
             </div>
           </div>
@@ -72,7 +77,7 @@ const Containeraccueil = ({ className = "" }: ContainerProps) => {
 
           {/* Aucun match */}
           <div className="py-2.5 px-5 text-xs text-[#4a4845] font-[Inter]">
-            Aucun match en cours actuellement
+            {stats ? `${stats.matchesInProgress} match(s) en cours · ${stats.playersInQueue} joueur(s) en file` : "Chargement…"}
           </div>
 
           {/* Ligne */}
@@ -80,7 +85,7 @@ const Containeraccueil = ({ className = "" }: ContainerProps) => {
 
           {/* Bouton Jouer */}
           <div className="p-4">
-<Link href="/ranked">
+<Link href="/cod/ranked">
   <button className="w-[542px] h-11 bg-gradient-to-br from-[#3a8cff] to-[#1a6fe0] flex items-center justify-center gap-1.5 cursor-pointer">
     <b className="text-sm tracking-[2.52px] leading-5 uppercase text-white">
       Jouer
@@ -123,12 +128,22 @@ const Containeraccueil = ({ className = "" }: ContainerProps) => {
               </div>
 
               {/* Input */}
-              <div className="h-11 flex flex-col pt-2.5">
+              <div className="flex flex-col pt-2.5">
                 <div className="bg-[rgba(58,140,255,0.03)] border border-[rgba(58,140,255,0.25)] flex py-2 pl-[11px] pr-[9px]">
-                  <input
-                    className="w-full border-none outline-none font-[Inter] text-xs bg-transparent leading-4 text-[#4a4845]"
-                    placeholder="Aucun joueur classé"
-                  />
+                  {top && top.length > 0 ? (
+                    <ol className="m-0 p-0 list-none w-full flex flex-col gap-1">
+                      {top.map((p, i) => (
+                        <li key={p.user_id} className="flex justify-between gap-3 text-xs font-[Inter] leading-4">
+                          <Link href={`/cod/profile/${p.user_id}`} className="text-[#dddad4] no-underline hover:text-white truncate">
+                            {i + 1}. {p.username}
+                          </Link>
+                          <span className="text-[#7a7870] shrink-0">{p.points} pts</span>
+                        </li>
+                      ))}
+                    </ol>
+                  ) : (
+                    <span className="text-xs font-[Inter] leading-4 text-[#4a4845]">{top ? "Aucun joueur classé" : "Chargement…"}</span>
+                  )}
                 </div>
               </div>
             </div>

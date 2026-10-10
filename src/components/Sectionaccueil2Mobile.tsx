@@ -1,7 +1,10 @@
 import type { NextPage } from "next";
 import Image from "next/image";
+import useSiteStats, { formatCount } from "../hooks/useSiteStats";
 
 const Sectionaccueil2Mobile: NextPage = () => {
+  const stats = useSiteStats();
+
   return (
     <div className="w-full flex flex-col items-center py-14 px-4 bg-[#0c0c0c] border-y border-[rgba(232,160,32,0.07)]">
 
@@ -43,10 +46,10 @@ const Sectionaccueil2Mobile: NextPage = () => {
              [-webkit-background-clip:text]
              [-webkit-text-fill-color:transparent]"
 >
-            12,847
+            {formatCount(stats?.players)}
           </h1>
           <div className="pt-2 text-xs tracking-[2px] uppercase font-['JetBrains_Mono'] text-[#e8a020]">
-            Joueurs actifs
+            Joueurs inscrits
           </div>
         </div>
 
@@ -61,7 +64,7 @@ const Sectionaccueil2Mobile: NextPage = () => {
              [-webkit-background-clip:text]
              [-webkit-text-fill-color:transparent]"
 >
-            384,920
+            {formatCount(stats?.matchesPlayed)}
           </h2>
           <div className="pt-2 text-xs tracking-[2px] uppercase font-['JetBrains_Mono'] text-[#e8a020]">
             Matchs joués
@@ -79,10 +82,10 @@ const Sectionaccueil2Mobile: NextPage = () => {
              [-webkit-background-clip:text]
              [-webkit-text-fill-color:transparent]"
 >
-            201,506
+            {formatCount(stats?.matchesInProgress)}
           </h2>
           <div className="pt-2 text-xs tracking-[2px] uppercase font-['JetBrains_Mono'] text-[#e8a020]">
-            Victoires
+            Matchs en cours
           </div>
         </div>
 
@@ -97,10 +100,10 @@ const Sectionaccueil2Mobile: NextPage = () => {
              [-webkit-background-clip:text]
              [-webkit-text-fill-color:transparent]"
 >
-            1,342
+            {formatCount(stats?.averagePoints)}
           </h2>
           <div className="pt-2 text-xs tracking-[2px] uppercase font-['JetBrains_Mono'] text-[#e8a020]">
-            MMR moyen
+            Points moyens
           </div>
         </div>
 

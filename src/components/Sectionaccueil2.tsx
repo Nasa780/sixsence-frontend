@@ -1,11 +1,14 @@
 import type { NextPage } from "next";
 import Image from "next/image";
+import useSiteStats, { formatCount } from "../hooks/useSiteStats";
 
 type Sectionaccueil2Props = {
   className?: string;
 };
 
 const Sectionaccueil2: NextPage<Sectionaccueil2Props> = ({ className = "" }) => {
+  const stats = useSiteStats();
+
   return (
     <div
       className={`w-full relative [background:linear-gradient(180deg,_#09090b,_#0d0c0a_50%,_#09090b)] border-[rgba(232,160,32,0.07)] border-solid border-t-[1px] border-b-[1px] box-border flex flex-col items-start py-20 px-6 leading-[normal] tracking-[normal] ${className}`}
@@ -50,12 +53,12 @@ const Sectionaccueil2: NextPage<Sectionaccueil2Props> = ({ className = "" }) => 
                 </div>
                 <div className="w-[85px] h-[34px] flex flex-col items-center pt-0 px-0 pb-1 box-border">
                   <h1 className="m-0 relative text-[length:inherit] leading-[30px] font-black font-[inherit] text-transparent !bg-clip-text [background:linear-gradient(180deg,_#fff,_#f5e8a0_45%,_#e8a020)] [-webkit-background-clip:text] [-webkit-text-fill-color:transparent] mq450:text-lg mq450:leading-[18px] mq750:text-2xl mq750:leading-6">
-                    12,847
+                    {formatCount(stats?.players)}
                   </h1>
                 </div>
                 <div className="flex flex-col items-start pt-1 px-0 pb-0 text-xs font-['JetBrains_Mono']">
                   <div className="relative tracking-[2.4px] leading-4 uppercase">
-                    Joueurs actifs
+                    Joueurs inscrits
                   </div>
                 </div>
               </div>
@@ -76,7 +79,7 @@ const Sectionaccueil2: NextPage<Sectionaccueil2Props> = ({ className = "" }) => 
                 </div>
                 <div className="w-28 h-[34px] flex flex-col items-center pt-0 px-0 pb-1 box-border">
                   <h2 className="m-0 relative text-[length:inherit] leading-[30px] font-black font-[inherit] text-transparent !bg-clip-text [background:linear-gradient(180deg,_#fff,_#f5e8a0_45%,_#e8a020)] [-webkit-background-clip:text] [-webkit-text-fill-color:transparent] mq450:text-lg mq450:leading-[18px] mq750:text-2xl mq750:leading-6">
-                    384,920
+                    {formatCount(stats?.matchesPlayed)}
                   </h2>
                 </div>
                 <div className="flex flex-col items-start pt-1 px-0 pb-0 text-xs font-['JetBrains_Mono']">
@@ -102,12 +105,12 @@ const Sectionaccueil2: NextPage<Sectionaccueil2Props> = ({ className = "" }) => 
                 </div>
                 <div className="w-[104px] h-[34px] flex flex-col items-center pt-0 px-0 pb-1 box-border">
                   <h2 className="m-0 relative text-[length:inherit] leading-[30px] font-black font-[inherit] text-transparent !bg-clip-text [background:linear-gradient(180deg,_#fff,_#f5e8a0_45%,_#e8a020)] [-webkit-background-clip:text] [-webkit-text-fill-color:transparent] mq450:text-lg mq450:leading-[18px] mq750:text-2xl mq750:leading-6">
-                    201,506
+                    {formatCount(stats?.matchesInProgress)}
                   </h2>
                 </div>
                 <div className="flex flex-col items-start pt-1 px-0 pb-0 text-xs font-['JetBrains_Mono']">
                   <div className="relative tracking-[2.4px] leading-4 uppercase">
-                    Victoires
+                    Matchs en cours
                   </div>
                 </div>
               </div>
@@ -128,12 +131,12 @@ const Sectionaccueil2: NextPage<Sectionaccueil2Props> = ({ className = "" }) => 
                 </div>
                 <div className="w-[72px] h-[34px] flex flex-col items-center pt-0 px-0 pb-1 box-border">
                   <h2 className="m-0 relative text-[length:inherit] leading-[30px] font-black font-[inherit] text-transparent !bg-clip-text [background:linear-gradient(180deg,_#fff,_#f5e8a0_45%,_#e8a020)] [-webkit-background-clip:text] [-webkit-text-fill-color:transparent] mq450:text-lg mq450:leading-[18px] mq750:text-2xl mq750:leading-6">
-                    1,342
+                    {formatCount(stats?.averagePoints)}
                   </h2>
                 </div>
                 <div className="flex flex-col items-start pt-1 px-0 pb-0 text-xs font-['JetBrains_Mono']">
                   <div className="relative tracking-[2.4px] leading-4 uppercase">
-                    MMR moyen
+                    Points moyens
                   </div>
                 </div>
               </div>

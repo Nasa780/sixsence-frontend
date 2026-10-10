@@ -1,5 +1,7 @@
 import Image from "next/image";
 import useUser from "../hooks/useUser";
+import { signInWithDiscord } from "../lib/auth";
+import { UserMenu } from "./site/SiteNav";
 
 const Navigationaccueil = ({ className = "" }) => {
   const user = useUser();
@@ -36,20 +38,11 @@ const Navigationaccueil = ({ className = "" }) => {
 
       {/* SI CONNECTÉ */}
       {user ? (
-        <div className="flex items-center gap-3 bg-[#1a1b22] px-3 py-2 rounded-md border border-[#333]">
-          <img
-            src={avatar}
-            className="w-8 h-8 rounded-full"
-            alt="avatar"
-          />
-          <div className="text-sm font-semibold text-white">
-            {username}
-          </div>
-        </div>
-      ) : (
+          <UserMenu user={user} />
+        ) : (
         <button
           onClick={() => {
-            window.location.href = "https://sixsence-backend.onrender.com/auth/discord";
+            signInWithDiscord()
           }}
           className="cursor-pointer border-[rgba(88,101,242,0.33)] border-solid border-[1px] py-2 px-4 bg-[rgba(88,101,242,0.15)] rounded-md flex items-center gap-[7px]"
         >
