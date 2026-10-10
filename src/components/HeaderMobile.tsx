@@ -1,5 +1,7 @@
 import Image from "next/image";
 import useUser from "../hooks/useUser";
+import { signInWithDiscord } from "../lib/auth";
+import { UserMenu } from "./site/SiteNav";
 
 const HeaderMobile = () => {
   const user = useUser();
@@ -30,21 +32,11 @@ const HeaderMobile = () => {
 
       {/* SI CONNECTÉ → AVATAR + PSEUDO */}
       {user ? (
-        <div className="flex items-center gap-3 bg-[#1a1b22] px-3 py-2 rounded-md border border-[#333]">
-          <img
-            src={avatar}
-            alt="avatar"
-            className="w-8 h-8 rounded-full"
-          />
-
-          <span className="text-white text-[12px] font-[Inter] font-semibold">
-            {username}
-          </span>
-        </div>
-      ) : (
+          <UserMenu user={user} />
+        ) : (
         /* SINON → BOUTON DISCORD */
         <button
-          onClick={() => window.location.href = "https://sixsence-backend.onrender.com/auth/discord"}
+          onClick={() => signInWithDiscord()}
           className="flex items-center gap-2 bg-[#5865f2] px-3 py-2 rounded"
         >
           <Image

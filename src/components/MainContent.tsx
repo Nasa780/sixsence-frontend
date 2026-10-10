@@ -1,5 +1,6 @@
 import type { NextPage } from "next";
 import Image from "next/image";
+import { signInWithDiscord } from "../lib/auth";
 
 const MainContent: NextPage = () => {
   return (
@@ -82,7 +83,7 @@ const MainContent: NextPage = () => {
 
         {/* Blue Button SVG */}
 <button
-  onClick={() => window.location.href = "https://sixsence-backend.onrender.com/auth/discord"}
+  onClick={() => signInWithDiscord()}
   className="cursor-pointer flex items-center justify-center"
 >
   <Image

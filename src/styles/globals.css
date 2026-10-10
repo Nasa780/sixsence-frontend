@@ -1,11 +1,10 @@
-@import "tailwindcss/preflight.css";
-@import "tailwindcss/components.css";
-@import "tailwindcss/utilities.css";
-
-/* Fonts */
+/* Fonts (les @import url doivent rester avant Tailwind) */
 @import url("https://fonts.googleapis.com/css2?family=Cousine:ital,wght@0,700&display=swap");
 @import url("https://fonts.googleapis.com/css2?family=Inter:ital,wght@0,400;0,600&display=swap");
 @import url("https://fonts.googleapis.com/css2?family=Rajdhani:wght@400;500;600;700&display=swap");
+
+/* Tailwind v4 (équivaut à theme.css + preflight.css + utilities.css) */
+@import "tailwindcss";
 
 /* Global body reset */
 body {

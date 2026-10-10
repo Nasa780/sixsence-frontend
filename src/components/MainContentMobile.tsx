@@ -1,4 +1,5 @@
 import Image from "next/image";
+import { signInWithDiscord } from "../lib/auth";
 
 const MainContentMobile = () => {
   return (
@@ -62,7 +63,7 @@ const MainContentMobile = () => {
 
       {/* Bouton Discord */}
       <button
-        onClick={() => window.location.href = "https://sixsence-backend.onrender.com/auth/discord"}
+        onClick={() => signInWithDiscord()}
         className="w-full flex justify-center mt-4"
       >
         <Image

@@ -1,36 +1,16 @@
+import { supabase } from "../lib/supabase";
+
+/** Vrai si une session Discord est ouverte dans ce navigateur. */
 export async function isAuthenticated() {
-  try {
-    const token = localStorage.getItem("session");
-    if (!token) return false;
-
-    const res = await fetch("https://sixsence-backend.onrender.com/me", {
-      method: "GET",
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    });
-
-    if (!res.ok) return false;
-
-    const user = await res.json();
-    return !!user;
-  } catch {
-    return false;
-  }
+  const { data } = await supabase.auth.getSession();
+  return Boolean(data.session);
 }
 
+/** Ligne `users` du joueur connecté, ou null. */
 export async function getUser() {
-  const token = localStorage.getItem("session");
-  if (!token) return null;
-
-  const res = await fetch("https://sixsence-backend.onrender.com/me", {
-    method: "GET",
-    headers: {
-      Authorization: `Bearer ${token}`,
-    },
-  });
-
-  if (!res.ok) return null;
-
-  return await res.json();
+  const { data } = await supabase.auth.getSession();
+  const userId = data.session?.user?.id;
+  if (!userId) return null;
+  const { data: user } = await supabase.from("users").select("*").eq("id", userId).maybeSingle();
+  return user ?? null;
 }

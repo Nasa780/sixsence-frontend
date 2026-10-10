@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import Head from "next/head";
 
 import Header from "../components/Header";
 import HeaderMobile from "../components/HeaderMobile";
@@ -10,30 +10,6 @@ import Container from "../components/Container";
 import ContainerMobile from "../components/ContainerMobile";
 
 export default function Home() {
-
-  useEffect(() => {
-    const token = localStorage.getItem("session");
-
-    if (!token) {
-      console.log("❌ PAS CONNECTÉ");
-      return;
-    }
-
-    fetch("https://sixsence-backend.onrender.com/me", {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
-    })
-      .then(res => res.ok ? res.json() : Promise.reject())
-      .then(user => {
-        console.log("🔥 USER CONNECTÉ :", user);
-      })
-      .catch(() => {
-        console.log("❌ Token invalide");
-        localStorage.removeItem("session");
-      });
-  }, []);
-
   return (
     <div
       className="w-full min-h-screen text-white flex flex-col relative"
@@ -44,6 +20,9 @@ export default function Home() {
         backgroundPosition: "center",
       }}
     >
+      <Head>
+        <title>SixSence — Competitive Platform</title>
+      </Head>
 
       {/* DESKTOP */}
       <div className="hidden md:block">
