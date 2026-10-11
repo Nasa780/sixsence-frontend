@@ -49,6 +49,7 @@ export function unlockAudio() {
   source.buffer = ctx.createBuffer(1, 1, 22050);
   source.connect(ctx.destination);
   source.start(0);
+  loadSamples();
 }
 
 export function isSoundMuted() {
@@ -103,9 +104,48 @@ function impact(ctx, start) {
   osc.stop(start + 0.5);
 }
 
-/** Alerte « Match trouvé » : impact + arpège montant (mi majeur), environ 1,2 s. */
+// --- Sons enregistrés (public/sounds) ---------------------------------------------
+// Extraits de « War Is War » (audioknap, Pixabay, licence libre d'usage) : l'impact et
+// sa montée pour « match trouvé », l'impact seul pour le départ. Chargés une fois,
+// au premier clic ; en cas d'échec, les sons synthétisés ci-dessous prennent le relais.
+const SAMPLES = { found: "/sounds/match-found.wav", start: "/sounds/match-start.wav" };
+const buffers = {};
+let samplesLoading = null;
+
+export function loadSamples() {
+  const ctx = audio();
+  if (!ctx || samplesLoading) return samplesLoading;
+  samplesLoading = Promise.all(
+    Object.entries(SAMPLES).map(async ([key, url]) => {
+      try {
+        const data = await (await fetch(url)).arrayBuffer();
+        buffers[key] = await ctx.decodeAudioData(data);
+      } catch {
+        // Fichier indisponible : repli sur le son synthétisé.
+      }
+    }),
+  );
+  return samplesLoading;
+}
+
+/** Joue un son enregistré s'il est chargé ; renvoie false sinon. */
+function playSample(key, volume = 1) {
+  const ctx = audio();
+  if (!ctx || !buffers[key]) return false;
+  const source = ctx.createBufferSource();
+  const gain = ctx.createGain();
+  gain.gain.value = volume;
+  source.buffer = buffers[key];
+  source.connect(gain).connect(ctx.destination);
+  source.start();
+  return true;
+}
+
+/** Alerte « Match trouvé » : extrait enregistré, sinon impact + arpège synthétisés. */
 export function playMatchSound({ force = false } = {}) {
   if (!force && isSoundMuted()) return;
+  loadSamples();
+  if (playSample("found")) return;
   try {
     const ctx = audio();
     if (!ctx) return;
@@ -144,6 +184,7 @@ export function playTick(urgent = false) {
 /** Confirmation : tout le monde est prêt, le match démarre. */
 export function playStartSound() {
   if (isSoundMuted()) return;
+  if (playSample("start")) return;
   try {
     const ctx = audio();
     if (!ctx) return;
@@ -155,7 +196,7 @@ export function playStartSound() {
   }
 }
 
-/** Joue l'alerte puis la répète toutes les 3 s jusqu'à stopMatchAlarm() (au plus jusqu'à `until`). */
+/** Joue l'alerte puis la répète toutes les 6 s jusqu'à stopMatchAlarm() (au plus jusqu'à `until`). */
 export function startMatchAlarm(until) {
   stopMatchAlarm();
   playMatchSound();
@@ -163,7 +204,7 @@ export function startMatchAlarm(until) {
   alarmTimer = setInterval(() => {
     if (Date.now() >= end) stopMatchAlarm();
     else playMatchSound();
-  }, 3000);
+  }, 6000);
 }
 
 export function stopMatchAlarm() {

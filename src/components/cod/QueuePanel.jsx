@@ -11,6 +11,7 @@ import {
   alertMatchFound,
   askNotificationPermission,
   isSoundMuted,
+  loadSamples,
   playMatchSound,
   playStartSound,
   playTick,
@@ -251,8 +252,9 @@ function SoundControls() {
     setMuted(!muted);
   }
 
-  function test() {
+  async function test() {
     unlockAudio();
+    await loadSamples();
     playMatchSound({ force: true });
   }
 
