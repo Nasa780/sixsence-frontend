@@ -60,7 +60,7 @@ export function Hero() {
           <motion.div variants={item} className="inline-flex items-center gap-3 border border-gold/30 bg-gold/8 px-4 py-2">
             <span aria-hidden className="h-1.5 w-1.5 animate-pulse-gold bg-gold shadow-[0_0_10px_var(--color-gold)]" />
             <span className="font-tech text-[10px] font-medium uppercase tracking-[0.3em] text-gold sm:text-[11px]">
-              Plateforme multigaming
+              Plateforme gaming
             </span>
           </motion.div>
 

@@ -1,6 +1,6 @@
 # CLAUDE.md
 
-Guide pour Claude Code (et tout contributeur) travaillant sur le **frontend de SixSence**, plateforme multigaming : classé Call of Duty 5v5 (file, matchs, points, classement) et événements GTA 6.
+Guide pour Claude Code (et tout contributeur) travaillant sur le **frontend de SixSence**, plateforme gaming : classé Call of Duty 5v5 (file, matchs, points, classement) et événements GTA 6.
 
 L'API vit dans un dépôt séparé : `Nasa780/sixsence-backend` (Express + WebSocket sur Render, Supabase).
 
