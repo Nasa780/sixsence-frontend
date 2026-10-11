@@ -1,60 +1,78 @@
-import { useEffect, useState } from "react";
-import EventCard from "../../../components/site/EventCard";
-import PageShell from "../../../components/site/PageShell";
-import { Loading, PageTitle } from "../../../components/site/ui";
-import { api } from "../../../lib/api";
+import Head from "next/head";
+import { EventCard } from "../../../components/gta/EventCard";
+import { Container } from "../../../components/ui/Container";
+import { EmptyState, Loading } from "../../../components/ui/Feedback";
+import { Eyebrow, PageHeader } from "../../../components/ui/Typography";
+import useGtaEvents from "../../../hooks/useGtaEvents";
 
-const TABS = [
-  { key: "upcoming", label: "À venir" },
-  { key: "past", label: "Passés" },
-];
+/** Planning complet : événements à venir, puis événements passés. Public. */
+export default function EventsPage() {
+  const { events, mine } = useGtaEvents("all");
 
-/** Planning des événements GTA 6. */
-export default function GtaEvents() {
-  const [scope, setScope] = useState("upcoming");
-  const [events, setEvents] = useState(null);
-
-  useEffect(() => {
-    setEvents(null);
-    api(`/gta/events?scope=${scope}`)
-      .then((data) => setEvents(data.events))
-      .catch(() => setEvents([]));
-  }, [scope]);
+  const now = Date.now();
+  const upcoming = (events || []).filter((event) => new Date(event.starts_at).getTime() > now);
+  // Les plus récents d'abord, limités aux douze derniers.
+  const past = (events || [])
+    .filter((event) => new Date(event.starts_at).getTime() <= now)
+    .reverse()
+    .slice(0, 12);
 
   return (
-    <PageShell active="gta6" title="Événements GTA 6">
-      <div className="flex flex-col gap-6">
-        <PageTitle
-          title="Planning des événements"
-          subtitle="Toutes les sessions GTA 6 de la communauté. L'inscription se fait avec ton compte Discord."
-        />
+    <>
+      <Head>
+        <title>Événements GTA 6 — SixSence</title>
+      </Head>
+      <PageHeader
+        eyebrow="GTA 6"
+        title={
+          <>
+            Le <span className="text-gold-gradient">planning</span>
+          </>
+        }
+        description="Toutes les sessions de la communauté. Les horaires sont donnés à l'heure de Paris."
+      />
 
-        <div className="flex gap-1 border-b border-solid border-[rgba(26,107,220,0.18)] font-[Inter] text-sm">
-          {TABS.map((tab) => (
-            <button
-              key={tab.key}
-              onClick={() => setScope(tab.key)}
-              className={`cursor-pointer bg-transparent [border:none] py-2 px-4 -mb-px ${
-                scope === tab.key ? "text-[#1a6bdc] border-b-2 border-solid border-[#1a6bdc]" : "text-[#94a3b8]"
-              }`}
-            >
-              {tab.label}
-            </button>
-          ))}
-        </div>
+      <Container className="space-y-16 py-12">
+        {events === null ? (
+          <Loading />
+        ) : (
+          <>
+            <section aria-labelledby="titre-a-venir">
+              <Eyebrow>À venir</Eyebrow>
+              <h2 id="titre-a-venir" className="mt-3 font-display text-4xl font-black uppercase leading-none">
+                {upcoming.length} événement{upcoming.length > 1 ? "s" : ""} programmé{upcoming.length > 1 ? "s" : ""}
+              </h2>
+              <div className="mt-8">
+                {upcoming.length === 0 ? (
+                  <EmptyState title="Rien de prévu pour l'instant">
+                    Aucun événement n&apos;est programmé. Les prochaines dates seront annoncées ici et sur Discord.
+                  </EmptyState>
+                ) : (
+                  <div className="grid grid-cols-1 gap-5 md:grid-cols-2 lg:grid-cols-3">
+                    {upcoming.map((event) => (
+                      <EventCard key={event.id} event={event} registered={mine.has(event.id)} />
+                    ))}
+                  </div>
+                )}
+              </div>
+            </section>
 
-        {events === null && <Loading />}
-        {events?.length === 0 && (
-          <div className="py-10 text-center text-sm text-[#5b7fa8] font-[Inter]">
-            {scope === "upcoming" ? "Aucun événement prévu pour l'instant." : "Aucun événement passé."}
-          </div>
+            {past.length > 0 ? (
+              <section aria-labelledby="titre-passes">
+                <Eyebrow>Archives</Eyebrow>
+                <h2 id="titre-passes" className="mt-3 font-display text-4xl font-black uppercase leading-none">
+                  Événements passés
+                </h2>
+                <div className="mt-8 grid grid-cols-1 gap-5 md:grid-cols-2 lg:grid-cols-3">
+                  {past.map((event) => (
+                    <EventCard key={event.id} event={event} registered={mine.has(event.id)} />
+                  ))}
+                </div>
+              </section>
+            ) : null}
+          </>
         )}
-        <div className="grid grid-cols-3 max-md:grid-cols-1 gap-4">
-          {events?.map((event) => (
-            <EventCard key={event.id} event={event} />
-          ))}
-        </div>
-      </div>
-    </PageShell>
+      </Container>
+    </>
   );
 }

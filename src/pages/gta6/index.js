@@ -1,66 +1,77 @@
-import Link from "next/link";
-import { useEffect, useState } from "react";
-import EventCard from "../../components/site/EventCard";
-import PageShell from "../../components/site/PageShell";
-import { Loading, SectionTitle } from "../../components/site/ui";
-import { api } from "../../lib/api";
+import Head from "next/head";
+import { LuCalendarDays, LuTicket, LuUsers } from "react-icons/lu";
+import { Reveal } from "../../components/effects/Reveal";
+import { EventCard } from "../../components/gta/EventCard";
+import { ButtonLink } from "../../components/ui/Button";
+import { Container } from "../../components/ui/Container";
+import { EmptyState, Loading } from "../../components/ui/Feedback";
+import { PageHeader, SectionHeading } from "../../components/ui/Typography";
+import useGtaEvents from "../../hooks/useGtaEvents";
 
-/** Hub GTA 6 : présentation et prochains événements. */
-export default function GtaHub() {
-  const [events, setEvents] = useState(null);
+const PILLARS = [
+  { icon: LuCalendarDays, title: "Un planning clair", text: "Toutes les sessions à venir au même endroit, avec date, heure et lieu de rendez-vous." },
+  { icon: LuTicket, title: "Inscription en un clic", text: "Réserve ta place, ou libère-la si tu as un empêchement : quelqu'un d'autre en profitera." },
+  { icon: LuUsers, title: "Des places comptées", text: "Chaque événement affiche sa jauge et la liste des inscrits, à jour en permanence." },
+];
 
-  useEffect(() => {
-    api("/gta/events?scope=upcoming")
-      .then((data) => setEvents(data.events))
-      .catch(() => setEvents([]));
-  }, []);
+/** Hub GTA 6 : présentation et prochains événements. Public. */
+export default function GtaHubPage() {
+  const { events, mine } = useGtaEvents("upcoming");
+  const upcoming = (events || []).filter((event) => event.status !== "cancelled").slice(0, 3);
 
   return (
-    <PageShell active="gta6" title="GTA 6">
-      <div className="flex flex-col gap-8">
-        <section className="relative overflow-hidden border border-solid border-[rgba(255,160,64,0.3)] min-h-[260px] flex items-end">
-          <div className="absolute inset-0 bg-[url('/images/grand-theft-auto-vi-3840x2160-22311.jpg')] bg-cover bg-center opacity-60" />
-          <div className="absolute inset-0 bg-[linear-gradient(90deg,rgba(6,7,15,0.95),rgba(6,7,15,0.35))]" />
-          <div className="relative p-8 max-sm:p-5">
-            <div className="text-[11px] text-[#ffa040] font-[Rajdhani] tracking-[2px] uppercase font-bold">Communauté SixSence</div>
-            <h1 className="m-0 pt-1 text-[44px] max-sm:text-[30px] leading-[1.05] font-bold font-[Rajdhani] text-white tracking-[2px] uppercase">
-              Événements GTA 6
-            </h1>
-            <p className="m-0 pt-2 text-sm text-[#a0b0c8] font-[Inter] max-w-[560px]">
-              Sessions, courses, braquages en équipe : consulte le planning et réserve ta place avec ton compte Discord.
-            </p>
-            <Link
-              href="/gta6/events"
-              className="inline-block mt-5 no-underline py-3 px-5 rounded-[10px] [background:linear-gradient(90deg,_#ffa040,_#e07a10)] text-[#080c14] font-[Rajdhani] font-bold"
-            >
-              Voir le planning complet
-            </Link>
+    <>
+      <Head>
+        <title>GTA 6 — SixSence</title>
+      </Head>
+      <PageHeader
+        eyebrow="GTA 6"
+        title={
+          <>
+            Les rues sont à <span className="text-gold-gradient">nous</span>
+          </>
+        }
+        description="Sessions organisées, rassemblements, tournois : la communauté se retrouve ici. Consulte le planning et réserve ta place."
+        actions={
+          <ButtonLink href="/gta6/events" size="lg">
+            <LuCalendarDays aria-hidden className="h-5 w-5" />
+            Tout le planning
+          </ButtonLink>
+        }
+      />
+
+      <Container className="space-y-20 py-12">
+        <div className="grid grid-cols-1 gap-8 md:grid-cols-3">
+          {PILLARS.map((pillar, index) => (
+            <Reveal key={pillar.title} delay={index * 0.08}>
+              <div className="border-t border-gold/40 pt-6">
+                <pillar.icon aria-hidden className="h-8 w-8 text-gold" />
+                <h2 className="mt-5 font-display text-3xl font-bold uppercase leading-none tracking-wide">{pillar.title}</h2>
+                <p className="mt-3 text-sm leading-relaxed text-white/60">{pillar.text}</p>
+              </div>
+            </Reveal>
+          ))}
+        </div>
+
+        <section aria-labelledby="titre-prochains">
+          <SectionHeading eyebrow="À venir" title={<span id="titre-prochains">Prochains événements</span>} />
+          <div className="mt-10">
+            {events === null ? (
+              <Loading />
+            ) : upcoming.length === 0 ? (
+              <EmptyState title="Rien de prévu pour l'instant">
+                Aucun événement n&apos;est programmé. Les prochaines dates seront annoncées ici et sur Discord.
+              </EmptyState>
+            ) : (
+              <div className="grid grid-cols-1 gap-5 md:grid-cols-2 lg:grid-cols-3">
+                {upcoming.map((event) => (
+                  <EventCard key={event.id} event={event} registered={mine.has(event.id)} />
+                ))}
+              </div>
+            )}
           </div>
         </section>
-
-        <div className="flex flex-col gap-4">
-          <SectionTitle
-            right={
-              <Link href="/gta6/events" className="text-xs text-[#4a90d9] font-[Inter] no-underline normal-case tracking-normal">
-                Tout voir →
-              </Link>
-            }
-          >
-            Prochains événements
-          </SectionTitle>
-          {events === null && <Loading />}
-          {events?.length === 0 && (
-            <div className="py-10 text-center text-sm text-[#5b7fa8] font-[Inter]">
-              Aucun événement prévu pour l'instant. Reviens bientôt !
-            </div>
-          )}
-          <div className="grid grid-cols-3 max-md:grid-cols-1 gap-4">
-            {events?.slice(0, 6).map((event) => (
-              <EventCard key={event.id} event={event} />
-            ))}
-          </div>
-        </div>
-      </div>
-    </PageShell>
+      </Container>
+    </>
   );
 }

@@ -5,6 +5,7 @@ const nextConfig = {
   // Anciennes adresses du site → nouvelles pages (les liens déjà partagés continuent de marcher).
   async redirects() {
     return [
+      { source: "/accueil", destination: "/", permanent: false },
       { source: "/ranked", destination: "/cod/ranked", permanent: false },
       { source: "/queue", destination: "/cod/ranked", permanent: false },
       { source: "/profile", destination: "/cod/profile", permanent: false },

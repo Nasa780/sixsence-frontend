@@ -1,0 +1,46 @@
+# CLAUDE.md
+
+Guide pour Claude Code (et tout contributeur) travaillant sur le **frontend de SixSence**, plateforme multigaming : classé Call of Duty 5v5 (file, matchs, points, classement) et événements GTA 6.
+
+L'API vit dans un dépôt séparé : `Nasa780/sixsence-backend` (Express + WebSocket sur Render, Supabase).
+
+## Stack
+
+- Next.js 16 (Pages Router), React 19, JavaScript (JSX)
+- Tailwind CSS v4 (thème en CSS dans `src/styles/globals.css`, pas de `tailwind.config` chargé)
+- framer-motion (animations), tsParticles (particules dorées), react-icons
+- Supabase JS : connexion Discord (Supabase Auth) et lectures publiques
+- Déployé sur Vercel (`www.sixsence.fr`) : chaque commit sur `main` part en production, chaque PR a un aperçu.
+
+## Commandes
+
+```bash
+npm install
+npm run dev     # http://localhost:3000
+npm run build   # à lancer avant chaque PR (pas de tests ni de linter)
+```
+
+## Identité visuelle
+
+Noir (`ink`), or métallique (`gold`), formes tactiques. Polices via `next/font` dans `_app.js` : Saira Condensed (`font-display`, titres), Orbitron (`font-tech`, chiffres HUD), Inter (`font-sans`).
+Utilitaires maison dans `globals.css` : `clip-tactical`, `clip-slant`, `clip-corner`, `bg-gold-sheen`, `text-gold-gradient`, `text-outline`, `bg-grid`, `mask-fade`, `holo`, `glow-gold`.
+
+## Structure
+
+- `src/pages/` : `/`, `/cod` (hub), `/cod/ranked`, `/cod/match/[id]`, `/cod/leaderboard`, `/cod/profile`, `/cod/profile/[id]`, `/gta6`, `/gta6/events`, `/gta6/events/[id]`, `/founders`, `/partners`, `/login`, `/auth/callback`, `404`.
+- `src/components/ui/` : briques communes (Button / ButtonLink, TacticalCard, Typography, Feedback, Avatar, Logo, LoginPrompt).
+- `src/components/layout/` : Navbar (fixe, menu mobile) et Footer, posés par `_app.js` sur toutes les pages sauf `/auth/callback`.
+- `src/components/cod/`, `gta/`, `home/`, `effects/` : écrans et effets (GoldParticles, Reveal).
+- `src/hooks/` : `useSession`, `useUser` (joueur + profil COD), `useQueueSocket` (WebSocket de la file), `useSiteStats`, `useTopPlayers`, `useGtaEvents`.
+- `src/lib/` : `config.js` (URL de l'API, clé publique Supabase), `supabase.js`, `auth.js` (connexion Discord), `api.js` (appels au backend avec le jeton), `ranks.js` (8 rangs et barème).
+
+## Règles
+
+- Tout le site est **public** ; la connexion Discord n'est exigée que pour la file, son propre profil, le vote et le chat de match, et l'inscription aux événements.
+- Le navigateur **lit** Supabase (RLS en lecture publique) ; toutes les **écritures** passent par le backend (`lib/api.js`). Seule exception : `activision_id` et `platform` de son propre profil.
+- Barème : victoire +30 pts et +500 XP ; défaite de -10 (Bronze) à -30 (Champion). Garder `lib/ranks.js` aligné avec la fonction SQL `cod_loss_penalty` du backend.
+- Ne jamais mettre la clé secrète Supabase dans le frontend.
+
+## Conventions
+
+- Textes de l'interface, code et commentaires en français.
