@@ -22,9 +22,14 @@ const BARE_PAGES = ["/auth/callback"];
 export default function App({ Component, pageProps }) {
   const { pathname } = useRouter();
   const bare = BARE_PAGES.includes(pathname);
+  // Pages GTA 6 : palette coucher de soleil (voir globals.css).
+  const univers = pathname.startsWith("/gta6") ? "gta" : undefined;
 
   return (
-    <div className={`${saira.variable} ${orbitron.variable} ${inter.variable} flex min-h-dvh flex-col overflow-x-hidden font-sans`}>
+    <div
+      data-univers={univers}
+      className={`${saira.variable} ${orbitron.variable} ${inter.variable} flex min-h-dvh flex-col overflow-x-hidden font-sans`}
+    >
       <Head>
         <title>SixSence — Plateforme multigaming COD &amp; GTA 6</title>
         <meta name="viewport" content="width=device-width, initial-scale=1" />
