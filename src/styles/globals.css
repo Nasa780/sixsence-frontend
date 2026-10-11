@@ -1,29 +1,223 @@
-/* Fonts (les @import url doivent rester avant Tailwind) */
-@import url("https://fonts.googleapis.com/css2?family=Cousine:ital,wght@0,700&display=swap");
-@import url("https://fonts.googleapis.com/css2?family=Inter:ital,wght@0,400;0,600&display=swap");
-@import url("https://fonts.googleapis.com/css2?family=Rajdhani:wght@400;500;600;700&display=swap");
-
-/* Tailwind v4 (équivaut à theme.css + preflight.css + utilities.css) */
 @import "tailwindcss";
 
-/* Global body reset */
-body {
-  margin: 0;
-  line-height: normal;
+/* =============================================================================
+   SixSence — identité visuelle « plateforme multigaming »
+   -----------------------------------------------------------------------------
+   Tout le thème est ici (Tailwind CSS v4 se configure en CSS). Pour changer une
+   couleur de marque, modifie-la dans le bloc @theme : elle se propage à toutes
+   les classes (bg-gold, text-gold, ...).
+   ========================================================================== */
+
+/* Polices : les variables --font-* sont posées par next/font (pages/_app.js). */
+@theme inline {
+  --font-display: var(--font-saira), "Arial Narrow", "Roboto Condensed", system-ui, sans-serif;
+  --font-tech: var(--font-orbitron), ui-monospace, "SFMono-Regular", monospace;
+  --font-sans: var(--font-inter), system-ui, -apple-system, "Segoe UI", sans-serif;
 }
 
-/* Base reset */
-@layer base {
-  *,
-  *::before,
-  *::after {
-    border-width: 0;
+@theme {
+  /* Noir : du fond de page (ink) aux surfaces surélevées (ink-500). */
+  --color-ink: #0a0a0a;
+  --color-ink-800: #101010;
+  --color-ink-700: #161616;
+  --color-ink-600: #1e1e1e;
+  --color-ink-500: #2a2a2a;
+
+  /* Or métallique. */
+  --color-gold: #d4af37;
+  --color-gold-light: #f1d77a;
+  --color-gold-pale: #f8ecc0;
+  --color-gold-dark: #9c7c1c;
+
+  /* États. */
+  --color-win: #6ee7a0;
+  --color-loss: #f87171;
+
+  --animate-sheen: sheen 3.5s linear infinite;
+  --animate-scan: scan 7s linear infinite;
+  --animate-pulse-gold: pulse-gold 2.2s ease-in-out infinite;
+  --animate-float: float 7s ease-in-out infinite;
+
+  @keyframes sheen {
+    from { background-position: 200% 0; }
+    to { background-position: -200% 0; }
+  }
+  @keyframes scan {
+    from { transform: translateY(-100%); }
+    to { transform: translateY(100vh); }
+  }
+  @keyframes pulse-gold {
+    0%, 100% { opacity: 0.45; }
+    50% { opacity: 1; }
+  }
+  @keyframes float {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-10px); }
   }
 }
 
-/* ⭐ AJOUTE ÇA ICI — EXACTEMENT ICI ⭐ */
-@layer utilities {
-  .font-rajdhani {
-    font-family: 'Rajdhani', sans-serif !important;
+@layer base {
+  html {
+    color-scheme: dark;
+    scroll-behavior: smooth;
+    background-color: var(--color-ink);
+  }
+
+  body {
+    margin: 0;
+    min-height: 100dvh;
+    background-color: var(--color-ink);
+    color: #ffffff;
+    font-family: var(--font-sans);
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
+  }
+
+  ::selection {
+    background-color: var(--color-gold);
+    color: var(--color-ink);
+  }
+
+  /* Tailwind v4 ne met plus le curseur "main" sur les boutons : on le rétablit. */
+  button:not(:disabled),
+  [role="button"]:not([aria-disabled="true"]) {
+    cursor: pointer;
+  }
+
+  /* Focus clavier visible partout, aux couleurs de la marque. */
+  :focus-visible {
+    outline: 2px solid var(--color-gold);
+    outline-offset: 3px;
+  }
+
+  /* Barre de défilement discrète. */
+  * {
+    scrollbar-width: thin;
+    scrollbar-color: var(--color-ink-500) var(--color-ink);
+  }
+}
+
+/* -----------------------------------------------------------------------------
+   Formes tactiques : coins coupés et diagonales (clip-path).
+   clip-path rogne aussi les ombres : pour un halo, on applique drop-shadow sur
+   un élément parent non rogné (voir TacticalCard et Button).
+   -------------------------------------------------------------------------- */
+
+/* Carte tactique : coin haut-gauche et bas-droit coupés. Taille réglable via --cut. */
+@utility clip-tactical {
+  clip-path: polygon(
+    var(--cut, 18px) 0,
+    100% 0,
+    100% calc(100% - var(--cut, 18px)),
+    calc(100% - var(--cut, 18px)) 100%,
+    0 100%,
+    0 var(--cut, 18px)
+  );
+}
+
+/* Parallélogramme : boutons et étiquettes. */
+@utility clip-slant {
+  clip-path: polygon(var(--slant, 12px) 0, 100% 0, calc(100% - var(--slant, 12px)) 100%, 0 100%);
+}
+
+/* Un seul coin coupé (bas-droit) : avatars, vignettes. */
+@utility clip-corner {
+  clip-path: polygon(0 0, 100% 0, 100% calc(100% - var(--cut, 10px)), calc(100% - var(--cut, 10px)) 100%, 0 100%);
+}
+
+/* -----------------------------------------------------------------------------
+   Matières : or, grille tactique, hologramme.
+   -------------------------------------------------------------------------- */
+
+/* Dégradé or métallique. Ajouter animate-sheen pour faire glisser le reflet. */
+@utility bg-gold-sheen {
+  background-image: linear-gradient(
+    110deg,
+    var(--color-gold-dark) 0%,
+    var(--color-gold) 28%,
+    var(--color-gold-pale) 50%,
+    var(--color-gold) 72%,
+    var(--color-gold-dark) 100%
+  );
+  background-size: 200% 100%;
+  background-position: 50% 0;
+}
+
+/* Texte en or métallique. */
+@utility text-gold-gradient {
+  background-image: linear-gradient(
+    100deg,
+    var(--color-gold-dark) 0%,
+    var(--color-gold) 30%,
+    var(--color-gold-pale) 50%,
+    var(--color-gold) 70%,
+    var(--color-gold-dark) 100%
+  );
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  color: transparent;
+}
+
+/* Texte en contour seul (grands mots décoratifs en arrière-plan). */
+@utility text-outline {
+  -webkit-text-stroke: 1px color-mix(in srgb, var(--color-gold) 45%, transparent);
+  -webkit-text-fill-color: transparent;
+  color: transparent;
+}
+
+/* Grille tactique en fond. */
+@utility bg-grid {
+  background-image:
+    linear-gradient(to right, color-mix(in srgb, var(--color-gold) 7%, transparent) 1px, transparent 1px),
+    linear-gradient(to bottom, color-mix(in srgb, var(--color-gold) 7%, transparent) 1px, transparent 1px);
+  background-size: 56px 56px;
+}
+
+/* Fondu radial : estompe une grille ou des particules vers les bords. */
+@utility mask-fade {
+  -webkit-mask-image: radial-gradient(ellipse at center, #000 30%, transparent 78%);
+  mask-image: radial-gradient(ellipse at center, #000 30%, transparent 78%);
+}
+
+/* Hologramme léger : lignes de balayage + reflet doré. À poser sur un élément "relative". */
+@utility holo {
+  &::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    background-image:
+      repeating-linear-gradient(
+        to bottom,
+        color-mix(in srgb, var(--color-gold) 6%, transparent) 0,
+        color-mix(in srgb, var(--color-gold) 6%, transparent) 1px,
+        transparent 1px,
+        transparent 4px
+      ),
+      linear-gradient(120deg, transparent 30%, color-mix(in srgb, var(--color-gold) 9%, transparent) 50%, transparent 70%);
+    mix-blend-mode: screen;
+  }
+}
+
+/* Halo doré (à utiliser sur un élément NON rogné par clip-path). */
+@utility glow-gold {
+  filter: drop-shadow(0 0 14px color-mix(in srgb, var(--color-gold) 55%, transparent));
+}
+
+@utility glow-gold-soft {
+  filter: drop-shadow(0 0 22px color-mix(in srgb, var(--color-gold) 28%, transparent));
+}
+
+/* Accessibilité : on coupe les animations pour qui le demande au niveau du système. */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
   }
 }

@@ -1,49 +1,20 @@
-import Head from "next/head";
+import { CallToAction } from "../components/home/CallToAction";
+import { Features } from "../components/home/Features";
+import { Hero } from "../components/home/Hero";
+import { HowItWorks } from "../components/home/HowItWorks";
+import { LiveBoard } from "../components/home/LiveBoard";
+import { Universes } from "../components/home/Universes";
 
-import Header from "../components/Header";
-import HeaderMobile from "../components/HeaderMobile";
-
-import MainContent from "../components/MainContent";
-import MainContentMobile from "../components/MainContentMobile";
-
-import Container from "../components/Container";
-import ContainerMobile from "../components/ContainerMobile";
-
-export default function Home() {
+/** Page d'accueil publique. Chaque section vit dans src/components/home. */
+export default function HomePage() {
   return (
-    <div
-      className="w-full min-h-screen text-white flex flex-col relative"
-      style={{
-        backgroundImage: "url('/assets/Background.png')",
-        backgroundSize: "100% 100%",
-        backgroundRepeat: "no-repeat",
-        backgroundPosition: "center",
-      }}
-    >
-      <Head>
-        <title>SixSence — Competitive Platform</title>
-      </Head>
-
-      {/* DESKTOP */}
-      <div className="hidden md:block">
-        <Header />
-        <MainContent />
-
-        <div className="absolute bottom-8 left-8">
-          <Container />
-        </div>
-      </div>
-
-      {/* MOBILE */}
-      <div className="block md:hidden">
-        <HeaderMobile />
-        <MainContentMobile />
-
-        <div className="px-4 mt-10">
-          <ContainerMobile />
-        </div>
-      </div>
-
-    </div>
+    <>
+      <Hero />
+      <Universes />
+      <HowItWorks />
+      <LiveBoard />
+      <Features />
+      <CallToAction />
+    </>
   );
 }

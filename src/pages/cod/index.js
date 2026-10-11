@@ -1,95 +1,128 @@
-import Image from "next/image";
+import Head from "next/head";
 import Link from "next/link";
 import { useEffect, useState } from "react";
-import LeaderboardTable from "../../components/site/LeaderboardTable";
-import PageShell from "../../components/site/PageShell";
-import { SectionTitle } from "../../components/site/ui";
-import { api } from "../../lib/api";
+import { LuArrowRight, LuCrosshair, LuTrophy, LuUser } from "react-icons/lu";
+import { LeaderboardView } from "../../components/cod/LeaderboardView";
+import { RankBadge } from "../../components/cod/RankBadge";
+import { Reveal } from "../../components/effects/Reveal";
+import { ButtonLink } from "../../components/ui/Button";
+import { Container } from "../../components/ui/Container";
+import { Notice, StatTile } from "../../components/ui/Feedback";
+import { TacticalCard } from "../../components/ui/TacticalCard";
+import { PageHeader, SectionHeading } from "../../components/ui/Typography";
+import useSession from "../../hooks/useSession";
+import useUser from "../../hooks/useUser";
+import { supabase } from "../../lib/supabase";
 
-/** Hub Call of Duty : accès au classé, au classement et au profil, chiffres en direct. */
-const CARDS = [
-  {
-    href: "/cod/ranked",
-    icon: "/assets/Iconranked.svg",
-    title: "Ranked",
-    text: "Entre dans la file : à 10 joueurs, le match se lance avec une carte et des équipes tirées au sort.",
-    cta: "Jouer",
-  },
-  {
-    href: "/cod/leaderboard",
-    icon: "/assets/Iconleaderboard.svg",
-    title: "Classement",
-    text: "Suis ton rang en direct et compare-toi aux meilleurs joueurs de la saison.",
-    cta: "Voir le classement",
-  },
-  {
-    href: "/cod/profile",
-    icon: "/assets/Iconprofil.svg",
-    title: "Mon profil",
-    text: "Statistiques, trophées, progression et historique complet de tes matchs.",
-    cta: "Ouvrir mon profil",
-  },
+const SECTIONS = [
+  { href: "/cod/ranked", icon: LuCrosshair, title: "File classée", text: "Lance une recherche en 5v5. Le match démarre dès que dix joueurs sont prêts." },
+  { href: "/cod/leaderboard", icon: LuTrophy, title: "Classement", text: "Les meilleurs joueurs de la saison, mis à jour en direct après chaque match." },
+  { href: "/cod/profile", icon: LuUser, title: "Mon profil", text: "Tes statistiques, ton rang, tes distinctions et ton historique de matchs." },
 ];
 
-export default function CodHub() {
-  const [status, setStatus] = useState(null);
+const winRate = (wins, losses) => (wins + losses > 0 ? Math.round((wins / (wins + losses)) * 100) : null);
+
+/** Hub COD : résumé du joueur connecté, accès aux trois sections, top 10. Public. */
+export default function CodHubPage() {
+  const { session } = useSession();
+  const user = useUser();
+  const profile = user?.profile;
+  const [extra, setExtra] = useState({ position: null, activeMatchId: null });
 
   useEffect(() => {
-    api("/cod/status").then(setStatus).catch(() => {});
-  }, []);
+    if (!user?.id || !profile) return;
+    (async () => {
+      const [{ data: active }, positionResult] = await Promise.all([
+        supabase.rpc("cod_active_match_id", { p_user: user.id }),
+        profile.wins + profile.losses > 0
+          ? supabase.from("cod_leaderboard").select("user_id", { count: "exact", head: true }).gt("points", profile.points)
+          : Promise.resolve({ count: null }),
+      ]);
+      setExtra({ activeMatchId: active || null, position: positionResult.count === null ? null : positionResult.count + 1 });
+    })();
+  }, [user?.id, profile]);
+
+  const rate = profile ? winRate(profile.wins, profile.losses) : null;
 
   return (
-    <PageShell active="cod" title="Call of Duty">
-      <div className="flex flex-col gap-8">
-        <section className="relative overflow-hidden border border-solid border-[rgba(26,107,220,0.25)] min-h-[220px] flex items-end">
-          <div className="absolute inset-0 bg-[url('/images/call-of-duty-black-3840x2160-22670.jpg')] bg-cover bg-center opacity-50" />
-          <div className="absolute inset-0 bg-[linear-gradient(90deg,rgba(6,7,15,0.95),rgba(6,7,15,0.4))]" />
-          <div className="relative p-8 max-sm:p-5">
-            <div className="text-[11px] text-[#ffa040] font-[Rajdhani] tracking-[2px] uppercase font-bold">Saison 1 · Compétition ouverte</div>
-            <h1 className="m-0 pt-1 text-[44px] max-sm:text-[30px] leading-[1.05] font-bold font-[Rajdhani] text-white tracking-[2px] uppercase">
-              Call of Duty — Classé 5v5
-            </h1>
-            <p className="m-0 pt-2 text-sm text-[#a0b0c8] font-[Inter] max-w-[560px]">
-              Recherche & Destruction, matchmaking automatique, classement en direct.
-            </p>
-            {status && (
-              <div className="flex flex-wrap gap-4 pt-4 text-xs text-[#a0b0c8] font-[Inter]">
-                <span>🔵 {status.playersInQueue} en file</span>
-                <span>🟠 {status.matchesInProgress} match(s) en cours</span>
-                <span>🟢 {status.playersOnline} en ligne</span>
-              </div>
-            )}
-          </div>
-        </section>
+    <>
+      <Head>
+        <title>Call of Duty — SixSence</title>
+      </Head>
+      <PageHeader
+        eyebrow="Call of Duty"
+        title={
+          <>
+            Zone de <span className="text-gold-gradient">combat</span>
+          </>
+        }
+        description={
+          user ? `Content de te revoir, ${user.username}. La file classée est ouverte.` : "Classé 5v5 en Recherche & Destruction : la file est ouverte."
+        }
+        actions={
+          <ButtonLink href="/cod/ranked" size="lg">
+            <LuCrosshair aria-hidden className="h-5 w-5" />
+            Jouer en classé
+          </ButtonLink>
+        }
+      />
 
-        <div className="grid grid-cols-3 max-md:grid-cols-1 gap-4">
-          {CARDS.map((card) => (
-            <Link
-              key={card.href}
-              href={card.href}
-              className="no-underline rounded-[10px] bg-[rgba(10,22,40,0.6)] border border-solid border-[rgba(26,107,220,0.15)] p-5 flex flex-col gap-3 hover:border-[rgba(26,107,220,0.5)] transition-colors"
-            >
-              <Image className="h-10 w-10" width={40} height={40} alt="" src={card.icon} />
-              <b className="text-xl text-[#e8f0fa] font-[Rajdhani] tracking-[0.4px]">{card.title}</b>
-              <p className="m-0 flex-1 text-sm text-[#6b7d94] font-[Inter] leading-[21px]">{card.text}</p>
-              <span className="text-sm text-[#4a90d9] font-[Inter] font-semibold">{card.cta} →</span>
+      <Container className="space-y-16 py-12">
+        {session && extra.activeMatchId ? (
+          <Notice>
+            Tu as un match en cours.{" "}
+            <Link href={`/cod/match/${extra.activeMatchId}`} className="font-semibold text-gold underline underline-offset-4 hover:text-gold-light">
+              Ouvrir le salon de match
             </Link>
+          </Notice>
+        ) : null}
+
+        {profile && !profile.activision_id ? (
+          <Notice>
+            Dernière étape avant de jouer : renseigne ton identifiant Activision.{" "}
+            <Link href="/cod/profile" className="font-semibold text-gold underline underline-offset-4 hover:text-gold-light">
+              Compléter mon profil
+            </Link>
+          </Notice>
+        ) : null}
+
+        {profile ? (
+          <section aria-label="Mon résumé" className="grid grid-cols-1 gap-6 lg:grid-cols-[auto_1fr] lg:items-center">
+            <RankBadge points={profile.points} showProgress />
+            <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
+              <StatTile label="Points" value={profile.points} accent />
+              <StatTile label="Classement" value={extra.position ? `#${extra.position}` : "—"} />
+              <StatTile label="Victoires / Défaites" value={`${profile.wins} / ${profile.losses}`} />
+              <StatTile label="Taux de victoire" value={rate === null ? "—" : `${rate}%`} />
+            </div>
+          </section>
+        ) : null}
+
+        <div className="grid grid-cols-1 gap-5 md:grid-cols-3">
+          {SECTIONS.map((section, index) => (
+            <Reveal key={section.href} delay={index * 0.08} className="h-full">
+              <Link href={section.href} className="block h-full">
+                <TacticalCard interactive className="h-full" innerClassName="flex h-full flex-col p-7">
+                  <section.icon aria-hidden className="h-9 w-9 text-gold" />
+                  <h2 className="mt-6 font-display text-4xl font-black uppercase leading-none">{section.title}</h2>
+                  <p className="mt-3 text-sm leading-relaxed text-white/60">{section.text}</p>
+                  <p className="mt-auto inline-flex items-center gap-2 pt-8 font-display text-base font-bold uppercase tracking-[0.14em] text-gold">
+                    Ouvrir
+                    <LuArrowRight aria-hidden className="h-4 w-4 transition-transform duration-300 group-hover/card:translate-x-1.5" />
+                  </p>
+                </TacticalCard>
+              </Link>
+            </Reveal>
           ))}
         </div>
 
-        <div className="flex flex-col gap-4">
-          <SectionTitle
-            right={
-              <Link href="/cod/leaderboard" className="text-xs text-[#4a90d9] font-[Inter] no-underline normal-case tracking-normal">
-                Tout voir →
-              </Link>
-            }
-          >
-            Top 10 joueurs
-          </SectionTitle>
-          <LeaderboardTable limit={10} />
-        </div>
-      </div>
-    </PageShell>
+        <section aria-labelledby="titre-top10">
+          <SectionHeading eyebrow="Saison 1" title={<span id="titre-top10">Top 10</span>} />
+          <div className="mt-8">
+            <LeaderboardView limit={10} currentUserId={user?.id ?? null} compact />
+          </div>
+        </section>
+      </Container>
+    </>
   );
 }

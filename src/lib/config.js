@@ -14,5 +14,8 @@ export const SUPABASE_URL = process.env.NEXT_PUBLIC_SUPABASE_URL || "https://trl
 export const SUPABASE_PUBLISHABLE_KEY =
   process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || "sb_publishable_b9GLgoUc1BbOaUo1EoKh8w_Nu1FfIcr";
 
+/** Lien d'invitation vers le serveur Discord (facultatif : affiche les boutons « Rejoindre le Discord »). */
+export const DISCORD_INVITE_URL = process.env.NEXT_PUBLIC_DISCORD_INVITE_URL || "";
+
 /** Adresse WebSocket du backend (file d'attente en temps réel). */
 export const WS_URL = API_URL.replace(/^http/, "ws") + "/ws";

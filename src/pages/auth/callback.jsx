@@ -1,5 +1,8 @@
 import { useEffect, useState } from "react";
 import { useRouter } from "next/router";
+import { LuLoaderCircle } from "react-icons/lu";
+import { ButtonLink } from "../../components/ui/Button";
+import { LogoMark } from "../../components/ui/Logo";
 import { supabase } from "../../lib/supabase";
 
 /**
@@ -15,9 +18,9 @@ export default function AuthCallback() {
   useEffect(() => {
     if (!router.isReady) return;
 
-    const next = typeof router.query.next === "string" ? router.query.next : "/accueil";
+    const next = typeof router.query.next === "string" ? router.query.next : "/cod";
     // Seuls les chemins internes sont acceptés.
-    const target = next.startsWith("/") && !next.startsWith("//") ? next : "/accueil";
+    const target = next.startsWith("/") && !next.startsWith("//") ? next : "/cod";
 
     if (router.query.error) {
       setError("La connexion avec Discord a été annulée ou refusée.");
@@ -40,17 +43,24 @@ export default function AuthCallback() {
   }, [router]);
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-[#06070F] text-[#e8eaf0] font-[Inter] px-6 text-center">
-      {error ? (
-        <div>
-          <p className="text-[#fecaca]">{error}</p>
-          <a href="/accueil" className="text-[#4a90d9]">
-            Retour à l'accueil
-          </a>
-        </div>
-      ) : (
-        <p className="text-[#a0b0c8]">Connexion en cours…</p>
-      )}
+    <div className="relative isolate flex min-h-dvh items-center justify-center bg-ink px-6 text-center">
+      <div aria-hidden className="absolute inset-0 -z-10 bg-grid mask-fade" />
+      <div>
+        <LogoMark className="mx-auto h-14 w-14 text-gold glow-gold" />
+        {error ? (
+          <>
+            <p className="mt-6 font-display text-3xl font-black uppercase">{error}</p>
+            <div className="mt-6 flex justify-center">
+              <ButtonLink href="/login">Réessayer</ButtonLink>
+            </div>
+          </>
+        ) : (
+          <p className="mt-6 inline-flex items-center gap-2.5 font-display text-2xl font-bold uppercase tracking-[0.14em] text-white/80">
+            <LuLoaderCircle aria-hidden className="h-6 w-6 animate-spin text-gold" />
+            Connexion en cours…
+          </p>
+        )}
+      </div>
     </div>
   );
 }
