@@ -10,7 +10,10 @@ const SECTIONS = [
     content: (
       <ul>
         <li>Un seul compte Discord par joueur. Les comptes multiples (« smurfs ») sont interdits.</li>
-        <li>L&apos;identifiant Activision renseigné doit être le tien et celui avec lequel tu joues le match.</li>
+        <li>
+          L&apos;identifiant Activision renseigné doit être le tien et celui avec lequel tu joues le match. Un identifiant ne peut être
+          lié qu&apos;à un seul compte SixSence.
+        </li>
         <li>Pseudos, avatars et messages injurieux, haineux ou discriminatoires sont interdits.</li>
       </ul>
     ),
