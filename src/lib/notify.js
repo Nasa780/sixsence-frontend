@@ -105,12 +105,18 @@ function impact(ctx, start) {
 }
 
 // --- Sons enregistrés (public/sounds) ---------------------------------------------
-// Extraits de « War Is War » (audioknap, Pixabay, licence libre d'usage) : l'impact et
-// sa montée pour « match trouvé », l'impact seul pour le départ. Chargés une fois,
-// au premier clic ; en cas d'échec, les sons synthétisés ci-dessous prennent le relais.
-const SAMPLES = { found: "/sounds/match-found.wav", start: "/sounds/match-start.wav" };
+// Extraits de « War Is War » (audioknap, Pixabay, licence libre d'usage) :
+//   match-found.mp3 : une minute continue à partir de l'impact (0:29 → 1:30 de la piste),
+//                     jouée pendant la vérification « Prêt ? » ;
+//   match-start.wav : l'impact seul, quand le match démarre.
+// Chargés une fois, au premier clic ; en cas d'échec, les sons synthétisés prennent le relais.
+const SAMPLES = { found: "/sounds/match-found.mp3", start: "/sounds/match-start.wav" };
+/** Début de la musique dans match-found.mp3 (juste avant l'impact, à 0,35 s). */
+const FOUND_OFFSET = 0.25;
 const buffers = {};
 let samplesLoading = null;
+let music = null; // { source, gain } de la musique « match trouvé » en cours
+let alarmArmed = false; // vrai entre « match trouvé » et l'arrêt de l'alarme
 
 export function loadSamples() {
   const ctx = audio();
@@ -128,24 +134,30 @@ export function loadSamples() {
   return samplesLoading;
 }
 
-/** Joue un son enregistré s'il est chargé ; renvoie false sinon. */
-function playSample(key, volume = 1) {
+/**
+ * Joue un son enregistré s'il est chargé (renvoie null sinon).
+ * offset / duration en secondes ; fadeOut : fondu de fin (secondes).
+ */
+function playSample(key, { volume = 1, offset = 0, duration, fadeOut = 0 } = {}) {
   const ctx = audio();
-  if (!ctx || !buffers[key]) return false;
+  if (!ctx || !buffers[key]) return null;
   const source = ctx.createBufferSource();
   const gain = ctx.createGain();
-  gain.gain.value = volume;
   source.buffer = buffers[key];
+  const length = Math.max(0.1, Math.min(duration ?? Infinity, buffers[key].duration - offset));
+  const now = ctx.currentTime;
+  gain.gain.setValueAtTime(volume, now);
+  if (fadeOut > 0) {
+    gain.gain.setValueAtTime(volume, now + Math.max(0, length - fadeOut));
+    gain.gain.linearRampToValueAtTime(0.0001, now + length);
+  }
   source.connect(gain).connect(ctx.destination);
-  source.start();
-  return true;
+  source.start(now, offset, length);
+  return { source, gain };
 }
 
-/** Alerte « Match trouvé » : extrait enregistré, sinon impact + arpège synthétisés. */
-export function playMatchSound({ force = false } = {}) {
-  if (!force && isSoundMuted()) return;
-  loadSamples();
-  if (playSample("found")) return;
+/** Synthèse de secours : impact + arpège montant (si le fichier n'a pas pu être chargé). */
+function playFallbackAlert() {
   try {
     const ctx = audio();
     if (!ctx) return;
@@ -184,7 +196,7 @@ export function playTick(urgent = false) {
 /** Confirmation : tout le monde est prêt, le match démarre. */
 export function playStartSound() {
   if (isSoundMuted()) return;
-  if (playSample("start")) return;
+  if (playSample("start", { volume: 0.9 })) return;
   try {
     const ctx = audio();
     if (!ctx) return;
@@ -196,20 +208,65 @@ export function playStartSound() {
   }
 }
 
-/** Joue l'alerte puis la répète toutes les 6 s jusqu'à stopMatchAlarm() (au plus jusqu'à `until`). */
+/**
+ * Match trouvé : la musique démarre sur l'impact et joue en continu jusqu'à la fin
+ * du délai pour accepter (`until`, une minute au plus), avec un fondu final.
+ */
 export function startMatchAlarm(until) {
-  stopMatchAlarm();
-  playMatchSound();
-  const end = until ? new Date(until).getTime() : Date.now() + 60_000;
-  alarmTimer = setInterval(() => {
-    if (Date.now() >= end) stopMatchAlarm();
-    else playMatchSound();
-  }, 6000);
+  stopMatchAlarm({ fade: 0 });
+  if (isSoundMuted()) return;
+  const seconds = until ? Math.max(3, (new Date(until).getTime() - Date.now()) / 1000) : 60;
+  music = playSample("found", { offset: FOUND_OFFSET, duration: Math.min(60, seconds), fadeOut: 1.5 });
+  if (!music) {
+    // Fichier pas encore chargé : alerte synthétisée, et la musique prend le relais dès qu'elle est prête.
+    playFallbackAlert();
+    loadSamples()?.then(() => {
+      if (music || !alarmArmed) return;
+      const left = until ? (new Date(until).getTime() - Date.now()) / 1000 : 0;
+      if (left > 3) music = playSample("found", { offset: FOUND_OFFSET, duration: Math.min(60, left), fadeOut: 1.5 });
+    });
+  }
+  alarmArmed = true;
 }
 
-export function stopMatchAlarm() {
+
+/** Le joueur a accepté : la musique continue, moins fort, en attendant les autres. */
+export function duckMatchAlarm() {
+  const ctx = audio();
+  if (!ctx || !music) return;
+  const now = ctx.currentTime;
+  music.gain.gain.cancelScheduledValues(now);
+  music.gain.gain.setValueAtTime(music.gain.gain.value, now);
+  music.gain.gain.linearRampToValueAtTime(0.35, now + 0.6);
+}
+
+/** Coupe la musique avec un court fondu (match démarré, annulé, joueur parti). */
+export function stopMatchAlarm({ fade = 0.5 } = {}) {
+  alarmArmed = false;
   if (alarmTimer) clearInterval(alarmTimer);
   alarmTimer = null;
+  const current = music;
+  music = null;
+  if (!current) return;
+  try {
+    const ctx = audio();
+    const now = ctx.currentTime;
+    current.gain.gain.cancelScheduledValues(now);
+    current.gain.gain.setValueAtTime(current.gain.gain.value, now);
+    current.gain.gain.linearRampToValueAtTime(0.0001, now + fade);
+    current.source.stop(now + fade + 0.05);
+  } catch {
+    // Déjà arrêtée.
+  }
+}
+
+/** Bouton « Tester le son » : les 8 premières secondes de la musique (ou l'alerte de secours). */
+export async function previewMatchSound() {
+  unlockAudio();
+  await loadSamples();
+  stopMatchAlarm({ fade: 0.2 });
+  music = playSample("found", { offset: FOUND_OFFSET, duration: 8, fadeOut: 1.5 });
+  if (!music) playFallbackAlert();
 }
 
 /** Demande l'autorisation d'afficher des notifications (à appeler sur un clic). */
