@@ -4,6 +4,16 @@ import { LEGAL } from "../lib/legal";
 
 const todo = (value) => value || <span className="todo">à compléter</span>;
 
+/** Une ligne de la fiche éditeur. */
+function EditorInfo({ label, children }) {
+  return (
+    <div className="bg-ink-800 px-4 py-3.5">
+      <dt className="font-tech text-[10px] uppercase tracking-[0.24em] text-gold">{label}</dt>
+      <dd className="mt-1.5 text-sm text-white/85">{children}</dd>
+    </div>
+  );
+}
+
 const SECTIONS = [
   {
     id: "editeur",
@@ -11,14 +21,27 @@ const SECTIONS = [
     content: (
       <>
         <p>
-          Le site <strong>sixsence.fr</strong> est édité par : {todo(LEGAL.editor)}.
-          {LEGAL.status ? ` ${LEGAL.status}` : ""}
+          Le site <strong>sixsence.fr</strong> est une plateforme communautaire de jeu, éditée par un particulier sous le pseudonyme{" "}
+          <strong>SixSence</strong>, à titre non professionnel et sans but lucratif.
         </p>
-        <ul>
-          <li>Adresse : {todo(LEGAL.address)}</li>
-          <li>Contact : {LEGAL.email ? <a href={`mailto:${LEGAL.email}`}>{LEGAL.email}</a> : todo(null)}</li>
-          {LEGAL.director ? <li>Directeur ou directrice de la publication : {LEGAL.director}</li> : null}
-        </ul>
+        <dl className="grid grid-cols-1 gap-px overflow-hidden border border-white/10 bg-white/10 sm:grid-cols-2">
+          <EditorInfo label="Éditeur">{todo(LEGAL.editor)}</EditorInfo>
+          <EditorInfo label="Statut">{todo(LEGAL.status)}</EditorInfo>
+          <EditorInfo label="Adresse">{todo(LEGAL.address)}</EditorInfo>
+          <EditorInfo label="Contact">
+            {LEGAL.email ? <a href={`mailto:${LEGAL.email}`}>{LEGAL.email}</a> : todo(null)}
+          </EditorInfo>
+          {LEGAL.director ? <EditorInfo label="Directeur de la publication">{LEGAL.director}</EditorInfo> : null}
+        </dl>
+        <p>
+          Conformément à l&apos;article 6, III-2 de la loi n° 2004-575 du 21 juin 2004 pour la confiance dans l&apos;économie numérique,
+          l&apos;éditeur, qui agit à titre non professionnel, a choisi de rester anonyme : ses coordonnées complètes ont été communiquées
+          à l&apos;hébergeur, qui peut les transmettre à l&apos;autorité judiciaire sur demande.
+        </p>
+        <p>
+          Pour toute question, demande liée à tes données ou signalement d&apos;un contenu, écris à{" "}
+          {LEGAL.email ? <a href={`mailto:${LEGAL.email}`}>{LEGAL.email}</a> : todo(null)}. Réponse sous quelques jours.
+        </p>
       </>
     ),
   },

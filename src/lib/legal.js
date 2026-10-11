@@ -10,9 +10,9 @@ export const LEGAL = {
   /** Nom (ou pseudonyme) de l'éditeur. */
   editor: "SixSence (pseudonyme)",
   /** Statut de l'éditeur. */
-  status: "Site édité à titre non professionnel.",
+  status: "Particulier, site non professionnel",
   /** Adresse postale. */
-  address: "non publiée conformément à la loi, communiquée à l'hébergeur",
+  address: "Non publiée (communiquée à l'hébergeur)",
   /** Adresse e-mail de contact, notamment pour les demandes RGPD. */
   email: "sixsence.contact@gmail.com",
   /** Directeur ou directrice de la publication (facultatif pour un site non professionnel). */
