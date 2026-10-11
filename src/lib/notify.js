@@ -106,13 +106,17 @@ function impact(ctx, start) {
 
 // --- Sons enregistrés (public/sounds) ---------------------------------------------
 // Extraits de « War Is War » (audioknap, Pixabay, licence libre d'usage) :
-//   match-found.mp3 : une minute continue à partir de l'impact (0:29 → 1:30 de la piste),
-//                     jouée pendant la vérification « Prêt ? » ;
-//   match-start.wav : l'impact seul, quand le match démarre.
+//   match-found.mp3 : 0:00.3 → 1:03 de la piste, jouée pendant la vérification « Prêt ? » ;
+//   match-start.wav : l'impact de 0:29, quand le match démarre.
 // Chargés une fois, au premier clic ; en cas d'échec, les sons synthétisés prennent le relais.
 const SAMPLES = { found: "/sounds/match-found.mp3", start: "/sounds/match-start.wav" };
-/** Début de la musique dans match-found.mp3 (juste avant l'impact, à 0,35 s). */
-const FOUND_OFFSET = 0.25;
+/** Le fichier commence à 0,235 s de la piste : décalage pour démarrer pile à 0,3 s. */
+const FOUND_OFFSET = 0.065;
+/** Durée jouée : de 0,3 s à 1:03 de la piste. */
+const FOUND_LENGTH = 62.7;
+/** « Tester le son » : de 0:16 à 0:21 de la piste (le fichier commence à 0,235 s). */
+const PREVIEW_OFFSET = 16 - 0.235;
+const PREVIEW_LENGTH = 5;
 const buffers = {};
 let samplesLoading = null;
 let music = null; // { source, gain } de la musique « match trouvé » en cours
@@ -209,21 +213,20 @@ export function playStartSound() {
 }
 
 /**
- * Match trouvé : la musique démarre sur l'impact et joue en continu jusqu'à la fin
- * du délai pour accepter (`until`, une minute au plus), avec un fondu final.
+ * Match trouvé : la musique joue en continu (0:00.3 → 1:03 de la piste). Elle est
+ * coupée en fondu dès que le match démarre ou est annulé (fin du délai pour accepter).
  */
 export function startMatchAlarm(until) {
   stopMatchAlarm({ fade: 0 });
   if (isSoundMuted()) return;
-  const seconds = until ? Math.max(3, (new Date(until).getTime() - Date.now()) / 1000) : 60;
-  music = playSample("found", { offset: FOUND_OFFSET, duration: Math.min(60, seconds), fadeOut: 1.5 });
+  music = playSample("found", { offset: FOUND_OFFSET, duration: FOUND_LENGTH, fadeOut: 1.5 });
   if (!music) {
     // Fichier pas encore chargé : alerte synthétisée, et la musique prend le relais dès qu'elle est prête.
     playFallbackAlert();
     loadSamples()?.then(() => {
       if (music || !alarmArmed) return;
       const left = until ? (new Date(until).getTime() - Date.now()) / 1000 : 0;
-      if (left > 3) music = playSample("found", { offset: FOUND_OFFSET, duration: Math.min(60, left), fadeOut: 1.5 });
+      if (left > 3) music = playSample("found", { offset: FOUND_OFFSET, duration: FOUND_LENGTH, fadeOut: 1.5 });
     });
   }
   alarmArmed = true;
@@ -260,12 +263,12 @@ export function stopMatchAlarm({ fade = 0.5 } = {}) {
   }
 }
 
-/** Bouton « Tester le son » : les 8 premières secondes de la musique (ou l'alerte de secours). */
+/** Bouton « Tester le son » : de 0:16 à 0:21 de la piste (ou l'alerte de secours). */
 export async function previewMatchSound() {
   unlockAudio();
   await loadSamples();
   stopMatchAlarm({ fade: 0.2 });
-  music = playSample("found", { offset: FOUND_OFFSET, duration: 8, fadeOut: 1.5 });
+  music = playSample("found", { offset: PREVIEW_OFFSET, duration: PREVIEW_LENGTH, fadeOut: 0.8 });
   if (!music) playFallbackAlert();
 }
 
