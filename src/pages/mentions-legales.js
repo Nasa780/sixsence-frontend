@@ -21,13 +21,10 @@ const SECTIONS = [
     content: (
       <>
         <p>
-          Le site <strong>sixsence.fr</strong> est une plateforme communautaire de jeu, éditée par un particulier sous le pseudonyme{" "}
-          <strong>SixSence</strong>, à titre non professionnel et sans but lucratif.
+          Le site <strong>sixsence.fr</strong> est une plateforme communautaire de jeu, éditée par <strong>SixSence</strong>.
         </p>
         <dl className="grid grid-cols-1 gap-px overflow-hidden border border-white/10 bg-white/10 sm:grid-cols-2">
           <EditorInfo label="Éditeur">{todo(LEGAL.editor)}</EditorInfo>
-          <EditorInfo label="Statut">{todo(LEGAL.status)}</EditorInfo>
-          <EditorInfo label="Adresse">{todo(LEGAL.address)}</EditorInfo>
           <EditorInfo label="Contact">
             {LEGAL.email ? <a href={`mailto:${LEGAL.email}`}>{LEGAL.email}</a> : todo(null)}
           </EditorInfo>
@@ -35,8 +32,7 @@ const SECTIONS = [
         </dl>
         <p>
           Conformément à l&apos;article 6, III-2 de la loi n° 2004-575 du 21 juin 2004 pour la confiance dans l&apos;économie numérique,
-          l&apos;éditeur, qui agit à titre non professionnel, a choisi de rester anonyme : ses coordonnées complètes ont été communiquées
-          à l&apos;hébergeur, qui peut les transmettre à l&apos;autorité judiciaire sur demande.
+          les coordonnées de l&apos;éditeur ont été communiquées à l&apos;hébergeur.
         </p>
         <p>
           Pour toute question, demande liée à tes données ou signalement d&apos;un contenu, écris à{" "}
