@@ -2,6 +2,7 @@ import { FaDiscord } from "react-icons/fa6";
 import { LuArrowRight } from "react-icons/lu";
 import useSession from "../../hooks/useSession";
 import { signInWithDiscord } from "../../lib/auth";
+import { DISCORD_INVITE_URL } from "../../lib/config";
 import { Reveal } from "../effects/Reveal";
 import { Button, ButtonLink } from "../ui/Button";
 import { Container } from "../ui/Container";
@@ -25,7 +26,7 @@ export function CallToAction() {
               <p className="mx-auto mt-5 max-w-lg text-base leading-relaxed text-white/60 sm:text-lg">
                 La file est ouverte. Connecte-toi, renseigne ton identifiant Activision et lance ton premier match classé.
               </p>
-              <div className="mt-9 flex justify-center">
+              <div className="mt-9 flex flex-col items-center justify-center gap-4 sm:flex-row">
                 {session ? (
                   <ButtonLink href="/cod/ranked" size="lg">
                     Rejoindre la file
@@ -37,6 +38,12 @@ export function CallToAction() {
                     Se connecter avec Discord
                   </Button>
                 )}
+                {DISCORD_INVITE_URL ? (
+                  <ButtonLink href={DISCORD_INVITE_URL} external variant="outline" size="lg">
+                    <FaDiscord aria-hidden className="h-5 w-5" />
+                    Rejoindre le serveur
+                  </ButtonLink>
+                ) : null}
               </div>
             </div>
           </TacticalCard>

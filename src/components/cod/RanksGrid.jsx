@@ -1,5 +1,6 @@
 import { cn } from "../../lib/cn";
 import { RANKS, WIN_POINTS, WIN_XP } from "../../lib/ranks";
+import useSeasons from "../../hooks/useSeasons";
 import { Eyebrow } from "../ui/Typography";
 
 /**
@@ -9,12 +10,13 @@ import { Eyebrow } from "../ui/Typography";
  */
 export function RanksGrid({ highlight = null }) {
   const ordered = [...RANKS].reverse(); // de Bronze à Champion
+  const { label } = useSeasons();
 
   return (
     <section aria-labelledby="titre-rangs">
       <div className="flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
         <div>
-          <Eyebrow>Saison 1</Eyebrow>
+          <Eyebrow>{label}</Eyebrow>
           <h2 id="titre-rangs" className="mt-3 font-display text-4xl font-black uppercase leading-none sm:text-5xl">
             Les rangs
           </h2>

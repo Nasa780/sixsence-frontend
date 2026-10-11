@@ -9,8 +9,10 @@ import { WS_URL } from "../lib/config";
  * Renvoie :
  *   status        "off" | "connecting" | "online" | "reconnecting"
  *   size, needed  joueurs en file / requis pour lancer un match
- *   inQueue, joinedAt, activeMatchId
- *   matchFound    { matchId, map, mode } dès qu'un match est prêt
+ *   inQueue, joinedAt, activeMatchId, bannedUntil
+ *   readyCheck    { matchId, map, mode, deadline, accepted, total, readyUsers } pendant la vérification « Prêt ? »
+ *   started       identifiant du match quand tous les joueurs ont accepté
+ *   aborted       { reason: "requeued" | "missed", bannedUntil } quand la vérification échoue
  *
  * Protocole décrit dans le backend : src/ws/hub.ts.
  */
@@ -22,7 +24,10 @@ export default function useQueueSocket(enabled) {
     inQueue: false,
     joinedAt: null,
     activeMatchId: null,
-    matchFound: null,
+    bannedUntil: null,
+    readyCheck: null,
+    started: null,
+    aborted: null,
   });
   const socketRef = useRef(null);
 
@@ -57,28 +62,65 @@ export default function useQueueSocket(enabled) {
         } catch {
           return;
         }
-        if (message.type === "ready") {
-          retry = 0;
-          setState((prev) => ({
-            ...prev,
-            status: "online",
-            size: message.size,
-            needed: message.needed,
-            inQueue: message.inQueue,
-            joinedAt: message.joinedAt,
-            activeMatchId: message.activeMatchId,
-          }));
-        } else if (message.type === "queue:update") {
-          setState((prev) => ({ ...prev, size: message.size, needed: message.needed }));
-        } else if (message.type === "queue:state") {
-          setState((prev) => ({ ...prev, inQueue: message.inQueue, joinedAt: message.joinedAt }));
-        } else if (message.type === "match:found") {
-          setState((prev) => ({
-            ...prev,
-            inQueue: false,
-            activeMatchId: message.matchId,
-            matchFound: { matchId: message.matchId, map: message.map, mode: message.mode },
-          }));
+        switch (message.type) {
+          case "ready":
+            retry = 0;
+            setState((prev) => ({
+              ...prev,
+              status: "online",
+              size: message.size,
+              needed: message.needed,
+              inQueue: message.inQueue,
+              joinedAt: message.joinedAt,
+              activeMatchId: message.activeMatchId,
+              bannedUntil: message.bannedUntil ?? null,
+            }));
+            break;
+          case "queue:update":
+            setState((prev) => ({ ...prev, size: message.size, needed: message.needed }));
+            break;
+          case "queue:state":
+            setState((prev) => ({ ...prev, inQueue: message.inQueue, joinedAt: message.joinedAt }));
+            break;
+          case "match:found":
+            setState((prev) => ({
+              ...prev,
+              inQueue: false,
+              activeMatchId: message.matchId,
+              aborted: null,
+              started: null,
+              readyCheck: {
+                matchId: message.matchId,
+                map: message.map,
+                mode: message.mode,
+                deadline: message.deadline,
+                accepted: 0,
+                total: message.total ?? prev.needed,
+                readyUsers: [],
+              },
+            }));
+            break;
+          case "match:ready":
+            setState((prev) =>
+              prev.readyCheck?.matchId === message.matchId
+                ? { ...prev, readyCheck: { ...prev.readyCheck, accepted: message.accepted, total: message.total, readyUsers: message.readyUsers || [] } }
+                : prev,
+            );
+            break;
+          case "match:start":
+            setState((prev) => ({ ...prev, readyCheck: null, started: message.matchId, activeMatchId: message.matchId }));
+            break;
+          case "match:aborted":
+            setState((prev) => ({
+              ...prev,
+              readyCheck: null,
+              activeMatchId: null,
+              aborted: { reason: message.reason, bannedUntil: message.bannedUntil ?? null },
+              bannedUntil: message.bannedUntil ?? prev.bannedUntil,
+            }));
+            break;
+          default:
+            break;
         }
       };
 
@@ -103,7 +145,7 @@ export default function useQueueSocket(enabled) {
     };
   }, [enabled]);
 
-  /** Mise à jour locale après une action REST (rejoindre / quitter). */
+  /** Mise à jour locale après une action REST (rejoindre / quitter / accepter). */
   const patch = (partial) => setState((prev) => ({ ...prev, ...partial }));
 
   return { ...state, patch };

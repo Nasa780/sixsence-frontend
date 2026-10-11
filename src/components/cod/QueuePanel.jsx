@@ -1,48 +1,67 @@
 import { AnimatePresence, motion } from "framer-motion";
 import Link from "next/link";
 import { useRouter } from "next/router";
-import { useEffect, useState } from "react";
-import { LuCrosshair, LuLoaderCircle, LuMap, LuWifi, LuWifiOff, LuX } from "react-icons/lu";
+import { useEffect, useRef, useState } from "react";
+import { LuBan, LuCheck, LuCrosshair, LuLoaderCircle, LuMap, LuWifi, LuWifiOff, LuX } from "react-icons/lu";
+import useCountdown from "../../hooks/useCountdown";
 import useQueueSocket from "../../hooks/useQueueSocket";
 import { api } from "../../lib/api";
 import { cn } from "../../lib/cn";
+import { alertMatchFound, askNotificationPermission, stopFlashTitle } from "../../lib/notify";
 import { Button, ButtonLink } from "../ui/Button";
 import { Chip, Notice } from "../ui/Feedback";
 import { TacticalCard } from "../ui/TacticalCard";
-
-/** Délai avant de basculer vers la page du match, le temps de lire l'annonce. */
-const MATCH_REDIRECT_MS = 3500;
 
 /**
  * Panneau de la file d'attente classée.
  *  - L'état (joueurs en file, ma place) arrive en direct par WebSocket.
  *  - "Rejoindre" et "Quitter" passent par l'API REST du backend.
- *  - Quand un match est trouvé, une annonce plein écran s'affiche puis la page
- *    du match s'ouvre toute seule.
+ *  - Match trouvé : son + notification, puis vérification « Prêt ? » d'une minute.
+ *    Tous prêts : la page du match s'ouvre. Délai dépassé : les joueurs prêts
+ *    repartent en tête de file, les absents reçoivent un avertissement.
  *
  * profileComplete : faux tant que le joueur n'a pas renseigné son identifiant Activision.
  */
-export function QueuePanel({ profileComplete }) {
+export function QueuePanel({ profileComplete, userId }) {
   const router = useRouter();
   const queue = useQueueSocket(true);
   const [pending, setPending] = useState(false);
   const [error, setError] = useState(null);
   const elapsed = useElapsedSeconds(queue.inQueue ? queue.joinedAt : null);
+  const banLeft = useCountdown(queue.bannedUntil);
 
-  // Match trouvé : on laisse l'annonce à l'écran quelques secondes, puis direction le match.
-  const foundId = queue.matchFound?.matchId;
+  // Match trouvé : alerte sonore et notification (une seule fois par match).
+  const alerted = useRef(null);
   useEffect(() => {
-    if (!foundId) return undefined;
-    const timer = setTimeout(() => router.push(`/cod/match/${foundId}`), MATCH_REDIRECT_MS);
+    if (queue.readyCheck && alerted.current !== queue.readyCheck.matchId) {
+      alerted.current = queue.readyCheck.matchId;
+      alertMatchFound(queue.readyCheck);
+    }
+  }, [queue.readyCheck]);
+
+  // Tous prêts : direction le salon de match.
+  useEffect(() => {
+    if (!queue.started) return undefined;
+    stopFlashTitle();
+    const timer = setTimeout(() => router.push(`/cod/match/${queue.started}`), 1200);
     return () => clearTimeout(timer);
-  }, [foundId, router]);
+  }, [queue.started, router]);
 
   async function toggleQueue() {
     setPending(true);
     setError(null);
+    if (!queue.inQueue) askNotificationPermission();
     try {
       const next = await api(queue.inQueue ? "/cod/queue/leave" : "/cod/queue/join", { method: "POST" });
-      queue.patch({ size: next.size, needed: next.needed, inQueue: next.inQueue, joinedAt: next.joinedAt, activeMatchId: next.activeMatchId });
+      queue.patch({
+        size: next.size,
+        needed: next.needed,
+        inQueue: next.inQueue,
+        joinedAt: next.joinedAt,
+        activeMatchId: next.activeMatchId,
+        bannedUntil: next.bannedUntil ?? null,
+        aborted: null,
+      });
     } catch (caught) {
       setError(caught.message);
     } finally {
@@ -52,8 +71,9 @@ export function QueuePanel({ profileComplete }) {
 
   const connected = queue.status === "online";
   const slots = Array.from({ length: queue.needed }, (_, index) => index < queue.size);
-  const hasActiveMatch = Boolean(queue.activeMatchId) && !queue.matchFound;
-  const canJoin = connected && profileComplete && !hasActiveMatch;
+  const banned = banLeft > 0;
+  const hasActiveMatch = Boolean(queue.activeMatchId) && !queue.readyCheck && !queue.started;
+  const canJoin = connected && profileComplete && !hasActiveMatch && !banned;
 
   return (
     <>
@@ -62,9 +82,9 @@ export function QueuePanel({ profileComplete }) {
 
         <div className="relative">
           <div className="flex flex-wrap items-center justify-between gap-3">
-            <Chip tone={queue.inQueue ? "gold" : "neutral"}>
+            <Chip tone={banned ? "loss" : queue.inQueue ? "gold" : "neutral"}>
               {queue.inQueue ? <span aria-hidden className="h-1.5 w-1.5 animate-pulse-gold bg-gold" /> : null}
-              {queue.inQueue ? "Recherche en cours" : "Hors file"}
+              {banned ? "Exclu temporairement" : queue.inQueue ? "Recherche en cours" : "Hors file"}
             </Chip>
             <ConnectionStatus status={queue.status} />
           </div>
@@ -96,11 +116,11 @@ export function QueuePanel({ profileComplete }) {
           <p className="mt-6 min-h-6 text-sm text-white/60">
             {queue.inQueue ? (
               <>
-                En file depuis <span className="font-tech font-bold tabular-nums text-white">{formatDuration(elapsed)}</span>. Le match se
-                lance dès que {queue.needed} joueurs sont réunis.
+                En file depuis <span className="font-tech font-bold tabular-nums text-white">{formatDuration(elapsed)}</span>. Garde cette page
+                ouverte : un son et une notification te préviennent dès que ton match est trouvé.
               </>
             ) : (
-              <>Dès que {queue.needed} joueurs sont en file, les équipes et la carte sont tirées au sort.</>
+              <>Dès que {queue.needed} joueurs sont en file, les équipes et la carte sont tirées au sort. Tu auras alors une minute pour accepter.</>
             )}
           </p>
 
@@ -122,6 +142,29 @@ export function QueuePanel({ profileComplete }) {
           <div className="mt-6 space-y-3">
             {error ? <Notice tone="error">{error}</Notice> : null}
 
+            {queue.aborted?.reason === "requeued" ? (
+              <Notice tone="success">Un joueur n&apos;a pas accepté le match : tu es remis en tête de file.</Notice>
+            ) : null}
+            {queue.aborted?.reason === "missed" ? (
+              <Notice tone="error">
+                Tu n&apos;as pas accepté le match à temps : avertissement enregistré.
+                {queue.aborted.bannedUntil ? " Plusieurs avertissements en 24 h entraînent une exclusion temporaire de la file." : " Au prochain oubli dans les 24 h, tu seras exclu 15 minutes."}
+              </Notice>
+            ) : null}
+
+            {banned ? (
+              <Notice tone="error">
+                <span className="inline-flex items-center gap-2 font-semibold">
+                  <LuBan aria-hidden className="h-4 w-4" />
+                  Exclu de la file encore <span className="font-tech tabular-nums">{formatDuration(banLeft)}</span>
+                </span>{" "}
+                après des matchs non acceptés.{" "}
+                <Link href="/reglement" className="underline underline-offset-4">
+                  Voir le règlement
+                </Link>
+              </Notice>
+            ) : null}
+
             {hasActiveMatch ? (
               <Notice>
                 Tu as un match en cours : termine-le avant de relancer une recherche.{" "}
@@ -142,38 +185,38 @@ export function QueuePanel({ profileComplete }) {
 
             {queue.status === "reconnecting" ? (
               <Notice>
-                Connexion au serveur de jeu en cours. S&apos;il était en veille, son réveil peut prendre jusqu&apos;à une minute :
-                reste sur la page, la connexion se rétablit toute seule.
+                Connexion au serveur de jeu en cours. S&apos;il était en veille, son réveil peut prendre jusqu&apos;à une minute : reste sur la
+                page, la connexion se rétablit toute seule.
               </Notice>
             ) : null}
           </div>
         </div>
       </TacticalCard>
 
-      <MatchFoundOverlay match={queue.matchFound} />
+      <ReadyCheckOverlay check={queue.readyCheck} started={queue.started} userId={userId} />
     </>
   );
 }
 
 /** « 1 min 05 s » à partir d'un nombre de secondes. */
-function formatDuration(seconds) {
-  const total = Math.floor(seconds);
-  const minutes = Math.floor(total / 60);
+export function formatDuration(seconds) {
+  const total = Math.max(0, Math.floor(seconds));
+  const hours = Math.floor(total / 3600);
+  const minutes = Math.floor((total % 3600) / 60);
   const rest = String(total % 60).padStart(2, "0");
+  if (hours > 0) return `${hours} h ${String(minutes).padStart(2, "0")} min`;
   return minutes > 0 ? `${minutes} min ${rest} s` : `${total} s`;
 }
 
 /** Secondes écoulées depuis une date, rafraîchies chaque seconde. */
 function useElapsedSeconds(since) {
   const [now, setNow] = useState(() => Date.now());
-
   useEffect(() => {
     if (!since) return undefined;
     setNow(Date.now());
     const timer = setInterval(() => setNow(Date.now()), 1000);
     return () => clearInterval(timer);
   }, [since]);
-
   return since ? Math.max(0, (now - new Date(since).getTime()) / 1000) : 0;
 }
 
@@ -181,7 +224,6 @@ function ConnectionStatus({ status }) {
   const open = status === "online";
   const label = open ? "Temps réel connecté" : status === "reconnecting" ? "Reconnexion…" : "Connexion…";
   const Icon = open ? LuWifi : LuWifiOff;
-
   return (
     <span role="status" className={cn("inline-flex items-center gap-2 text-xs", open ? "text-win" : "text-white/45")}>
       <Icon aria-hidden className="h-4 w-4" />
@@ -190,11 +232,42 @@ function ConnectionStatus({ status }) {
   );
 }
 
-/** Annonce plein écran quand le match est trouvé. */
-function MatchFoundOverlay({ match }) {
+/** Écran plein « Match trouvé » : une minute pour accepter. */
+function ReadyCheckOverlay({ check, started, userId }) {
+  const [accepting, setAccepting] = useState(false);
+  const [acceptedByMe, setAcceptedByMe] = useState(false);
+  const [error, setError] = useState(null);
+  const left = useCountdown(check?.deadline);
+
+  useEffect(() => {
+    setAcceptedByMe(false);
+    setError(null);
+  }, [check?.matchId]);
+
+  const mine = acceptedByMe || Boolean(check?.readyUsers?.includes(userId));
+  const visible = Boolean(check) || Boolean(started);
+
+  async function accept() {
+    setAccepting(true);
+    setError(null);
+    try {
+      await api(`/cod/matches/${check.matchId}/ready`, { method: "POST" });
+      setAcceptedByMe(true);
+      stopFlashTitle();
+    } catch (caught) {
+      setError(caught.message);
+    } finally {
+      setAccepting(false);
+    }
+  }
+
+  const total = check?.total ?? 0;
+  const accepted = Math.max(check?.accepted ?? 0, mine ? 1 : 0);
+  const progress = check?.deadline ? Math.min(100, (left / 60) * 100) : 0;
+
   return (
     <AnimatePresence>
-      {match ? (
+      {visible ? (
         <motion.div
           role="alertdialog"
           aria-modal="true"
@@ -205,7 +278,7 @@ function MatchFoundOverlay({ match }) {
           className="fixed inset-0 z-[80] flex items-center justify-center overflow-hidden bg-ink/95 px-4 backdrop-blur-md"
         >
           <div aria-hidden className="absolute inset-0 bg-grid mask-fade" />
-          <div aria-hidden className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,rgba(212,175,55,0.22),transparent_60%)]" />
+          <div aria-hidden className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,color-mix(in_srgb,var(--color-gold)_22%,transparent),transparent_60%)]" />
           <motion.div
             aria-hidden
             initial={{ scaleX: 0 }}
@@ -218,29 +291,81 @@ function MatchFoundOverlay({ match }) {
             initial={{ opacity: 0, scale: 0.9, y: 20 }}
             animate={{ opacity: 1, scale: 1, y: 0 }}
             transition={{ duration: 0.5, delay: 0.15, ease: [0.22, 1, 0.36, 1] }}
-            className="relative text-center"
+            className="relative w-full max-w-2xl text-center"
           >
-            <p className="font-tech text-xs uppercase tracking-[0.4em] text-gold">Équipes formées</p>
-            <p className="mt-4 font-display text-7xl font-black uppercase leading-[0.85] sm:text-9xl">
-              Match <span className="text-gold-gradient">trouvé</span>
-            </p>
-            <p className="mt-6 inline-flex flex-wrap items-center justify-center gap-x-3 gap-y-1 font-display text-2xl font-bold uppercase tracking-[0.14em] text-white/85">
-              <LuMap aria-hidden className="h-6 w-6 text-gold" />
-              {match.map}
-              <span aria-hidden className="text-white/25">
-                /
-              </span>
-              {match.mode}
-            </p>
-            <p className="mt-8 flex items-center justify-center gap-2.5 text-sm text-white/55">
-              <LuLoaderCircle aria-hidden className="h-4 w-4 animate-spin text-gold" />
-              Ouverture du salon de match…
-            </p>
-            <div className="mt-6 flex justify-center">
-              <ButtonLink href={`/cod/match/${match.matchId}`} variant="outline" size="sm">
-                Y aller maintenant
-              </ButtonLink>
-            </div>
+            {started ? (
+              <>
+                <p className="font-tech text-xs uppercase tracking-[0.4em] text-gold">Tout le monde est prêt</p>
+                <p className="mt-4 font-display text-7xl font-black uppercase leading-[0.85] sm:text-9xl">
+                  C&apos;est <span className="text-gold-gradient">parti</span>
+                </p>
+                <p className="mt-8 flex items-center justify-center gap-2.5 text-sm text-white/55">
+                  <LuLoaderCircle aria-hidden className="h-4 w-4 animate-spin text-gold" />
+                  Ouverture du salon de match…
+                </p>
+              </>
+            ) : check ? (
+              <>
+                <p className="font-tech text-xs uppercase tracking-[0.4em] text-gold">Équipes formées</p>
+                <p className="mt-4 font-display text-7xl font-black uppercase leading-[0.85] sm:text-9xl">
+                  Match <span className="text-gold-gradient">trouvé</span>
+                </p>
+                <p className="mt-6 inline-flex flex-wrap items-center justify-center gap-x-3 gap-y-1 font-display text-2xl font-bold uppercase tracking-[0.14em] text-white/85">
+                  <LuMap aria-hidden className="h-6 w-6 text-gold" />
+                  {check.map}
+                  <span aria-hidden className="text-white/25">/</span>
+                  {check.mode}
+                </p>
+
+                {/* Compte à rebours */}
+                <div className="mx-auto mt-8 max-w-md">
+                  <p className="font-display text-6xl font-black tabular-nums leading-none" aria-live="polite">
+                    {Math.ceil(left)}
+                    <span className="ml-1 text-2xl text-white/40">s</span>
+                  </p>
+                  <div aria-hidden className="mt-3 h-1.5 w-full bg-white/10">
+                    <div className={cn("h-full transition-[width] duration-300", left < 15 ? "bg-loss" : "bg-gold-sheen")} style={{ width: `${progress}%` }} />
+                  </div>
+                </div>
+
+                {/* Joueurs prêts */}
+                <div aria-hidden className="mx-auto mt-6 flex max-w-md justify-center gap-1.5">
+                  {Array.from({ length: total }, (_, index) => (
+                    <span
+                      key={index}
+                      className={cn(
+                        "h-3 flex-1 -skew-x-[18deg] transition-all duration-300",
+                        index < accepted ? "bg-win shadow-[0_0_10px_var(--color-win)]" : "bg-white/12",
+                      )}
+                    />
+                  ))}
+                </div>
+                <p className="mt-3 text-sm text-white/60">
+                  {accepted} / {total} joueur{total > 1 ? "s" : ""} prêt{accepted > 1 ? "s" : ""}
+                </p>
+
+                <div className="mt-8 flex justify-center">
+                  {mine ? (
+                    <p className="inline-flex items-center gap-2.5 font-display text-2xl font-bold uppercase tracking-[0.12em] text-win">
+                      <LuCheck aria-hidden className="h-6 w-6" />
+                      Prêt — en attente des autres
+                    </p>
+                  ) : (
+                    <Button size="lg" onClick={accept} disabled={accepting || left <= 0}>
+                      {accepting ? <LuLoaderCircle aria-hidden className="h-5 w-5 animate-spin" /> : <LuCheck aria-hidden className="h-5 w-5" />}
+                      Accepter le match
+                    </Button>
+                  )}
+                </div>
+                {error ? <p className="mt-4 text-sm text-loss">{error}</p> : null}
+                <p className="mt-6 text-xs text-white/40">
+                  Sans réponse dans la minute, tu es retiré de la file et un avertissement est enregistré.{" "}
+                  <ButtonLink href="/reglement" variant="ghost" size="sm" className="align-baseline">
+                    Règlement
+                  </ButtonLink>
+                </p>
+              </>
+            ) : null}
           </motion.div>
         </motion.div>
       ) : null}

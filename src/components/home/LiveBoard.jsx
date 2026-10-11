@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { LuArrowRight } from "react-icons/lu";
+import useSeasons from "../../hooks/useSeasons";
 import useSiteStats, { formatCount } from "../../hooks/useSiteStats";
 import useTopPlayers from "../../hooks/useTopPlayers";
 import { rankFor } from "../../lib/ranks";
@@ -13,6 +14,7 @@ import { SectionHeading } from "../ui/Typography";
 export function LiveBoard() {
   const stats = useSiteStats();
   const top = useTopPlayers(5);
+  const { label } = useSeasons();
 
   return (
     <section className="py-20 sm:py-28">
@@ -38,7 +40,7 @@ export function LiveBoard() {
         <Reveal delay={0.12}>
           <TacticalCard cut={24} innerClassName="p-6 sm:p-8">
             <div className="flex items-center justify-between gap-4">
-              <p className="font-tech text-[11px] uppercase tracking-[0.3em] text-gold">Top 5 — Saison 1</p>
+              <p className="font-tech text-[11px] uppercase tracking-[0.3em] text-gold">Top 5 — {label}</p>
               <Link href="/cod/leaderboard" className="inline-flex items-center gap-1.5 text-sm text-white/60 transition-colors hover:text-gold">
                 Classement complet
                 <LuArrowRight aria-hidden className="h-4 w-4" />

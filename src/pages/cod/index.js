@@ -10,6 +10,7 @@ import { Container } from "../../components/ui/Container";
 import { Notice, StatTile } from "../../components/ui/Feedback";
 import { TacticalCard } from "../../components/ui/TacticalCard";
 import { PageHeader, SectionHeading } from "../../components/ui/Typography";
+import useSeasons from "../../hooks/useSeasons";
 import useSession from "../../hooks/useSession";
 import useUser from "../../hooks/useUser";
 import { supabase } from "../../lib/supabase";
@@ -27,6 +28,7 @@ export default function CodHubPage() {
   const { session } = useSession();
   const user = useUser();
   const profile = user?.profile;
+  const { label: seasonLabel } = useSeasons();
   const [extra, setExtra] = useState({ position: null, activeMatchId: null });
 
   useEffect(() => {
@@ -119,7 +121,7 @@ export default function CodHubPage() {
         </div>
 
         <section aria-labelledby="titre-top10">
-          <SectionHeading eyebrow="Saison 1" title={<span id="titre-top10">Top 10</span>} />
+          <SectionHeading eyebrow={seasonLabel} title={<span id="titre-top10">Top 10</span>} />
           <div className="mt-8">
             <LeaderboardView limit={10} currentUserId={user?.id ?? null} compact />
           </div>

@@ -3,6 +3,7 @@ import { useRouter } from "next/router";
 import { Inter, Orbitron, Saira_Condensed } from "next/font/google";
 import { Footer } from "../components/layout/Footer";
 import { Navbar } from "../components/layout/Navbar";
+import { SITE_URL } from "../lib/config";
 import "../styles/globals.css";
 
 /**
@@ -20,7 +21,7 @@ const inter = Inter({ subsets: ["latin"], variable: "--font-inter", display: "sw
 const BARE_PAGES = ["/auth/callback"];
 
 export default function App({ Component, pageProps }) {
-  const { pathname } = useRouter();
+  const { pathname, asPath } = useRouter();
   const bare = BARE_PAGES.includes(pathname);
   // Pages GTA 6 : palette coucher de soleil (voir globals.css).
   const univers = pathname.startsWith("/gta6") ? "gta" : undefined;
@@ -35,9 +36,27 @@ export default function App({ Component, pageProps }) {
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <meta name="theme-color" content="#0a0a0a" />
         <meta
+          key="description"
           name="description"
           content="Classé Call of Duty en 5v5 avec matchmaking automatique et classement en direct, événements GTA 6 avec inscriptions. Connexion avec Discord."
         />
+        <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+        <link rel="apple-touch-icon" href="/favicon.svg" />
+        {/* Aperçu des liens partagés (Discord, X, WhatsApp…). */}
+        <meta property="og:site_name" content="SixSence" />
+        <meta property="og:locale" content="fr_FR" />
+        <meta property="og:type" content="website" />
+        <meta key="og:title" property="og:title" content="SixSence — Plateforme multigaming COD & GTA 6" />
+        <meta
+          key="og:description"
+          property="og:description"
+          content="Classé Call of Duty en 5v5, classement en direct et événements GTA 6. Connexion avec Discord."
+        />
+        <meta property="og:url" content={`${SITE_URL}${asPath.split(/[?#]/)[0]}`} />
+        <meta key="og:image" property="og:image" content={`${SITE_URL}/api/og`} />
+        <meta property="og:image:width" content="1200" />
+        <meta property="og:image:height" content="630" />
+        <meta name="twitter:card" content="summary_large_image" />
       </Head>
 
       {bare ? (

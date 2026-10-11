@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { LuCheck, LuCrown, LuLoaderCircle, LuMap, LuSend, LuSwords, LuX } from "react-icons/lu";
+import { LuCheck, LuCrown, LuImagePlus, LuLoaderCircle, LuMap, LuSend, LuSwords, LuX } from "react-icons/lu";
+import useCountdown from "../../hooks/useCountdown";
 import useSession from "../../hooks/useSession";
 import useUser from "../../hooks/useUser";
 import { api } from "../../lib/api";
@@ -13,6 +14,7 @@ import { TacticalCard } from "../ui/TacticalCard";
 import { Eyebrow } from "../ui/Typography";
 
 const STATUS_LABEL = {
+  ready_check: "En attente des joueurs",
   in_progress: "Match en cours",
   awaiting_confirmation: "Résultat à confirmer",
   disputed: "Résultat contesté",
@@ -29,7 +31,7 @@ const teamLabel = (team) => (team === "A" ? "Équipe 1" : "Équipe 2");
  * Salon de match : carte, mode, les deux équipes, le chat, et les actions selon l'état.
  *
  * Cycle de vie d'un match :
- *   en cours -> un joueur déclare le vainqueur -> l'équipe adverse confirme -> terminé (points mis à jour)
+ *   « Prêt ? » (1 min) -> en cours -> un joueur déclare le vainqueur -> l'équipe adverse confirme -> terminé (points mis à jour)
  *                                              -> ou conteste -> un admin tranche
  *
  * Tout le monde peut regarder ; seuls les joueurs du match agissent et écrivent.
@@ -58,6 +60,7 @@ export function MatchView({ matchId }) {
       .channel(`match-${matchId}-${Math.random().toString(36).slice(2)}`)
       .on("postgres_changes", { event: "UPDATE", schema: "public", table: "cod_matches", filter: `id=eq.${matchId}` }, load)
       .on("postgres_changes", { event: "INSERT", schema: "public", table: "cod_match_messages", filter: `match_id=eq.${matchId}` }, load)
+      .on("postgres_changes", { event: "INSERT", schema: "public", table: "cod_match_proofs", filter: `match_id=eq.${matchId}` }, load)
       .subscribe();
     return () => {
       supabase.removeChannel(channel);
@@ -92,13 +95,15 @@ export function MatchView({ matchId }) {
   }
   if (!data) return <Loading label="Chargement du match…" />;
 
-  const { match, messages } = data;
+  const { match, messages, proofs } = data;
   const myTeam = match.team_a.includes(userId) ? "A" : match.team_b.includes(userId) ? "B" : null;
   const reporterTeam = match.reported_by ? (match.team_a.includes(match.reported_by) ? "A" : "B") : null;
   const reporterName = match.reported_by ? playerById.get(match.reported_by)?.username ?? "Un joueur" : "Un joueur";
   const hostName = playerById.get(match.team_a[0])?.username ?? "L'hôte";
   const isAdmin = user?.role === "admin";
   const spinner = <LuLoaderCircle aria-hidden className="h-5 w-5 animate-spin" />;
+  const readyUsers = match.ready_users || [];
+  const canProve = Boolean(myTeam) && ["in_progress", "awaiting_confirmation", "disputed"].includes(match.status);
 
   return (
     <div className="space-y-8">
@@ -130,6 +135,16 @@ export function MatchView({ matchId }) {
       {/* --- Actions selon l'état ----------------------------------------- */}
       <div aria-live="polite" className="space-y-4">
         {error ? <Notice tone="error">{error}</Notice> : null}
+
+        {match.status === "ready_check" ? (
+          <ReadyCheckBlock
+            match={match}
+            isPlayer={Boolean(myTeam)}
+            iAmReady={readyUsers.includes(userId)}
+            pending={pending === "ready"}
+            onAccept={() => act("ready", undefined, "ready")}
+          />
+        ) : null}
 
         {match.status === "in_progress" ? (
           <>
@@ -215,7 +230,9 @@ export function MatchView({ matchId }) {
 
         {match.status === "cancelled" ? (
           <Notice>
-            Ce match a été annulé : aucun point n&apos;a été modifié.{" "}
+            {match.cancel_reason === "ready_check_failed"
+              ? "Match annulé : tous les joueurs n'ont pas accepté à temps. Les joueurs prêts ont été remis en tête de file."
+              : "Ce match a été annulé : aucun point n'a été modifié."}{" "}
             <Link href="/cod/ranked" className="font-semibold text-gold underline underline-offset-4 hover:text-gold-light">
               Retourner à la file
             </Link>
@@ -225,12 +242,17 @@ export function MatchView({ matchId }) {
 
       {/* --- Les deux équipes --------------------------------------------- */}
       <div className="grid grid-cols-1 gap-6 pt-4 lg:grid-cols-[1fr_auto_1fr] lg:items-start">
-        <TeamColumn team="A" match={match} ids={match.team_a} playerById={playerById} currentUserId={userId} />
+        <TeamColumn team="A" match={match} ids={match.team_a} playerById={playerById} currentUserId={userId} readyUsers={readyUsers} />
         <div aria-hidden className="flex items-center justify-center lg:pt-16">
           <span className="font-display text-5xl font-black italic leading-none text-outline">VS</span>
         </div>
-        <TeamColumn team="B" match={match} ids={match.team_b} playerById={playerById} currentUserId={userId} />
+        <TeamColumn team="B" match={match} ids={match.team_b} playerById={playerById} currentUserId={userId} readyUsers={readyUsers} />
       </div>
+
+      {/* --- Preuves (captures du tableau des scores) -------------------- */}
+      {canProve || (proofs || []).length > 0 ? (
+        <MatchProofs matchId={match.id} proofs={proofs || []} canUpload={canProve} currentUserId={userId} onUploaded={load} />
+      ) : null}
 
       {/* --- Chat ----------------------------------------------------------- */}
       <MatchChat matchId={match.id} messages={messages || []} canWrite={Boolean(myTeam)} currentUserId={userId} />
@@ -238,7 +260,7 @@ export function MatchView({ matchId }) {
   );
 }
 
-function TeamColumn({ team, match, ids, playerById, currentUserId }) {
+function TeamColumn({ team, match, ids, playerById, currentUserId, readyUsers = [] }) {
   const won = match.status === "completed" && match.winner === team;
   const lost = match.status === "completed" && match.winner !== team;
   const known = ids.map((id) => playerById.get(id)).filter(Boolean);
@@ -275,6 +297,11 @@ function TeamColumn({ team, match, ids, playerById, currentUserId }) {
                     {player?.username ?? "Joueur inconnu"}
                   </Link>
                   {isMe ? <Chip className="shrink-0">Toi</Chip> : null}
+                  {match.status === "ready_check" ? (
+                    <Chip tone={readyUsers.includes(id) ? "win" : "neutral"} className="shrink-0">
+                      {readyUsers.includes(id) ? "Prêt" : "En attente"}
+                    </Chip>
+                  ) : null}
                   {isHost ? (
                     <Chip tone="neutral" className="shrink-0">
                       Hôte
@@ -380,6 +407,130 @@ function MatchChat({ matchId, messages, canWrite, currentUserId }) {
         )}
         {error ? <p className="px-4 pb-4 text-xs text-loss">{error}</p> : null}
       </TacticalCard>
+    </section>
+  );
+}
+
+/** Vérification « Prêt ? » : chaque joueur a une minute pour accepter. */
+function ReadyCheckBlock({ match, isPlayer, iAmReady, pending, onAccept }) {
+  const left = useCountdown(match.ready_deadline);
+  const total = match.team_a.length + match.team_b.length;
+  const accepted = (match.ready_users || []).length;
+
+  return (
+    <TacticalCard highlight cut={20} innerClassName="flex flex-col gap-5 p-6 sm:flex-row sm:items-center sm:justify-between">
+      <div>
+        <p className="font-display text-2xl font-black uppercase tracking-wide">
+          {accepted} / {total} joueurs prêts
+        </p>
+        <p className="mt-1 text-sm text-white/60">
+          Encore <span className="font-tech font-bold tabular-nums text-white">{Math.ceil(left)} s</span> pour accepter. Sans réponse de
+          tous, le match est annulé et les absents reçoivent un avertissement.
+        </p>
+      </div>
+      {isPlayer ? (
+        iAmReady ? (
+          <p className="inline-flex items-center gap-2 font-display text-xl font-bold uppercase tracking-[0.12em] text-win">
+            <LuCheck aria-hidden className="h-5 w-5" />
+            Tu es prêt
+          </p>
+        ) : (
+          <Button size="lg" onClick={onAccept} disabled={pending || left <= 0}>
+            {pending ? <LuLoaderCircle aria-hidden className="h-5 w-5 animate-spin" /> : <LuCheck aria-hidden className="h-5 w-5" />}
+            Accepter le match
+          </Button>
+        )
+      ) : null}
+    </TacticalCard>
+  );
+}
+
+const PROOF_TYPES = { "image/png": "png", "image/jpeg": "jpg", "image/webp": "webp" };
+const MAX_PROOF_BYTES = 5 * 1024 * 1024;
+
+/**
+ * Preuves du match : captures du tableau des scores, utiles en cas de contestation.
+ * Le fichier part directement dans Supabase Storage (dossier <match>/<joueur>/),
+ * puis le backend l'enregistre (5 captures maximum par joueur).
+ */
+function MatchProofs({ matchId, proofs, canUpload, currentUserId, onUploaded }) {
+  const [uploading, setUploading] = useState(false);
+  const [error, setError] = useState(null);
+  const inputRef = useRef(null);
+
+  async function upload(event) {
+    const file = event.target.files?.[0];
+    event.target.value = "";
+    if (!file) return;
+    const extension = PROOF_TYPES[file.type];
+    if (!extension) return setError("Formats acceptés : PNG, JPEG ou WebP.");
+    if (file.size > MAX_PROOF_BYTES) return setError("Image trop lourde : 5 Mo maximum.");
+
+    setUploading(true);
+    setError(null);
+    try {
+      const path = `${matchId}/${currentUserId}/${Date.now()}.${extension}`;
+      const { error: storageError } = await supabase.storage.from("match-proofs").upload(path, file, { contentType: file.type });
+      if (storageError) throw new Error("Envoi de l'image impossible. Réessaie dans un instant.");
+      await api(`/cod/matches/${matchId}/proofs`, { method: "POST", body: { path } });
+      await onUploaded();
+    } catch (caught) {
+      setError(caught.message);
+    } finally {
+      setUploading(false);
+    }
+  }
+
+  return (
+    <section aria-labelledby="titre-preuves">
+      <div className="flex flex-wrap items-end justify-between gap-4">
+        <div>
+          <Eyebrow>Preuves</Eyebrow>
+          <h2 id="titre-preuves" className="mt-3 font-display text-4xl font-black uppercase leading-none">
+            Captures du match
+          </h2>
+        </div>
+        {canUpload ? (
+          <>
+            <input
+              ref={inputRef}
+              type="file"
+              accept="image/png,image/jpeg,image/webp"
+              className="sr-only"
+              tabIndex={-1}
+              aria-hidden
+              onChange={upload}
+            />
+            <Button variant="outline" size="sm" onClick={() => inputRef.current?.click()} disabled={uploading}>
+              {uploading ? <LuLoaderCircle aria-hidden className="h-4 w-4 animate-spin" /> : <LuImagePlus aria-hidden className="h-4 w-4" />}
+              Ajouter une capture
+            </Button>
+          </>
+        ) : null}
+      </div>
+      {canUpload ? (
+        <p className="mt-3 text-sm text-white/55">
+          Une capture du tableau des scores en fin de partie permet à un administrateur de trancher en cas de contestation (PNG, JPEG ou
+          WebP, 5 Mo max).
+        </p>
+      ) : null}
+      {error ? <p className="mt-3 text-sm text-loss">{error}</p> : null}
+
+      {proofs.length > 0 ? (
+        <ul className="mt-6 grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4">
+          {proofs.map((proof) => (
+            <li key={proof.id}>
+              <a href={proof.url} target="_blank" rel="noopener noreferrer" className="group block border border-white/10 bg-white/[0.03] hover:border-gold">
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img src={proof.url} alt={`Capture envoyée par ${proof.username}`} loading="lazy" className="aspect-video w-full object-cover" />
+                <p className="truncate px-3 py-2 text-xs text-white/60 group-hover:text-white">
+                  {proof.username} · {new Date(proof.created_at).toLocaleTimeString("fr-FR", { hour: "2-digit", minute: "2-digit" })}
+                </p>
+              </a>
+            </li>
+          ))}
+        </ul>
+      ) : null}
     </section>
   );
 }

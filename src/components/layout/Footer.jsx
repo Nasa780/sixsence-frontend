@@ -20,6 +20,7 @@ const COLUMNS = [
     links: [
       { href: "/founders", label: "Fondateurs" },
       { href: "/partners", label: "Partenaires" },
+      { href: "/reglement", label: "Règlement" },
       { href: "/cod/profile", label: "Mon profil" },
     ],
   },
@@ -68,7 +69,20 @@ export function Footer() {
 
       <div className="border-t border-white/8">
         <Container className="flex flex-col gap-3 py-6 text-xs leading-relaxed text-white/40 md:flex-row md:items-start md:justify-between">
-          <p>© {new Date().getFullYear()} SixSence. Tous droits réservés.</p>
+          <div className="space-y-2">
+            <p>© {new Date().getFullYear()} SixSence. Tous droits réservés.</p>
+            <nav aria-label="Informations légales" className="flex flex-wrap gap-x-4 gap-y-1">
+              <Link href="/mentions-legales" className="transition-colors hover:text-white">
+                Mentions légales
+              </Link>
+              <Link href="/confidentialite" className="transition-colors hover:text-white">
+                Confidentialité
+              </Link>
+              <Link href="/reglement" className="transition-colors hover:text-white">
+                Règlement
+              </Link>
+            </nav>
+          </div>
           <p className="max-w-2xl md:text-right">
             SixSence est une plateforme communautaire indépendante, sans lien avec Activision, Rockstar Games, Take-Two
             Interactive ou Discord. Call of Duty et Grand Theft Auto sont des marques de leurs propriétaires respectifs.

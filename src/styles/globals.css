@@ -233,3 +233,49 @@
     scroll-behavior: auto !important;
   }
 }
+
+/* Texte courant des pages légales et du règlement. */
+@layer components {
+  .legal-prose {
+    color: rgb(255 255 255 / 0.68);
+    font-size: 0.95rem;
+    line-height: 1.75;
+  }
+  .legal-prose > * + * {
+    margin-top: 1rem;
+  }
+  .legal-prose strong {
+    color: #fff;
+    font-weight: 600;
+  }
+  .legal-prose a {
+    color: var(--color-gold);
+    text-decoration: underline;
+    text-underline-offset: 4px;
+  }
+  .legal-prose ul {
+    list-style: none;
+    padding-left: 0;
+  }
+  .legal-prose li {
+    position: relative;
+    padding-left: 1.25rem;
+  }
+  .legal-prose li + li {
+    margin-top: 0.5rem;
+  }
+  .legal-prose li::before {
+    content: "";
+    position: absolute;
+    left: 0;
+    top: 0.7em;
+    width: 0.5rem;
+    height: 2px;
+    background: var(--color-gold);
+  }
+  .legal-prose .todo {
+    background: color-mix(in srgb, var(--color-gold) 18%, transparent);
+    color: var(--color-gold-light, #fff);
+    padding: 0 0.3rem;
+  }
+}

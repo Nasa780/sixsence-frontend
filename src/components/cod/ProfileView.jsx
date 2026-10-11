@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { LuLock, LuMedal } from "react-icons/lu";
+import useSeasons, { seasonBadge } from "../../hooks/useSeasons";
 import { cn } from "../../lib/cn";
 import { levelFor } from "../../lib/ranks";
 import { supabase } from "../../lib/supabase";
@@ -24,12 +25,17 @@ const STAFF_BADGES = {
   mvp: { label: "MVP", description: "Distingué par l'équipe pour ses performances." },
 };
 
-function badgesFor(profile) {
+function badgesFor(profile, seasons) {
   const played = profile.wins + profile.losses;
   const staff = (profile.badges || [])
     .filter((key) => STAFF_BADGES[key])
     .map((key) => ({ key, ...STAFF_BADGES[key], unlocked: true }));
+  const seasonal = (profile.badges || [])
+    .map((key) => ({ key, badge: seasonBadge(key, seasons) }))
+    .filter(({ badge }) => badge)
+    .map(({ key, badge }) => ({ key, ...badge, unlocked: true }));
   return [
+    ...seasonal,
     ...staff,
     { key: "first-blood", label: "Premier sang", description: "Gagner un match classé.", unlocked: profile.wins >= 1 },
     { key: "domination", label: "Domination", description: "Gagner 10 matchs.", unlocked: profile.wins >= 10 },
@@ -47,6 +53,7 @@ function badgesFor(profile) {
 export function ProfileView({ userId, editable = false, ownUser = null }) {
   const [data, setData] = useState(null);
   const [notFound, setNotFound] = useState(false);
+  const { seasons } = useSeasons();
 
   const load = useCallback(async () => {
     const [{ data: player }, { data: profile }, { data: history }] = await Promise.all([
@@ -76,10 +83,21 @@ export function ProfileView({ userId, editable = false, ownUser = null }) {
   const { player, profile, history, position } = data;
   const played = profile.wins + profile.losses;
   const rate = winRate(profile.wins, profile.losses);
-  const badges = badgesFor(profile);
+  const badges = badgesFor(profile, seasons);
+  const bannedUntil = profile.banned_until && new Date(profile.banned_until) > new Date() ? new Date(profile.banned_until) : null;
 
   return (
     <div className="space-y-12">
+      {editable && bannedUntil ? (
+        <Notice tone="error">
+          Tu es exclu de la file classée jusqu&apos;à{" "}
+          {bannedUntil.toLocaleTimeString("fr-FR", { hour: "2-digit", minute: "2-digit" })} après plusieurs matchs non acceptés.{" "}
+          <Link href="/reglement" className="underline underline-offset-4">
+            Voir le règlement
+          </Link>
+        </Notice>
+      ) : null}
+
       {editable && !profile.activision_id ? (
         <Notice>Ton profil est incomplet : ajoute ton identifiant Activision ci-dessous pour pouvoir rejoindre la file classée.</Notice>
       ) : null}

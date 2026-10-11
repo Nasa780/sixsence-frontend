@@ -14,10 +14,11 @@ import { rankFor } from "../../lib/ranks";
 
 const RULES = [
   { title: "Dix joueurs, un match", text: "La file se déclenche à dix. Les premiers arrivés sont les premiers servis." },
+  { title: "Une minute pour accepter", text: "Match trouvé : un son te prévient, tu as 60 secondes pour cliquer sur « Accepter »." },
   { title: "Tout est tiré au sort", text: "Équipes et carte : personne ne choisit, personne ne peut tricher." },
   { title: "L'hôte crée la partie", text: "Le premier joueur de l'équipe 1 ouvre la partie privée et invite les autres." },
   { title: "Le résultat se confirme à deux", text: "Un joueur déclare le vainqueur, l'équipe adverse valide. Les points bougent ensuite." },
-  { title: "Engagement", text: "Lancer un match, c'est s'engager à le jouer : les abandons répétés sont sanctionnés." },
+  { title: "Engagement", text: "Match non accepté = avertissement. 2e oubli en 24 h : 15 min sans file, 3e : 1 h, ensuite 24 h." },
 ];
 
 /** File d'attente classée : panneau temps réel, règles, rangs. Visible par tous, jouable une fois connecté. */
@@ -78,7 +79,7 @@ export default function RankedPage() {
               <Loading />
             ) : session ? (
               // La session est connue : on attend le profil pour savoir si l'identifiant Activision est renseigné.
-              user ? <QueuePanel profileComplete={profileComplete} /> : <Loading label="Chargement du profil…" />
+              user ? <QueuePanel profileComplete={profileComplete} userId={user.id} /> : <Loading label="Chargement du profil…" />
             ) : (
               <LoginPrompt next="/cod/ranked" />
             )}
