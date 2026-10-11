@@ -38,7 +38,7 @@ export default function App({ Component, pageProps }) {
         <meta
           key="description"
           name="description"
-          content="La plateforme gaming de la communauté : matchs classés Call of Duty MW4 en 5v5 avec matchmaking automatique, classement en direct et saisons, événements GTA 6 avec inscriptions. Gratuit, connexion avec Discord."
+          content="La plateforme gaming de la communauté : matchs classés Call of Duty MW4 avec matchmaking automatique, classement en direct et saisons, événements GTA 6 avec inscriptions. Gratuit, connexion avec Discord."
         />
         <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
         <link rel="apple-touch-icon" href="/favicon.svg" />
@@ -50,13 +50,13 @@ export default function App({ Component, pageProps }) {
         <meta
           key="og:description"
           property="og:description"
-          content="La plateforme gaming de la communauté : matchs classés MW4 en 5v5, classement en direct, récompenses de saison et événements GTA 6. Accès gratuit avec Discord."
+          content="La plateforme gaming de la communauté : matchs classés MW4, classement en direct, récompenses de saison et événements GTA 6. Accès gratuit avec Discord."
         />
         <meta property="og:url" content={`${SITE_URL}${asPath.split(/[?#]/)[0]}`} />
-        <meta key="og:image" property="og:image" content={`${SITE_URL}/api/og?v=3`} />
+        <meta key="og:image" property="og:image" content={`${SITE_URL}/api/og?v=4`} />
         <meta property="og:image:width" content="1200" />
         <meta property="og:image:height" content="630" />
-        <meta property="og:image:alt" content="SixSence, plateforme gaming : « Entre dans l'arène ». Matchs classés MW4 en 5v5 et événements GTA 6." />
+        <meta property="og:image:alt" content="SixSence, plateforme gaming : « Entre dans l'arène ». Matchs classés MW4 et événements GTA 6." />
         <meta name="twitter:card" content="summary_large_image" />
       </Head>
 
