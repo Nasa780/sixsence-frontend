@@ -1,8 +1,18 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" fill="none">
-  <rect width="64" height="64" rx="12" fill="#0a0a0a"/>
-  <g transform="translate(4 4) scale(0.875)" stroke-linejoin="round">
-    <path d="M32 4 56.25 18v28L32 60 7.75 46V18L32 4Z" stroke="#d4af37" stroke-width="3.6"/>
-    <path d="M15 32c5-7 10.5-10.5 17-10.5S44 25 49 32c-5 7-10.5 10.5-17 10.5S20 39 15 32Z" stroke="#f1d77a" stroke-width="3.2"/>
-    <path d="M32 26.5 37.5 32 32 37.5 26.5 32 32 26.5Z" fill="#f8ecc0"/>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="2 2 60 60" fill="none">
+  <!-- Icône d'onglet : fond transparent. Or plus soutenu sur les onglets clairs, plus lumineux sur les sombres. -->
+  <style>
+    .hex { stroke: #a8841c; }
+    .eye { stroke: #b8921f; }
+    .pupil { fill: #8a6a12; }
+    @media (prefers-color-scheme: dark) {
+      .hex { stroke: #d4af37; }
+      .eye { stroke: #f1d77a; }
+      .pupil { fill: #f8ecc0; }
+    }
+  </style>
+  <g stroke-linejoin="round">
+    <path class="hex" d="M32 4 56.25 18v28L32 60 7.75 46V18L32 4Z" stroke-width="4"/>
+    <path class="eye" d="M15 32c5-7 10.5-10.5 17-10.5S44 25 49 32c-5 7-10.5 10.5-17 10.5S20 39 15 32Z" stroke-width="3.6"/>
+    <path class="pupil" d="M32 26 38 32 32 38 26 32 32 26Z"/>
   </g>
 </svg>
