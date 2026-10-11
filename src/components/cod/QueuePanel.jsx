@@ -13,7 +13,6 @@ import {
   duckMatchAlarm,
   isSoundMuted,
   playStartSound,
-  playTick,
   previewMatchSound,
   setSoundMuted,
   stopFlashTitle,
@@ -303,13 +302,6 @@ function ReadyCheckOverlay({ check, started, userId }) {
 
   const mine = acceptedByMe || Boolean(check?.readyUsers?.includes(userId));
   const visible = Boolean(check) || Boolean(started);
-
-  // Dix dernières secondes sans avoir accepté : un tic par seconde, plus aigu sur les cinq dernières.
-  const secondsLeft = Math.ceil(left);
-  const checkId = check?.matchId;
-  useEffect(() => {
-    if (checkId && !mine && secondsLeft > 0 && secondsLeft <= 10) playTick(secondsLeft <= 5);
-  }, [secondsLeft, checkId, mine]);
 
   async function accept() {
     setAccepting(true);

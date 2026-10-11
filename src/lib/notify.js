@@ -114,8 +114,8 @@ const SAMPLES = { found: "/sounds/match-found.mp3", start: "/sounds/match-start.
 const FOUND_OFFSET = 0.065;
 /** Durée jouée : de 0,3 s à 1:03 de la piste. */
 const FOUND_LENGTH = 62.7;
-/** « Tester le son » : de 0:16 à 0:21 de la piste (le fichier commence à 0,235 s). */
-const PREVIEW_OFFSET = 16 - 0.235;
+/** « Tester le son » : de 0:17 à 0:22 de la piste (le fichier commence à 0,235 s). */
+const PREVIEW_OFFSET = 17 - 0.235;
 const PREVIEW_LENGTH = 5;
 const buffers = {};
 let samplesLoading = null;
@@ -172,28 +172,6 @@ function playFallbackAlert() {
     });
   } catch {
     // Son bloqué par le navigateur : la notification et le titre suffisent.
-  }
-}
-
-/** Tic du compte à rebours (10 dernières secondes). */
-export function playTick(urgent = false) {
-  if (isSoundMuted()) return;
-  try {
-    const ctx = audio();
-    if (!ctx) return;
-    const t = ctx.currentTime + 0.01;
-    const osc = ctx.createOscillator();
-    const gain = ctx.createGain();
-    osc.type = "square";
-    osc.frequency.value = urgent ? 1760 : 1320;
-    gain.gain.setValueAtTime(0.0001, t);
-    gain.gain.exponentialRampToValueAtTime(0.07, t + 0.005);
-    gain.gain.exponentialRampToValueAtTime(0.0001, t + 0.06);
-    osc.connect(gain).connect(master);
-    osc.start(t);
-    osc.stop(t + 0.08);
-  } catch {
-    // Sans importance.
   }
 }
 
@@ -263,7 +241,7 @@ export function stopMatchAlarm({ fade = 0.5 } = {}) {
   }
 }
 
-/** Bouton « Tester le son » : de 0:16 à 0:21 de la piste (ou l'alerte de secours). */
+/** Bouton « Tester le son » : de 0:17 à 0:22 de la piste (ou l'alerte de secours). */
 export async function previewMatchSound() {
   unlockAudio();
   await loadSamples();
