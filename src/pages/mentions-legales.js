@@ -12,11 +12,12 @@ const SECTIONS = [
       <>
         <p>
           Le site <strong>sixsence.fr</strong> est édité par : {todo(LEGAL.editor)}.
+          {LEGAL.status ? ` ${LEGAL.status}` : ""}
         </p>
         <ul>
           <li>Adresse : {todo(LEGAL.address)}</li>
           <li>Contact : {LEGAL.email ? <a href={`mailto:${LEGAL.email}`}>{LEGAL.email}</a> : todo(null)}</li>
-          <li>Directeur ou directrice de la publication : {todo(LEGAL.director)}</li>
+          {LEGAL.director ? <li>Directeur ou directrice de la publication : {LEGAL.director}</li> : null}
         </ul>
       </>
     ),
