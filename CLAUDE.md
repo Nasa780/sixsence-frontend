@@ -27,19 +27,22 @@ Utilitaires maison dans `globals.css` : `clip-tactical`, `clip-slant`, `clip-cor
 
 ## Structure
 
-- `src/pages/` : `/`, `/cod` (hub), `/cod/ranked`, `/cod/match/[id]`, `/cod/leaderboard`, `/cod/profile`, `/cod/profile/[id]`, `/gta6`, `/gta6/events`, `/gta6/events/[id]`, `/founders`, `/partners`, `/login`, `/auth/callback`, `404`.
+- `src/pages/` : `/`, `/cod` (hub), `/cod/ranked`, `/cod/match/[id]`, `/cod/leaderboard`, `/cod/profile`, `/cod/profile/[id]`, `/gta6`, `/gta6/events`, `/gta6/events/[id]`, `/founders`, `/partners`, `/login`, `/auth/callback`, `/admin` (rôle admin), `/reglement`, `/mentions-legales`, `/confidentialite`, `/sitemap.xml`, `/api/og` (image d'aperçu des liens), `404`.
 - `src/components/ui/` : briques communes (Button / ButtonLink, TacticalCard, Typography, Feedback, Avatar, Logo, LoginPrompt).
 - `src/components/layout/` : Navbar (fixe, menu mobile) et Footer, posés par `_app.js` sur toutes les pages sauf `/auth/callback`.
 - `src/components/cod/`, `gta/`, `home/`, `effects/` : écrans et effets (GoldParticles, Reveal).
-- `src/hooks/` : `useSession`, `useUser` (joueur + profil COD), `useQueueSocket` (WebSocket de la file), `useSiteStats`, `useTopPlayers`, `useGtaEvents`.
-- `src/lib/` : `config.js` (URL de l'API, clé publique Supabase), `supabase.js`, `auth.js` (connexion Discord), `api.js` (appels au backend avec le jeton), `ranks.js` (8 rangs et barème).
+- `src/components/admin/` : panneau d'administration (contestations, joueurs et badges, événements, fondateurs, partenaires, clôture de saison).
+- `src/hooks/` : `useSession`, `useUser` (joueur + profil COD), `useQueueSocket` (WebSocket de la file, vérification « Prêt ? »), `useCountdown`, `useSeasons` (saison active, badges de saison), `useSiteStats`, `useTopPlayers`, `useGtaEvents`.
+- `src/lib/` : `config.js` (URL de l'API, clé publique Supabase), `supabase.js`, `auth.js` (connexion Discord), `api.js` (appels au backend avec le jeton), `ranks.js` (8 rangs et barème), `notify.js` (son, notification et titre clignotant « match trouvé »), `legal.js` (identité de l'éditeur pour les pages légales, à compléter).
 
 ## Règles
 
 - Tout le site est **public** ; la connexion Discord n'est exigée que pour la file, son propre profil, le vote et le chat de match, et l'inscription aux événements.
 - Le navigateur **lit** Supabase (RLS en lecture publique) ; toutes les **écritures** passent par le backend (`lib/api.js`). Seule exception : `activision_id` et `platform` de son propre profil.
 - Barème : victoire +30 pts et +500 XP ; défaite de -10 (Bronze) à -30 (Champion). Garder `lib/ranks.js` aligné avec la fonction SQL `cod_loss_penalty` du backend.
+- Match trouvé : vérification « Prêt ? » d'une minute (`COD_READY_SECONDS` côté backend). Les preuves (captures) sont envoyées dans le bucket Storage `match-proofs` puis enregistrées par `POST /cod/matches/:id/proofs`.
 - Ne jamais mettre la clé secrète Supabase dans le frontend.
+- Une vérification automatique (`.github/workflows/ci.yml`) construit le site à chaque PR.
 
 ## Conventions
 

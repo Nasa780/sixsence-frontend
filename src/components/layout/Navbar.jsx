@@ -3,7 +3,7 @@ import Link from "next/link";
 import { useRouter } from "next/router";
 import { useEffect, useRef, useState } from "react";
 import { FaDiscord } from "react-icons/fa6";
-import { LuCrosshair, LuLogOut, LuMenu, LuUser, LuX } from "react-icons/lu";
+import { LuCrosshair, LuLogOut, LuMenu, LuShieldCheck, LuUser, LuX } from "react-icons/lu";
 import useSession from "../../hooks/useSession";
 import useUser from "../../hooks/useUser";
 import { signInWithDiscord, signOut } from "../../lib/auth";
@@ -154,6 +154,11 @@ export function Navbar() {
                     <Link href="/cod/ranked" className="px-4 py-3 text-sm text-white/70 hover:text-gold">
                       File classée
                     </Link>
+                    {user.role === "admin" ? (
+                      <Link href="/admin" className="px-4 py-3 text-sm text-white/70 hover:text-gold">
+                        Administration
+                      </Link>
+                    ) : null}
                     <button
                       type="button"
                       onClick={signOut}
@@ -244,6 +249,16 @@ function UserMenu({ user }) {
               <LuCrosshair aria-hidden className="h-4 w-4" />
               File classée
             </Link>
+            {user.role === "admin" ? (
+              <Link
+                role="menuitem"
+                href="/admin"
+                className="flex items-center gap-2.5 px-4 py-2.5 text-sm text-white/75 transition-colors hover:bg-white/5 hover:text-gold"
+              >
+                <LuShieldCheck aria-hidden className="h-4 w-4" />
+                Administration
+              </Link>
+            ) : null}
             <div className="my-1.5 border-t border-white/10" />
             <button
               type="button"

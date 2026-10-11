@@ -1,0 +1,304 @@
+import Link from "next/link";
+import { useCallback, useEffect, useState } from "react";
+import { LuExternalLink, LuLoaderCircle, LuShieldCheck, LuLockOpen } from "react-icons/lu";
+import { api } from "../../lib/api";
+import { cn } from "../../lib/cn";
+import { Avatar } from "../ui/Avatar";
+import { Button } from "../ui/Button";
+import { Chip, EmptyState, Loading, Notice, StatTile } from "../ui/Feedback";
+import { TacticalCard } from "../ui/TacticalCard";
+import { SearchInput } from "./Fields";
+
+/** Petit utilitaire : appelle le backend, gère « en cours » et les erreurs. */
+function useAction() {
+  const [pending, setPending] = useState(null);
+  const [error, setError] = useState(null);
+  const run = useCallback(async (key, fn) => {
+    setPending(key);
+    setError(null);
+    try {
+      return await fn();
+    } catch (caught) {
+      setError(caught.message);
+      return undefined;
+    } finally {
+      setPending(null);
+    }
+  }, []);
+  return { pending, error, run };
+}
+
+// --- Tableau de bord -------------------------------------------------------------
+
+export function OverviewPanel({ onNavigate }) {
+  const [data, setData] = useState(null);
+  const [error, setError] = useState(null);
+
+  useEffect(() => {
+    api("/admin/overview")
+      .then(setData)
+      .catch((caught) => setError(caught.message));
+  }, []);
+
+  if (error) return <Notice tone="error">{error}</Notice>;
+  if (!data) return <Loading />;
+
+  return (
+    <div className="space-y-6">
+      <div className="grid grid-cols-2 gap-3 lg:grid-cols-4">
+        <button type="button" onClick={() => onNavigate("disputes")} className="text-left">
+          <StatTile label="Contestations" value={data.disputes} accent={data.disputes > 0} hint="à arbitrer" />
+        </button>
+        <button type="button" onClick={() => onNavigate("players")} className="text-left">
+          <StatTile label="Joueurs" value={data.players} />
+        </button>
+        <button type="button" onClick={() => onNavigate("events")} className="text-left">
+          <StatTile label="Événements à venir" value={data.upcomingEvents} />
+        </button>
+        <button type="button" onClick={() => onNavigate("players")} className="text-left">
+          <StatTile label="Exclus de la file" value={data.bannedPlayers} />
+        </button>
+      </div>
+      {data.season ? (
+        <p className="text-sm text-white/55">
+          Saison en cours : <span className="font-semibold text-white">{data.season.name}</span>, depuis le{" "}
+          {new Date(data.season.starts_at).toLocaleDateString("fr-FR", { day: "numeric", month: "long", year: "numeric" })}.
+        </p>
+      ) : null}
+    </div>
+  );
+}
+
+// --- Contestations ---------------------------------------------------------------
+
+export function DisputesPanel() {
+  const [matches, setMatches] = useState(null);
+  const { pending, error, run } = useAction();
+
+  const load = useCallback(() => api("/admin/disputes").then((data) => setMatches(data.matches)), []);
+  useEffect(() => {
+    load().catch(() => setMatches([]));
+  }, [load]);
+
+  const resolve = (matchId, winner) =>
+    run(`${matchId}-${winner}`, async () => {
+      if (winner === null) await api(`/admin/matches/${matchId}/cancel`, { method: "POST" });
+      else await api(`/cod/matches/${matchId}/resolve`, { method: "POST", body: { winner } });
+      await load();
+    });
+
+  if (matches === null) return <Loading />;
+  return (
+    <div className="space-y-4">
+      {error ? <Notice tone="error">{error}</Notice> : null}
+      {matches.length === 0 ? (
+        <EmptyState title="Aucune contestation">Tous les résultats ont été validés. Rien à arbitrer.</EmptyState>
+      ) : (
+        matches.map((match) => (
+          <TacticalCard key={match.id} cut={18} innerClassName="flex flex-col gap-4 p-5 lg:flex-row lg:items-center lg:justify-between">
+            <div>
+              <p className="font-display text-2xl font-black uppercase leading-none">
+                {match.map} <span className="text-white/40">· {match.mode}</span>
+              </p>
+              <p className="mt-2 text-sm text-white/55">
+                Victoire déclarée : {match.reported_winner === "A" ? "équipe 1" : "équipe 2"} ·{" "}
+                {new Date(match.reported_at || match.created_at).toLocaleString("fr-FR", { day: "numeric", month: "short", hour: "2-digit", minute: "2-digit" })}
+              </p>
+              <Link href={`/cod/match/${match.id}`} className="mt-2 inline-flex items-center gap-1.5 text-sm text-gold underline underline-offset-4">
+                Voir le match, le chat et les preuves
+                <LuExternalLink aria-hidden className="h-3.5 w-3.5" />
+              </Link>
+            </div>
+            <div className="flex flex-wrap gap-2">
+              <Button size="sm" onClick={() => resolve(match.id, "A")} disabled={pending !== null}>
+                {pending === `${match.id}-A` ? <LuLoaderCircle aria-hidden className="h-4 w-4 animate-spin" /> : null}
+                Équipe 1 gagne
+              </Button>
+              <Button size="sm" variant="outline" onClick={() => resolve(match.id, "B")} disabled={pending !== null}>
+                {pending === `${match.id}-B` ? <LuLoaderCircle aria-hidden className="h-4 w-4 animate-spin" /> : null}
+                Équipe 2 gagne
+              </Button>
+              <Button size="sm" variant="danger" onClick={() => resolve(match.id, null)} disabled={pending !== null}>
+                {pending === `${match.id}-null` ? <LuLoaderCircle aria-hidden className="h-4 w-4 animate-spin" /> : null}
+                Annuler
+              </Button>
+            </div>
+          </TacticalCard>
+        ))
+      )}
+    </div>
+  );
+}
+
+// --- Joueurs ---------------------------------------------------------------------
+
+const BADGE_LABEL = { founder: "Fondateur", beta: "Bêta-testeur", partner: "Partenaire", staff: "Staff", mvp: "MVP" };
+
+export function PlayersPanel({ currentUserId }) {
+  const [query, setQuery] = useState("");
+  const [players, setPlayers] = useState(null);
+  const { pending, error, run } = useAction();
+
+  const search = useCallback((term) => api(`/admin/players?q=${encodeURIComponent(term)}`).then((data) => setPlayers(data.players)), []);
+
+  useEffect(() => {
+    const timer = setTimeout(() => search(query).catch(() => setPlayers([])), 300);
+    return () => clearTimeout(timer);
+  }, [query, search]);
+
+  const update = (player, key, fn) =>
+    run(`${player.id}-${key}`, async () => {
+      await fn();
+      await search(query);
+    });
+
+  const toggleBadge = (player, badge) => {
+    const current = player.profile?.badges || [];
+    const badges = current.includes(badge) ? current.filter((item) => item !== badge) : [...current, badge];
+    return update(player, badge, () => api(`/admin/players/${player.id}/badges`, { method: "POST", body: { badges } }));
+  };
+
+  return (
+    <div className="space-y-5">
+      <SearchInput value={query} onChange={setQuery} label="Rechercher un joueur" placeholder="Rechercher un pseudo Discord…" />
+      {error ? <Notice tone="error">{error}</Notice> : null}
+      {players === null ? (
+        <Loading />
+      ) : players.length === 0 ? (
+        <EmptyState title="Aucun joueur">Aucun pseudo ne correspond à la recherche.</EmptyState>
+      ) : (
+        <ul className="space-y-2">
+          {players.map((player) => {
+            const banned = player.profile?.banned_until && new Date(player.profile.banned_until) > new Date();
+            const badges = player.profile?.badges || [];
+            return (
+              <li key={player.id} className="border-l-2 border-white/10 bg-white/[0.03] px-4 py-4">
+                <div className="flex flex-wrap items-center gap-3">
+                  <Avatar src={player.avatar_url} name={player.username} size={38} />
+                  <div className="min-w-0 flex-1">
+                    <p className="flex flex-wrap items-center gap-2">
+                      <Link href={`/cod/profile/${player.id}`} className="truncate font-display text-lg font-bold uppercase tracking-wide hover:text-gold">
+                        {player.username}
+                      </Link>
+                      {player.role === "admin" ? <Chip>Admin</Chip> : null}
+                      {banned ? <Chip tone="loss">Exclu</Chip> : null}
+                    </p>
+                    <p className="text-xs text-white/45">
+                      {player.profile ? `${player.profile.points} pts · ${player.profile.wins} V / ${player.profile.losses} D` : "Pas de profil COD"}
+                      {player.profile?.activision_id ? ` · ${player.profile.activision_id}` : ""}
+                    </p>
+                  </div>
+                  <div className="flex flex-wrap gap-2">
+                    {banned ? (
+                      <Button size="sm" variant="outline" disabled={pending !== null} onClick={() => update(player, "unban", () => api(`/admin/players/${player.id}/unban`, { method: "POST" }))}>
+                        <LuLockOpen aria-hidden className="h-4 w-4" />
+                        Lever l&apos;exclusion
+                      </Button>
+                    ) : null}
+                    {player.id !== currentUserId ? (
+                      <Button
+                        size="sm"
+                        variant="ghost"
+                        disabled={pending !== null}
+                        onClick={() => {
+                          const role = player.role === "admin" ? "member" : "admin";
+                          if (window.confirm(role === "admin" ? `Donner les droits d'administration à ${player.username} ?` : `Retirer les droits d'administration de ${player.username} ?`)) {
+                            update(player, "role", () => api(`/admin/players/${player.id}/role`, { method: "POST", body: { role } }));
+                          }
+                        }}
+                      >
+                        <LuShieldCheck aria-hidden className="h-4 w-4" />
+                        {player.role === "admin" ? "Retirer admin" : "Passer admin"}
+                      </Button>
+                    ) : null}
+                  </div>
+                </div>
+                {player.profile ? (
+                  <div className="mt-3 flex flex-wrap gap-2" aria-label={`Badges de ${player.username}`}>
+                    {Object.entries(BADGE_LABEL).map(([badge, label]) => {
+                      const on = badges.includes(badge);
+                      return (
+                        <button
+                          key={badge}
+                          type="button"
+                          aria-pressed={on}
+                          disabled={pending !== null}
+                          onClick={() => toggleBadge(player, badge)}
+                          className={cn(
+                            "border px-2.5 py-1 font-tech text-[10px] uppercase tracking-[0.18em] transition-colors disabled:opacity-50",
+                            on ? "border-gold bg-gold/15 text-gold" : "border-white/12 text-white/45 hover:border-white/30 hover:text-white",
+                          )}
+                        >
+                          {pending === `${player.id}-${badge}` ? "…" : label}
+                        </button>
+                      );
+                    })}
+                  </div>
+                ) : null}
+              </li>
+            );
+          })}
+        </ul>
+      )}
+    </div>
+  );
+}
+
+// --- Saison ----------------------------------------------------------------------
+
+export function SeasonPanel() {
+  const [overview, setOverview] = useState(null);
+  const [nextName, setNextName] = useState("");
+  const [result, setResult] = useState(null);
+  const { pending, error, run } = useAction();
+
+  useEffect(() => {
+    api("/admin/overview")
+      .then((data) => {
+        setOverview(data);
+        const number = Number(/(\d+)$/.exec(data.season?.name ?? "")?.[1]);
+        setNextName(Number.isFinite(number) && number > 0 ? `Saison ${number + 1}` : "");
+      })
+      .catch(() => setOverview({ season: null }));
+  }, []);
+
+  async function close(event) {
+    event.preventDefault();
+    if (!window.confirm(`Clôturer « ${overview?.season?.name} » ? Les points, victoires et défaites de tous les joueurs seront remis à zéro (l'XP est conservée). Action irréversible.`)) return;
+    const data = await run("close", () => api("/admin/season/close", { method: "POST", body: { nextName } }));
+    if (data) setResult(data.archived);
+  }
+
+  if (!overview) return <Loading />;
+  return (
+    <div className="max-w-2xl space-y-5">
+      <p className="text-sm leading-relaxed text-white/60">
+        Clôturer la saison <strong className="text-white">{overview.season?.name ?? "en cours"}</strong> : le classement final est archivé
+        (consultable sur la page Classement), le premier reçoit le badge Champion et les dix premiers le badge Top 10, puis les points,
+        victoires, défaites et séries repartent de zéro. L&apos;XP et les niveaux sont conservés. Impossible tant que des matchs sont en
+        cours.
+      </p>
+      {error ? <Notice tone="error">{error}</Notice> : null}
+      {result !== null ? <Notice tone="success">Saison clôturée : {result} joueur(s) archivé(s). Bonne nouvelle saison !</Notice> : null}
+      <form onSubmit={close} className="flex flex-col gap-3 sm:flex-row sm:items-end">
+        <div className="flex-1">
+          <label htmlFor="nom-saison" className="mb-1.5 block font-tech text-[10px] uppercase tracking-[0.24em] text-white/50">
+            Nom de la nouvelle saison
+          </label>
+          <input
+            id="nom-saison"
+            required
+            maxLength={40}
+            value={nextName}
+            onChange={(event) => setNextName(event.target.value)}
+            className="w-full border border-white/12 bg-ink px-3 py-2.5 text-sm text-white focus:border-gold focus:outline-none"
+          />
+        </div>
+        <Button type="submit" variant="danger" disabled={pending !== null || !nextName.trim()}>
+          {pending === "close" ? <LuLoaderCircle aria-hidden className="h-5 w-5 animate-spin" /> : null}
+          Clôturer la saison
+        </Button>
+      </form>
+    </div>
+  );
+}

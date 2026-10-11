@@ -17,5 +17,8 @@ export const SUPABASE_PUBLISHABLE_KEY =
 /** Lien d'invitation vers le serveur Discord (facultatif : affiche les boutons « Rejoindre le Discord »). */
 export const DISCORD_INVITE_URL = process.env.NEXT_PUBLIC_DISCORD_INVITE_URL || "";
 
+/** Adresse publique du site (liens absolus : aperçus de partage, plan du site). */
+export const SITE_URL = (process.env.NEXT_PUBLIC_SITE_URL || "https://www.sixsence.fr").replace(/\/$/, "");
+
 /** Adresse WebSocket du backend (file d'attente en temps réel). */
 export const WS_URL = API_URL.replace(/^http/, "ws") + "/ws";
