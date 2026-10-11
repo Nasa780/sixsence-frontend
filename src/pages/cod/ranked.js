@@ -50,6 +50,9 @@ export default function RankedPage() {
       </Head>
 
       <PageHeader
+
+
+        image="/images/mw4.webp"
         eyebrow="Classé 5v5"
         title={
           <>

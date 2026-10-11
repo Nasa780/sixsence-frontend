@@ -12,13 +12,15 @@ import { cn } from "../../lib/cn";
  * interactive : halo doré, liseré doré et soulèvement au survol.
  * highlight   : liseré doré permanent (carte mise en avant).
  * cut         : taille des coins coupés en pixels (18 par défaut).
+ * univers     : "gta" pour la palette coucher de soleil (voir globals.css).
  */
-export function TacticalCard({ children, className = "", innerClassName = "", interactive = false, highlight = false, cut = 0 }) {
+export function TacticalCard({ children, className = "", innerClassName = "", interactive = false, highlight = false, cut = 0, univers = undefined }) {
   const style = cut ? { "--cut": `${cut}px` } : undefined;
 
   return (
     <div
       style={style}
+      data-univers={univers}
       className={cn(
         "group/card relative",
         interactive && "transition duration-300 hover:-translate-y-1 hover:glow-gold-soft",

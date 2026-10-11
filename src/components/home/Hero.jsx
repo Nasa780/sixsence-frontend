@@ -8,9 +8,9 @@ import { Button, ButtonLink } from "../ui/Button";
 import { Container } from "../ui/Container";
 
 const HUD = [
-  { value: "5V5", label: "Classé COD" },
+  { value: "5V5", label: "Classé MW4" },
   { value: "LIVE", label: "File en temps réel" },
-  { value: "GTA 6", label: "Événements" },
+  { value: "GTA 6", label: "Événements", univers: "gta" },
 ];
 
 /** Écran d'accueil : particules dorées, grand titre, appel à la connexion Discord. */
@@ -101,7 +101,7 @@ export function Hero() {
 
           <motion.dl variants={item} className="mt-12 grid max-w-2xl grid-cols-3 gap-px bg-white/10 sm:mt-14">
             {HUD.map((entry) => (
-              <div key={entry.value} className="bg-ink/90 px-3 py-3.5 backdrop-blur-sm sm:px-5 sm:py-4">
+              <div key={entry.value} data-univers={entry.univers} className="bg-ink/90 px-3 py-3.5 backdrop-blur-sm sm:px-5 sm:py-4">
                 <dt className="sr-only">{entry.label}</dt>
                 <dd>
                   <span className="block font-tech text-base font-bold tracking-[0.1em] text-gold sm:text-xl">{entry.value}</span>

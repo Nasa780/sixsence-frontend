@@ -1,3 +1,4 @@
+import Image from "next/image";
 import Link from "next/link";
 import { LuArrowRight, LuCheck } from "react-icons/lu";
 import { Reveal } from "../effects/Reveal";
@@ -9,7 +10,8 @@ const UNIVERSES = [
   {
     href: "/cod",
     index: "01",
-    game: "Call of Duty",
+    game: "Call of Duty · MW4",
+    image: "/images/mw4.webp",
     title: "Classé 5v5",
     watermark: "COD",
     text: "Rejoins la file, laisse le matchmaking composer les équipes et grimpe au classement match après match.",
@@ -20,6 +22,9 @@ const UNIVERSES = [
     href: "/gta6",
     index: "02",
     game: "GTA 6",
+    image: "/images/grand-theft-auto-vi-3840x2160-22311.jpg",
+    // Palette coucher de soleil (voir globals.css), comme sur les pages GTA 6.
+    univers: "gta",
     title: "Événements",
     watermark: "VI",
     text: "Sessions organisées, rassemblements et tournois : consulte le planning et réserve ta place.",
@@ -48,8 +53,22 @@ export function Universes() {
         <div className="mt-12 grid grid-cols-1 gap-6 lg:grid-cols-2">
           {UNIVERSES.map((universe, position) => (
             <Reveal key={universe.href} delay={position * 0.12} className="h-full">
-              <Link href={universe.href} className="block h-full" aria-label={`${universe.game} : ${universe.title}`}>
+              <Link
+                href={universe.href}
+                data-univers={universe.univers}
+                className="block h-full"
+                aria-label={`${universe.game} : ${universe.title}`}
+              >
                 <TacticalCard interactive cut={28} className="h-full" innerClassName="holo overflow-hidden p-7 sm:p-10">
+                  {/* Image du jeu, très assombrie pour garder le texte lisible */}
+                  <Image
+                    src={universe.image}
+                    alt=""
+                    fill
+                    sizes="(min-width: 1024px) 50vw, 100vw"
+                    className="object-cover object-center opacity-30 transition-opacity duration-500 group-hover/card:opacity-45"
+                  />
+                  <span aria-hidden className="absolute inset-0 bg-linear-to-r from-ink-800 via-ink-800/85 to-ink-800/30" />
                   {/* Filigrane et faisceau décoratifs */}
                   <span
                     aria-hidden

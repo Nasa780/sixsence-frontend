@@ -8,11 +8,11 @@ const COLUMNS = [
   {
     title: "Jeux",
     links: [
-      { href: "/cod", label: "Call of Duty" },
+      { href: "/cod", label: "Call of Duty · MW4" },
       { href: "/cod/ranked", label: "File classée" },
       { href: "/cod/leaderboard", label: "Classement" },
-      { href: "/gta6", label: "GTA 6" },
-      { href: "/gta6/events", label: "Événements" },
+      { href: "/gta6", label: "GTA 6", univers: "gta" },
+      { href: "/gta6/events", label: "Événements GTA 6", univers: "gta" },
     ],
   },
   {
@@ -55,8 +55,8 @@ export function Footer() {
             <p className="font-tech text-[11px] uppercase tracking-[0.3em] text-gold">{column.title}</p>
             <ul className="mt-4 space-y-2.5">
               {column.links.map((link) => (
-                <li key={link.href}>
-                  <Link href={link.href} className="text-sm text-white/60 transition-colors hover:text-white">
+                <li key={link.href} data-univers={link.univers}>
+                  <Link href={link.href} className={`text-sm text-white/60 transition-colors ${link.univers ? "hover:text-gold" : "hover:text-white"}`}>
                     {link.label}
                   </Link>
                 </li>
