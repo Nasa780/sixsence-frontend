@@ -23,8 +23,9 @@ const SECTIONS = [
         <p>Visiter le site ne demande aucun compte et ne collecte aucune donnée personnelle. Si tu te connectes avec Discord :</p>
         <ul>
           <li>
-            <strong>Compte Discord</strong> : identifiant, pseudo et avatar. La connexion demande uniquement l&apos;autorisation
-            « identify » : SixSence ne reçoit ni ton adresse e-mail, ni tes serveurs, ni tes messages Discord.
+            <strong>Compte Discord</strong> : identifiant, pseudo, avatar et adresse e-mail associée au compte (transmise par Discord
+            lors de la connexion et conservée par notre service d&apos;authentification ; elle n&apos;est jamais affichée ni utilisée pour
+            t&apos;écrire). SixSence ne reçoit ni tes serveurs, ni tes amis, ni tes messages Discord.
           </li>
           <li>
             <strong>Profil de jeu</strong> : identifiant Activision et plateforme, si tu les renseignes.
