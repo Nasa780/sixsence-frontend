@@ -10,7 +10,7 @@ const FEATURES = [
   { icon: LuShieldCheck, title: "Résultats vérifiés", text: "Un résultat ne compte qu'une fois confirmé par l'équipe adverse." },
   { icon: LuTrendingUp, title: "Classement dynamique", text: "Huit rangs, de Bronze à Champion : chaque victoire rapporte +30 points." },
   { icon: LuMedal, title: "Profil complet", text: "Statistiques, historique des matchs, courbe de progression et trophées." },
-  { icon: LuCalendarDays, title: "Événements GTA 6", text: "Planning, places limitées et suivi des inscrits pour chaque session." },
+  { icon: LuCalendarDays, title: "Événements GTA 6", text: "Planning, places limitées et suivi des inscrits pour chaque session.", univers: "gta" },
 ];
 
 /** Grille des fonctionnalités clés. */
@@ -29,7 +29,7 @@ export function Features() {
         <div className="mt-12 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
           {FEATURES.map((feature, position) => (
             <Reveal key={feature.title} delay={(position % 3) * 0.08} className="h-full">
-              <TacticalCard interactive className="h-full" innerClassName="p-6">
+              <TacticalCard interactive className="h-full" innerClassName="p-6" univers={feature.univers}>
                 <feature.icon aria-hidden className="h-7 w-7 text-gold" />
                 <h3 className="mt-5 font-display text-2xl font-bold uppercase leading-none tracking-wide">{feature.title}</h3>
                 <p className="mt-2.5 text-sm leading-relaxed text-white/60">{feature.text}</p>

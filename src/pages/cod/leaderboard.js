@@ -19,6 +19,8 @@ export default function LeaderboardPage() {
         <title>Classement COD — SixSence</title>
       </Head>
       <PageHeader
+
+        image="/images/mw4.webp"
         eyebrow="Saison 1"
         title={
           <>

@@ -50,6 +50,8 @@ export default function CodHubPage() {
         <title>Call of Duty — SixSence</title>
       </Head>
       <PageHeader
+
+        image="/images/mw4.webp"
         eyebrow="Call of Duty"
         title={
           <>

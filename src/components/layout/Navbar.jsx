@@ -15,8 +15,8 @@ import { Logo } from "../ui/Logo";
 
 const LINKS = [
   { href: "/", label: "Accueil" },
-  { href: "/cod", label: "COD" },
-  { href: "/gta6", label: "GTA 6" },
+  { href: "/cod", label: "MW4" },
+  { href: "/gta6", label: "GTA 6", univers: "gta" },
   { href: "/founders", label: "Fondateurs" },
   { href: "/partners", label: "Partenaires" },
 ];
@@ -64,9 +64,10 @@ export function Navbar() {
                   key={link.href}
                   href={link.href}
                   aria-current={active ? "page" : undefined}
+                  data-univers={link.univers}
                   className={cn(
                     "relative px-4 py-2 font-display text-[15px] font-semibold uppercase tracking-[0.16em] transition-colors duration-200",
-                    active ? "text-gold" : "text-white/60 hover:text-white",
+                    active ? "text-gold" : link.univers ? "text-white/60 hover:text-gold" : "text-white/60 hover:text-white",
                   )}
                 >
                   {link.label}
@@ -128,6 +129,7 @@ export function Navbar() {
                       key={link.href}
                       href={link.href}
                       aria-current={active ? "page" : undefined}
+                      data-univers={link.univers}
                       className={cn(
                         "border-l-2 px-4 py-3.5 font-display text-xl font-bold uppercase tracking-[0.14em] transition-colors",
                         active ? "border-gold bg-gold/8 text-gold" : "border-transparent text-white/70 hover:text-white",
