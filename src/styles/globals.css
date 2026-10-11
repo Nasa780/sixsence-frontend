@@ -56,6 +56,18 @@
   }
 }
 
+/* -----------------------------------------------------------------------------
+   Univers GTA 6 : sur les pages /gta6, l'or devient un coucher de soleil
+   (orange -> rose). Toutes les classes "gold" (texte, fonds, liserés, halos,
+   dégradés) suivent automatiquement, car elles lisent ces variables.
+   -------------------------------------------------------------------------- */
+[data-univers="gta"] {
+  --color-gold: #ff6a3d;
+  --color-gold-light: #ff9a5c;
+  --color-gold-pale: #ffd29a;
+  --color-gold-dark: #d6246e;
+}
+
 @layer base {
   html {
     color-scheme: dark;

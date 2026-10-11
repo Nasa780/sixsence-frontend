@@ -16,7 +16,7 @@ export function LoginPrompt({
 }) {
   return (
     <TacticalCard highlight cut={24} className={className} innerClassName="holo overflow-hidden p-6 sm:p-10">
-      <div aria-hidden className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_left,rgba(212,175,55,0.16),transparent_60%)]" />
+      <div aria-hidden className="absolute inset-0 bg-[radial-gradient(ellipse_at_top_left,color-mix(in_srgb,var(--color-gold)_16%,transparent),transparent_60%)]" />
       <div className="relative flex flex-col gap-6 sm:flex-row sm:items-center sm:justify-between">
         <div className="flex items-start gap-4">
           <LuShieldCheck aria-hidden className="mt-1 h-8 w-8 shrink-0 text-gold" />

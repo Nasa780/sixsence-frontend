@@ -1,3 +1,4 @@
+import Image from "next/image";
 import { cn } from "../../lib/cn";
 import { Container } from "./Container";
 
@@ -24,11 +25,28 @@ export function SectionHeading({ eyebrow, title, description = null, center = fa
   );
 }
 
-/** En-tête des pages intérieures : grille tactique, faisceau doré, grand titre. */
-export function PageHeader({ eyebrow, title, description = null, actions = null }) {
+/**
+ * En-tête des pages intérieures : grille tactique, faisceau doré, grand titre.
+ * image : visuel de fond facultatif (ex. une image du jeu), assombri pour garder le texte lisible.
+ */
+export function PageHeader({ eyebrow, title, description = null, actions = null, image = null }) {
   return (
-    <header className="relative isolate overflow-hidden border-b border-white/10 pt-28 pb-10 sm:pt-36 sm:pb-14">
-      <div aria-hidden className="absolute inset-0 -z-10 bg-grid mask-fade opacity-80" />
+    <header
+      className={cn(
+        "relative isolate overflow-hidden border-b border-white/10 pt-28 pb-10 sm:pt-36 sm:pb-14",
+        image && "sm:min-h-[30rem] sm:pb-16 lg:flex lg:flex-col lg:justify-end",
+      )}
+    >
+      {image ? (
+        <>
+          <Image src={image} alt="" fill priority sizes="100vw" className="-z-20 object-cover object-center opacity-55" />
+          {/* Voiles : sombre à gauche (texte), fondu vers la page en bas, lueur de la couleur d'accent. */}
+          <div aria-hidden className="absolute inset-0 -z-10 bg-linear-to-r from-ink via-ink/75 to-ink/10" />
+          <div aria-hidden className="absolute inset-0 -z-10 bg-linear-to-t from-ink via-transparent to-ink/40" />
+          <div aria-hidden className="absolute inset-0 -z-10 bg-[radial-gradient(ellipse_at_80%_30%,color-mix(in_srgb,var(--color-gold)_22%,transparent),transparent_60%)]" />
+        </>
+      ) : null}
+      <div aria-hidden className={cn("absolute inset-0 -z-10 bg-grid mask-fade", image ? "opacity-30" : "opacity-80")} />
       <div
         aria-hidden
         className="absolute -top-10 right-[8%] -z-10 h-[140%] w-40 -skew-x-[24deg] bg-linear-to-b from-gold/20 via-gold/5 to-transparent sm:w-64"

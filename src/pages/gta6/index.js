@@ -25,6 +25,7 @@ export default function GtaHubPage() {
         <title>GTA 6 — SixSence</title>
       </Head>
       <PageHeader
+        image="/images/grand-theft-auto-vi-3840x2160-22311.jpg"
         eyebrow="GTA 6"
         title={
           <>
