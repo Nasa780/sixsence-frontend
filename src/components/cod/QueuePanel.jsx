@@ -2,12 +2,24 @@ import { AnimatePresence, motion } from "framer-motion";
 import Link from "next/link";
 import { useRouter } from "next/router";
 import { useEffect, useRef, useState } from "react";
-import { LuBan, LuCheck, LuCrosshair, LuLoaderCircle, LuMap, LuWifi, LuWifiOff, LuX } from "react-icons/lu";
+import { LuBan, LuCheck, LuCrosshair, LuLoaderCircle, LuMap, LuVolume2, LuVolumeX, LuWifi, LuWifiOff, LuX } from "react-icons/lu";
 import useCountdown from "../../hooks/useCountdown";
 import useQueueSocket from "../../hooks/useQueueSocket";
 import { api } from "../../lib/api";
 import { cn } from "../../lib/cn";
-import { alertMatchFound, askNotificationPermission, stopFlashTitle } from "../../lib/notify";
+import {
+  alertMatchFound,
+  askNotificationPermission,
+  isSoundMuted,
+  loadSamples,
+  playMatchSound,
+  playStartSound,
+  playTick,
+  setSoundMuted,
+  stopFlashTitle,
+  stopMatchAlarm,
+  unlockAudio,
+} from "../../lib/notify";
 import { Button, ButtonLink } from "../ui/Button";
 import { Chip, Notice } from "../ui/Feedback";
 import { TacticalCard } from "../ui/TacticalCard";
@@ -30,19 +42,25 @@ export function QueuePanel({ profileComplete, userId }) {
   const elapsed = useElapsedSeconds(queue.inQueue ? queue.joinedAt : null);
   const banLeft = useCountdown(queue.bannedUntil);
 
-  // Match trouvé : alerte sonore et notification (une seule fois par match).
+  // Match trouvé : alarme sonore et notification (une seule fois par match).
   const alerted = useRef(null);
   useEffect(() => {
     if (queue.readyCheck && alerted.current !== queue.readyCheck.matchId) {
       alerted.current = queue.readyCheck.matchId;
       alertMatchFound(queue.readyCheck);
     }
+    if (!queue.readyCheck) stopMatchAlarm();
   }, [queue.readyCheck]);
 
-  // Tous prêts : direction le salon de match.
+  // L'alarme ne doit jamais survivre à la page.
+  useEffect(() => () => stopMatchAlarm(), []);
+
+  // Tous prêts : son de départ, puis direction le salon de match.
   useEffect(() => {
     if (!queue.started) return undefined;
+    stopMatchAlarm();
     stopFlashTitle();
+    playStartSound();
     const timer = setTimeout(() => router.push(`/cod/match/${queue.started}`), 1200);
     return () => clearTimeout(timer);
   }, [queue.started, router]);
@@ -50,7 +68,10 @@ export function QueuePanel({ profileComplete, userId }) {
   async function toggleQueue() {
     setPending(true);
     setError(null);
-    if (!queue.inQueue) askNotificationPermission();
+    if (!queue.inQueue) {
+      askNotificationPermission();
+      unlockAudio();
+    }
     try {
       const next = await api(queue.inQueue ? "/cod/queue/leave" : "/cod/queue/join", { method: "POST" });
       queue.patch({
@@ -136,6 +157,7 @@ export function QueuePanel({ profileComplete, userId }) {
                 Rejoindre la file
               </Button>
             )}
+            <SoundControls />
           </div>
 
           {/* Ce qui empêche de jouer, du plus bloquant au moins bloquant. */}
@@ -220,6 +242,43 @@ function useElapsedSeconds(since) {
   return since ? Math.max(0, (now - new Date(since).getTime()) / 1000) : 0;
 }
 
+/** Couper / réactiver le son, et l'essayer (débloque aussi le son du navigateur). */
+function SoundControls() {
+  const [muted, setMuted] = useState(false);
+  useEffect(() => setMuted(isSoundMuted()), []);
+
+  function toggle() {
+    setSoundMuted(!muted);
+    setMuted(!muted);
+  }
+
+  async function test() {
+    unlockAudio();
+    await loadSamples();
+    playMatchSound({ force: true });
+  }
+
+  return (
+    <div className="flex items-center gap-1 sm:ml-auto">
+      <button
+        type="button"
+        onClick={toggle}
+        aria-pressed={!muted}
+        className={cn(
+          "inline-flex items-center gap-2 px-3 py-2 text-sm transition-colors hover:bg-white/5",
+          muted ? "text-white/45" : "text-white/75 hover:text-gold",
+        )}
+      >
+        {muted ? <LuVolumeX aria-hidden className="h-4 w-4" /> : <LuVolume2 aria-hidden className="h-4 w-4" />}
+        {muted ? "Son coupé" : "Son activé"}
+      </button>
+      <button type="button" onClick={test} className="px-3 py-2 text-sm text-white/55 underline-offset-4 transition-colors hover:text-gold hover:underline">
+        Tester le son
+      </button>
+    </div>
+  );
+}
+
 function ConnectionStatus({ status }) {
   const open = status === "online";
   const label = open ? "Temps réel connecté" : status === "reconnecting" ? "Reconnexion…" : "Connexion…";
@@ -247,12 +306,20 @@ function ReadyCheckOverlay({ check, started, userId }) {
   const mine = acceptedByMe || Boolean(check?.readyUsers?.includes(userId));
   const visible = Boolean(check) || Boolean(started);
 
+  // Dix dernières secondes sans avoir accepté : un tic par seconde, plus aigu sur les cinq dernières.
+  const secondsLeft = Math.ceil(left);
+  const checkId = check?.matchId;
+  useEffect(() => {
+    if (checkId && !mine && secondsLeft > 0 && secondsLeft <= 10) playTick(secondsLeft <= 5);
+  }, [secondsLeft, checkId, mine]);
+
   async function accept() {
     setAccepting(true);
     setError(null);
     try {
       await api(`/cod/matches/${check.matchId}/ready`, { method: "POST" });
       setAcceptedByMe(true);
+      stopMatchAlarm();
       stopFlashTitle();
     } catch (caught) {
       setError(caught.message);
