@@ -37,7 +37,12 @@ export function ActivisionForm({ user, onSaved = null }) {
     const { error } = await supabase.from("cod_profiles").update({ activision_id: value, platform }).eq("user_id", user.id);
     setSaving(false);
     if (error) {
-      setNotice({ tone: "error", text: "Enregistrement impossible. Réessaie dans un instant." });
+      // 23505 : identifiant déjà utilisé par un autre compte (un identifiant Activision par joueur).
+      const text =
+        error.code === "23505"
+          ? "Cet identifiant Activision est déjà utilisé par un autre compte. Si c'est bien le tien, contacte l'équipe sur Discord."
+          : "Enregistrement impossible. Réessaie dans un instant.";
+      setNotice({ tone: "error", text });
       return;
     }
     setNotice({ tone: "success", text: "Identifiants enregistrés." });
