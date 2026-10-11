@@ -26,10 +26,12 @@ export default function handler(request) {
         }}
       >
         <div style={{ display: "flex", alignItems: "center", gap: 20 }}>
-          <svg width="72" height="72" viewBox="0 0 32 32" fill="none">
-            <path d="M16 2 28 9v14L16 30 4 23V9L16 2Z" stroke="#d4af37" strokeWidth="1.6" strokeLinejoin="round" />
-            <path d="M8 16c2.4-3.4 5-5 8-5s5.6 1.6 8 5c-2.4 3.4-5 5-8 5s-5.6-1.6-8-5Z" stroke="#d4af37" strokeWidth="1.4" strokeLinejoin="round" />
-            <path d="M16 13.2 18.8 16 16 18.8 13.2 16 16 13.2Z" fill="#d4af37" />
+          <svg width="72" height="72" viewBox="0 0 64 64" fill="none">
+            <path d="M32 4 56.25 18v28L32 60 7.75 46V18L32 4Z" stroke="#d4af37" strokeWidth="3" strokeLinejoin="round" />
+            <path d="M32 10.5 50.6 21.25v21.5L32 53.5 13.4 42.75v-21.5L32 10.5Z" stroke="#9c7c1c" strokeWidth="1" strokeLinejoin="round" />
+            <path d="M15 32c5-7 10.5-10.5 17-10.5S44 25 49 32c-5 7-10.5 10.5-17 10.5S20 39 15 32Z" stroke="#f1d77a" strokeWidth="2.6" strokeLinejoin="round" />
+            <circle cx="32" cy="32" r="6.5" stroke="#d4af37" strokeWidth="1.6" />
+            <path d="M32 27.5 36.5 32 32 36.5 27.5 32 32 27.5Z" fill="#f8ecc0" />
           </svg>
           <div style={{ display: "flex", fontSize: 56, fontWeight: 900, letterSpacing: 2, textTransform: "uppercase" }}>
             Six<span style={{ color: "#d4af37" }}>Sence</span>
