@@ -10,11 +10,11 @@ import { cn } from "../../lib/cn";
 import {
   alertMatchFound,
   askNotificationPermission,
+  duckMatchAlarm,
   isSoundMuted,
-  loadSamples,
-  playMatchSound,
   playStartSound,
   playTick,
+  previewMatchSound,
   setSoundMuted,
   stopFlashTitle,
   stopMatchAlarm,
@@ -252,10 +252,8 @@ function SoundControls() {
     setMuted(!muted);
   }
 
-  async function test() {
-    unlockAudio();
-    await loadSamples();
-    playMatchSound({ force: true });
+  function test() {
+    previewMatchSound();
   }
 
   return (
@@ -319,7 +317,7 @@ function ReadyCheckOverlay({ check, started, userId }) {
     try {
       await api(`/cod/matches/${check.matchId}/ready`, { method: "POST" });
       setAcceptedByMe(true);
-      stopMatchAlarm();
+      duckMatchAlarm();
       stopFlashTitle();
     } catch (caught) {
       setError(caught.message);
