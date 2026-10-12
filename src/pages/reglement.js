@@ -99,9 +99,11 @@ const SECTIONS = [
     content: (
       <ul>
         <li>
-          Après un match terminé, chaque joueur a <strong>24 heures</strong> pour voter pour le meilleur joueur de l&apos;
-          <strong>équipe gagnante</strong> (il peut voter pour lui-même si elle est la sienne, et changer son vote).
+          Après un match terminé, chaque joueur (gagnant ou perdant) a <strong>24 heures</strong> pour élire le meilleur joueur de
+          l&apos;<strong>équipe gagnante</strong>.
         </li>
+        <li>Si tu as gagné, tu peux voter pour toi-même.</li>
+        <li>Tu peux changer ton vote tant que les 24 heures ne sont pas écoulées.</li>
         <li>
           Le plus élu est MVP du match. À égalité, les votes reçus des autres joueurs départagent ; si l&apos;égalité persiste, les joueurs
           sont co-MVP.
