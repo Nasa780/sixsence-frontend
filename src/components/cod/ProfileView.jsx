@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { useCallback, useEffect, useMemo, useState } from "react";
-import { LuFlag, LuLock, LuMedal } from "react-icons/lu";
+import { LuCheck, LuFlag, LuLock, LuMedal, LuShare2 } from "react-icons/lu";
 import useSeasons, { seasonBadge } from "../../hooks/useSeasons";
 import useSession from "../../hooks/useSession";
 import { api } from "../../lib/api";
@@ -60,6 +60,23 @@ export function ProfileView({ userId, editable = false, ownUser = null }) {
   const { seasons } = useSeasons();
   const { userId: viewerId } = useSession();
   const [reporting, setReporting] = useState(false);
+  const [shared, setShared] = useState(false);
+
+  /** Copie le lien public du profil : collé sur Discord, il affiche la carte du joueur. */
+  async function shareProfile() {
+    const url = `${window.location.origin}/cod/profile/${userId}`;
+    try {
+      if (navigator.share && window.matchMedia("(pointer: coarse)").matches) {
+        await navigator.share({ title: "Mon profil SixSence", url });
+        return;
+      }
+      await navigator.clipboard.writeText(url);
+      setShared(true);
+      setTimeout(() => setShared(false), 3000);
+    } catch {
+      window.prompt("Copie ce lien :", url);
+    }
+  }
 
   const load = useCallback(async () => {
     const [{ data: player }, { data: profile }, { data: history }] = await Promise.all([
@@ -121,16 +138,26 @@ export function ProfileView({ userId, editable = false, ownUser = null }) {
                 {profile.platform ? ` · ${PLATFORM_LABEL[profile.platform] ?? profile.platform}` : ""}
               </p>
               <RankBadge points={profile.points} showProgress className="mt-4" />
-              {viewerId && viewerId !== userId ? (
+              <div className="mt-4 flex flex-wrap items-center gap-x-5 gap-y-2">
                 <button
                   type="button"
-                  onClick={() => setReporting(true)}
-                  className="mt-4 inline-flex items-center gap-1.5 text-xs text-white/40 transition-colors hover:text-loss"
+                  onClick={shareProfile}
+                  className="inline-flex items-center gap-1.5 text-xs text-gold/80 transition-colors hover:text-gold"
                 >
-                  <LuFlag aria-hidden className="h-3.5 w-3.5" />
-                  Signaler ce joueur
+                  {shared ? <LuCheck aria-hidden className="h-3.5 w-3.5" /> : <LuShare2 aria-hidden className="h-3.5 w-3.5" />}
+                  {shared ? "Lien copié : colle-le sur Discord" : editable ? "Partager mon profil" : "Partager ce profil"}
                 </button>
-              ) : null}
+                {viewerId && viewerId !== userId ? (
+                  <button
+                    type="button"
+                    onClick={() => setReporting(true)}
+                    className="inline-flex items-center gap-1.5 text-xs text-white/40 transition-colors hover:text-loss"
+                  >
+                    <LuFlag aria-hidden className="h-3.5 w-3.5" />
+                    Signaler ce joueur
+                  </button>
+                ) : null}
+              </div>
               <ReasonDialog
                 open={reporting}
                 onClose={() => setReporting(false)}

@@ -27,7 +27,7 @@ Utilitaires maison dans `globals.css` : `clip-tactical`, `clip-slant`, `clip-cor
 
 ## Structure
 
-- `src/pages/` : `/`, `/cod` (hub), `/cod/ranked`, `/cod/match/[id]`, `/cod/groupe/[code]` (invitation de groupe), `/cod/leaderboard`, `/cod/profile`, `/cod/profile/[id]`, `/gta6`, `/gta6/events`, `/gta6/events/[id]`, `/founders`, `/partners`, `/login`, `/auth/callback`, `/admin` (rôle admin), `/reglement`, `/mentions-legales`, `/confidentialite`, `/sitemap.xml`, `/api/og` (image d'aperçu des liens), `404`.
+- `src/pages/` : `/`, `/cod` (hub), `/cod/ranked`, `/cod/match/[id]`, `/cod/groupe/[code]` (invitation de groupe), `/cod/leaderboard`, `/cod/profile`, `/cod/profile/[id]`, `/gta6`, `/gta6/events`, `/gta6/events/[id]`, `/founders`, `/partners`, `/login`, `/auth/callback`, `/admin` (rôle admin), `/reglement`, `/mentions-legales`, `/confidentialite`, `/sitemap.xml`, `/api/og` (image d'aperçu des liens), `/api/og/player?id=` (carte de joueur, aperçu des profils), `404`.
 - `src/components/ui/` : briques communes (Button / ButtonLink, TacticalCard, Typography, Feedback, Avatar, Logo, LoginPrompt).
 - `src/components/layout/` : Navbar (fixe, menu mobile) et Footer, posés par `_app.js` sur toutes les pages sauf `/auth/callback`.
 - `src/components/cod/`, `gta/`, `home/`, `effects/` : écrans et effets (GoldParticles, Reveal).

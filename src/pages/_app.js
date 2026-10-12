@@ -56,7 +56,7 @@ export default function App({ Component, pageProps }) {
         <meta key="og:image" property="og:image" content={`${SITE_URL}/api/og?v=4`} />
         <meta property="og:image:width" content="1200" />
         <meta property="og:image:height" content="630" />
-        <meta property="og:image:alt" content="SixSence, plateforme gaming : « Entre dans l'arène ». Matchs classés MW4 et événements GTA 6." />
+        <meta key="og:image:alt" property="og:image:alt" content="SixSence, plateforme gaming : « Entre dans l'arène ». Matchs classés MW4 et événements GTA 6." />
         <meta name="twitter:card" content="summary_large_image" />
       </Head>
 

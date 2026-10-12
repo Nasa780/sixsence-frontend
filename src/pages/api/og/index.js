@@ -1,4 +1,5 @@
 import { ImageResponse } from "next/og";
+import { dataUrl, loadFonts } from "../../../lib/og";
 
 export const config = { runtime: "edge" };
 
@@ -14,47 +15,8 @@ const SUNSET = "#ff9a5c";
  * diagonale dorée, cadre fin, accroche en dégradé or.
  * Paramètre facultatif : ?title=Classement (remplace l'accroche « Entre dans l'arène »).
  *
- * Polices du site (Saira Condensed, Inter) chargées depuis Google Fonts au premier appel ;
- * en cas d'échec, l'image est rendue avec la police par défaut.
+ * Polices du site chargées depuis Google Fonts au premier appel (voir lib/og.js).
  */
-let fontsPromise = null;
-
-async function googleFont(family, weight) {
-  const css = await (await fetch(`https://fonts.googleapis.com/css2?family=${family}:wght@${weight}`)).text();
-  const url = /src:\s*url\(([^)]+)\)\s*format\('(?:truetype|opentype)'\)/.exec(css)?.[1];
-  if (!url) throw new Error("police introuvable");
-  return (await fetch(url)).arrayBuffer();
-}
-
-function loadFonts() {
-  if (!fontsPromise) {
-    fontsPromise = Promise.all([googleFont("Saira+Condensed", 900), googleFont("Inter", 500), googleFont("Inter", 700)])
-      .then(([saira, inter, interBold]) => [
-        { name: "Saira", data: saira, weight: 900, style: "normal" },
-        { name: "Inter", data: inter, weight: 500, style: "normal" },
-        { name: "Inter", data: interBold, weight: 700, style: "normal" },
-      ])
-      .catch(() => {
-        fontsPromise = null;
-        return [];
-      });
-  }
-  return fontsPromise;
-}
-
-async function picture(origin, path) {
-  try {
-    const res = await fetch(`${origin}${path}`);
-    if (!res.ok) return null;
-    const bytes = new Uint8Array(await res.arrayBuffer());
-    let binary = "";
-    for (let i = 0; i < bytes.length; i += 0x8000) binary += String.fromCharCode(...bytes.subarray(i, i + 0x8000));
-    return `data:image/jpeg;base64,${btoa(binary)}`;
-  } catch {
-    return null;
-  }
-}
-
 function Emblem({ size }) {
   return (
     <svg width={size} height={size} viewBox="0 0 64 64" fill="none">
@@ -84,7 +46,7 @@ function Corner({ x, y, flipX, flipY }) {
 export default async function handler(request) {
   const { searchParams, origin } = new URL(request.url);
   const custom = searchParams.get("title")?.slice(0, 32);
-  const [fonts, mw4, gta] = await Promise.all([loadFonts(), picture(origin, "/og/og-mw4.jpg"), picture(origin, "/og/og-gta6.jpg")]);
+  const [fonts, mw4, gta] = await Promise.all([loadFonts(), dataUrl(`${origin}/og/og-mw4.jpg`), dataUrl(`${origin}/og/og-gta6.jpg`)]);
   const display = fonts.length ? "Saira" : "sans-serif";
   const text = fonts.length ? "Inter" : "sans-serif";
 
