@@ -71,7 +71,37 @@ export function OverviewPanel({ onNavigate }) {
           {new Date(data.season.starts_at).toLocaleDateString("fr-FR", { day: "numeric", month: "long", year: "numeric" })}.
         </p>
       ) : null}
+      <DiscordRolesSync />
     </div>
+  );
+}
+
+/** Remet à jour les rôles Discord (rang, COD) de tous les joueurs classés. */
+function DiscordRolesSync() {
+  const [result, setResult] = useState(null);
+  const { pending, error, run } = useAction();
+
+  const sync = () =>
+    run("sync", async () => {
+      const { updated } = await api("/admin/discord/sync-roles", { method: "POST" });
+      setResult(updated);
+    });
+
+  return (
+    <TacticalCard cut={16} innerClassName="flex flex-col gap-3 p-5 sm:flex-row sm:items-center sm:justify-between">
+      <div>
+        <p className="font-display text-xl font-black uppercase leading-none">Rôles Discord</p>
+        <p className="mt-1 text-sm text-white/55">
+          Les rôles de rang et « COD » se mettent à jour après chaque match. Ce bouton les recalcule pour tous les joueurs classés.
+        </p>
+        {result !== null ? <p className="mt-1 text-sm text-win">{result} joueur(s) mis à jour sur Discord.</p> : null}
+        {error ? <p className="mt-1 text-sm text-loss">{error}</p> : null}
+      </div>
+      <Button size="sm" variant="outline" onClick={sync} disabled={pending !== null}>
+        {pending === "sync" ? <LuLoaderCircle aria-hidden className="h-4 w-4 animate-spin" /> : null}
+        Synchroniser les rôles
+      </Button>
+    </TacticalCard>
   );
 }
 
