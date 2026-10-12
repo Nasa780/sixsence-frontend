@@ -58,8 +58,8 @@ export function AppPanel({ variant = "cod", className = "mt-6" }) {
 
       <div className="mt-5 flex flex-col gap-3 sm:flex-row sm:flex-wrap">
         <InstallButton />
-        {support === "ok" || (support === "denied" && enabled) ? (
-          <Button variant={enabled ? "ghost" : "primary"} onClick={toggle} disabled={pending}>
+        {support === "ok" || support === "denied" ? (
+          <Button variant={enabled ? "ghost" : "primary"} onClick={toggle} disabled={pending || (support === "denied" && !enabled)}>
             {pending ? (
               <LuLoaderCircle aria-hidden className="h-4 w-4 animate-spin" />
             ) : enabled ? (
@@ -76,10 +76,7 @@ export function AppPanel({ variant = "cod", className = "mt-6" }) {
         <p className="mt-3 text-sm text-white/55">Sur iPhone, les notifications s&apos;activent depuis l&apos;appli installée : installe-la d&apos;abord.</p>
       ) : null}
       {support === "denied" && !enabled ? (
-        <p className="mt-3 text-sm text-loss">
-          Les notifications sont bloquées pour ce site : autorise-les dans les réglages du navigateur (icône à gauche de l&apos;adresse →
-          Notifications → Autoriser), puis recharge la page.
-        </p>
+        <p className="mt-3 text-sm text-loss">Les notifications sont bloquées pour ce site : autorise-les dans les réglages du navigateur.</p>
       ) : null}
       {support === "unsupported" ? <p className="mt-3 text-sm text-white/45">Ce navigateur ne gère pas les notifications.</p> : null}
       {message ? (
