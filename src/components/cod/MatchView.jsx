@@ -127,8 +127,7 @@ export function MatchView({ matchId }) {
   const canArbitrate = canProve;
   const canReport = Boolean(userId);
   const mvpVotes = data.mvpVotes || {};
-  const topVotes = Math.max(0, ...Object.values(mvpVotes));
-  const mvpIds = topVotes > 0 ? Object.keys(mvpVotes).filter((id) => mvpVotes[id] === topVotes) : [];
+  const mvpIds = mvpWinners(mvpVotes, data.mvpVotesFromOthers || {});
 
   return (
     <div className="space-y-8">
@@ -343,8 +342,21 @@ export function MatchView({ matchId }) {
 const GROUP_COLORS = ["#f1d77a", "#7dd3fc", "#c4b5fd", "#86efac", "#fca5a5", "#fdba74"];
 
 /**
- * Vote du MVP : chaque joueur du match élit un autre joueur, pendant 24 h après la fin.
- * Tout le monde voit le décompte ; le plus élu du mois reçoit le badge « MVP du mois ».
+ * MVP du match : le plus de votes ; à égalité, le plus de votes reçus des autres
+ * joueurs (un vote pour soi compte moins) ; toujours à égalité, co-MVP.
+ */
+function mvpWinners(total, fromOthers) {
+  const ids = Object.keys(total).filter((id) => total[id] > 0);
+  if (ids.length === 0) return [];
+  const best = Math.max(...ids.map((id) => total[id]));
+  const tied = ids.filter((id) => total[id] === best);
+  const bestOthers = Math.max(...tied.map((id) => fromOthers[id] ?? 0));
+  return tied.filter((id) => (fromOthers[id] ?? 0) === bestOthers);
+}
+
+/**
+ * Vote du MVP : chaque joueur du match élit un joueur de l'équipe gagnante (lui-même
+ * compris), pendant 24 h après la fin. Le plus élu du mois reçoit le badge « MVP du mois ».
  */
 function MvpVote({ match, playerById, votes, myVote, userId, isPlayer, onVoted }) {
   const [pending, setPending] = useState(null);
@@ -366,7 +378,8 @@ function MvpVote({ match, playerById, votes, myVote, userId, isPlayer, onVoted }
     }
   }
 
-  const players = [...match.team_a, ...match.team_b];
+  // Seuls les joueurs de l'équipe gagnante peuvent être élus.
+  const players = match.winner === "B" ? match.team_b : match.team_a;
   return (
     <TacticalCard cut={20} innerClassName="p-6">
       <div className="flex flex-wrap items-end justify-between gap-3">
@@ -375,7 +388,12 @@ function MvpVote({ match, playerById, votes, myVote, userId, isPlayer, onVoted }
           <h2 className="mt-2 font-display text-3xl font-black uppercase leading-none">MVP du match</h2>
         </div>
         <p className="text-xs text-white/45">
-          {open ? (isPlayer ? "Vote pour le meilleur joueur (pas toi), pendant 24 h." : "Les joueurs du match votent pendant 24 h.") : "Vote terminé."} {total} vote
+          {open
+            ? isPlayer
+              ? "Vote pour le meilleur joueur de l'équipe gagnante (toi compris), pendant 24 h."
+              : "Les joueurs du match votent pendant 24 h."
+            : "Vote terminé."}{" "}
+          {total} vote
           {total > 1 ? "s" : ""}
         </p>
       </div>
@@ -384,7 +402,7 @@ function MvpVote({ match, playerById, votes, myVote, userId, isPlayer, onVoted }
           const player = playerById.get(id);
           const count = votes[id] ?? 0;
           const mine = myVote === id;
-          const canVote = open && isPlayer && id !== userId;
+          const canVote = open && isPlayer;
           return (
             <li key={id}>
               <button
