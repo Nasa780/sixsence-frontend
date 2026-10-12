@@ -65,8 +65,13 @@ const SECTIONS = [
     content: (
       <ul>
         <li>
-          Le premier joueur de l&apos;équipe 1 est l&apos;<strong>hôte</strong> : il crée la partie privée avec la carte et le mode
-          tirés au sort, puis invite les autres joueurs grâce à leurs identifiants Activision affichés dans le salon de match.
+          Le classé se joue uniquement en <strong>Recherche &amp; Destruction Hardcore</strong> (réglage Hardcore de Call of Duty), en
+          2v2 comme en 5v5. Une partie jouée dans un autre mode ou sans le réglage Hardcore ne compte pas.
+        </li>
+        <li>
+          Le premier joueur de l&apos;équipe 1 est l&apos;<strong>hôte</strong> : il crée la partie privée en Recherche &amp; Destruction
+          Hardcore sur la carte tirée au sort, puis invite les autres joueurs grâce à leurs identifiants Activision affichés dans le salon
+          de match.
         </li>
         <li>Les équipes tirées au sort doivent être respectées ; aucun remplaçant n&apos;est autorisé.</li>
         <li>Le chat du salon et, s&apos;il est actif, le salon vocal Discord servent à s&apos;organiser.</li>

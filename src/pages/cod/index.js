@@ -61,7 +61,7 @@ export default function CodHubPage() {
           </>
         }
         description={
-          user ? `Content de te revoir, ${user.username}. La file classée est ouverte.` : "Classé 2v2 et 5v5 en Recherche & Destruction : les files sont ouvertes."
+          user ? `Content de te revoir, ${user.username}. La file classée est ouverte.` : "Classé 2v2 et 5v5 en Recherche & Destruction Hardcore : les files sont ouvertes."
         }
         actions={
           <ButtonLink href="/cod/ranked" size="lg">
