@@ -23,6 +23,7 @@ import { groupLabel } from "../../lib/ranks";
 import { Button, ButtonLink } from "../ui/Button";
 import { Chip, Notice } from "../ui/Feedback";
 import { TacticalCard } from "../ui/TacticalCard";
+import { AppPanel } from "./AppPanel";
 import { PartyPanel } from "./PartyPanel";
 
 const FORMAT_KEY = "sixsence:format";
@@ -336,6 +337,8 @@ export function QueuePanel({ profileComplete, userId }) {
         locked={queue.inQueue || hasActiveMatch}
         onChange={(updated) => queue.patch({ party: updated })}
       />
+
+      <AppPanel />
 
       <ReadyCheckOverlay check={queue.readyCheck} started={queue.started} userId={userId} />
     </>

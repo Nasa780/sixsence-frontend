@@ -112,7 +112,9 @@ const SECTIONS = [
       <p>
         Le site n&apos;utilise <strong>aucun cookie publicitaire ni outil de mesure d&apos;audience</strong>. Seul ton jeton de
         connexion est enregistré dans le stockage de ton navigateur, ce qui est strictement nécessaire au service et ne demande pas de
-        consentement. Les notifications « match trouvé » ne s&apos;affichent que si tu les autorises dans ton navigateur.
+        consentement. Les notifications (match trouvé, rappels d&apos;événements) ne fonctionnent que si tu les actives : l&apos;adresse
+        technique d&apos;abonnement fournie par ton navigateur est alors enregistrée et liée à ton compte, uniquement pour t&apos;envoyer ces
+        notifications. Tu peux les désactiver à tout moment depuis la page File classée ou les réglages de ton navigateur.
       </p>
     ),
   },

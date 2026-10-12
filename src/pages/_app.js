@@ -1,9 +1,11 @@
 import Head from "next/head";
 import { useRouter } from "next/router";
+import { useEffect } from "react";
 import { Inter, Orbitron, Saira_Condensed } from "next/font/google";
 import { Footer } from "../components/layout/Footer";
 import { Navbar } from "../components/layout/Navbar";
 import { SITE_URL } from "../lib/config";
+import { registerServiceWorker } from "../lib/push";
 import "../styles/globals.css";
 
 /**
@@ -26,6 +28,11 @@ export default function App({ Component, pageProps }) {
   // Pages GTA 6 : palette coucher de soleil (voir globals.css).
   const univers = pathname.startsWith("/gta6") ? "gta" : undefined;
 
+  // Service worker : rend le site installable et reçoit les notifications push.
+  useEffect(() => {
+    registerServiceWorker();
+  }, []);
+
   return (
     <div
       data-univers={univers}
@@ -41,7 +48,13 @@ export default function App({ Component, pageProps }) {
           content="La plateforme gaming de la communauté : matchs classés Call of Duty MW4 avec matchmaking automatique, classement en direct et saisons, événements GTA 6 avec inscriptions. Gratuit, connexion avec Discord."
         />
         <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
-        <link rel="apple-touch-icon" href="/favicon.svg" />
+        <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+        {/* Appli installable (PWA) : voir public/manifest.webmanifest et public/sw.js. */}
+        <link rel="manifest" href="/manifest.webmanifest" />
+        <meta name="apple-mobile-web-app-capable" content="yes" />
+        <meta name="mobile-web-app-capable" content="yes" />
+        <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+        <meta name="apple-mobile-web-app-title" content="SixSence" />
         {/* Aperçu des liens partagés (Discord, X, WhatsApp…). */}
         <meta property="og:site_name" content="SixSence" />
         <meta property="og:locale" content="fr_FR" />
