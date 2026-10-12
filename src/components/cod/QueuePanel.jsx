@@ -25,7 +25,6 @@ import { Chip, Notice } from "../ui/Feedback";
 import { TacticalCard } from "../ui/TacticalCard";
 import { AppPanel } from "./AppPanel";
 import { PartyPanel } from "./PartyPanel";
-import { Portal } from "../ui/Portal";
 
 const FORMAT_KEY = "sixsence:format";
 
@@ -374,9 +373,8 @@ export function QueuePanel({ profileComplete, userId }) {
 
       <AppPanel />
 
-      <Portal>
-        <ReadyCheckOverlay check={queue.readyCheck} started={queue.started} userId={userId} />
-      </Portal>
+      {/* Rendue dans la page (pas dans un Portal) : la barre de menu du site reste visible au-dessus. */}
+      <ReadyCheckOverlay check={queue.readyCheck} started={queue.started} userId={userId} />
     </>
   );
 }
