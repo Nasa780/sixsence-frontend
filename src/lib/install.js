@@ -52,21 +52,31 @@ export function browserGuide(browser) {
 /**
  * État de l'installation :
  *   installed   l'appli est déjà ouverte en mode installé
+ *   alreadyInstalled  l'appli est installée sur cet appareil, mais la page est ouverte dans le navigateur
  *   canPrompt   installation possible en un clic
  *   browser     navigateur détecté (pour la marche à suivre)
  */
 export function useInstall() {
-  const [state, setState] = useState({ installed: false, canPrompt: false, browser: "autre", ready: false });
+  const [state, setState] = useState({ installed: false, alreadyInstalled: false, canPrompt: false, browser: "autre", ready: false });
 
   useEffect(() => {
     const update = () =>
-      setState({
-        installed: isStandalone() || Boolean(window.__appInstalled),
+      setState((prev) => ({
+        ...prev,
+        installed: isStandalone(),
+        alreadyInstalled: prev.alreadyInstalled || Boolean(window.__appInstalled),
         canPrompt: Boolean(window.__installPrompt),
         browser: detectBrowser(),
         ready: true,
-      });
+      }));
     update();
+    // Chrome et Edge savent dire si l'appli est déjà installée (manifeste : related_applications).
+    if ("getInstalledRelatedApps" in navigator) {
+      navigator
+        .getInstalledRelatedApps()
+        .then((apps) => apps.length > 0 && setState((prev) => ({ ...prev, alreadyInstalled: true })))
+        .catch(() => {});
+    }
     window.addEventListener("sixsence:installable", update);
     window.addEventListener("sixsence:installed", update);
     return () => {
