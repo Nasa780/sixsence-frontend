@@ -64,6 +64,7 @@ export function AppPanel() {
 
   if (support === null) return null;
   const iosHelp = isIos() && !installed;
+  const isMobile = typeof navigator !== "undefined" && /Android|Mobi/i.test(navigator.userAgent);
 
   return (
     <TacticalCard cut={20} className="mt-6" innerClassName="p-6">
@@ -99,10 +100,42 @@ export function AppPanel() {
 
       {iosHelp ? (
         <ol className="mt-4 list-decimal space-y-1 pl-5 text-sm text-white/60">
-          <li>Dans Safari, touche le bouton Partager (carré avec une flèche).</li>
+          <li>Dans Safari, touche « ••• » (ou le bouton Partager, carré avec une flèche) puis « Partager ».</li>
           <li>Choisis « Sur l&apos;écran d&apos;accueil », puis « Ajouter ».</li>
           <li>Ouvre SixSence depuis l&apos;écran d&apos;accueil et active les notifications ici.</li>
         </ol>
+      ) : null}
+      {/* Le navigateur ne propose pas l'installation directe : marche à suivre par son menu. */}
+      {!iosHelp && !installed && !installPrompt ? (
+        <div className="mt-4 text-sm text-white/60">
+          <p className="font-semibold text-white/80">Installer l&apos;appli depuis le menu du navigateur :</p>
+          <ul className="mt-1 list-disc space-y-1 pl-5">
+            {isMobile ? (
+              <>
+                <li>
+                  <strong className="text-white/80">Chrome</strong> : menu ⋮ en haut à droite → « Ajouter à l&apos;écran d&apos;accueil » → « Installer ».
+                </li>
+                <li>
+                  <strong className="text-white/80">Samsung Internet</strong> : menu ≡ en bas → « Ajouter la page à » → « Écran d&apos;accueil ».
+                </li>
+                <li>
+                  <strong className="text-white/80">Firefox</strong> : menu ⋮ → « Installer » ou « Ajouter à l&apos;écran d&apos;accueil ».
+                </li>
+              </>
+            ) : (
+              <>
+                <li>
+                  <strong className="text-white/80">Chrome</strong> : icône d&apos;installation dans la barre d&apos;adresse, ou menu ⋮ → « Caster, enregistrer
+                  et partager » → « Installer la page en tant qu&apos;appli ».
+                </li>
+                <li>
+                  <strong className="text-white/80">Edge</strong> : menu ⋯ → « Applications » → « Installer ce site en tant qu&apos;application ».
+                </li>
+              </>
+            )}
+          </ul>
+          <p className="mt-2 text-xs text-white/40">Déjà installée ? Cherche l&apos;icône SixSence dans la liste de tes applis.</p>
+        </div>
       ) : null}
       {support === "denied" && !enabled ? (
         <p className="mt-3 text-sm text-loss">Les notifications sont bloquées pour ce site : autorise-les dans les réglages du navigateur.</p>
