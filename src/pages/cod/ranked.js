@@ -62,7 +62,7 @@ export default function RankedPage() {
             File <span className="text-gold-gradient">d&apos;attente</span>
           </>
         }
-        description="Rejoins la file et reste sur cette page : tu es prévenu à la seconde où ton match est prêt."
+        description="Rejoins la file : tu es prévenu à la seconde où ton match est prêt, par un son sur cette page ou par notification sur ton téléphone."
         actions={
           <div className="grid grid-cols-3 gap-3">
             <StatTile label="En ligne" value={status ? status.playersOnline : "—"} />
