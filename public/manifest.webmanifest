@@ -1,7 +1,7 @@
 {
   "name": "SixSence",
   "short_name": "SixSence",
-  "description": "Classé MW4 en 2v2 et 5v5 (Recherche & Destruction Hardcore), classement en direct et événements GTA 6.",
+  "description": "Classé MW4 du 2v2 au 5v5 (Recherche & Destruction Hardcore), classement en direct et événements GTA 6.",
   "lang": "fr",
   "start_url": "/?source=appli",
   "scope": "/",
