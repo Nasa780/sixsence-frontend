@@ -2,7 +2,7 @@ import { AnimatePresence, motion } from "framer-motion";
 import Link from "next/link";
 import { useRouter } from "next/router";
 import { useEffect, useRef, useState } from "react";
-import { LuBan, LuCheck, LuCrosshair, LuLoaderCircle, LuMap, LuUsers, LuVolume2, LuVolumeX, LuWifi, LuWifiOff, LuX } from "react-icons/lu";
+import { LuBan, LuBellRing, LuCheck, LuCrosshair, LuLoaderCircle, LuMap, LuUsers, LuVolume2, LuVolumeX, LuWifi, LuWifiOff, LuX } from "react-icons/lu";
 import useCountdown from "../../hooks/useCountdown";
 import useQueueSocket from "../../hooks/useQueueSocket";
 import { api } from "../../lib/api";
@@ -50,6 +50,8 @@ export function QueuePanel({ profileComplete, userId }) {
   const [chosen, setChosen] = useState(null);
   const elapsed = useElapsedSeconds(queue.inQueue ? queue.joinedAt : null);
   const banLeft = useCountdown(queue.bannedUntil);
+  // Durée maximale de recherche : « Toujours là ? » 5 min avant l'arrêt (backend : COD_QUEUE_MAX_MINUTES).
+  const stopLeft = useCountdown(queue.inQueue && queue.stillThere ? queue.expiresAt : null);
   // Sur téléphone, le serveur garde la place 30 min après la fermeture de l'appli (COD_MOBILE_GRACE_MINUTES).
   const [isMobile, setIsMobile] = useState(false);
   useEffect(() => setIsMobile(/Android|iPhone|iPad|iPod|Mobi/i.test(navigator.userAgent)), []);
@@ -106,6 +108,8 @@ export function QueuePanel({ profileComplete, userId }) {
       format: next.format ?? null,
       groupSize: next.groupSize ?? 1,
       joinedAt: next.joinedAt,
+      expiresAt: next.expiresAt ?? null,
+      stillThere: Boolean(next.stillThere),
       activeMatchId: next.activeMatchId,
       bannedUntil: next.bannedUntil ?? null,
       party: next.party ?? null,
@@ -137,6 +141,11 @@ export function QueuePanel({ profileComplete, userId }) {
         : await api("/cod/queue/join", { method: "POST", body: { format: selectedId } });
       applyState(next);
     });
+  }
+
+  /** « Rester en file » : confirme la présence, la place dans la file est conservée. */
+  function stayInQueue() {
+    return run(async () => applyState(await api("/cod/queue/stay", { method: "POST" })));
   }
 
   function chooseFormat(format) {
@@ -248,6 +257,25 @@ export function QueuePanel({ profileComplete, userId }) {
               </>
             )}
           </p>
+
+          {queue.inQueue && queue.stillThere ? (
+            <div role="alert" className="mt-6 flex flex-col gap-4 border border-gold/50 bg-gold/10 p-5 sm:flex-row sm:items-center sm:justify-between">
+              <div className="flex items-start gap-3">
+                <LuBellRing aria-hidden className="mt-0.5 h-5 w-5 shrink-0 animate-pulse text-gold" />
+                <div>
+                  <p className="font-display text-2xl font-black uppercase leading-none text-gold">Toujours là ?</p>
+                  <p className="mt-1.5 text-sm text-white/70">
+                    Aucun match pour l&apos;instant : {queue.groupSize > 1 ? "la recherche du groupe" : "ta recherche"} s&apos;arrête dans{" "}
+                    <span className="font-tech font-bold tabular-nums text-white">{formatDuration(stopLeft)}</span>. Tu gardes ta place si tu restes.
+                  </p>
+                </div>
+              </div>
+              <Button onClick={stayInQueue} disabled={pending} className="shrink-0">
+                {pending ? <LuLoaderCircle aria-hidden className="h-4 w-4 animate-spin" /> : <LuCheck aria-hidden className="h-4 w-4" />}
+                Rester en file
+              </Button>
+            </div>
+          ) : null}
 
           <div className="mt-8 flex flex-col gap-4 sm:flex-row sm:items-center">
             {queue.inQueue ? (

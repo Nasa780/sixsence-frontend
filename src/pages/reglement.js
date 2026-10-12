@@ -38,6 +38,12 @@ const SECTIONS = [
           notifications pour être prévenu du match trouvé ; si ta recherche s&apos;arrête, une notification te le dit aussi.
         </p>
         <p>
+          Une recherche dure <strong>30 minutes</strong> au plus. 5 minutes avant la fin, le message « Toujours là ? » s&apos;affiche
+          (et arrive en notification) : clique sur « Rester en file » pour repartir pour 30 minutes <strong>sans perdre ta place</strong>.
+          Sans réponse, la recherche s&apos;arrête et tu peux la relancer quand tu veux. Dans un groupe, n&apos;importe quel membre peut
+          répondre pour tout le groupe.
+        </p>
+        <p>
           Si un joueur n&apos;accepte pas à temps, le match est annulé. Ceux qui avaient accepté repartent{" "}
           <strong>en tête de file</strong> ; ceux qui n&apos;ont pas répondu reçoivent un avertissement.
         </p>
