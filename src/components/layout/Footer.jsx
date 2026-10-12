@@ -35,7 +35,7 @@ export function Footer() {
         <div>
           <Logo />
           <p className="mt-4 max-w-sm text-sm leading-relaxed text-white/55">
-            La plateforme gaming de la communauté : classé Call of Duty en 5v5 et événements GTA 6, avec un seul accès,
+            La plateforme gaming de la communauté : classé Call of Duty en 2v2 et 5v5 et événements GTA 6, avec un seul accès,
             ton compte Discord.
           </p>
           {DISCORD_INVITE_URL ? (

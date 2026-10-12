@@ -6,6 +6,7 @@ import useSession from "../../hooks/useSession";
 import useUser from "../../hooks/useUser";
 import { api } from "../../lib/api";
 import { cn } from "../../lib/cn";
+import { groupLabel } from "../../lib/ranks";
 import { supabase } from "../../lib/supabase";
 import { Avatar } from "../ui/Avatar";
 import { Button } from "../ui/Button";
@@ -125,7 +126,7 @@ export function MatchView({ matchId }) {
               {STATUS_LABEL[match.status]}
             </Chip>
             <p className="font-tech text-xs uppercase tracking-[0.2em] text-white/40">
-              {match.team_size}v{match.team_size} ·{" "}
+              {match.format ?? `${match.team_size}v${match.team_size}`} ·{" "}
               {new Date(match.created_at).toLocaleString("fr-FR", { day: "numeric", month: "short", hour: "2-digit", minute: "2-digit" })}
             </p>
           </div>
@@ -260,7 +261,17 @@ export function MatchView({ matchId }) {
   );
 }
 
+/** Couleur par groupe du match : les membres d'un même groupe partagent la même marque. */
+const GROUP_COLORS = ["#f1d77a", "#7dd3fc", "#c4b5fd", "#86efac", "#fca5a5", "#fdba74"];
+
 function TeamColumn({ team, match, ids, playerById, currentUserId, readyUsers = [] }) {
+  const groupMarks = new Map();
+  for (const id of [...match.team_a, ...match.team_b]) {
+    const group = match.groups?.[id];
+    if (group && (match.group_sizes?.[id] ?? 1) > 1 && !groupMarks.has(group)) {
+      groupMarks.set(group, GROUP_COLORS[groupMarks.size % GROUP_COLORS.length]);
+    }
+  }
   const won = match.status === "completed" && match.winner === team;
   const lost = match.status === "completed" && match.winner !== team;
   const known = ids.map((id) => playerById.get(id)).filter(Boolean);
@@ -284,6 +295,8 @@ function TeamColumn({ team, match, ids, playerById, currentUserId, readyUsers = 
           const delta = match.points_changes?.[id];
           const isMe = id === currentUserId;
           const isHost = team === "A" && index === 0;
+          const groupSize = match.group_sizes?.[id] ?? 1;
+          const groupMark = groupSize > 1 ? groupMarks.get(match.groups?.[id]) : null;
 
           return (
             <li
@@ -297,6 +310,16 @@ function TeamColumn({ team, match, ids, playerById, currentUserId, readyUsers = 
                     {player?.username ?? "Joueur inconnu"}
                   </Link>
                   {isMe ? <Chip className="shrink-0">Toi</Chip> : null}
+                  {groupMark ? (
+                    <span
+                      title={`Joue en groupe (${groupLabel(groupSize).toLowerCase()})`}
+                      className="inline-flex shrink-0 items-center gap-1.5 border px-1.5 py-0.5 font-tech text-[10px] uppercase tracking-[0.16em]"
+                      style={{ borderColor: groupMark, color: groupMark }}
+                    >
+                      <span aria-hidden className="h-1.5 w-1.5" style={{ background: groupMark }} />
+                      {groupLabel(groupSize)}
+                    </span>
+                  ) : null}
                   {match.status === "ready_check" ? (
                     <Chip tone={readyUsers.includes(id) ? "win" : "neutral"} className="shrink-0">
                       {readyUsers.includes(id) ? "Prêt" : "En attente"}

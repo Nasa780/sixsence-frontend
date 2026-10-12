@@ -2,7 +2,7 @@ import { AnimatePresence, motion } from "framer-motion";
 import Link from "next/link";
 import { useRouter } from "next/router";
 import { useEffect, useRef, useState } from "react";
-import { LuBan, LuCheck, LuCrosshair, LuLoaderCircle, LuMap, LuVolume2, LuVolumeX, LuWifi, LuWifiOff, LuX } from "react-icons/lu";
+import { LuBan, LuCheck, LuCrosshair, LuLoaderCircle, LuMap, LuUsers, LuVolume2, LuVolumeX, LuWifi, LuWifiOff, LuX } from "react-icons/lu";
 import useCountdown from "../../hooks/useCountdown";
 import useQueueSocket from "../../hooks/useQueueSocket";
 import { api } from "../../lib/api";
@@ -19,16 +19,23 @@ import {
   stopMatchAlarm,
   unlockAudio,
 } from "../../lib/notify";
+import { groupLabel } from "../../lib/ranks";
 import { Button, ButtonLink } from "../ui/Button";
 import { Chip, Notice } from "../ui/Feedback";
 import { TacticalCard } from "../ui/TacticalCard";
+import { PartyPanel } from "./PartyPanel";
+
+const FORMAT_KEY = "sixsence:format";
 
 /**
  * Panneau de la file d'attente classée.
- *  - L'état (joueurs en file, ma place) arrive en direct par WebSocket.
- *  - "Rejoindre" et "Quitter" passent par l'API REST du backend.
- *  - Match trouvé : son + notification, puis vérification « Prêt ? » d'une minute.
- *    Tous prêts : la page du match s'ouvre. Délai dépassé : les joueurs prêts
+ *  - Une file par format (2v2, 5v5…) : le joueur choisit la sienne.
+ *  - On joue seul ou en groupe : le chef du groupe lance la recherche pour tous,
+ *    le groupe n'est jamais séparé.
+ *  - L'état (files, ma place, mon groupe) arrive en direct par WebSocket ;
+ *    les actions passent par l'API REST du backend.
+ *  - Match trouvé : musique + notification, puis vérification « Prêt ? » d'une minute.
+ *    Tous prêts : la page du match s'ouvre. Délai dépassé : les groupes complets
  *    repartent en tête de file, les absents reçoivent un avertissement.
  *
  * profileComplete : faux tant que le joueur n'a pas renseigné son identifiant Activision.
@@ -38,8 +45,18 @@ export function QueuePanel({ profileComplete, userId }) {
   const queue = useQueueSocket(true);
   const [pending, setPending] = useState(false);
   const [error, setError] = useState(null);
+  const [chosen, setChosen] = useState(null);
   const elapsed = useElapsedSeconds(queue.inQueue ? queue.joinedAt : null);
   const banLeft = useCountdown(queue.bannedUntil);
+
+  // Format retenu par le joueur (mémorisé d'une visite à l'autre).
+  useEffect(() => {
+    try {
+      setChosen(window.localStorage.getItem(FORMAT_KEY));
+    } catch {
+      // Stockage indisponible : format par défaut.
+    }
+  }, []);
 
   // Match trouvé : alarme sonore et notification (une seule fois par match).
   const alerted = useRef(null);
@@ -64,24 +81,39 @@ export function QueuePanel({ profileComplete, userId }) {
     return () => clearTimeout(timer);
   }, [queue.started, router]);
 
-  async function toggleQueue() {
+  const party = queue.party;
+  const isLeader = !party || party.leaderId === userId;
+  // Format affiché : celui de ma file, sinon celui du groupe, sinon mon choix (5v5 par défaut).
+  const selectedId =
+    (queue.inQueue && queue.format) ||
+    party?.format ||
+    (queue.queues.some((item) => item.format === chosen) ? chosen : null) ||
+    queue.queues.find((item) => item.format === "5v5")?.format ||
+    queue.queues[0]?.format ||
+    null;
+  const selected = queue.queues.find((item) => item.format === selectedId) ?? null;
+
+  /** Applique l'état renvoyé par l'API (même forme que le message « ready » du WebSocket). */
+  function applyState(next) {
+    queue.patch({
+      queues: next.queues ?? queue.queues,
+      inQueue: next.inQueue,
+      format: next.format ?? null,
+      groupSize: next.groupSize ?? 1,
+      joinedAt: next.joinedAt,
+      activeMatchId: next.activeMatchId,
+      bannedUntil: next.bannedUntil ?? null,
+      party: next.party ?? null,
+      aborted: null,
+      notice: null,
+    });
+  }
+
+  async function run(action) {
     setPending(true);
     setError(null);
-    if (!queue.inQueue) {
-      askNotificationPermission();
-      unlockAudio();
-    }
     try {
-      const next = await api(queue.inQueue ? "/cod/queue/leave" : "/cod/queue/join", { method: "POST" });
-      queue.patch({
-        size: next.size,
-        needed: next.needed,
-        inQueue: next.inQueue,
-        joinedAt: next.joinedAt,
-        activeMatchId: next.activeMatchId,
-        bannedUntil: next.bannedUntil ?? null,
-        aborted: null,
-      });
+      await action();
     } catch (caught) {
       setError(caught.message);
     } finally {
@@ -89,11 +121,46 @@ export function QueuePanel({ profileComplete, userId }) {
     }
   }
 
+  function toggleQueue() {
+    if (!queue.inQueue) {
+      askNotificationPermission();
+      unlockAudio();
+    }
+    return run(async () => {
+      const next = queue.inQueue
+        ? await api("/cod/queue/leave", { method: "POST" })
+        : await api("/cod/queue/join", { method: "POST", body: { format: selectedId } });
+      applyState(next);
+    });
+  }
+
+  function chooseFormat(format) {
+    if (format === selectedId) return;
+    if (party) {
+      run(async () => {
+        const { party: updated } = await api("/cod/party/format", { method: "POST", body: { format } });
+        queue.patch({ party: updated });
+      });
+      return;
+    }
+    setChosen(format);
+    try {
+      window.localStorage.setItem(FORMAT_KEY, format);
+    } catch {
+      // Sans importance.
+    }
+  }
+
   const connected = queue.status === "online";
-  const slots = Array.from({ length: queue.needed }, (_, index) => index < queue.size);
+  const size = selected?.size ?? 0;
+  const needed = selected?.needed ?? 2;
+  const slots = Array.from({ length: needed }, (_, index) => index < size);
   const banned = banLeft > 0;
   const hasActiveMatch = Boolean(queue.activeMatchId) && !queue.readyCheck && !queue.started;
-  const canJoin = connected && profileComplete && !hasActiveMatch && !banned;
+  const groupSize = party ? party.members.length : 1;
+  const tooBig = selected ? groupSize > selected.teamSize : false;
+  const canJoin = connected && profileComplete && !hasActiveMatch && !banned && Boolean(selected) && isLeader && !tooBig;
+  const canSwitch = !queue.inQueue && isLeader && !pending;
 
   return (
     <>
@@ -104,19 +171,47 @@ export function QueuePanel({ profileComplete, userId }) {
           <div className="flex flex-wrap items-center justify-between gap-3">
             <Chip tone={banned ? "loss" : queue.inQueue ? "gold" : "neutral"}>
               {queue.inQueue ? <span aria-hidden className="h-1.5 w-1.5 animate-pulse-gold bg-gold" /> : null}
-              {banned ? "Exclu temporairement" : queue.inQueue ? "Recherche en cours" : "Hors file"}
+              {banned ? "Exclu temporairement" : queue.inQueue ? `Recherche ${queue.format ?? ""} en cours` : "Hors file"}
             </Chip>
             <ConnectionStatus status={queue.status} />
           </div>
 
-          {/* Compteur : annoncé aux lecteurs d'écran à chaque changement. */}
+          {/* Choix de la file : 2v2, 5v5… avec le nombre de joueurs en attente. */}
+          {queue.queues.length > 0 ? (
+            <div role="tablist" aria-label="File classée" className="mt-6 grid grid-cols-2 gap-2 sm:flex">
+              {queue.queues.map((item) => {
+                const active = item.format === selectedId;
+                const fits = groupSize <= item.teamSize;
+                return (
+                  <button
+                    key={item.format}
+                    type="button"
+                    role="tab"
+                    aria-selected={active}
+                    disabled={!active && (!canSwitch || !fits)}
+                    onClick={() => chooseFormat(item.format)}
+                    title={!fits ? `Ton groupe compte ${groupSize} joueurs : trop pour du ${item.format}.` : undefined}
+                    className={cn(
+                      "clip-slant flex min-w-[8.5rem] items-baseline justify-between gap-4 px-5 py-3 text-left transition-colors disabled:cursor-not-allowed disabled:opacity-40",
+                      active ? "bg-gold text-ink" : "bg-white/[0.05] text-white/70 hover:bg-white/10 hover:text-white",
+                    )}
+                  >
+                    <span className="font-display text-2xl font-black uppercase leading-none">{item.label}</span>
+                    <span className={cn("font-tech text-xs font-bold tabular-nums", active ? "text-ink/70" : "text-white/45")}>
+                      {item.size}/{item.needed}
+                    </span>
+                  </button>
+                );
+              })}
+            </div>
+          ) : null}
+
+          {/* Compteur de la file choisie : annoncé aux lecteurs d'écran à chaque changement. */}
           <div className="mt-8" aria-live="polite" aria-atomic="true">
-            <p className="font-tech text-[11px] uppercase tracking-[0.3em] text-white/45">Joueurs en file</p>
+            <p className="font-tech text-[11px] uppercase tracking-[0.3em] text-white/45">Joueurs en file {selected ? `· ${selected.label}` : ""}</p>
             <p className="mt-2 font-display font-black leading-[0.8] tabular-nums">
-              <span className={cn("text-8xl sm:text-9xl", queue.size > 0 ? "text-gold-gradient" : "text-white/30")}>
-                {String(queue.size).padStart(2, "0")}
-              </span>
-              <span className="ml-2 text-4xl text-white/30 sm:text-5xl">/ {queue.needed}</span>
+              <span className={cn("text-8xl sm:text-9xl", size > 0 ? "text-gold-gradient" : "text-white/30")}>{String(size).padStart(2, "0")}</span>
+              <span className="ml-2 text-4xl text-white/30 sm:text-5xl">/ {needed}</span>
             </p>
           </div>
 
@@ -125,10 +220,7 @@ export function QueuePanel({ profileComplete, userId }) {
             {slots.map((filled, index) => (
               <span
                 key={index}
-                className={cn(
-                  "h-3 flex-1 -skew-x-[18deg] transition-all duration-500",
-                  filled ? "bg-gold shadow-[0_0_12px_var(--color-gold)]" : "bg-white/10",
-                )}
+                className={cn("h-3 flex-1 -skew-x-[18deg] transition-all duration-500", filled ? "bg-gold shadow-[0_0_12px_var(--color-gold)]" : "bg-white/10")}
               />
             ))}
           </div>
@@ -136,11 +228,17 @@ export function QueuePanel({ profileComplete, userId }) {
           <p className="mt-6 min-h-6 text-sm text-white/60">
             {queue.inQueue ? (
               <>
-                En file depuis <span className="font-tech font-bold tabular-nums text-white">{formatDuration(elapsed)}</span>. Garde cette page
-                ouverte : un son et une notification te préviennent dès que ton match est trouvé.
+                En file {queue.groupSize > 1 ? `avec ton groupe (${groupLabel(queue.groupSize).toLowerCase()}) ` : ""}depuis{" "}
+                <span className="font-tech font-bold tabular-nums text-white">{formatDuration(elapsed)}</span>. Garde cette page ouverte : un son et
+                une notification te préviennent dès que ton match est trouvé.
               </>
+            ) : party && !isLeader ? (
+              <>Tu es dans le groupe de {party.members.find((member) => member.isLeader)?.username ?? "ton chef"} : c&apos;est lui qui lance la recherche.</>
             ) : (
-              <>Dès que {queue.needed} joueurs sont en file, les équipes et la carte sont tirées au sort. Tu auras alors une minute pour accepter.</>
+              <>
+                Dès que {needed} joueurs sont en file, les équipes et la carte sont tirées au sort ; un groupe joue toujours dans la même équipe.
+                Tu auras alors une minute pour accepter.
+              </>
             )}
           </p>
 
@@ -148,23 +246,38 @@ export function QueuePanel({ profileComplete, userId }) {
             {queue.inQueue ? (
               <Button variant="danger" size="lg" onClick={toggleQueue} disabled={pending}>
                 {pending ? <LuLoaderCircle aria-hidden className="h-5 w-5 animate-spin" /> : <LuX aria-hidden className="h-5 w-5" />}
-                Quitter la file
+                {queue.groupSize > 1 ? "Annuler la recherche du groupe" : "Quitter la file"}
               </Button>
             ) : (
               <Button size="lg" onClick={toggleQueue} disabled={pending || !canJoin}>
-                {pending ? <LuLoaderCircle aria-hidden className="h-5 w-5 animate-spin" /> : <LuCrosshair aria-hidden className="h-5 w-5" />}
-                Rejoindre la file
+                {pending ? (
+                  <LuLoaderCircle aria-hidden className="h-5 w-5 animate-spin" />
+                ) : party ? (
+                  <LuUsers aria-hidden className="h-5 w-5" />
+                ) : (
+                  <LuCrosshair aria-hidden className="h-5 w-5" />
+                )}
+                {party ? `Lancer la recherche · ${groupLabel(groupSize)}` : "Rejoindre la file"}
               </Button>
             )}
             <SoundControls />
           </div>
 
+          <p className="mt-4 text-xs text-white/45">
+            Barème : <span className="text-white/70">seul</span>, une défaite coûte 25 % de points en moins ;{" "}
+            <span className="text-white/70">en groupe de 3 ou plus</span>, une victoire rapporte 26 points au lieu de 30.
+          </p>
+
           {/* Ce qui empêche de jouer, du plus bloquant au moins bloquant. */}
           <div className="mt-6 space-y-3">
             {error ? <Notice tone="error">{error}</Notice> : null}
+            {queue.notice ? <Notice>{queue.notice.message}</Notice> : null}
 
             {queue.aborted?.reason === "requeued" ? (
-              <Notice tone="success">Un joueur n&apos;a pas accepté le match : tu es remis en tête de file.</Notice>
+              <Notice tone="success">Un joueur n&apos;a pas accepté le match : {queue.groupSize > 1 ? "ton groupe est remis" : "tu es remis"} en tête de file.</Notice>
+            ) : null}
+            {queue.aborted?.reason === "released" ? (
+              <Notice>Un membre de ton groupe n&apos;a pas accepté le match : la recherche du groupe est annulée. Relancez-la quand vous êtes prêts.</Notice>
             ) : null}
             {queue.aborted?.reason === "missed" ? (
               <Notice tone="error">
@@ -185,6 +298,8 @@ export function QueuePanel({ profileComplete, userId }) {
                 </Link>
               </Notice>
             ) : null}
+
+            {tooBig ? <Notice tone="error">Ton groupe compte {groupSize} joueurs : trop pour du {selected?.label}. Choisis une autre file.</Notice> : null}
 
             {hasActiveMatch ? (
               <Notice>
@@ -213,6 +328,14 @@ export function QueuePanel({ profileComplete, userId }) {
           </div>
         </div>
       </TacticalCard>
+
+      <PartyPanel
+        party={party}
+        userId={userId}
+        format={selected}
+        locked={queue.inQueue || hasActiveMatch}
+        onChange={(updated) => queue.patch({ party: updated })}
+      />
 
       <ReadyCheckOverlay check={queue.readyCheck} started={queue.started} userId={userId} />
     </>
@@ -363,7 +486,7 @@ function ReadyCheckOverlay({ check, started, userId }) {
               </>
             ) : check ? (
               <>
-                <p className="font-tech text-xs uppercase tracking-[0.4em] text-gold">Équipes formées</p>
+                <p className="font-tech text-xs uppercase tracking-[0.4em] text-gold">Équipes formées{check.format ? ` · ${check.format}` : ""}</p>
                 <p className="mt-4 font-display text-7xl font-black uppercase leading-[0.85] sm:text-9xl">
                   Match <span className="text-gold-gradient">trouvé</span>
                 </p>

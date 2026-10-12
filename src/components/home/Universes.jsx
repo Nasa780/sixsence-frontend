@@ -12,7 +12,7 @@ const UNIVERSES = [
     index: "01",
     game: "Call of Duty · MW4",
     image: "/images/mw4.webp",
-    title: "Classé 5v5",
+    title: "Classé 2v2 · 5v5",
     watermark: "COD",
     text: "Rejoins la file, laisse le matchmaking composer les équipes et grimpe au classement match après match.",
     points: ["File d'attente en temps réel", "Carte et équipes tirées au sort", "8 rangs, séries de victoires et trophées"],
