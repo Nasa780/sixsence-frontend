@@ -33,7 +33,7 @@ Utilitaires maison dans `globals.css` : `clip-tactical`, `clip-slant`, `clip-cor
 - `src/components/cod/`, `gta/`, `home/`, `effects/` : écrans et effets (GoldParticles, Reveal).
 - `src/components/admin/` : panneau d'administration (contestations, joueurs et badges, événements, fondateurs, partenaires, clôture de saison).
 - `src/hooks/` : `useSession`, `useUser` (joueur + profil COD), `useQueueSocket` (WebSocket de la file, vérification « Prêt ? »), `useCountdown`, `useSeasons` (saison active, badges de saison), `useSiteStats`, `useTopPlayers`, `useGtaEvents`.
-- `src/lib/` : `config.js` (URL de l'API, clé publique Supabase), `supabase.js`, `auth.js` (connexion Discord), `api.js` (appels au backend avec le jeton), `ranks.js` (8 rangs et barème), `notify.js` (son, notification et titre clignotant « match trouvé »), `legal.js` (identité de l'éditeur pour les pages légales, à compléter).
+- `src/lib/` : `config.js` (URL de l'API, clé publique Supabase), `supabase.js`, `auth.js` (connexion Discord), `api.js` (appels au backend avec le jeton), `ranks.js` (8 rangs et barème selon la taille du groupe), `moderation.js` (motifs d'arbitrage et de signalement, badge MVP du mois), `notify.js` (son, notification et titre clignotant « match trouvé »), `legal.js` (identité de l'éditeur pour les pages légales, à compléter).
 
 ## Règles
 

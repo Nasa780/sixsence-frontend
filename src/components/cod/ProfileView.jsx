@@ -1,13 +1,17 @@
 import Link from "next/link";
 import { useCallback, useEffect, useMemo, useState } from "react";
-import { LuLock, LuMedal } from "react-icons/lu";
+import { LuFlag, LuLock, LuMedal } from "react-icons/lu";
 import useSeasons, { seasonBadge } from "../../hooks/useSeasons";
+import useSession from "../../hooks/useSession";
+import { api } from "../../lib/api";
 import { cn } from "../../lib/cn";
+import { REPORT_REASONS, monthlyMvpBadge } from "../../lib/moderation";
 import { levelFor } from "../../lib/ranks";
 import { supabase } from "../../lib/supabase";
 import { Avatar } from "../ui/Avatar";
 import { Chip, EmptyState, Loading, Notice, StatTile } from "../ui/Feedback";
 import { TacticalCard } from "../ui/TacticalCard";
+import { ReasonDialog } from "../ui/ReasonDialog";
 import { Eyebrow } from "../ui/Typography";
 import { ActivisionForm } from "./ActivisionForm";
 import { RankBadge } from "./RankBadge";
@@ -31,7 +35,7 @@ function badgesFor(profile, seasons) {
     .filter((key) => STAFF_BADGES[key])
     .map((key) => ({ key, ...STAFF_BADGES[key], unlocked: true }));
   const seasonal = (profile.badges || [])
-    .map((key) => ({ key, badge: seasonBadge(key, seasons) }))
+    .map((key) => ({ key, badge: seasonBadge(key, seasons) ?? monthlyMvpBadge(key) }))
     .filter(({ badge }) => badge)
     .map(({ key, badge }) => ({ key, ...badge, unlocked: true }));
   return [
@@ -54,6 +58,8 @@ export function ProfileView({ userId, editable = false, ownUser = null }) {
   const [data, setData] = useState(null);
   const [notFound, setNotFound] = useState(false);
   const { seasons } = useSeasons();
+  const { userId: viewerId } = useSession();
+  const [reporting, setReporting] = useState(false);
 
   const load = useCallback(async () => {
     const [{ data: player }, { data: profile }, { data: history }] = await Promise.all([
@@ -115,6 +121,25 @@ export function ProfileView({ userId, editable = false, ownUser = null }) {
                 {profile.platform ? ` · ${PLATFORM_LABEL[profile.platform] ?? profile.platform}` : ""}
               </p>
               <RankBadge points={profile.points} showProgress className="mt-4" />
+              {viewerId && viewerId !== userId ? (
+                <button
+                  type="button"
+                  onClick={() => setReporting(true)}
+                  className="mt-4 inline-flex items-center gap-1.5 text-xs text-white/40 transition-colors hover:text-loss"
+                >
+                  <LuFlag aria-hidden className="h-3.5 w-3.5" />
+                  Signaler ce joueur
+                </button>
+              ) : null}
+              <ReasonDialog
+                open={reporting}
+                onClose={() => setReporting(false)}
+                title={`Signaler ${player.username}`}
+                intro="Ton signalement reste confidentiel : seule l'équipe SixSence le voit."
+                reasons={REPORT_REASONS}
+                submitLabel="Envoyer le signalement"
+                onSubmit={({ reason, details }) => api("/cod/reports", { method: "POST", body: { targetId: userId, reason, details } })}
+              />
             </div>
           </div>
 
