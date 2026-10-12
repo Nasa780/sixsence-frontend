@@ -11,6 +11,7 @@ import { cn } from "../../lib/cn";
 import { Avatar } from "../ui/Avatar";
 import { Button } from "../ui/Button";
 import { Container } from "../ui/Container";
+import { InstallButton } from "../ui/InstallButton";
 import { Logo } from "../ui/Logo";
 
 const LINKS = [
@@ -84,6 +85,7 @@ export function Navbar() {
           </nav>
 
           <div className="flex items-center gap-2">
+            <InstallButton variant="nav" />
             {/* Zone de largeur fixe pendant le chargement : évite que la barre ne saute. */}
             <div className="hidden min-w-[9rem] justify-end sm:flex">
               {loading ? null : user ? (
@@ -142,6 +144,7 @@ export function Navbar() {
               </nav>
 
               <div className="mt-4 border-t border-white/10 pt-4">
+                <InstallButton variant="menu" />
                 {loading ? null : user ? (
                   <div className="flex flex-col gap-1">
                     <div className="flex items-center gap-3 px-4 py-2">
