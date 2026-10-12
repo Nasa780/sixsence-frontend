@@ -94,6 +94,23 @@ const SECTIONS = [
     ),
   },
   {
+    id: "mvp",
+    title: "MVP",
+    content: (
+      <ul>
+        <li>
+          Après un match terminé, chaque joueur a <strong>24 heures</strong> pour voter pour le meilleur joueur de l&apos;
+          <strong>équipe gagnante</strong> (il peut voter pour lui-même si elle est la sienne, et changer son vote).
+        </li>
+        <li>
+          Le plus élu est MVP du match. À égalité, les votes reçus des autres joueurs départagent ; si l&apos;égalité persiste, les joueurs
+          sont co-MVP.
+        </li>
+        <li>Le joueur le plus élu du mois reçoit le badge « MVP du mois » sur son profil.</li>
+      </ul>
+    ),
+  },
+  {
     id: "points",
     title: "Points et rangs",
     content: (
