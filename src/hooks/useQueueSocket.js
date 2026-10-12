@@ -8,7 +8,7 @@ import { WS_URL } from "../lib/config";
  *
  * Renvoie :
  *   status        "off" | "connecting" | "online" | "reconnecting"
- *   queues        [{ format, label, teamSize, size, needed }] une entrée par file (2v2, 5v5…)
+ *   queues        [{ format, label, teamSize, size, needed }] une entrée par file (2v2, 3v3, 4v4, 5v5)
  *   inQueue, format, groupSize, joinedAt   ma place en file (format de la file, taille de mon groupe)
  *   expiresAt, stillThere   arrêt de la recherche sans confirmation ; « Toujours là ? » en attente
  *   activeMatchId, bannedUntil

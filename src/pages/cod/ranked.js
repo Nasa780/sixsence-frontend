@@ -13,10 +13,10 @@ import { api } from "../../lib/api";
 import { rankFor } from "../../lib/ranks";
 
 const RULES = [
-  { title: "Choisis ta file", text: "2v2 ou 5v5, seul ou en groupe. Le match se lance dès que les deux équipes sont complètes ; les premiers arrivés sont servis en premier." },
+  { title: "Choisis ta file", text: "2v2, 3v3, 4v4 ou 5v5, seul ou en groupe. Le match se lance dès que les deux équipes sont complètes ; les premiers arrivés sont servis en premier." },
   { title: "Joue avec tes amis", text: "Crée un groupe, envoie le lien : vous serez toujours dans la même équipe. Seul, une défaite coûte 25 % de points en moins ; à 3 ou plus, une victoire rapporte 26 points." },
   { title: "Une minute pour accepter", text: "Match trouvé : un son te prévient, tu as 60 secondes pour cliquer sur « Accepter »." },
-  { title: "Recherche & Destruction Hardcore", text: "Le seul mode du classé, en 2v2 comme en 5v5 : partie privée en Recherche & Destruction avec le réglage Hardcore." },
+  { title: "Recherche & Destruction Hardcore", text: "Le seul mode du classé, dans toutes les files : partie privée en Recherche & Destruction avec le réglage Hardcore." },
   { title: "Tout est tiré au sort", text: "Carte et camp : personne ne choisit. Les joueurs seuls complètent les équipes autour des groupes." },
   { title: "L'hôte crée la partie", text: "Le premier joueur de l'équipe 1 ouvre la partie privée en S&D Hardcore et invite les autres." },
   { title: "Le résultat se confirme à deux", text: "Un joueur déclare le vainqueur, l'équipe adverse valide. Les points bougent ensuite." },
@@ -56,7 +56,7 @@ export default function RankedPage() {
 
 
         image="/images/mw4.webp"
-        eyebrow="Classé 2v2 · 5v5 · S&D Hardcore"
+        eyebrow="Classé 2v2 → 5v5 · S&D Hardcore"
         title={
           <>
             File <span className="text-gold-gradient">d&apos;attente</span>

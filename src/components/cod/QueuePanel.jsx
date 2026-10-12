@@ -31,7 +31,7 @@ const FORMAT_KEY = "sixsence:format";
 
 /**
  * Panneau de la file d'attente classée.
- *  - Une file par format (2v2, 5v5…) : le joueur choisit la sienne.
+ *  - Une file par format (2v2, 3v3, 4v4, 5v5) : le joueur choisit la sienne.
  *  - On joue seul ou en groupe : le chef du groupe lance la recherche pour tous,
  *    le groupe n'est jamais séparé.
  *  - L'état (files, ma place, mon groupe) arrive en direct par WebSocket ;
@@ -190,9 +190,9 @@ export function QueuePanel({ profileComplete, userId }) {
             <ConnectionStatus status={queue.status} />
           </div>
 
-          {/* Choix de la file : 2v2, 5v5… avec le nombre de joueurs en attente. */}
+          {/* Choix de la file : 2v2 à 5v5, avec le nombre de joueurs en attente. */}
           {queue.queues.length > 0 ? (
-            <div role="tablist" aria-label="File classée" className="mt-6 grid grid-cols-2 gap-2 sm:flex">
+            <div role="tablist" aria-label="File classée" className="mt-6 grid grid-cols-2 gap-2 sm:grid-cols-4">
               {queue.queues.map((item) => {
                 const active = item.format === selectedId;
                 const fits = groupSize <= item.teamSize;
@@ -206,7 +206,7 @@ export function QueuePanel({ profileComplete, userId }) {
                     onClick={() => chooseFormat(item.format)}
                     title={!fits ? `Ton groupe compte ${groupSize} joueurs : trop pour du ${item.format}.` : undefined}
                     className={cn(
-                      "clip-slant flex min-w-[8.5rem] items-baseline justify-between gap-4 px-5 py-3 text-left transition-colors disabled:cursor-not-allowed disabled:opacity-40",
+                      "clip-slant flex items-baseline justify-between gap-3 px-5 py-3 text-left transition-colors disabled:cursor-not-allowed disabled:opacity-40",
                       active ? "bg-gold text-ink" : "bg-white/[0.05] text-white/70 hover:bg-white/10 hover:text-white",
                     )}
                   >

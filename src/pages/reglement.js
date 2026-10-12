@@ -24,7 +24,8 @@ const SECTIONS = [
     content: (
       <>
         <p>
-          Deux files sont ouvertes : <strong>2v2</strong> (seul ou en duo) et <strong>5v5</strong> (seul ou en groupe de 2 à 5). Un groupe
+          Quatre files sont ouvertes : <strong>2v2</strong>, <strong>3v3</strong>, <strong>4v4</strong> et <strong>5v5</strong>. On y joue seul ou
+          en groupe, jusqu&apos;à la taille d&apos;une équipe (2 en 2v2, 3 en 3v3…). Un groupe
           est toujours placé dans la même équipe ; seul son chef lance la recherche, et si un membre quitte la file ou le site, la recherche
           du groupe est annulée.
         </p>
@@ -75,8 +76,8 @@ const SECTIONS = [
     content: (
       <ul>
         <li>
-          Le classé se joue uniquement en <strong>Recherche &amp; Destruction Hardcore</strong> (réglage Hardcore de Call of Duty), en
-          2v2 comme en 5v5. Une partie jouée dans un autre mode ou sans le réglage Hardcore ne compte pas.
+          Le classé se joue uniquement en <strong>Recherche &amp; Destruction Hardcore</strong> (réglage Hardcore de Call of Duty), dans
+          toutes les files. Une partie jouée dans un autre mode ou sans le réglage Hardcore ne compte pas.
         </li>
         <li>
           Le premier joueur de l&apos;équipe 1 est l&apos;<strong>hôte</strong> : il crée la partie privée en Recherche &amp; Destruction
