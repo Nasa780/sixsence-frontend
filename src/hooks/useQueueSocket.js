@@ -10,6 +10,7 @@ import { WS_URL } from "../lib/config";
  *   status        "off" | "connecting" | "online" | "reconnecting"
  *   queues        [{ format, label, teamSize, size, needed }] une entrée par file (2v2, 5v5…)
  *   inQueue, format, groupSize, joinedAt   ma place en file (format de la file, taille de mon groupe)
+ *   expiresAt, stillThere   arrêt de la recherche sans confirmation ; « Toujours là ? » en attente
  *   activeMatchId, bannedUntil
  *   party         mon groupe { id, leaderId, format, maxSize, inviteCode, members[] } ou null
  *   readyCheck    { matchId, format, map, mode, deadline, accepted, total, readyUsers } pendant la vérification « Prêt ? »
@@ -27,6 +28,8 @@ export default function useQueueSocket(enabled) {
     format: null,
     groupSize: 1,
     joinedAt: null,
+    expiresAt: null,
+    stillThere: false,
     activeMatchId: null,
     bannedUntil: null,
     party: null,
@@ -79,6 +82,8 @@ export default function useQueueSocket(enabled) {
               format: message.format ?? null,
               groupSize: message.groupSize ?? 1,
               joinedAt: message.joinedAt,
+              expiresAt: message.expiresAt ?? null,
+              stillThere: Boolean(message.stillThere),
               activeMatchId: message.activeMatchId,
               bannedUntil: message.bannedUntil ?? null,
               party: message.party ?? null,
@@ -94,6 +99,8 @@ export default function useQueueSocket(enabled) {
               format: message.format ?? null,
               groupSize: message.groupSize ?? 1,
               joinedAt: message.joinedAt,
+              expiresAt: message.expiresAt ?? null,
+              stillThere: Boolean(message.stillThere),
             }));
             break;
           case "party:update":
