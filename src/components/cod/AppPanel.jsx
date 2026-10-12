@@ -5,10 +5,11 @@ import { Button } from "../ui/Button";
 import { TacticalCard } from "../ui/TacticalCard";
 
 /**
- * « Ne rate plus aucun match » : installer l'appli et activer les notifications
+ * « Ne rate plus aucun match » (variant="gta" : « Ne rate aucun événement ») : installer l'appli et activer les notifications
  * (match trouvé, rappels d'événements GTA), même site fermé.
  */
-export function AppPanel() {
+export function AppPanel({ variant = "cod", className = "mt-6" }) {
+  const gta = variant === "gta";
   const [support, setSupport] = useState(null);
   const [enabled, setEnabled] = useState(false);
   const [installPrompt, setInstallPrompt] = useState(null);
@@ -67,14 +68,15 @@ export function AppPanel() {
   const isMobile = typeof navigator !== "undefined" && /Android|Mobi/i.test(navigator.userAgent);
 
   return (
-    <TacticalCard cut={20} className="mt-6" innerClassName="p-6">
+    <TacticalCard cut={20} className={className} innerClassName="p-6">
       <p className="flex items-center gap-2 font-display text-2xl font-black uppercase leading-none">
         <LuSmartphone aria-hidden className="h-5 w-5 text-gold" />
-        Ne rate plus aucun match
+        {gta ? "Ne rate aucun événement" : "Ne rate plus aucun match"}
       </p>
       <p className="mt-2 max-w-xl text-sm text-white/55">
-        Installe l&apos;appli SixSence et active les notifications : ton téléphone sonne quand ton match est trouvé, même si le site est
-        fermé.
+        {gta
+          ? "Installe l'appli SixSence et active les notifications : tu es prévenu des nouveaux événements GTA 6 et 1 h avant ceux où tu es inscrit, même si le site est fermé."
+          : "Installe l'appli SixSence et active les notifications : ton téléphone sonne quand ton match est trouvé, même si le site est fermé."}
       </p>
 
       <div className="mt-5 flex flex-col gap-3 sm:flex-row sm:flex-wrap">

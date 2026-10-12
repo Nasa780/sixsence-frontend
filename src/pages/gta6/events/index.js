@@ -1,13 +1,17 @@
 import Head from "next/head";
+import { AppPanel } from "../../../components/cod/AppPanel";
 import { EventCard } from "../../../components/gta/EventCard";
 import { Container } from "../../../components/ui/Container";
 import { EmptyState, Loading } from "../../../components/ui/Feedback";
 import { Eyebrow, PageHeader } from "../../../components/ui/Typography";
 import useGtaEvents from "../../../hooks/useGtaEvents";
+import useSession from "../../../hooks/useSession";
 
 /** Planning complet : événements à venir, puis événements passés. Public. */
 export default function EventsPage() {
   const { events, mine } = useGtaEvents("all");
+  // Les notifications sont liées au compte : le bloc n'est proposé qu'aux joueurs connectés.
+  const { session } = useSession();
 
   const now = Date.now();
   const upcoming = (events || []).filter((event) => new Date(event.starts_at).getTime() > now);
@@ -34,6 +38,7 @@ export default function EventsPage() {
       />
 
       <Container className="space-y-16 py-12">
+        {session ? <AppPanel variant="gta" className="" /> : null}
         {events === null ? (
           <Loading />
         ) : (
