@@ -8,26 +8,32 @@ import { WS_URL } from "../lib/config";
  *
  * Renvoie :
  *   status        "off" | "connecting" | "online" | "reconnecting"
- *   size, needed  joueurs en file / requis pour lancer un match
- *   inQueue, joinedAt, activeMatchId, bannedUntil
- *   readyCheck    { matchId, map, mode, deadline, accepted, total, readyUsers } pendant la vérification « Prêt ? »
+ *   queues        [{ format, label, teamSize, size, needed }] une entrée par file (2v2, 5v5…)
+ *   inQueue, format, groupSize, joinedAt   ma place en file (format de la file, taille de mon groupe)
+ *   activeMatchId, bannedUntil
+ *   party         mon groupe { id, leaderId, format, maxSize, inviteCode, members[] } ou null
+ *   readyCheck    { matchId, format, map, mode, deadline, accepted, total, readyUsers } pendant la vérification « Prêt ? »
  *   started       identifiant du match quand tous les joueurs ont accepté
- *   aborted       { reason: "requeued" | "missed", bannedUntil } quand la vérification échoue
+ *   aborted       { reason: "requeued" | "missed" | "released", bannedUntil } quand la vérification échoue
+ *   notice        dernier message d'information (recherche annulée par un coéquipier…)
  *
- * Protocole décrit dans le backend : src/ws/hub.ts.
+ * Protocole décrit dans le backend : src/ws/hub.ts et src/index.ts.
  */
 export default function useQueueSocket(enabled) {
   const [state, setState] = useState({
     status: "off",
-    size: 0,
-    needed: 10,
+    queues: [],
     inQueue: false,
+    format: null,
+    groupSize: 1,
     joinedAt: null,
     activeMatchId: null,
     bannedUntil: null,
+    party: null,
     readyCheck: null,
     started: null,
     aborted: null,
+    notice: null,
   });
   const socketRef = useRef(null);
 
@@ -68,19 +74,33 @@ export default function useQueueSocket(enabled) {
             setState((prev) => ({
               ...prev,
               status: "online",
-              size: message.size,
-              needed: message.needed,
+              queues: message.queues ?? [],
               inQueue: message.inQueue,
+              format: message.format ?? null,
+              groupSize: message.groupSize ?? 1,
               joinedAt: message.joinedAt,
               activeMatchId: message.activeMatchId,
               bannedUntil: message.bannedUntil ?? null,
+              party: message.party ?? null,
             }));
             break;
           case "queue:update":
-            setState((prev) => ({ ...prev, size: message.size, needed: message.needed }));
+            setState((prev) => ({ ...prev, queues: message.queues ?? prev.queues }));
             break;
           case "queue:state":
-            setState((prev) => ({ ...prev, inQueue: message.inQueue, joinedAt: message.joinedAt }));
+            setState((prev) => ({
+              ...prev,
+              inQueue: message.inQueue,
+              format: message.format ?? null,
+              groupSize: message.groupSize ?? 1,
+              joinedAt: message.joinedAt,
+            }));
+            break;
+          case "party:update":
+            setState((prev) => ({ ...prev, party: message.party ?? null }));
+            break;
+          case "notice":
+            setState((prev) => ({ ...prev, notice: { message: message.message, at: Date.now() } }));
             break;
           case "match:found":
             setState((prev) => ({
@@ -89,13 +109,15 @@ export default function useQueueSocket(enabled) {
               activeMatchId: message.matchId,
               aborted: null,
               started: null,
+              notice: null,
               readyCheck: {
                 matchId: message.matchId,
+                format: message.format,
                 map: message.map,
                 mode: message.mode,
                 deadline: message.deadline,
                 accepted: 0,
-                total: message.total ?? prev.needed,
+                total: message.total ?? 2,
                 readyUsers: [],
               },
             }));
@@ -145,7 +167,7 @@ export default function useQueueSocket(enabled) {
     };
   }, [enabled]);
 
-  /** Mise à jour locale après une action REST (rejoindre / quitter / accepter). */
+  /** Mise à jour locale après une action REST (rejoindre / quitter / groupe). */
   const patch = (partial) => setState((prev) => ({ ...prev, ...partial }));
 
   return { ...state, patch };

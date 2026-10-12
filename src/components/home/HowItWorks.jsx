@@ -13,7 +13,7 @@ const STEPS = [
   {
     icon: LuCrosshair,
     title: "Rejoins la file",
-    text: "Dès que dix joueurs sont prêts, le match se lance : carte et équipes sont tirées au sort.",
+    text: "Seul ou en groupe, en 2v2 ou en 5v5 : dès que les deux équipes sont complètes, le match se lance et la carte est tirée au sort.",
   },
   {
     icon: LuTrophy,

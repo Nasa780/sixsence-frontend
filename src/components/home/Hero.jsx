@@ -76,7 +76,7 @@ export function Hero() {
           </motion.p>
 
           <motion.p variants={item} className="mt-4 max-w-xl text-base leading-relaxed text-white/60 sm:text-lg">
-            File classée Call of Duty en 5v5, matchmaking automatique, classement en direct et événements GTA 6. Un seul
+            Files classées Call of Duty en 2v2 et 5v5, seul ou en groupe, matchmaking automatique, classement en direct et événements GTA 6. Un seul
             accès : ton compte Discord.
           </motion.p>
 

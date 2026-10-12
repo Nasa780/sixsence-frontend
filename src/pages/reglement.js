@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { LegalPage } from "../components/ui/LegalPage";
 import { LEGAL } from "../lib/legal";
-import { RANKS, WIN_POINTS, WIN_XP } from "../lib/ranks";
+import { GROUP_WIN_POINTS, RANKS, WIN_POINTS, WIN_XP } from "../lib/ranks";
 
 const SECTIONS = [
   {
@@ -24,7 +24,12 @@ const SECTIONS = [
     content: (
       <>
         <p>
-          Quand assez de joueurs sont en file, les équipes et la carte sont tirées au sort. Chaque joueur dispose alors de{" "}
+          Deux files sont ouvertes : <strong>2v2</strong> (seul ou en duo) et <strong>5v5</strong> (seul ou en groupe de 2 à 5). Un groupe
+          est toujours placé dans la même équipe ; seul son chef lance la recherche, et si un membre quitte la file ou le site, la recherche
+          du groupe est annulée.
+        </p>
+        <p>
+          Quand assez de joueurs sont en file, les équipes sont formées et la carte est tirée au sort. Chaque joueur dispose alors de{" "}
           <strong>1 minute</strong> pour cliquer sur « Accepter le match ». Un son et une notification te préviennent : garde la page
           ouverte pendant ta recherche.
         </p>
@@ -96,6 +101,11 @@ const SECTIONS = [
         <p>
           Victoire : <strong>+{WIN_POINTS} points</strong> et +{WIN_XP} XP. Défaite : de -{Math.min(...RANKS.map((rank) => rank.loss))} à
           -{Math.max(...RANKS.map((rank) => rank.loss))} points selon ton rang (jamais en dessous de 0).
+        </p>
+        <p>
+          La taille de ton groupe compte : <strong>seul</strong>, une défaite coûte 25 % de points en moins ;{" "}
+          <strong>en groupe de 3 joueurs ou plus</strong>, une victoire rapporte {GROUP_WIN_POINTS} points au lieu de {WIN_POINTS} (jouer ensemble
+          est un avantage).
         </p>
         <ul>
           {[...RANKS].reverse().map((rank) => (
