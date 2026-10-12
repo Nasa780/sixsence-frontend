@@ -30,8 +30,12 @@ const SECTIONS = [
         </p>
         <p>
           Quand assez de joueurs sont en file, les équipes sont formées et la carte est tirée au sort. Chaque joueur dispose alors de{" "}
-          <strong>1 minute</strong> pour cliquer sur « Accepter le match ». Un son et une notification te préviennent : garde la page
-          ouverte pendant ta recherche.
+          <strong>1 minute</strong> pour cliquer sur « Accepter le match ». Un son et une notification te préviennent.
+        </p>
+        <p>
+          Sur ordinateur, garde la page ouverte pendant ta recherche : si tu la fermes, tu quittes la file au bout de 30 secondes. Sur
+          téléphone, tu peux verrouiller l&apos;écran ou changer d&apos;appli : tu gardes ta place <strong>30 minutes</strong>. Active les
+          notifications pour être prévenu du match trouvé ; si ta recherche s&apos;arrête, une notification te le dit aussi.
         </p>
         <p>
           Si un joueur n&apos;accepte pas à temps, le match est annulé. Ceux qui avaient accepté repartent{" "}

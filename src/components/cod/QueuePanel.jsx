@@ -50,6 +50,9 @@ export function QueuePanel({ profileComplete, userId }) {
   const [chosen, setChosen] = useState(null);
   const elapsed = useElapsedSeconds(queue.inQueue ? queue.joinedAt : null);
   const banLeft = useCountdown(queue.bannedUntil);
+  // Sur téléphone, le serveur garde la place 30 min après la fermeture de l'appli (COD_MOBILE_GRACE_MINUTES).
+  const [isMobile, setIsMobile] = useState(false);
+  useEffect(() => setIsMobile(/Android|iPhone|iPad|iPod|Mobi/i.test(navigator.userAgent)), []);
 
   // Format retenu par le joueur (mémorisé d'une visite à l'autre).
   useEffect(() => {
@@ -231,8 +234,10 @@ export function QueuePanel({ profileComplete, userId }) {
             {queue.inQueue ? (
               <>
                 En file {queue.groupSize > 1 ? `avec ton groupe (${groupLabel(queue.groupSize).toLowerCase()}) ` : ""}depuis{" "}
-                <span className="font-tech font-bold tabular-nums text-white">{formatDuration(elapsed)}</span>. Garde cette page ouverte : un son et
-                une notification te préviennent dès que ton match est trouvé.
+                <span className="font-tech font-bold tabular-nums text-white">{formatDuration(elapsed)}</span>.{" "}
+                {isMobile
+                  ? "Tu peux verrouiller ton téléphone ou changer d'appli : tu gardes ta place 30 min et une notification te prévient dès que ton match est trouvé."
+                  : "Garde cette page ouverte (dans un autre onglet si tu veux) : un son et une notification te préviennent dès que ton match est trouvé."}
               </>
             ) : party && !isLeader ? (
               <>Tu es dans le groupe de {party.members.find((member) => member.isLeader)?.username ?? "ton chef"} : c&apos;est lui qui lance la recherche.</>
