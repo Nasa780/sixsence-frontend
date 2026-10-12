@@ -43,6 +43,7 @@ export function AppPanel({ variant = "cod", className = "mt-6" }) {
   }
 
   if (support === null) return null;
+  const isMobile = /Android|iPhone|iPad|Mobi/i.test(navigator.userAgent);
 
   return (
     <TacticalCard cut={20} className={className} innerClassName="p-6">
@@ -76,7 +77,11 @@ export function AppPanel({ variant = "cod", className = "mt-6" }) {
         <p className="mt-3 text-sm text-white/55">Sur iPhone, les notifications s&apos;activent depuis l&apos;appli installée : installe-la d&apos;abord.</p>
       ) : null}
       {support === "denied" && !enabled ? (
-        <p className="mt-3 text-sm text-loss">Les notifications sont bloquées pour ce site : autorise-les dans les réglages du navigateur.</p>
+        <p className="mt-3 text-sm text-loss">
+          {isMobile
+            ? "Pour débloquer les notifications sur ton téléphone : touche l'icône à gauche de l'adresse, puis Autorisations > Notifications > Autoriser. Recharge la page, puis touche « Activer les notifications »."
+            : "Pour débloquer les notifications sur ton PC : clique sur l'icône à gauche de l'adresse, puis Notifications > Autoriser. Recharge la page, puis clique sur « Activer les notifications »."}
+        </p>
       ) : null}
       {support === "unsupported" ? <p className="mt-3 text-sm text-white/45">Ce navigateur ne gère pas les notifications.</p> : null}
       {message ? (
