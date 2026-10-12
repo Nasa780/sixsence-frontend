@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { LuCheck, LuCrown, LuFlag, LuImagePlus, LuLoaderCircle, LuMap, LuSend, LuShieldAlert, LuStar, LuSwords, LuX } from "react-icons/lu";
+import { LuCheck, LuCrown, LuFlag, LuImagePlus, LuLoaderCircle, LuLock, LuMap, LuSend, LuShieldAlert, LuStar, LuSwords, LuX } from "react-icons/lu";
 import useCountdown from "../../hooks/useCountdown";
 import useSession from "../../hooks/useSession";
 import useUser from "../../hooks/useUser";
@@ -37,7 +37,8 @@ const teamLabel = (team) => (team === "A" ? "Équipe 1" : "Équipe 2");
  *   « Prêt ? » (1 min) -> en cours -> un joueur déclare le vainqueur -> l'équipe adverse confirme -> terminé (points mis à jour)
  *                                              -> ou conteste -> un admin tranche
  *
- * Tout le monde peut regarder ; seuls les joueurs du match agissent et écrivent.
+ * Tout le monde peut regarder le match ; le chat et les captures sont réservés à ses
+ * joueurs et aux admins (privateAccess, renvoyé par le backend). Seuls les joueurs agissent.
  * La page s'actualise seule (Supabase Realtime sur le match et ses messages).
  */
 export function MatchView({ matchId }) {
@@ -58,6 +59,7 @@ export function MatchView({ matchId }) {
     }
   }, [matchId]);
 
+  // Rechargé quand le joueur se connecte : le chat et les captures dépendent de qui regarde.
   const load = useCallback(async () => {
     try {
       setData(await api(`/cod/matches/${matchId}`));
@@ -65,7 +67,7 @@ export function MatchView({ matchId }) {
       if (caught.status === 404 || caught.status === 400) setNotFound(true);
       else setError(caught.message);
     }
-  }, [matchId]);
+  }, [matchId, userId]);
 
   useEffect(() => {
     load();
@@ -115,7 +117,7 @@ export function MatchView({ matchId }) {
   }
   if (!data) return <Loading label="Chargement du match…" />;
 
-  const { match, messages, proofs } = data;
+  const { match, messages, proofs, privateAccess } = data;
   const myTeam = match.team_a.includes(userId) ? "A" : match.team_b.includes(userId) ? "B" : null;
   const reporterTeam = match.reported_by ? (match.team_a.includes(match.reported_by) ? "A" : "B") : null;
   const reporterName = match.reported_by ? playerById.get(match.reported_by)?.username ?? "Un joueur" : "Un joueur";
@@ -327,13 +329,28 @@ export function MatchView({ matchId }) {
         }
       />
 
-      {/* --- Preuves (captures du tableau des scores) -------------------- */}
-      {canProve || (proofs || []).length > 0 ? (
-        <MatchProofs matchId={match.id} proofs={proofs || []} canUpload={canProve} currentUserId={userId} onUploaded={load} />
-      ) : null}
+      {privateAccess ? (
+        <>
+          {/* --- Preuves (captures du tableau des scores) -------------------- */}
+          {canProve || (proofs || []).length > 0 ? (
+            <MatchProofs matchId={match.id} proofs={proofs || []} canUpload={canProve} currentUserId={userId} onUploaded={load} />
+          ) : null}
 
-      {/* --- Chat ----------------------------------------------------------- */}
-      <MatchChat matchId={match.id} messages={messages || []} canWrite={Boolean(myTeam)} currentUserId={userId} />
+          {/* --- Chat ----------------------------------------------------------- */}
+          <MatchChat matchId={match.id} messages={messages || []} canWrite={Boolean(myTeam)} currentUserId={userId} />
+        </>
+      ) : (
+        <TacticalCard cut={16} innerClassName="flex items-start gap-4 p-5 sm:p-6">
+          <LuLock aria-hidden className="mt-0.5 h-5 w-5 shrink-0 text-gold" />
+          <div>
+            <p className="font-display text-xl font-black uppercase leading-none">Salon privé</p>
+            <p className="mt-2 text-sm text-white/55">
+              Le chat et les captures de ce match sont réservés à ses joueurs et aux admins.
+              {userId ? null : " Joueur de ce match ? Connecte-toi pour y accéder."}
+            </p>
+          </div>
+        </TacticalCard>
+      )}
     </div>
   );
 }

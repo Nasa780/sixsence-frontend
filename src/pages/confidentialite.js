@@ -64,11 +64,16 @@ const SECTIONS = [
     id: "public",
     title: "Ce qui est public",
     content: (
-      <p>
-        SixSence est une plateforme compétitive : ton <strong>pseudo, ton avatar, ton identifiant Activision, ta plateforme, tes
-        statistiques, ton historique de matchs</strong>, les messages des chats de match et les captures de preuve sont visibles par
-        tous les visiteurs, comme sur un classement e-sport. N&apos;indique rien que tu ne souhaites pas rendre public.
-      </p>
+      <>
+        <p>
+          SixSence est une plateforme compétitive : ton <strong>pseudo, ton avatar, ton identifiant Activision, ta plateforme, tes
+          statistiques et ton historique de matchs</strong> sont visibles par tous les visiteurs, comme sur un classement e-sport.
+        </p>
+        <p>
+          Les <strong>messages du chat de match</strong> et les <strong>captures de preuve</strong> ne sont visibles que par les
+          joueurs du match et les administrateurs. Tes <strong>avertissements</strong> ne sont pas publics.
+        </p>
+      </>
     ),
   },
   {
