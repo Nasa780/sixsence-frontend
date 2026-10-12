@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { LegalPage } from "../components/ui/LegalPage";
 import { LEGAL } from "../lib/legal";
-import { GROUP_WIN_POINTS, RANKS, WIN_POINTS, WIN_XP } from "../lib/ranks";
+import { RANKS, WIN_POINTS, WIN_XP } from "../lib/ranks";
 
 const SECTIONS = [
   {
@@ -138,9 +138,8 @@ const SECTIONS = [
           -{Math.max(...RANKS.map((rank) => rank.loss))} points selon ton rang (jamais en dessous de 0).
         </p>
         <p>
-          La taille de ton groupe compte : <strong>seul</strong>, une défaite coûte 25 % de points en moins ;{" "}
-          <strong>en groupe de 3 joueurs ou plus</strong>, une victoire rapporte {GROUP_WIN_POINTS} points au lieu de {WIN_POINTS} (jouer ensemble
-          est un avantage).
+          Une victoire rapporte {WIN_POINTS} points à tout le monde, seul ou en groupe. <strong>Seul</strong>, une défaite coûte 25 % de
+          points en moins.
         </p>
         <ul>
           {[...RANKS].reverse().map((rank) => (

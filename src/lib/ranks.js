@@ -32,14 +32,10 @@ export const WIN_POINTS = 30;
 export const WIN_XP = 500;
 
 /**
- * Barème selon la taille du groupe (aligné sur cod_win_points / cod_loss_points du backend) :
- *   victoire : +30, ou +26 en groupe de 3 joueurs ou plus ;
+ * Barème (aligné sur cod_win_points / cod_loss_points du backend) :
+ *   victoire : +30 pour tous ;
  *   défaite  : pénalité du rang, réduite de 25 % pour un joueur seul.
  */
-export const GROUP_WIN_POINTS = 26;
-export function winPoints(groupSize = 1) {
-  return groupSize >= 3 ? GROUP_WIN_POINTS : WIN_POINTS;
-}
 export function lossPoints(points = 0, groupSize = 1) {
   const penalty = rankFor(points).loss;
   return Math.min(points, groupSize === 1 ? Math.round(penalty * 0.75) : penalty);

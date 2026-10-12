@@ -299,8 +299,8 @@ export function QueuePanel({ profileComplete, userId }) {
           </div>
 
           <p className="mt-4 text-xs text-white/45">
-            Barème : <span className="text-white/70">seul</span>, une défaite coûte 25 % de points en moins ;{" "}
-            <span className="text-white/70">en groupe de 3 ou plus</span>, une victoire rapporte 26 points au lieu de 30.
+            Barème : victoire <span className="text-white/70">+30</span> pour tous ; <span className="text-white/70">seul</span>, une défaite
+            coûte 25 % de points en moins.
           </p>
 
           {/* Ce qui empêche de jouer, du plus bloquant au moins bloquant. */}
