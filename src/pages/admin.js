@@ -1,6 +1,6 @@
 import Head from "next/head";
 import { useRouter } from "next/router";
-import { DisputesPanel, OverviewPanel, PlayersPanel, SeasonPanel } from "../components/admin/AdminPanels";
+import { CasesPanel, DisputesPanel, OverviewPanel, PlayersPanel, SeasonPanel } from "../components/admin/AdminPanels";
 import { CrudPanel } from "../components/admin/CrudPanel";
 import { EVENTS, FOUNDERS, PARTNERS } from "../components/admin/contentConfigs";
 import { Container } from "../components/ui/Container";
@@ -14,6 +14,8 @@ import { cn } from "../lib/cn";
 const TABS = [
   { key: "overview", label: "Tableau de bord" },
   { key: "disputes", label: "Contestations" },
+  { key: "arbitrages", label: "Arbitrages" },
+  { key: "signalements", label: "Signalements" },
   { key: "players", label: "Joueurs" },
   { key: "events", label: "Événements GTA 6" },
   { key: "founders", label: "Fondateurs" },
@@ -59,6 +61,8 @@ export default function AdminPage() {
         <section aria-label={TABS.find((item) => item.key === tab).label}>
           {tab === "overview" ? <OverviewPanel onNavigate={go} /> : null}
           {tab === "disputes" ? <DisputesPanel /> : null}
+          {tab === "arbitrages" ? <CasesPanel key="arbitrations" kind="arbitrations" /> : null}
+          {tab === "signalements" ? <CasesPanel key="reports" kind="reports" /> : null}
           {tab === "players" ? <PlayersPanel currentUserId={user.id} /> : null}
           {tab === "events" ? <CrudPanel key="events" config={EVENTS} /> : null}
           {tab === "founders" ? <CrudPanel key="founders" config={FOUNDERS} /> : null}

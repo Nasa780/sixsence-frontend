@@ -1,17 +1,19 @@
 import Link from "next/link";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { LuCheck, LuCrown, LuImagePlus, LuLoaderCircle, LuMap, LuSend, LuSwords, LuX } from "react-icons/lu";
+import { LuCheck, LuCrown, LuFlag, LuImagePlus, LuLoaderCircle, LuMap, LuSend, LuShieldAlert, LuStar, LuSwords, LuX } from "react-icons/lu";
 import useCountdown from "../../hooks/useCountdown";
 import useSession from "../../hooks/useSession";
 import useUser from "../../hooks/useUser";
 import { api } from "../../lib/api";
 import { cn } from "../../lib/cn";
+import { ARBITRATION_REASONS, REPORT_REASONS } from "../../lib/moderation";
 import { groupLabel } from "../../lib/ranks";
 import { supabase } from "../../lib/supabase";
 import { Avatar } from "../ui/Avatar";
 import { Button } from "../ui/Button";
 import { Chip, EmptyState, Loading, Notice } from "../ui/Feedback";
 import { TacticalCard } from "../ui/TacticalCard";
+import { ReasonDialog } from "../ui/ReasonDialog";
 import { Eyebrow } from "../ui/Typography";
 
 const STATUS_LABEL = {
@@ -45,6 +47,16 @@ export function MatchView({ matchId }) {
   const [notFound, setNotFound] = useState(false);
   const [pending, setPending] = useState(null);
   const [error, setError] = useState(null);
+  const [me, setMe] = useState({ myVote: null, arbitrations: [] });
+  const [dialog, setDialog] = useState(null); // { kind: "arbitration" } | { kind: "report", target }
+
+  const loadMe = useCallback(async () => {
+    try {
+      setMe(await api(`/cod/matches/${matchId}/me`));
+    } catch {
+      // Sans importance : ces informations ne servent qu'à l'affichage.
+    }
+  }, [matchId]);
 
   const load = useCallback(async () => {
     try {
@@ -62,6 +74,7 @@ export function MatchView({ matchId }) {
       .on("postgres_changes", { event: "UPDATE", schema: "public", table: "cod_matches", filter: `id=eq.${matchId}` }, load)
       .on("postgres_changes", { event: "INSERT", schema: "public", table: "cod_match_messages", filter: `match_id=eq.${matchId}` }, load)
       .on("postgres_changes", { event: "INSERT", schema: "public", table: "cod_match_proofs", filter: `match_id=eq.${matchId}` }, load)
+      .on("postgres_changes", { event: "*", schema: "public", table: "cod_mvp_votes", filter: `match_id=eq.${matchId}` }, load)
       .subscribe();
     return () => {
       supabase.removeChannel(channel);
@@ -69,6 +82,12 @@ export function MatchView({ matchId }) {
   }, [matchId, load]);
 
   const playerById = useMemo(() => new Map((data?.players || []).map((player) => [player.id, player])), [data]);
+  const isPlayer = Boolean(userId && data && (data.match.team_a.includes(userId) || data.match.team_b.includes(userId)));
+
+  // Mon vote MVP et mes demandes d'arbitrage (joueurs du match uniquement).
+  useEffect(() => {
+    if (isPlayer) loadMe();
+  }, [isPlayer, loadMe, data?.match?.status]);
 
   /** Appelle une action du backend puis recharge le match. */
   async function act(action, body, key) {
@@ -105,6 +124,11 @@ export function MatchView({ matchId }) {
   const spinner = <LuLoaderCircle aria-hidden className="h-5 w-5 animate-spin" />;
   const readyUsers = match.ready_users || [];
   const canProve = Boolean(myTeam) && ["in_progress", "awaiting_confirmation", "disputed"].includes(match.status);
+  const canArbitrate = canProve;
+  const canReport = Boolean(userId);
+  const mvpVotes = data.mvpVotes || {};
+  const topVotes = Math.max(0, ...Object.values(mvpVotes));
+  const mvpIds = topVotes > 0 ? Object.keys(mvpVotes).filter((id) => mvpVotes[id] === topVotes) : [];
 
   return (
     <div className="space-y-8">
@@ -239,16 +263,70 @@ export function MatchView({ matchId }) {
             </Link>
           </Notice>
         ) : null}
+
+        {/* Demande d'arbitrage : pendant le match, pour les joueurs. */}
+        {canArbitrate ? (
+          <div className="flex flex-col gap-3 border-t border-white/10 pt-4 sm:flex-row sm:items-center sm:justify-between">
+            <p className="text-sm text-white/55">Un problème pendant le match (triche, joueur absent, partie impossible…) ?</p>
+            <Button variant="outline" size="sm" onClick={() => setDialog({ kind: "arbitration" })}>
+              <LuShieldAlert aria-hidden className="h-4 w-4" />
+              Demander un arbitrage
+            </Button>
+          </div>
+        ) : null}
+        {me.arbitrations.length > 0 ? (
+          <ul className="space-y-2">
+            {me.arbitrations.map((request) => (
+              <li key={request.id} className="flex flex-wrap items-center gap-2 border-l-2 border-gold/40 bg-white/[0.03] px-3 py-2 text-sm text-white/70">
+                <LuShieldAlert aria-hidden className="h-4 w-4 text-gold" />
+                Ta demande « {ARBITRATION_REASONS[request.reason] ?? request.reason} » :
+                <span className={cn("font-semibold", request.status === "open" ? "text-gold" : request.status === "resolved" ? "text-win" : "text-white/60")}>
+                  {request.status === "open" ? "en attente d'un admin" : request.status === "resolved" ? "traitée" : "classée sans suite"}
+                </span>
+                {request.resolution ? <span className="text-white/50">— {request.resolution}</span> : null}
+              </li>
+            ))}
+          </ul>
+        ) : null}
       </div>
+
+      {/* --- Vote du MVP (24 h après la fin du match) ---------------------- */}
+      {match.status === "completed" ? (
+        <MvpVote match={match} playerById={playerById} votes={mvpVotes} myVote={me.myVote} userId={userId} isPlayer={isPlayer} onVoted={() => Promise.all([load(), loadMe()])} />
+      ) : null}
 
       {/* --- Les deux équipes --------------------------------------------- */}
       <div className="grid grid-cols-1 gap-6 pt-4 lg:grid-cols-[1fr_auto_1fr] lg:items-start">
-        <TeamColumn team="A" match={match} ids={match.team_a} playerById={playerById} currentUserId={userId} readyUsers={readyUsers} />
+        <TeamColumn team="A" match={match} ids={match.team_a} playerById={playerById} currentUserId={userId} readyUsers={readyUsers} mvpIds={mvpIds} onReport={canReport ? (target) => setDialog({ kind: "report", target }) : null} />
         <div aria-hidden className="flex items-center justify-center lg:pt-16">
           <span className="font-display text-5xl font-black italic leading-none text-outline">VS</span>
         </div>
-        <TeamColumn team="B" match={match} ids={match.team_b} playerById={playerById} currentUserId={userId} readyUsers={readyUsers} />
+        <TeamColumn team="B" match={match} ids={match.team_b} playerById={playerById} currentUserId={userId} readyUsers={readyUsers} mvpIds={mvpIds} onReport={canReport ? (target) => setDialog({ kind: "report", target }) : null} />
       </div>
+
+      <ReasonDialog
+        open={dialog?.kind === "arbitration"}
+        onClose={() => setDialog(null)}
+        title="Demander un arbitrage"
+        intro="Un admin est prévenu et peut consulter le chat et les captures du match. Ajoute une capture si tu en as une."
+        reasons={ARBITRATION_REASONS}
+        submitLabel="Envoyer la demande"
+        onSubmit={async ({ reason, details }) => {
+          await api(`/cod/matches/${matchId}/arbitration`, { method: "POST", body: { reason, details } });
+          await loadMe();
+        }}
+      />
+      <ReasonDialog
+        open={dialog?.kind === "report"}
+        onClose={() => setDialog(null)}
+        title={`Signaler ${dialog?.target?.username ?? "ce joueur"}`}
+        intro="Ton signalement reste confidentiel : seule l'équipe SixSence le voit."
+        reasons={REPORT_REASONS}
+        submitLabel="Envoyer le signalement"
+        onSubmit={({ reason, details }) =>
+          api("/cod/reports", { method: "POST", body: { targetId: dialog?.target?.id, matchId, reason, details } })
+        }
+      />
 
       {/* --- Preuves (captures du tableau des scores) -------------------- */}
       {canProve || (proofs || []).length > 0 ? (
@@ -264,7 +342,81 @@ export function MatchView({ matchId }) {
 /** Couleur par groupe du match : les membres d'un même groupe partagent la même marque. */
 const GROUP_COLORS = ["#f1d77a", "#7dd3fc", "#c4b5fd", "#86efac", "#fca5a5", "#fdba74"];
 
-function TeamColumn({ team, match, ids, playerById, currentUserId, readyUsers = [] }) {
+/**
+ * Vote du MVP : chaque joueur du match élit un autre joueur, pendant 24 h après la fin.
+ * Tout le monde voit le décompte ; le plus élu du mois reçoit le badge « MVP du mois ».
+ */
+function MvpVote({ match, playerById, votes, myVote, userId, isPlayer, onVoted }) {
+  const [pending, setPending] = useState(null);
+  const [error, setError] = useState(null);
+  const open = match.completed_at && Date.now() - new Date(match.completed_at).getTime() < 24 * 3600 * 1000;
+  const total = Object.values(votes).reduce((sum, count) => sum + count, 0);
+  if (!open && total === 0) return null;
+
+  async function vote(targetId) {
+    setPending(targetId);
+    setError(null);
+    try {
+      await api(`/cod/matches/${match.id}/mvp`, { method: "POST", body: { targetId } });
+      await onVoted();
+    } catch (caught) {
+      setError(caught.message);
+    } finally {
+      setPending(null);
+    }
+  }
+
+  const players = [...match.team_a, ...match.team_b];
+  return (
+    <TacticalCard cut={20} innerClassName="p-6">
+      <div className="flex flex-wrap items-end justify-between gap-3">
+        <div>
+          <Eyebrow>Vote</Eyebrow>
+          <h2 className="mt-2 font-display text-3xl font-black uppercase leading-none">MVP du match</h2>
+        </div>
+        <p className="text-xs text-white/45">
+          {open ? (isPlayer ? "Vote pour le meilleur joueur (pas toi), pendant 24 h." : "Les joueurs du match votent pendant 24 h.") : "Vote terminé."} {total} vote
+          {total > 1 ? "s" : ""}
+        </p>
+      </div>
+      <ul className="mt-5 grid grid-cols-1 gap-2 sm:grid-cols-2">
+        {players.map((id) => {
+          const player = playerById.get(id);
+          const count = votes[id] ?? 0;
+          const mine = myVote === id;
+          const canVote = open && isPlayer && id !== userId;
+          return (
+            <li key={id}>
+              <button
+                type="button"
+                disabled={!canVote || pending !== null}
+                onClick={() => vote(id)}
+                aria-pressed={mine}
+                className={cn(
+                  "flex w-full items-center gap-3 border px-3 py-2.5 text-left transition-colors disabled:cursor-default",
+                  mine ? "border-gold bg-gold/10" : "border-white/10 bg-white/[0.02]",
+                  canVote && !mine && "hover:border-gold/50",
+                )}
+              >
+                <Avatar src={player?.avatar_url} name={player?.username ?? "?"} size={30} />
+                <span className="min-w-0 flex-1 truncate font-display text-base font-bold uppercase tracking-wide">
+                  {player?.username ?? "Joueur"}
+                  {id === userId ? <span className="ml-2 text-xs text-white/40">· Toi</span> : null}
+                </span>
+                {pending === id ? <LuLoaderCircle aria-hidden className="h-4 w-4 animate-spin text-gold" /> : null}
+                {mine ? <span className="font-tech text-[10px] uppercase tracking-[0.2em] text-gold">Ton vote</span> : null}
+                <span className="w-8 text-right font-tech text-sm font-bold tabular-nums text-gold">{count || ""}</span>
+              </button>
+            </li>
+          );
+        })}
+      </ul>
+      {error ? <p className="mt-3 text-sm text-loss">{error}</p> : null}
+    </TacticalCard>
+  );
+}
+
+function TeamColumn({ team, match, ids, playerById, currentUserId, readyUsers = [], mvpIds = [], onReport = null }) {
   const groupMarks = new Map();
   for (const id of [...match.team_a, ...match.team_b]) {
     const group = match.groups?.[id];
@@ -330,6 +482,12 @@ function TeamColumn({ team, match, ids, playerById, currentUserId, readyUsers = 
                       Hôte
                     </Chip>
                   ) : null}
+                  {mvpIds.includes(id) ? (
+                    <Chip className="shrink-0">
+                      <LuStar aria-hidden className="h-3 w-3" />
+                      MVP
+                    </Chip>
+                  ) : null}
                 </p>
                 <p className="mt-1.5 truncate text-xs text-white/50">
                   {player?.activision_id ?? "Identifiant Activision non renseigné"}
@@ -344,6 +502,17 @@ function TeamColumn({ team, match, ids, playerById, currentUserId, readyUsers = 
                   <p className="font-tech text-[10px] uppercase tracking-[0.2em] text-white/35">pts</p>
                 )}
               </div>
+              {onReport && !isMe ? (
+                <button
+                  type="button"
+                  onClick={() => onReport({ id, username: player?.username ?? "ce joueur" })}
+                  className="shrink-0 p-1.5 text-white/25 transition-colors hover:text-loss"
+                  aria-label={`Signaler ${player?.username ?? "ce joueur"}`}
+                  title="Signaler ce joueur"
+                >
+                  <LuFlag aria-hidden className="h-4 w-4" />
+                </button>
+              ) : null}
             </li>
           );
         })}
