@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { LegalPage } from "../components/ui/LegalPage";
 import { LEGAL } from "../lib/legal";
-import { PLACEMENT_MATCHES, RANKS, STREAK_BONUSES, WIN_MAX, WIN_MIN, WIN_POINTS, WIN_XP } from "../lib/ranks";
+import { LOSS_TIERS, PLACEMENT_MATCHES, RANKS, WIN_POINTS, WIN_XP } from "../lib/ranks";
 
 const SECTIONS = [
   {
@@ -134,32 +134,28 @@ const SECTIONS = [
     content: (
       <>
         <p>
-          Les points dépendent du <strong>niveau de l&apos;équipe adverse</strong> (moyenne des points de ses joueurs, comparée à celle de
-          ton équipe). Contre une équipe de même niveau, une victoire rapporte <strong>+{WIN_POINTS} points</strong> ; contre plus fort,
-          jusqu&apos;à <strong>+{WIN_MAX}</strong> ; contre plus faible, au moins <strong>+{WIN_MIN}</strong>. Chaque victoire rapporte
-          aussi +{WIN_XP} XP.
+          <strong>Victoire : +{WIN_POINTS} points</strong> (et +{WIN_XP} XP), pour tout le monde, seul ou en groupe.
         </p>
         <p>
-          Une défaite coûte la pénalité de ton rang (ci-dessous) : un peu moins contre plus fort, un peu plus contre plus faible.{" "}
-          <strong>Seul</strong>, tu perds 25 % de points en moins. Tu ne descends jamais en dessous de 0.
+          <strong>Défaite</strong> : plus tu montes, plus elle coûte cher. Tu ne descends jamais en dessous de 0.
         </p>
-        <p>
-          <strong>Placement</strong> : tes {PLACEMENT_MATCHES} premiers matchs de la saison comptent double, pour atteindre vite ton vrai
-          niveau. <strong>Série</strong> :{" "}
-          {STREAK_BONUSES.map((step, index) => (
-            <span key={step.streak}>
-              {index > 0 ? ", " : ""}
-              {step.streak}e victoire d&apos;affilée +{step.bonus}
-              {index === STREAK_BONUSES.length - 1 ? " (et suivantes)" : ""}
-            </span>
+        <ul>
+          {LOSS_TIERS.map((tier) => (
+            <li key={tier.ranks}>
+              {tier.ranks} : <strong>-{tier.loss}</strong>
+            </li>
           ))}
-          .
+        </ul>
+        <p>
+          <strong>Placement</strong> : pendant tes {PLACEMENT_MATCHES} premiers matchs de la saison, chaque victoire compte double (
+          <strong>+{WIN_POINTS * 2}</strong>), les défaites restent normales.
         </p>
         <p>Les points en jeu (victoire et défaite) s&apos;affichent avant chaque match, dans la fenêtre « Match trouvé » et le salon.</p>
+        <p>Les rangs :</p>
         <ul>
           {[...RANKS].reverse().map((rank) => (
             <li key={rank.name}>
-              <strong>{rank.name}</strong> : à partir de {rank.min} points, défaite -{rank.loss} contre une équipe de même niveau
+              <strong>{rank.name}</strong> : à partir de {rank.min} points
             </li>
           ))}
         </ul>

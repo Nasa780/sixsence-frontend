@@ -1,4 +1,4 @@
-import { RANKS, WIN_MAX, WIN_MIN, WIN_XP, rankGradient, rankLevel } from "../../lib/ranks";
+import { PLACEMENT_MATCHES, RANKS, WIN_POINTS, WIN_XP, rankGradient, rankLevel } from "../../lib/ranks";
 import useSeasons from "../../hooks/useSeasons";
 import { RankBars } from "./RankBars";
 import { RankEmblem } from "./RankEmblem";
@@ -6,7 +6,7 @@ import { Eyebrow } from "../ui/Typography";
 
 /**
  * Les 9 rangs du classé et le barème (identique au backend) :
- * victoire de +45 à +55 pts (+50 à niveau égal) / +500 XP, défaite de -15 (Bronze) à -50 (Maître et au-delà).
+ * victoire +50 pts / +500 XP, défaite -20, -35 ou -50 selon le rang, placement (victoires doublées).
  * highlight : nom du rang à mettre en avant (celui du joueur).
  */
 export function RanksGrid({ highlight = null }) {
@@ -23,8 +23,9 @@ export function RanksGrid({ highlight = null }) {
           </h2>
         </div>
         <p className="text-sm text-white/60">
-          Victoire : <span className="font-tech font-bold text-gold">+{WIN_MIN} à +{WIN_MAX} pts</span> selon l&apos;adversaire ·{" "}
-          <span className="font-tech font-bold text-gold">+{WIN_XP} XP</span>
+          Victoire : <span className="font-tech font-bold text-gold">+{WIN_POINTS} pts</span> ·{" "}
+          <span className="font-tech font-bold text-gold">+{WIN_XP} XP</span> · placement ({PLACEMENT_MATCHES} matchs) :{" "}
+          <span className="font-tech font-bold text-gold">+{WIN_POINTS * 2}</span>
         </p>
       </div>
 

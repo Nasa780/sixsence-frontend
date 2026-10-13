@@ -4,7 +4,7 @@ import { PLACEMENT_MATCHES } from "../../lib/ranks";
 
 /**
  * Points en jeu pour un joueur, avant le match : « Victoire +35 · Défaite −9 »,
- * avec le match de placement et le bonus de série s'il y a lieu.
+ * avec le match de placement s'il y a lieu (victoire doublée).
  * stake : { win, loss, bonus, placement } renvoyé par le backend (cod_points_preview).
  */
 export function PointsAtStake({ stake, className = "", centered = false }) {
@@ -22,9 +22,9 @@ export function PointsAtStake({ stake, className = "", centered = false }) {
       {stake.placement ? (
         <span
           className="inline-flex items-center border border-gold/50 px-2.5 py-1 font-tech text-[10px] font-bold uppercase tracking-[0.2em] text-gold"
-          title={`Les ${PLACEMENT_MATCHES} premiers matchs de la saison comptent double`}
+          title={`Pendant les ${PLACEMENT_MATCHES} premiers matchs de la saison, les victoires comptent double`}
         >
-          Placement {stake.placement}/{PLACEMENT_MATCHES} · ×2
+          Placement {stake.placement}/{PLACEMENT_MATCHES} · victoire ×2
         </span>
       ) : null}
       {stake.bonus > 0 ? (

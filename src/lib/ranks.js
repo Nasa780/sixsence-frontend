@@ -12,10 +12,10 @@ export const RANKS = [
   { name: "Grand Maître", min: 1800, light: "#ffc8f1", color: "#e05cc6", dark: "#8a2479", text: "#ef8ad9", loss: 50 },
   { name: "Maître", min: 1500, light: "#e6dcff", color: "#a78bfa", dark: "#5b3fc4", text: "#c4b2ff", loss: 50 },
   { name: "Diamant", min: 1200, light: "#e0f7ff", color: "#5cc8ff", dark: "#1f6fb2", text: "#93daff", loss: 35 },
-  { name: "Platine", min: 900, light: "#cdfbea", color: "#4fd1b0", dark: "#1e7d68", text: "#83e6cc", loss: 30 },
-  { name: "Or", min: 600, light: "#fbe7a1", color: "#d4af37", dark: "#8a6d12", text: "#f1d77a", loss: 25 },
+  { name: "Platine", min: 900, light: "#cdfbea", color: "#4fd1b0", dark: "#1e7d68", text: "#83e6cc", loss: 35 },
+  { name: "Or", min: 600, light: "#fbe7a1", color: "#d4af37", dark: "#8a6d12", text: "#f1d77a", loss: 35 },
   { name: "Argent", min: 300, light: "#f5f8fb", color: "#b8c2cf", dark: "#5f6a78", text: "#dde3ea", loss: 20 },
-  { name: "Bronze", min: 0, light: "#f3bf95", color: "#c97b4b", dark: "#74401f", text: "#e9a77a", loss: 15 },
+  { name: "Bronze", min: 0, light: "#f3bf95", color: "#c97b4b", dark: "#74401f", text: "#e9a77a", loss: 20 },
 ];
 
 /** Dégradé métallique d'un rang (CSS), du reflet à l'ombre. */
@@ -43,23 +43,22 @@ export function nextRank(points = 0) {
 }
 
 /**
- * Barème (calculé par le backend, fonction SQL cod_points_preview) :
- *   victoire : 50 points contre une équipe de même niveau, de +45 à +55 selon l'écart ;
- *   défaite  : pénalité du rang, réduite contre plus fort, augmentée contre plus faible,
- *              et réduite de 25 % pour un joueur seul ;
- *   placement : les 10 premiers matchs de la saison comptent double ;
- *   série : 3e victoire d'affilée +5, 4e +10, 5e et suivantes +15.
+ * Barème (calculé par le backend, fonctions SQL cod_points_preview et cod_loss_penalty) :
+ *   victoire : +50 pour tout le monde ;
+ *   défaite  : -20 en Bronze et Argent, -35 en Or, Platine et Diamant, -50 dès Maître
+ *              (champ loss de chaque rang) ;
+ *   placement : pendant les 10 premiers matchs de la saison, victoires doublées (+100).
  * Les points en jeu de chaque joueur sont affichés avant le match (PointsAtStake).
  */
 export const WIN_POINTS = 50;
-export const WIN_MIN = 45;
-export const WIN_MAX = 55;
 export const WIN_XP = 500;
 export const PLACEMENT_MATCHES = 10;
-export const STREAK_BONUSES = [
-  { streak: 3, bonus: 5 },
-  { streak: 4, bonus: 10 },
-  { streak: 5, bonus: 15 },
+
+/** Défaite par groupe de rangs, pour l'affichage du barème. */
+export const LOSS_TIERS = [
+  { ranks: "Bronze, Argent", loss: 20 },
+  { ranks: "Or, Platine, Diamant", loss: 35 },
+  { ranks: "Maître et au-delà", loss: 50 },
 ];
 
 /** « Solo », « Duo », « Trio », « Groupe de 4 », « Équipe de 5 ». */
