@@ -1,5 +1,6 @@
 import { ImageResponse } from "next/og";
 import { OG_COLORS, dataUrl, discordAvatarPng, loadFallbackFonts, loadFonts, supabaseRest } from "../../../lib/og";
+import { emblemDataUrl } from "../../../lib/rankEmblem";
 import { levelFor, nextRank, rankFor } from "../../../lib/ranks";
 
 export const config = { runtime: "edge" };
@@ -91,11 +92,13 @@ export default async function handler(request) {
           <div
             style={{
               display: "flex",
+              alignItems: "center",
+              gap: 14,
               marginTop: 28,
-              padding: "10px 26px",
+              padding: "8px 26px 8px 14px",
               border: `2px solid ${rank.color}`,
               background: `${rank.color}22`,
-              color: rank.color,
+              color: rank.text,
               fontFamily: display,
               fontSize: 40,
               fontWeight: 900,
@@ -103,6 +106,7 @@ export default async function handler(request) {
               textTransform: "uppercase",
             }}
           >
+            <img src={emblemDataUrl(rank)} width={56} height={56} />
             {rank.name}
           </div>
         </div>

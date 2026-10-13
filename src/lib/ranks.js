@@ -1,18 +1,32 @@
 /**
  * Rangs du classé, identiques à la page Ranked (section « Les rangs ») et au
  * barème du backend (fonction SQL cod_loss_penalty).
+ *
+ * Chaque rang a sa teinte métallique, utilisée par l'emblème, les barres, le nom et
+ * le contour des avatars : light (reflet), color (teinte principale), dark (ombre),
+ * text (couleur lisible pour un pseudo ou un libellé sur fond noir).
  */
 export const RANKS = [
-  { name: "Légende", min: 3000, color: "#ff6b4a", icon: "/assets/Iconlegende.svg", loss: 50 },
-  { name: "Champion", min: 2100, color: "#e8b4f8", icon: "/assets/Iconchampion.svg", loss: 50 },
-  { name: "Grand Maître", min: 1800, color: "#c084fc", icon: "/assets/Icongrandmaitre.svg", loss: 50 },
-  { name: "Maître", min: 1500, color: "#a78bfa", icon: "/assets/Iconmaitre.svg", loss: 50 },
-  { name: "Diamant", min: 1200, color: "#38bdf8", icon: "/assets/Icondiament.svg", loss: 35 },
-  { name: "Platine", min: 900, color: "#34d399", icon: "/assets/Iconplatine.svg", loss: 30 },
-  { name: "Or", min: 600, color: "#c9a227", icon: "/assets/Iconor.svg", loss: 25 },
-  { name: "Argent", min: 300, color: "#94a3b8", icon: "/assets/Iconargent.svg", loss: 20 },
-  { name: "Bronze", min: 0, color: "#c97b4b", icon: "/assets/Iconbronze.svg", loss: 15 },
+  { name: "Légende", min: 3000, light: "#ffd36b", color: "#ff8a3d", dark: "#e8364a", text: "#ffa063", loss: 50 },
+  { name: "Champion", min: 2100, light: "#ffe3f8", color: "#f0a6e8", dark: "#9b7bff", text: "#f7bdef", loss: 50 },
+  { name: "Grand Maître", min: 1800, light: "#ffc8f1", color: "#e05cc6", dark: "#8a2479", text: "#ef8ad9", loss: 50 },
+  { name: "Maître", min: 1500, light: "#e6dcff", color: "#a78bfa", dark: "#5b3fc4", text: "#c4b2ff", loss: 50 },
+  { name: "Diamant", min: 1200, light: "#e0f7ff", color: "#5cc8ff", dark: "#1f6fb2", text: "#93daff", loss: 35 },
+  { name: "Platine", min: 900, light: "#cdfbea", color: "#4fd1b0", dark: "#1e7d68", text: "#83e6cc", loss: 30 },
+  { name: "Or", min: 600, light: "#fbe7a1", color: "#d4af37", dark: "#8a6d12", text: "#f1d77a", loss: 25 },
+  { name: "Argent", min: 300, light: "#f5f8fb", color: "#b8c2cf", dark: "#5f6a78", text: "#dde3ea", loss: 20 },
+  { name: "Bronze", min: 0, light: "#f3bf95", color: "#c97b4b", dark: "#74401f", text: "#e9a77a", loss: 15 },
 ];
+
+/** Dégradé métallique d'un rang (CSS), du reflet à l'ombre. */
+export function rankGradient(rank, angle = 180) {
+  return `linear-gradient(${angle}deg, ${rank.light} 0%, ${rank.color} 55%, ${rank.dark} 100%)`;
+}
+
+/** Niveau d'un rang : 1 = Bronze … 8 = Champion, 9 = Légende. */
+export function rankLevel(rank) {
+  return RANKS.length - RANKS.findIndex((item) => item.name === rank.name);
+}
 
 /** Rang correspondant à un nombre de points. */
 export function rankFor(points = 0) {

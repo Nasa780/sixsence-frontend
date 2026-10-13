@@ -2,11 +2,12 @@ import Link from "next/link";
 import { useEffect, useId, useRef, useState } from "react";
 import { LuCrown, LuFlame } from "react-icons/lu";
 import { cn } from "../../lib/cn";
-import { rankFor } from "../../lib/ranks";
+import { rankFor, rankGradient } from "../../lib/ranks";
 import { supabase } from "../../lib/supabase";
 import { Avatar } from "../ui/Avatar";
 import { EmptyState, Loading } from "../ui/Feedback";
 import { TacticalCard } from "../ui/TacticalCard";
+import { RankEmblem } from "./RankEmblem";
 
 const winRate = (wins, losses) => (wins + losses > 0 ? Math.round((wins / (wins + losses)) * 100) : null);
 
@@ -81,6 +82,7 @@ export function LeaderboardView({ limit = 100, currentUserId = null, compact = f
         <ol className="grid grid-cols-1 gap-4 md:grid-cols-3">
           {podium.map((row, index) => {
             const rate = winRate(row.wins, row.losses);
+            const rank = rankFor(row.points);
             return (
               <li key={row.user_id} className={cn(index === 0 && "md:-mt-4")}>
                 <TacticalCard highlight={index === 0} interactive className="h-full" innerClassName={cn("overflow-hidden p-6", index === 0 && "holo")}>
@@ -93,13 +95,14 @@ export function LeaderboardView({ limit = 100, currentUserId = null, compact = f
                       <span className="sr-only">Position </span>#{index + 1}
                     </p>
                     <div className="mt-4 flex items-center gap-3.5">
-                      <Avatar src={row.avatar_url} name={row.username} size={56} />
+                      <Avatar src={row.avatar_url} name={row.username} size={56} ring={rankGradient(rank, 160)} />
                       <div className="min-w-0">
                         <Link href={`/cod/profile/${row.user_id}`} className="block truncate font-display text-3xl font-black uppercase leading-none hover:text-gold">
                           {row.username}
                         </Link>
-                        <p className="mt-1.5 font-display text-sm font-bold uppercase tracking-[0.16em] text-gold/80">
-                          {rankFor(row.points).name}
+                        <p className="mt-1.5 flex items-center gap-1.5 font-display text-sm font-bold uppercase tracking-[0.16em]" style={{ color: rank.text }}>
+                          <RankEmblem rank={rank} size={22} animated={false} />
+                          {rank.name}
                           {row.user_id === currentUserId ? <span className="ml-2 text-white/60">· Toi</span> : null}
                         </p>
                       </div>
@@ -135,6 +138,7 @@ export function LeaderboardView({ limit = 100, currentUserId = null, compact = f
             <tbody>
               {others.map((row, index) => {
                 const isMe = row.user_id === currentUserId;
+                const rank = rankFor(row.points);
                 const rate = winRate(row.wins, row.losses);
                 return (
                   <tr key={row.user_id} className={cn("transition-colors", isMe ? "bg-gold/10" : "bg-white/[0.03] hover:bg-white/[0.06]")}>
@@ -143,13 +147,19 @@ export function LeaderboardView({ limit = 100, currentUserId = null, compact = f
                     </td>
                     <td className="px-4 py-3">
                       <Link href={`/cod/profile/${row.user_id}`} className="group flex items-center gap-3">
-                        <Avatar src={row.avatar_url} name={row.username} size={34} />
+                        <Avatar src={row.avatar_url} name={row.username} size={34} ring={rankGradient(rank, 160)} />
                         <span className="min-w-0">
-                          <span className="block truncate font-display text-lg font-bold uppercase leading-none tracking-wide group-hover:text-gold">
+                          <span
+                            className="block truncate font-display text-lg font-bold uppercase leading-none tracking-wide group-hover:!text-gold"
+                            style={{ color: rank.text }}
+                          >
                             {row.username}
                             {isMe ? <span className="ml-2 text-xs text-gold">· Toi</span> : null}
                           </span>
-                          <span className="mt-1 block text-xs text-white/40">{rankFor(row.points).name}</span>
+                          <span className="mt-1 flex items-center gap-1 text-xs text-white/45">
+                            <RankEmblem rank={rank} size={16} animated={false} />
+                            {rank.name}
+                          </span>
                         </span>
                       </Link>
                     </td>

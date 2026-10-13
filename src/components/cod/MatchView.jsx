@@ -7,7 +7,7 @@ import useUser from "../../hooks/useUser";
 import { api } from "../../lib/api";
 import { cn } from "../../lib/cn";
 import { ARBITRATION_REASONS, REPORT_REASONS } from "../../lib/moderation";
-import { groupLabel } from "../../lib/ranks";
+import { groupLabel, rankFor, rankGradient } from "../../lib/ranks";
 import { supabase } from "../../lib/supabase";
 import { Avatar } from "../ui/Avatar";
 import { Button } from "../ui/Button";
@@ -15,6 +15,8 @@ import { Chip, EmptyState, Loading, Notice } from "../ui/Feedback";
 import { TacticalCard } from "../ui/TacticalCard";
 import { ReasonDialog } from "../ui/ReasonDialog";
 import { PointsAtStake } from "./PointsAtStake";
+import { RankEmblem } from "./RankEmblem";
+import { RankUpOverlay } from "./RankUpOverlay";
 import { Eyebrow } from "../ui/Typography";
 
 const STATUS_LABEL = {
@@ -158,6 +160,11 @@ export function MatchView({ matchId }) {
           </div>
         </div>
       </TacticalCard>
+
+      {/* --- Promotion : écran de montée de rang, une fois par match ------- */}
+      {match.status === "completed" && myTeam && playerById.get(userId) ? (
+        <RankUpOverlay matchId={match.id} points={playerById.get(userId).points} delta={match.points_changes?.[userId]} completedAt={match.completed_at} />
+      ) : null}
 
       {/* --- Points en jeu pour moi (avant la fin du match) ----------------- */}
       {myTeam && data.pointsAtStake?.[userId] ? (
@@ -499,10 +506,15 @@ function TeamColumn({ team, match, ids, stakes = null, playerById, currentUserId
               key={id}
               className={cn("flex items-center gap-3 border-l-2 bg-white/[0.03] px-3 py-3 sm:px-4", isMe ? "border-gold bg-gold/8" : "border-white/10")}
             >
-              <Avatar src={player?.avatar_url} name={player?.username ?? "?"} size={42} />
+              <Avatar src={player?.avatar_url} name={player?.username ?? "?"} size={42} ring={player ? rankGradient(rankFor(player.points), 160) : null} />
               <div className="min-w-0 flex-1">
                 <p className="flex items-center gap-2">
-                  <Link href={`/cod/profile/${id}`} className="truncate font-display text-xl font-bold uppercase leading-none tracking-wide hover:text-gold">
+                  {player ? <RankEmblem rank={rankFor(player.points)} size={20} animated={false} /> : null}
+                  <Link
+                    href={`/cod/profile/${id}`}
+                    className="truncate font-display text-xl font-bold uppercase leading-none tracking-wide hover:!text-gold"
+                    style={player ? { color: rankFor(player.points).text } : undefined}
+                  >
                     {player?.username ?? "Joueur inconnu"}
                   </Link>
                   {isMe ? <Chip className="shrink-0">Toi</Chip> : null}
