@@ -95,7 +95,7 @@ export function OnboardingPanel({ user }) {
       title: "Notifications",
       text:
         push.support === "ios-needs-install"
-          ? "Sur iPhone, installe d'abord l'appli SixSence (bouton « Installer l'appli »)."
+          ? "Sur iPhone, installe d'abord l'appli SixSence (bouton « Installer l'application »)."
           : push.support === "denied"
             ? "Bloquées : autorise-les dans les réglages du navigateur, puis recharge la page."
             : "Sois prévenu du match trouvé, même site fermé.",

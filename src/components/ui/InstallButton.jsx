@@ -7,7 +7,7 @@ import { Button } from "./Button";
 import { Portal } from "./Portal";
 
 /**
- * Bouton « Installer l'appli » : installe en un clic quand le navigateur le permet,
+ * Bouton « Installer l'application » : installe en un clic quand le navigateur le permet,
  * sinon ouvre la marche à suivre adaptée (iPhone, Firefox…). Caché si l'appli est déjà ouverte.
  *
  *   variant  "nav" (barre du haut), "menu" (menu mobile), "panel" (bloc de la file)
@@ -45,7 +45,7 @@ export function InstallButton({ variant = "panel", className = "" }) {
     setGuide(true);
   }
 
-  const label = "Installer l'appli";
+  const label = "Installer l'application";
   return (
     <>
       {variant === "nav" ? (
