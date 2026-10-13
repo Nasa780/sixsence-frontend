@@ -269,7 +269,7 @@ export function QueuePanel({ profileComplete, userId }) {
               <span>
                 Si aucun match n&apos;est trouvé d&apos;ici là, on te demandera dans{" "}
                 <span className="font-tech font-bold tabular-nums text-white/80">{formatDuration(confirmLeft)}</span> si tu es toujours là. Tu
-                auras alors 5 min pour rester en file, sinon tu en seras retiré (recherche limitée à 30 min).
+                auras alors 5 min pour cliquer sur « Rester en file » ; sans réponse, ta recherche s&apos;arrêtera.
               </span>
             </p>
           ) : null}
@@ -281,8 +281,9 @@ export function QueuePanel({ profileComplete, userId }) {
                 <div>
                   <p className="font-display text-2xl font-black uppercase leading-none text-gold">Toujours là ?</p>
                   <p className="mt-1.5 text-sm text-white/70">
-                    Aucun match pour l&apos;instant : {queue.groupSize > 1 ? "la recherche du groupe" : "ta recherche"} s&apos;arrête dans{" "}
-                    <span className="font-tech font-bold tabular-nums text-white">{formatDuration(stopLeft)}</span>. Tu gardes ta place si tu restes.
+                    Aucun match pour l&apos;instant. Clique sur « Rester en file » dans les{" "}
+                    <span className="font-tech font-bold tabular-nums text-white">{formatDuration(stopLeft)}</span> pour continuer{" "}
+                    {queue.groupSize > 1 ? "la recherche du groupe" : "ta recherche"} sans perdre ta place ; sinon, elle s&apos;arrête.
                   </p>
                 </div>
               </div>
