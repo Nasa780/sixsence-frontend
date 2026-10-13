@@ -1,6 +1,7 @@
 import { cn } from "../../lib/cn";
 import { RANKS, WIN_MAX, WIN_MIN, WIN_XP } from "../../lib/ranks";
 import useSeasons from "../../hooks/useSeasons";
+import { RankBars, isLegend, rankLevel } from "./RankBars";
 import { Eyebrow } from "../ui/Typography";
 
 /**
@@ -30,19 +31,36 @@ export function RanksGrid({ highlight = null }) {
       <ol className="mt-8 grid grid-cols-3 gap-px bg-white/10 lg:grid-cols-9">
         {ordered.map((rank, index) => {
           const active = rank.name === highlight;
+          const legend = isLegend(rank);
+          const champion = !legend && rankLevel(rank) === 8;
           return (
-            <li key={rank.name} className={cn("relative bg-ink-800 px-4 py-5", active && "bg-gold/10")}>
-              {active ? <span aria-hidden className="absolute inset-x-0 top-0 h-0.5 bg-gold shadow-[0_0_10px_var(--color-gold)]" /> : null}
-              <span aria-hidden className="flex items-end gap-0.5">
-                {ordered.map((_, bar) => (
-                  <span
-                    key={bar}
-                    className={cn("w-1 -skew-x-[18deg]", bar <= index ? "bg-gold" : "bg-white/12")}
-                    style={{ height: 5 + bar * 1.5 }}
-                  />
-                ))}
-              </span>
-              <p className={cn("mt-4 font-display text-xl font-bold uppercase leading-none tracking-wide", active && "text-gold")}>
+            <li
+              key={rank.name}
+              className={cn(
+                "relative overflow-hidden bg-ink-800 px-4 py-5",
+                active && "bg-gold/10",
+                champion && "bg-linear-to-b from-gold/[0.09] to-ink-800",
+                legend && "bg-linear-to-b from-[#ff6b4a]/[0.16] via-[#e8364a]/[0.05] to-ink-800",
+              )}
+            >
+              {active ? (
+                <span
+                  aria-hidden
+                  className={cn(
+                    "absolute inset-x-0 top-0 h-0.5",
+                    legend ? "bg-[#ff6b4a] shadow-[0_0_10px_#ff6b4a]" : "bg-gold shadow-[0_0_10px_var(--color-gold)]",
+                  )}
+                />
+              ) : null}
+              <RankBars rank={rank} />
+              <p
+                className={cn(
+                  "mt-4 font-display text-xl font-bold uppercase leading-none tracking-wide",
+                  active && "text-gold",
+                  champion && "text-gold-gradient",
+                  legend && "bg-linear-to-b from-[#ffd36b] via-[#ff8a3d] to-[#e8364a] bg-clip-text text-transparent",
+                )}
+              >
                 {rank.name}
                 {active ? <span className="sr-only"> (ton rang)</span> : null}
               </p>
