@@ -30,7 +30,7 @@ const SECTIONS = [
           du groupe est annulée.
         </p>
         <p>
-          Quand assez de joueurs sont en file, les équipes sont formées et la carte est tirée au sort. Chaque joueur dispose alors de{" "}
+          Quand assez de joueurs sont en file, les premiers arrivés sont retenus, puis les équipes et la carte sont tirées au sort (un groupe reste toujours ensemble). Chaque joueur dispose alors de{" "}
           <strong>1 minute</strong> pour cliquer sur « Accepter le match ». Un son et une notification te préviennent.
         </p>
         <p>

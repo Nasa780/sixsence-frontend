@@ -18,7 +18,7 @@ const RULES = [
   { title: "Des points mérités", text: "Battre plus fort rapporte jusqu'à +40, battre plus faible au moins +20. Tes 5 premiers matchs de la saison comptent double, et les séries de victoires donnent un bonus." },
   { title: "Une minute pour accepter", text: "Match trouvé : un son te prévient, tu as 60 secondes pour cliquer sur « Accepter »." },
   { title: "Recherche & Destruction Hardcore", text: "Le seul mode du classé, dans toutes les files : partie privée en Recherche & Destruction avec le réglage Hardcore." },
-  { title: "Tout est tiré au sort", text: "Carte et camp : personne ne choisit. Les joueurs seuls complètent les équipes autour des groupes." },
+  { title: "Tout est tiré au sort", text: "Équipes, carte, camp et hôte : personne ne choisit. Les groupes restent toujours ensemble." },
   { title: "L'hôte crée la partie", text: "Le premier joueur de l'équipe 1 ouvre la partie privée en S&D Hardcore et invite les autres." },
   { title: "Le résultat se confirme à deux", text: "Un joueur déclare le vainqueur, l'équipe adverse valide. Les points bougent ensuite." },
   { title: "Engagement", text: "Match non accepté = avertissement. 2e oubli en 24 h : 15 min sans file, 3e : 1 h, ensuite 24 h." },
