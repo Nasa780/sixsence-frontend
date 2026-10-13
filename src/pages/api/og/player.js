@@ -106,7 +106,7 @@ export default async function handler(request) {
               textTransform: "uppercase",
             }}
           >
-            <img src={emblemDataUrl(rank)} width={79} height={56} style={{ marginLeft: -12, marginRight: -10 }} />
+            <img src={emblemDataUrl(rank)} width={56} height={56} />
             {rank.name}
           </div>
         </div>

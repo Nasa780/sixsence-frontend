@@ -7,15 +7,10 @@ import { rankLevel } from "./ranks";
  *   Platine : étoile à facettes · Diamant : gemme taillée
  *   Maître : épées croisées · Grand Maître : étoile dans une couronne de laurier
  *   Champion : couronne ornée · Légende : couronne ornée, laurier et flamme
- * Ailes à partir de Maître, de plus en plus grandes à chaque rang.
  *
- * Le dessin fait 90 × 64 (EMBLEM_RATIO) : l'hexagone occupe le carré central de 64 × 64
- * et les ailes débordent sur les côtés. Fourni en adresse data: (emblemDataUrl),
- * utilisable dans une balise <img> côté site comme dans les images d'aperçu (next/og).
+ * Fourni en adresse data: (emblemDataUrl), utilisable dans une balise <img> côté site
+ * comme dans les images d'aperçu (next/og).
  */
-
-export const EMBLEM_RATIO = 90 / 64;
-const VIEWBOX = "-13 0 90 64";
 
 const OUT = `stroke="#0b0a08" stroke-width="0.7" stroke-linejoin="round"`;
 const SHADE = `fill="#0b0a08" fill-opacity="0.3"`;
@@ -121,36 +116,6 @@ const flame = (y = 3) =>
   `<path d="M37.5 ${y + 8}c-1.8 2.4-2.4 4.4-1.8 6.4.4 1.4 1.4 2.2 2.5 2 1.6-.3 2.2-2 1.6-3.9-.5-1.6-1.2-2.8-2.3-4.5Z" fill="url(#f)"/>` +
   `<path d="M32 ${y + 9}c1.6 2 2.2 3.6 1.7 5.2-.3 1-1 1.6-1.7 1.6s-1.4-.6-1.7-1.6c-.5-1.6.1-3.2 1.7-5.2Z" fill="#fff3c4" fill-opacity="0.9"/>`;
 
-/**
- * Plumes des ailes, de haut en bas : [départ y, longueur, montée].
- * Plus le rang est haut, plus il y a de plumes et plus elles sont longues et relevées.
- */
-const WINGS = {
-  6: [[17, 8, 4], [26, 9, 3], [35, 7, 1]],
-  7: [[15, 10, 6], [23, 12, 5], [31, 11, 3], [39, 8, 1]],
-  8: [[13, 13, 8], [21, 15, 7], [29, 14, 5], [37, 11, 3]],
-  9: [[11, 17, 11], [18, 19, 9], [26, 19, 7], [34, 16, 5], [42, 12, 2]],
-};
-
-function wings(level) {
-  const feathers = WINGS[Math.min(level, 9)];
-  if (!feathers) return "";
-  let out = "";
-  for (const side of [-1, 1]) {
-    const x0 = side === -1 ? 9 : 55;
-    // Les plumes du bas d'abord : celles du haut passent par-dessus.
-    for (const [y, len, rise] of [...feathers].reverse()) {
-      const tipX = x0 + side * len;
-      const tipY = y - rise;
-      const c1x = x0 + side * len * 0.5;
-      out +=
-        `<path d="M${x0} ${y}Q${c1x} ${y - rise * 0.8 - 1} ${tipX} ${tipY}L${tipX - side * 1.8} ${tipY + 3.2}Q${x0 + side * len * 0.45} ${y + 2.4} ${x0} ${y + 5.6}Z" fill="url(#m)" ${OUT}/>` +
-        `<path d="M${x0} ${y + 2.8}Q${c1x} ${y - rise * 0.4 + 1} ${tipX - side * 1.2} ${tipY + 1.6}" stroke="#0b0a08" stroke-opacity="0.35" stroke-width="0.5" fill="none"/>`;
-    }
-  }
-  return out;
-}
-
 function symbol(level) {
   switch (level) {
     case 1:
@@ -174,20 +139,19 @@ function symbol(level) {
   }
 }
 
-/** SVG complet d'un emblème (90 × 64). withWings={false} pour les très petites tailles. */
-export function emblemSvg(rank, { withWings = true } = {}) {
+/** SVG complet d'un emblème (64 × 64). */
+export function emblemSvg(rank) {
   const level = rankLevel(rank);
   const hex = "32,4 56,18 56,46 32,60 8,46 8,18";
   const innerPts = [[32, 9.5], [51.3, 20.75], [51.3, 43.25], [32, 54.5], [12.7, 43.25], [12.7, 20.75]];
   const inner = innerPts.map(([x, y]) => pt(x, y)).join(" ");
   const rivets = innerPts.map(([x, y]) => `<circle cx="${x}" cy="${y}" r="1.25" fill="url(#m)"/>`).join("");
   return (
-    `<svg xmlns="http://www.w3.org/2000/svg" viewBox="${VIEWBOX}" width="90" height="64"><defs>` +
+    `<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64"><defs>` +
     `<linearGradient id="m" x1="0" y1="0" x2="0.35" y2="1"><stop offset="0" stop-color="${rank.light}"/><stop offset="0.55" stop-color="${rank.color}"/><stop offset="1" stop-color="${rank.dark}"/></linearGradient>` +
     `<radialGradient id="c" cx="0.5" cy="0.35" r="0.75"><stop offset="0" stop-color="${rank.color}" stop-opacity="0.32"/><stop offset="1" stop-color="#0b0a08" stop-opacity="0"/></radialGradient>` +
     `<linearGradient id="f" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#fff3c4"/><stop offset="0.5" stop-color="#ffb347"/><stop offset="1" stop-color="#ff4d2e"/></linearGradient>` +
     `</defs>` +
-    (withWings && level >= 6 ? wings(level) : "") +
     `<polygon points="${hex}" fill="#0b0a08"/><polygon points="${hex}" fill="url(#c)"/>` +
     `<polygon points="${hex}" fill="none" stroke="url(#m)" stroke-width="3" stroke-linejoin="round"/>` +
     (level >= 4 ? `<polygon points="32,6.8 53.6,19.4 53.6,44.6 32,57.2 10.4,44.6 10.4,19.4" fill="none" stroke="${rank.dark}" stroke-width="0.8"/>` : "") +
@@ -200,6 +164,6 @@ export function emblemSvg(rank, { withWings = true } = {}) {
 }
 
 /** Emblème sous forme d'adresse data: (balise <img>, next/og). */
-export function emblemDataUrl(rank, options) {
-  return `data:image/svg+xml;charset=utf-8,${encodeURIComponent(emblemSvg(rank, options))}`;
+export function emblemDataUrl(rank) {
+  return `data:image/svg+xml;charset=utf-8,${encodeURIComponent(emblemSvg(rank))}`;
 }

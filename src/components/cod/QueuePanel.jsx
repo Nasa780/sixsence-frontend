@@ -265,9 +265,9 @@ export function QueuePanel({ profileComplete, userId }) {
             <p className="mt-3 flex items-start gap-2 text-xs text-white/50">
               <LuClock aria-hidden className="mt-0.5 h-3.5 w-3.5 shrink-0 text-gold/80" />
               <span>
-                Recherche limitée à 30 min : dans{" "}
-                <span className="font-tech font-bold tabular-nums text-white/80">{formatDuration(confirmLeft)}</span>, on te demandera si tu es
-                toujours là. Tu auras alors 5 min pour rester en file, sinon tu en seras retiré.
+                Si aucun match n&apos;est trouvé d&apos;ici là, on te demandera dans{" "}
+                <span className="font-tech font-bold tabular-nums text-white/80">{formatDuration(confirmLeft)}</span> si tu es toujours là. Tu
+                auras alors 5 min pour rester en file, sinon tu en seras retiré (recherche limitée à 30 min).
               </span>
             </p>
           ) : null}

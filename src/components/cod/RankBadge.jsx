@@ -15,7 +15,7 @@ export function RankBadge({ points = 0, showProgress = false, className = "" }) 
   return (
     <div className={cn("inline-flex flex-col", className)}>
       <div className="flex items-center gap-3">
-        <RankEmblem rank={rank} size={44} spread />
+        <RankEmblem rank={rank} size={44} />
         <div className="flex flex-col gap-1.5">
           <span
             className="bg-clip-text font-display text-xl font-bold uppercase leading-none tracking-[0.14em] text-transparent"
