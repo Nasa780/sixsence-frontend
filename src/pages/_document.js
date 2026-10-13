@@ -3,7 +3,7 @@ import { Html, Head, Main, NextScript } from "next/document";
 /**
  * Le navigateur propose l'installation de l'appli (événement beforeinstallprompt) dès
  * le chargement, avant même que React ne démarre : ce petit script la met de côté
- * pour le bouton « Installer l'appli » (voir lib/install.js).
+ * pour le bouton « Installer l'application » (voir lib/install.js).
  */
 const CAPTURE_INSTALL = `
 window.addEventListener("beforeinstallprompt", function (event) {
