@@ -4,11 +4,11 @@ import { useEffect, useState } from "react";
 import { LuArrowRight, LuCrosshair, LuTrophy, LuUser } from "react-icons/lu";
 import { LeaderboardView } from "../../components/cod/LeaderboardView";
 import { OnboardingPanel } from "../../components/cod/OnboardingPanel";
-import { RankRoad } from "../../components/cod/RankRoad";
+import { RankBadge } from "../../components/cod/RankBadge";
 import { Reveal } from "../../components/effects/Reveal";
 import { ButtonLink } from "../../components/ui/Button";
 import { Container } from "../../components/ui/Container";
-import { Notice } from "../../components/ui/Feedback";
+import { Notice, StatTile } from "../../components/ui/Feedback";
 import { TacticalCard } from "../../components/ui/TacticalCard";
 import { PageHeader, SectionHeading } from "../../components/ui/Typography";
 import useSeasons from "../../hooks/useSeasons";
@@ -22,6 +22,7 @@ const SECTIONS = [
   { href: "/cod/profile", icon: LuUser, title: "Mon profil", text: "Tes statistiques, ton rang, tes distinctions et ton historique de matchs." },
 ];
 
+const winRate = (wins, losses) => (wins + losses > 0 ? Math.round((wins / (wins + losses)) * 100) : null);
 
 /** Hub COD : résumé du joueur connecté, accès aux trois sections, top 10. Public. */
 export default function CodHubPage() {
@@ -44,6 +45,7 @@ export default function CodHubPage() {
     })();
   }, [user?.id, profile]);
 
+  const rate = profile ? winRate(profile.wins, profile.losses) : null;
 
   return (
     <>
@@ -83,12 +85,16 @@ export default function CodHubPage() {
         {/* Mise en route d'un nouveau joueur (identifiant Activision, notifications, Discord, premier match). */}
         <OnboardingPanel user={user} />
 
-        {/* Progression du joueur connecté jusqu'à Légende. */}
         {profile ? (
-          <TacticalCard cut={22} innerClassName="p-5 sm:p-7">
-            <p className="mb-4 font-display text-2xl font-black uppercase leading-none">Road to Légende</p>
-            <RankRoad points={profile.points} />
-          </TacticalCard>
+          <section aria-label="Mon résumé" className="grid grid-cols-1 gap-6 lg:grid-cols-[auto_1fr] lg:items-center">
+            <RankBadge points={profile.points} showProgress />
+            <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
+              <StatTile label="Points" value={profile.points} accent />
+              <StatTile label="Classement" value={extra.position ? `#${extra.position}` : "—"} />
+              <StatTile label="Victoires / Défaites" value={`${profile.wins} / ${profile.losses}`} />
+              <StatTile label="Taux de victoire" value={rate === null ? "—" : `${rate}%`} />
+            </div>
+          </section>
         ) : null}
 
         <div className="grid grid-cols-1 gap-5 md:grid-cols-3">
