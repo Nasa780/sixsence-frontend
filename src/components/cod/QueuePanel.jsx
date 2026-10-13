@@ -4,6 +4,7 @@ import { useRouter } from "next/router";
 import { useEffect, useRef, useState } from "react";
 import { LuBan, LuBellRing, LuCheck, LuClock, LuCrosshair, LuLoaderCircle, LuMap, LuUsers, LuVolume2, LuVolumeX, LuWifi, LuWifiOff, LuX } from "react-icons/lu";
 import useCountdown from "../../hooks/useCountdown";
+import useDisputedMatch from "../../hooks/useDisputedMatch";
 import useQueueSocket from "../../hooks/useQueueSocket";
 import { api } from "../../lib/api";
 import { cn } from "../../lib/cn";
@@ -46,6 +47,7 @@ const FORMAT_KEY = "sixsence:format";
 export function QueuePanel({ profileComplete, userId }) {
   const router = useRouter();
   const queue = useQueueSocket(true);
+  const disputed = useDisputedMatch(userId);
   const [pending, setPending] = useState(false);
   const [error, setError] = useState(null);
   const [chosen, setChosen] = useState(null);
@@ -363,6 +365,15 @@ export function QueuePanel({ profileComplete, userId }) {
               <Notice>
                 Tu as un match en cours : termine-le avant de relancer une recherche.{" "}
                 <Link href={`/cod/match/${queue.activeMatchId}`} className="font-semibold text-gold underline underline-offset-4 hover:text-gold-light">
+                  Ouvrir le match
+                </Link>
+              </Notice>
+            ) : null}
+
+            {disputed && disputed.id !== queue.activeMatchId ? (
+              <Notice>
+                Ton match {disputed.format ? `${disputed.format} ` : ""}sur {disputed.map} est contesté : un arbitre SixSence va trancher.{" "}
+                <Link href={`/cod/match/${disputed.id}`} className="font-semibold text-gold underline underline-offset-4 hover:text-gold-light">
                   Ouvrir le match
                 </Link>
               </Notice>
