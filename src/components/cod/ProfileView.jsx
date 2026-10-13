@@ -45,9 +45,10 @@ function badgesFor(profile, seasons) {
     { key: "first-blood", label: "Premier sang", description: "Gagner un match classé.", unlocked: profile.wins >= 1 },
     { key: "domination", label: "Domination", description: "Gagner 10 matchs.", unlocked: profile.wins >= 10 },
     { key: "unstoppable", label: "Indestructible", description: "5 victoires d'affilée.", unlocked: profile.best_streak >= 5 },
-    { key: "diamond", label: "Diamant", description: "Atteindre 2 000 points.", unlocked: profile.peak_points >= 2000 },
+    { key: "diamond", label: "Diamant", description: "Atteindre 1 200 points.", unlocked: profile.peak_points >= 1200 },
     { key: "veteran", label: "Vétéran", description: "Jouer 50 matchs.", unlocked: played >= 50 },
-    { key: "champion", label: "Champion", description: "Atteindre 3 500 points.", unlocked: profile.peak_points >= 3500 },
+    { key: "champion", label: "Champion", description: "Atteindre 2 100 points.", unlocked: profile.peak_points >= 2100 },
+    { key: "legende", label: "Légende", description: "Atteindre 3 000 points.", unlocked: profile.peak_points >= 3000 },
   ];
 }
 

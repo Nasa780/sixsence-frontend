@@ -3,14 +3,15 @@
  * barème du backend (fonction SQL cod_loss_penalty).
  */
 export const RANKS = [
-  { name: "Champion", min: 3500, color: "#e8b4f8", icon: "/assets/Iconchampion.svg", loss: 30 },
-  { name: "Grand Maître", min: 3000, color: "#c084fc", icon: "/assets/Icongrandmaitre.svg", loss: 25 },
-  { name: "Maître", min: 2500, color: "#a78bfa", icon: "/assets/Iconmaitre.svg", loss: 22 },
-  { name: "Diamant", min: 2000, color: "#38bdf8", icon: "/assets/Icondiament.svg", loss: 20 },
-  { name: "Platine", min: 1500, color: "#34d399", icon: "/assets/Iconplatine.svg", loss: 18 },
-  { name: "Or", min: 1000, color: "#c9a227", icon: "/assets/Iconor.svg", loss: 15 },
-  { name: "Argent", min: 500, color: "#94a3b8", icon: "/assets/Iconargent.svg", loss: 12 },
-  { name: "Bronze", min: 0, color: "#c97b4b", icon: "/assets/Iconbronze.svg", loss: 10 },
+  { name: "Légende", min: 3000, color: "#ff6b4a", icon: "/assets/Iconlegende.svg", loss: 50 },
+  { name: "Champion", min: 2100, color: "#e8b4f8", icon: "/assets/Iconchampion.svg", loss: 50 },
+  { name: "Grand Maître", min: 1800, color: "#c084fc", icon: "/assets/Icongrandmaitre.svg", loss: 50 },
+  { name: "Maître", min: 1500, color: "#a78bfa", icon: "/assets/Iconmaitre.svg", loss: 50 },
+  { name: "Diamant", min: 1200, color: "#38bdf8", icon: "/assets/Icondiament.svg", loss: 35 },
+  { name: "Platine", min: 900, color: "#34d399", icon: "/assets/Iconplatine.svg", loss: 30 },
+  { name: "Or", min: 600, color: "#c9a227", icon: "/assets/Iconor.svg", loss: 25 },
+  { name: "Argent", min: 300, color: "#94a3b8", icon: "/assets/Iconargent.svg", loss: 20 },
+  { name: "Bronze", min: 0, color: "#c97b4b", icon: "/assets/Iconbronze.svg", loss: 15 },
 ];
 
 /** Rang correspondant à un nombre de points. */
@@ -27,19 +28,25 @@ export function nextRank(points = 0) {
   return { rank: next, progress: (points - current.min) / (next.min - current.min) };
 }
 
-/** Points gagnés par victoire, XP par victoire. */
-export const WIN_POINTS = 30;
-export const WIN_XP = 500;
-
 /**
- * Barème (aligné sur cod_win_points / cod_loss_points du backend) :
- *   victoire : +30 pour tous ;
- *   défaite  : pénalité du rang, réduite de 25 % pour un joueur seul.
+ * Barème (calculé par le backend, fonction SQL cod_points_preview) :
+ *   victoire : 50 points contre une équipe de même niveau, de +45 à +55 selon l'écart ;
+ *   défaite  : pénalité du rang, réduite contre plus fort, augmentée contre plus faible,
+ *              et réduite de 25 % pour un joueur seul ;
+ *   placement : les 10 premiers matchs de la saison comptent double ;
+ *   série : 3e victoire d'affilée +5, 4e +10, 5e et suivantes +15.
+ * Les points en jeu de chaque joueur sont affichés avant le match (PointsAtStake).
  */
-export function lossPoints(points = 0, groupSize = 1) {
-  const penalty = rankFor(points).loss;
-  return Math.min(points, groupSize === 1 ? Math.round(penalty * 0.75) : penalty);
-}
+export const WIN_POINTS = 50;
+export const WIN_MIN = 45;
+export const WIN_MAX = 55;
+export const WIN_XP = 500;
+export const PLACEMENT_MATCHES = 10;
+export const STREAK_BONUSES = [
+  { streak: 3, bonus: 5 },
+  { streak: 4, bonus: 10 },
+  { streak: 5, bonus: 15 },
+];
 
 /** « Solo », « Duo », « Trio », « Groupe de 4 », « Équipe de 5 ». */
 export function groupLabel(size = 1) {

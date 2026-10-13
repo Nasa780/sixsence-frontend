@@ -1,15 +1,15 @@
 import { cn } from "../../lib/cn";
-import { RANKS, WIN_POINTS, WIN_XP } from "../../lib/ranks";
+import { RANKS, WIN_MAX, WIN_MIN, WIN_XP } from "../../lib/ranks";
 import useSeasons from "../../hooks/useSeasons";
 import { Eyebrow } from "../ui/Typography";
 
 /**
- * Les 8 rangs du classé et le barème (identique au backend) :
- * victoire +30 pts / +500 XP, défaite de -10 (Bronze) à -30 (Champion).
+ * Les 9 rangs du classé et le barème (identique au backend) :
+ * victoire de +45 à +55 pts (+50 à niveau égal) / +500 XP, défaite de -15 (Bronze) à -50 (Maître et au-delà).
  * highlight : nom du rang à mettre en avant (celui du joueur).
  */
 export function RanksGrid({ highlight = null }) {
-  const ordered = [...RANKS].reverse(); // de Bronze à Champion
+  const ordered = [...RANKS].reverse(); // de Bronze à Légende
   const { label } = useSeasons();
 
   return (
@@ -22,12 +22,12 @@ export function RanksGrid({ highlight = null }) {
           </h2>
         </div>
         <p className="text-sm text-white/60">
-          Victoire : <span className="font-tech font-bold text-gold">+{WIN_POINTS} pts</span> ·{" "}
+          Victoire : <span className="font-tech font-bold text-gold">+{WIN_MIN} à +{WIN_MAX} pts</span> selon l&apos;adversaire ·{" "}
           <span className="font-tech font-bold text-gold">+{WIN_XP} XP</span>
         </p>
       </div>
 
-      <ol className="mt-8 grid grid-cols-2 gap-px bg-white/10 sm:grid-cols-4 lg:grid-cols-8">
+      <ol className="mt-8 grid grid-cols-3 gap-px bg-white/10 lg:grid-cols-9">
         {ordered.map((rank, index) => {
           const active = rank.name === highlight;
           return (

@@ -122,6 +122,7 @@ export default function useQueueSocket(enabled) {
                 format: message.format,
                 map: message.map,
                 mode: message.mode,
+                points: message.points ?? null,
                 deadline: message.deadline,
                 accepted: 0,
                 total: message.total ?? 2,
