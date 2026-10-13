@@ -22,7 +22,7 @@ export function PointsAtStake({ stake, className = "", centered = false }) {
       {stake.placement ? (
         <span
           className="inline-flex items-center border border-gold/50 px-2.5 py-1 font-tech text-[10px] font-bold uppercase tracking-[0.2em] text-gold"
-          title="Les 5 premiers matchs de la saison comptent double"
+          title={`Les ${PLACEMENT_MATCHES} premiers matchs de la saison comptent double`}
         >
           Placement {stake.placement}/{PLACEMENT_MATCHES} · ×2
         </span>

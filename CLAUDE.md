@@ -39,7 +39,7 @@ Utilitaires maison dans `globals.css` : `clip-tactical`, `clip-slant`, `clip-cor
 
 - Tout le site est **public** ; la connexion Discord n'est exigée que pour la file, son propre profil, le vote et le chat de match, et l'inscription aux événements.
 - Le navigateur **lit** Supabase (RLS en lecture publique) ; toutes les **écritures** passent par le backend (`lib/api.js`). Seule exception : `activision_id` et `platform` de son propre profil.
-- Barème calculé par le backend (`cod_points_preview`) : victoire de +20 à +40 selon le niveau adverse (+30 à niveau égal), défaite = pénalité du rang (-10 Bronze à -30 Champion) ajustée selon l'adversaire, -25 % en solo, placement (5 premiers matchs ×2), bonus de série. Le site affiche les points en jeu reçus du backend (`PointsAtStake`) ; garder les textes et `lib/ranks.js` alignés sur la migration 0013.
+- Barème calculé par le backend (`cod_points_preview`) : rangs tous les 300 points (Bronze 0 … Champion 2100), victoire de +35 à +65 selon le niveau adverse (+50 à niveau égal), défaite = pénalité du rang (-15 Bronze à -50 Maître et au-delà) ajustée selon l'adversaire, -25 % en solo, placement (10 premiers matchs ×2), bonus de série (+5, +10, +15). Le site affiche les points en jeu reçus du backend (`PointsAtStake`) ; garder les textes et `lib/ranks.js` alignés sur la migration 0013.
 - Match trouvé : vérification « Prêt ? » d'une minute (`COD_READY_SECONDS` côté backend). Les preuves (captures) sont envoyées dans le bucket Storage `match-proofs` puis enregistrées par `POST /cod/matches/:id/proofs`.
 - Ne jamais mettre la clé secrète Supabase dans le frontend.
 - Une vérification automatique (`.github/workflows/ci.yml`) construit le site à chaque PR.

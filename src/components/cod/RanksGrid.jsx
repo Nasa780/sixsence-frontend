@@ -5,7 +5,7 @@ import { Eyebrow } from "../ui/Typography";
 
 /**
  * Les 8 rangs du classé et le barème (identique au backend) :
- * victoire +30 pts / +500 XP, défaite de -10 (Bronze) à -30 (Champion).
+ * victoire de +35 à +65 pts (+50 à niveau égal) / +500 XP, défaite de -15 (Bronze) à -50 (Maître et au-delà).
  * highlight : nom du rang à mettre en avant (celui du joueur).
  */
 export function RanksGrid({ highlight = null }) {
