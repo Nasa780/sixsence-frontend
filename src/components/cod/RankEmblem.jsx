@@ -1,6 +1,6 @@
 import { useMemo } from "react";
 import { cn } from "../../lib/cn";
-import { emblemDataUrl } from "../../lib/rankEmblem";
+import { EMBLEM_RATIO, emblemDataUrl } from "../../lib/rankEmblem";
 import { rankLevel } from "../../lib/ranks";
 
 /** Braises de Légende : position de départ, dérive et décalage de chaque particule. */
@@ -19,10 +19,17 @@ const EMBERS = [
  *   Champion et Légende : halo qui respire
  *   Légende : braises qui s'élèvent
  * animated={false} pour les petites tailles répétées (listes) : emblème seul.
+ * size est la taille de l'hexagone : les ailes (Maître et au-delà) débordent sur les côtés
+ * sans changer la place occupée (spread : réserve aussi leur place, à côté d'un texte) ;
+ * sous 40 px, l'emblème est affiché sans ailes.
  */
-export function RankEmblem({ rank, size = 48, animated = true, className = "" }) {
+export function RankEmblem({ rank, size = 48, animated = true, spread = false, className = "" }) {
   const level = rankLevel(rank);
-  const src = useMemo(() => emblemDataUrl(rank), [rank]);
+  const withWings = size >= 40;
+  const src = useMemo(() => emblemDataUrl(rank, { withWings }), [rank, withWings]);
+  const width = Math.round(size * EMBLEM_RATIO);
+  // Le dessin est plus large que l'hexagone : on le centre sur la place réservée.
+  const drawing = { width, height: size, left: (size - width) / 2, top: 0 };
   const sheen = animated && level >= 5;
   const glow = animated && level >= 8;
   const embers = animated && level >= 9 && size >= 40;
@@ -30,24 +37,24 @@ export function RankEmblem({ rank, size = 48, animated = true, className = "" })
   return (
     <span
       className={cn("relative inline-flex shrink-0", className)}
-      style={{ width: size, height: size, "--rank-glow": rank.color }}
+      style={{ width: size, height: size, "--rank-glow": rank.color, ...(spread && withWings && level >= 6 ? { marginInline: (width - size) / 2 } : null) }}
       role="img"
       aria-label={`Rang ${rank.name}`}
     >
       <img
         src={src}
         alt=""
-        width={size}
+        width={width}
         height={size}
         draggable={false}
-        className={cn("h-full w-full select-none", glow && "rank-glow")}
-        style={!glow && level >= 5 ? { filter: `drop-shadow(0 0 ${Math.round(size / 10)}px ${rank.color}66)` } : undefined}
+        className={cn("pointer-events-none absolute max-w-none select-none", glow && "rank-glow")}
+        style={{ ...drawing, ...(!glow && level >= 5 ? { filter: `drop-shadow(0 0 ${Math.round(size / 10)}px ${rank.color}66)` } : null) }}
       />
       {sheen ? (
         <span
           aria-hidden
-          className="rank-sheen pointer-events-none absolute inset-0"
-          style={{ maskImage: `url("${src}")`, WebkitMaskImage: `url("${src}")`, maskSize: "100% 100%", WebkitMaskSize: "100% 100%" }}
+          className="rank-sheen pointer-events-none absolute"
+          style={{ ...drawing, maskImage: `url("${src}")`, WebkitMaskImage: `url("${src}")`, maskSize: "100% 100%", WebkitMaskSize: "100% 100%" }}
         />
       ) : null}
       {embers

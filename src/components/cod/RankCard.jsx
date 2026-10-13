@@ -19,7 +19,7 @@ export function RankCard({ points = 0, peak = 0, position = null, total = null, 
       <div aria-hidden className="pointer-events-none absolute -left-16 top-0 h-72 w-72 rounded-full opacity-20 blur-3xl" style={{ background: rank.color }} />
 
       <div className="relative flex flex-col gap-6 sm:flex-row sm:items-center">
-        <RankEmblem rank={rank} size={120} className="self-center sm:self-auto" />
+        <RankEmblem rank={rank} size={120} spread className="self-center sm:self-auto" />
         <div className="min-w-0 flex-1">
           <p className="font-tech text-[10px] uppercase tracking-[0.3em] text-white/45">Rang actuel · {seasonLabel}</p>
           <p

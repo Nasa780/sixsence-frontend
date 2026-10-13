@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { LegalPage } from "../components/ui/LegalPage";
 import { LEGAL } from "../lib/legal";
-import { LOSS_TIERS, PLACEMENT_MATCHES, RANKS, WIN_POINTS, WIN_XP } from "../lib/ranks";
+import { PLACEMENT_MATCHES, RANKS, SOLO_LOSS_REDUCTION, WIN_POINTS, WIN_XP } from "../lib/ranks";
 
 const SECTIONS = [
   {
@@ -137,15 +137,9 @@ const SECTIONS = [
           <strong>Victoire : +{WIN_POINTS} points</strong> (et +{WIN_XP} XP), pour tout le monde, seul ou en groupe.
         </p>
         <p>
-          <strong>Défaite</strong> : plus tu montes, plus elle coûte cher. Tu ne descends jamais en dessous de 0.
+          <strong>Défaite</strong> : plus tu montes, plus elle coûte cher (détail par rang ci-dessous). <strong>Seul</strong>, tu perds{" "}
+          {SOLO_LOSS_REDUCTION} % de points en moins. Tu ne descends jamais en dessous de 0.
         </p>
-        <ul>
-          {LOSS_TIERS.map((tier) => (
-            <li key={tier.ranks}>
-              {tier.ranks} : <strong>-{tier.loss}</strong>
-            </li>
-          ))}
-        </ul>
         <p>
           <strong>Placement</strong> : pendant tes {PLACEMENT_MATCHES} premiers matchs de la saison, chaque victoire compte double (
           <strong>+{WIN_POINTS * 2}</strong>), les défaites restent normales.
@@ -155,7 +149,7 @@ const SECTIONS = [
         <ul>
           {[...RANKS].reverse().map((rank) => (
             <li key={rank.name}>
-              <strong>{rank.name}</strong> : à partir de {rank.min} points
+              <strong>{rank.name}</strong> : à partir de {rank.min} points, défaite <strong>-{rank.loss}</strong>
             </li>
           ))}
         </ul>
