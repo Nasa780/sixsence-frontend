@@ -1,7 +1,9 @@
 import Head from "next/head";
 import { useEffect, useState } from "react";
 import { QueuePanel } from "../../components/cod/QueuePanel";
+import { RankRoad } from "../../components/cod/RankRoad";
 import { RanksGrid } from "../../components/cod/RanksGrid";
+import { TacticalCard } from "../../components/ui/TacticalCard";
 import { GoldParticles } from "../../components/effects/GoldParticles";
 import { Container } from "../../components/ui/Container";
 import { Loading, StatTile } from "../../components/ui/Feedback";
@@ -108,6 +110,15 @@ export default function RankedPage() {
             </ol>
           </aside>
         </Container>
+
+        {user?.profile ? (
+          <Container className="pb-10">
+            <TacticalCard cut={22} innerClassName="p-5 sm:p-7">
+              <p className="mb-4 font-display text-2xl font-black uppercase leading-none">Road to Légende</p>
+              <RankRoad points={user.profile.points} />
+            </TacticalCard>
+          </Container>
+        ) : null}
 
         <Container className="pb-8">
           <RanksGrid highlight={user?.profile ? rankFor(user.profile.points).name : null} />
