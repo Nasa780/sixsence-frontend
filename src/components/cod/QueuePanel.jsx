@@ -2,7 +2,7 @@ import { AnimatePresence, motion } from "framer-motion";
 import Link from "next/link";
 import { useRouter } from "next/router";
 import { useEffect, useRef, useState } from "react";
-import { LuBan, LuBellRing, LuCheck, LuCrosshair, LuLoaderCircle, LuMap, LuUsers, LuVolume2, LuVolumeX, LuWifi, LuWifiOff, LuX } from "react-icons/lu";
+import { LuBan, LuBellRing, LuCheck, LuClock, LuCrosshair, LuLoaderCircle, LuMap, LuUsers, LuVolume2, LuVolumeX, LuWifi, LuWifiOff, LuX } from "react-icons/lu";
 import useCountdown from "../../hooks/useCountdown";
 import useQueueSocket from "../../hooks/useQueueSocket";
 import { api } from "../../lib/api";
@@ -52,6 +52,9 @@ export function QueuePanel({ profileComplete, userId }) {
   const banLeft = useCountdown(queue.bannedUntil);
   // Durée maximale de recherche : « Toujours là ? » 5 min avant l'arrêt (backend : COD_QUEUE_MAX_MINUTES).
   const stopLeft = useCountdown(queue.inQueue && queue.stillThere ? queue.expiresAt : null);
+  // Avant le « Toujours là ? » : temps restant jusqu'à la demande de confirmation (5 min avant l'arrêt).
+  const warnAt = queue.inQueue && !queue.stillThere && queue.expiresAt ? new Date(new Date(queue.expiresAt).getTime() - 5 * 60_000).toISOString() : null;
+  const confirmLeft = useCountdown(warnAt);
   // Sur téléphone, le serveur garde la place 30 min après la fermeture de l'appli (COD_MOBILE_GRACE_MINUTES).
   const [isMobile, setIsMobile] = useState(false);
   useEffect(() => setIsMobile(/Android|iPhone|iPad|iPod|Mobi/i.test(navigator.userAgent)), []);
@@ -258,6 +261,17 @@ export function QueuePanel({ profileComplete, userId }) {
             )}
           </p>
 
+          {queue.inQueue && !queue.stillThere && warnAt ? (
+            <p className="mt-3 flex items-start gap-2 text-xs text-white/50">
+              <LuClock aria-hidden className="mt-0.5 h-3.5 w-3.5 shrink-0 text-gold/80" />
+              <span>
+                Recherche limitée à 30 min : dans{" "}
+                <span className="font-tech font-bold tabular-nums text-white/80">{formatDuration(confirmLeft)}</span>, on te demandera si tu es
+                toujours là. Tu auras alors 5 min pour rester en file, sinon tu en seras retiré.
+              </span>
+            </p>
+          ) : null}
+
           {queue.inQueue && queue.stillThere ? (
             <div role="alert" className="mt-6 flex flex-col gap-4 border border-gold/50 bg-gold/10 p-5 sm:flex-row sm:items-center sm:justify-between">
               <div className="flex items-start gap-3">
@@ -299,8 +313,8 @@ export function QueuePanel({ profileComplete, userId }) {
           </div>
 
           <p className="mt-4 text-xs text-white/45">
-            <span className="text-white/70">Victoire : +50 points</span>. <span className="text-white/70">Défaite</span> : −20, −35 ou −50 selon ton
-            rang. <span className="text-white/70">Placement</span> : victoires doublées sur tes 10 premiers matchs.
+            <span className="text-white/70">Victoire : +50 points</span>. <span className="text-white/70">Défaite</span> : de −15 à −50 selon ton rang,
+            25 % de moins si tu joues seul. <span className="text-white/70">Placement</span> : victoires doublées sur tes 10 premiers matchs.
           </p>
 
           {/* Ce qui empêche de jouer, du plus bloquant au moins bloquant. */}
