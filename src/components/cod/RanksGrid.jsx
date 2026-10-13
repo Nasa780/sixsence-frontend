@@ -1,4 +1,4 @@
-import { PLACEMENT_MATCHES, RANKS, WIN_POINTS, WIN_XP, rankGradient, rankLevel } from "../../lib/ranks";
+import { PLACEMENT_MATCHES, RANKS, WIN_POINTS, WIN_XP, rankGradient } from "../../lib/ranks";
 import useSeasons from "../../hooks/useSeasons";
 import { RankBars } from "./RankBars";
 import { RankEmblem } from "./RankEmblem";
@@ -32,12 +32,10 @@ export function RanksGrid({ highlight = null }) {
       <ol className="mt-8 grid grid-cols-3 gap-px bg-white/10 lg:grid-cols-9">
         {ordered.map((rank, index) => {
           const active = rank.name === highlight;
-          const top = rankLevel(rank) >= 8;
           return (
             <li
               key={rank.name}
               className="relative overflow-hidden bg-ink-800 px-4 pb-5 pt-4"
-              style={{ backgroundImage: `linear-gradient(180deg, ${rank.color}${top ? "2e" : active ? "26" : "14"} 0%, transparent 70%)` }}
             >
               {active ? (
                 <span aria-hidden className="absolute inset-x-0 top-0 h-0.5" style={{ background: rank.color, boxShadow: `0 0 10px ${rank.color}` }} />
