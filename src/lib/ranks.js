@@ -27,19 +27,25 @@ export function nextRank(points = 0) {
   return { rank: next, progress: (points - current.min) / (next.min - current.min) };
 }
 
-/** Points gagnés par victoire, XP par victoire. */
-export const WIN_POINTS = 30;
-export const WIN_XP = 500;
-
 /**
- * Barème (aligné sur cod_win_points / cod_loss_points du backend) :
- *   victoire : +30 pour tous ;
- *   défaite  : pénalité du rang, réduite de 25 % pour un joueur seul.
+ * Barème (calculé par le backend, fonction SQL cod_points_preview) :
+ *   victoire : 30 points contre une équipe de même niveau, de +20 à +40 selon l'écart ;
+ *   défaite  : pénalité du rang, réduite contre plus fort, augmentée contre plus faible,
+ *              et réduite de 25 % pour un joueur seul ;
+ *   placement : les 5 premiers matchs de la saison comptent double ;
+ *   série : 3e victoire d'affilée +3, 4e +6, 5e et suivantes +10.
+ * Les points en jeu de chaque joueur sont affichés avant le match (PointsAtStake).
  */
-export function lossPoints(points = 0, groupSize = 1) {
-  const penalty = rankFor(points).loss;
-  return Math.min(points, groupSize === 1 ? Math.round(penalty * 0.75) : penalty);
-}
+export const WIN_POINTS = 30;
+export const WIN_MIN = 20;
+export const WIN_MAX = 40;
+export const WIN_XP = 500;
+export const PLACEMENT_MATCHES = 5;
+export const STREAK_BONUSES = [
+  { streak: 3, bonus: 3 },
+  { streak: 4, bonus: 6 },
+  { streak: 5, bonus: 10 },
+];
 
 /** « Solo », « Duo », « Trio », « Groupe de 4 », « Équipe de 5 ». */
 export function groupLabel(size = 1) {

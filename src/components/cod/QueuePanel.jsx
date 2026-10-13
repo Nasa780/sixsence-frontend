@@ -24,6 +24,7 @@ import { Button, ButtonLink } from "../ui/Button";
 import { Chip, Notice } from "../ui/Feedback";
 import { TacticalCard } from "../ui/TacticalCard";
 import { AppPanel } from "./AppPanel";
+import { PointsAtStake } from "./PointsAtStake";
 import { PartyPanel } from "./PartyPanel";
 
 const FORMAT_KEY = "sixsence:format";
@@ -298,8 +299,8 @@ export function QueuePanel({ profileComplete, userId }) {
           </div>
 
           <p className="mt-4 text-xs text-white/45">
-            <span className="text-white/70">Victoire : +30 points</span>, seul ou en groupe. <span className="text-white/70">Défaite en solo</span> : tu
-            perds 25 % de points en moins.
+            <span className="text-white/70">Victoire : +20 à +40 points</span> selon le niveau adverse. <span className="text-white/70">Défaite en solo</span> :
+            tu perds 25 % de points en moins. Les points en jeu s&apos;affichent avant chaque match.
           </p>
 
           {/* Ce qui empêche de jouer, du plus bloquant au moins bloquant. */}
@@ -533,6 +534,8 @@ function ReadyCheckOverlay({ check, started, userId }) {
                   <span aria-hidden className="text-white/25">/</span>
                   {check.mode}
                 </p>
+                {/* Points en jeu pour ce joueur */}
+                <PointsAtStake stake={check.points} centered className="mt-5" />
 
                 {/* Compte à rebours */}
                 <div className="mx-auto mt-8 max-w-md">

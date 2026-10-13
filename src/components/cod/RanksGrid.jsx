@@ -1,5 +1,5 @@
 import { cn } from "../../lib/cn";
-import { RANKS, WIN_POINTS, WIN_XP } from "../../lib/ranks";
+import { RANKS, WIN_MAX, WIN_MIN, WIN_XP } from "../../lib/ranks";
 import useSeasons from "../../hooks/useSeasons";
 import { Eyebrow } from "../ui/Typography";
 
@@ -22,7 +22,7 @@ export function RanksGrid({ highlight = null }) {
           </h2>
         </div>
         <p className="text-sm text-white/60">
-          Victoire : <span className="font-tech font-bold text-gold">+{WIN_POINTS} pts</span> ·{" "}
+          Victoire : <span className="font-tech font-bold text-gold">+{WIN_MIN} à +{WIN_MAX} pts</span> selon l&apos;adversaire ·{" "}
           <span className="font-tech font-bold text-gold">+{WIN_XP} XP</span>
         </p>
       </div>

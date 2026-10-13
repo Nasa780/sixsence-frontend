@@ -14,6 +14,7 @@ import { Button } from "../ui/Button";
 import { Chip, EmptyState, Loading, Notice } from "../ui/Feedback";
 import { TacticalCard } from "../ui/TacticalCard";
 import { ReasonDialog } from "../ui/ReasonDialog";
+import { PointsAtStake } from "./PointsAtStake";
 import { Eyebrow } from "../ui/Typography";
 
 const STATUS_LABEL = {
@@ -27,7 +28,7 @@ const STATUS_LABEL = {
 
 const PLATFORM_LABEL = { pc: "PC", playstation: "PlayStation", xbox: "Xbox" };
 
-const signed = (value) => (value > 0 ? `+${value}` : `${value}`);
+const signed = (value) => (value > 0 ? `+${value}` : value === 0 ? "±0" : `${value}`);
 const teamLabel = (team) => (team === "A" ? "Équipe 1" : "Équipe 2");
 
 /**
@@ -157,6 +158,14 @@ export function MatchView({ matchId }) {
           </div>
         </div>
       </TacticalCard>
+
+      {/* --- Points en jeu pour moi (avant la fin du match) ----------------- */}
+      {myTeam && data.pointsAtStake?.[userId] ? (
+        <div className="flex flex-col gap-3 border-l-2 border-gold bg-gold/[0.06] px-5 py-4 sm:flex-row sm:items-center sm:justify-between">
+          <p className="font-tech text-[11px] uppercase tracking-[0.3em] text-gold">En jeu pour toi</p>
+          <PointsAtStake stake={data.pointsAtStake[userId]} />
+        </div>
+      ) : null}
 
       {/* --- Actions selon l'état ----------------------------------------- */}
       <div aria-live="polite" className="space-y-4">
@@ -298,11 +307,11 @@ export function MatchView({ matchId }) {
 
       {/* --- Les deux équipes --------------------------------------------- */}
       <div className="grid grid-cols-1 gap-6 pt-4 lg:grid-cols-[1fr_auto_1fr] lg:items-start">
-        <TeamColumn team="A" match={match} ids={match.team_a} playerById={playerById} currentUserId={userId} readyUsers={readyUsers} mvpIds={mvpIds} onReport={canReport ? (target) => setDialog({ kind: "report", target }) : null} />
+        <TeamColumn team="A" match={match} ids={match.team_a} stakes={data.pointsAtStake} playerById={playerById} currentUserId={userId} readyUsers={readyUsers} mvpIds={mvpIds} onReport={canReport ? (target) => setDialog({ kind: "report", target }) : null} />
         <div aria-hidden className="flex items-center justify-center lg:pt-16">
           <span className="font-display text-5xl font-black italic leading-none text-outline">VS</span>
         </div>
-        <TeamColumn team="B" match={match} ids={match.team_b} playerById={playerById} currentUserId={userId} readyUsers={readyUsers} mvpIds={mvpIds} onReport={canReport ? (target) => setDialog({ kind: "report", target }) : null} />
+        <TeamColumn team="B" match={match} ids={match.team_b} stakes={data.pointsAtStake} playerById={playerById} currentUserId={userId} readyUsers={readyUsers} mvpIds={mvpIds} onReport={canReport ? (target) => setDialog({ kind: "report", target }) : null} />
       </div>
 
       <ReasonDialog
@@ -451,7 +460,7 @@ function MvpVote({ match, playerById, votes, myVote, userId, isPlayer, onVoted }
   );
 }
 
-function TeamColumn({ team, match, ids, playerById, currentUserId, readyUsers = [], mvpIds = [], onReport = null }) {
+function TeamColumn({ team, match, ids, stakes = null, playerById, currentUserId, readyUsers = [], mvpIds = [], onReport = null }) {
   const groupMarks = new Map();
   for (const id of [...match.team_a, ...match.team_b]) {
     const group = match.groups?.[id];
@@ -532,7 +541,13 @@ function TeamColumn({ team, match, ids, playerById, currentUserId, readyUsers = 
               <div className="shrink-0 text-right">
                 <p className="font-tech text-base font-bold tabular-nums">{player?.points ?? "—"}</p>
                 {typeof delta === "number" ? (
-                  <p className={cn("font-tech text-xs font-bold tabular-nums", delta >= 0 ? "text-win" : "text-loss")}>{signed(delta)}</p>
+                  <p className={cn("font-tech text-xs font-bold tabular-nums", delta > 0 ? "text-win" : delta < 0 ? "text-loss" : "text-white/40")}>{signed(delta)}</p>
+                ) : stakes?.[id] ? (
+                  <p className="font-tech text-[11px] font-bold tabular-nums" title="Points en jeu : victoire / défaite">
+                    <span className="text-win">+{stakes[id].win}</span>
+                    <span className="text-white/30"> / </span>
+                    <span className="text-loss">{stakes[id].loss > 0 ? `−${stakes[id].loss}` : "±0"}</span>
+                  </p>
                 ) : (
                   <p className="font-tech text-[10px] uppercase tracking-[0.2em] text-white/35">pts</p>
                 )}
