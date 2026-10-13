@@ -222,6 +222,48 @@
   filter: drop-shadow(0 0 22px color-mix(in srgb, var(--color-gold) 28%, transparent));
 }
 
+/* -----------------------------------------------------------------------------
+   Effets des emblèmes de rang (composant RankEmblem) :
+     rank-sheen  reflet qui balaie l'emblème de temps en temps (Diamant et au-delà)
+     rank-glow   halo qui respire, couleur --rank-glow (Champion, Légende)
+     rank-ember  braises qui s'élèvent (Légende)
+   -------------------------------------------------------------------------- */
+.rank-sheen {
+  background: linear-gradient(115deg, transparent 35%, rgb(255 255 255 / 0.75) 50%, transparent 65%) no-repeat;
+  background-size: 250% 100%;
+  animation: rank-sheen 4.2s ease-in-out infinite;
+  mix-blend-mode: overlay;
+}
+@keyframes rank-sheen {
+  0% { background-position: 160% 0; }
+  45%, 100% { background-position: -60% 0; }
+}
+
+.rank-glow {
+  animation: rank-glow 2.6s ease-in-out infinite;
+}
+@keyframes rank-glow {
+  0%, 100% { filter: drop-shadow(0 0 4px var(--rank-glow)); }
+  50% { filter: drop-shadow(0 0 14px var(--rank-glow)); }
+}
+
+.rank-ember {
+  position: absolute;
+  bottom: 18%;
+  width: 3px;
+  height: 3px;
+  border-radius: 9999px;
+  background: #ffb347;
+  box-shadow: 0 0 6px #ff6b4a;
+  opacity: 0;
+  animation: rank-ember 2.8s ease-out infinite;
+}
+@keyframes rank-ember {
+  0% { transform: translate(0, 0) scale(1); opacity: 0; }
+  15% { opacity: 1; }
+  100% { transform: translate(var(--ember-drift, 0px), var(--ember-rise, -40px)) scale(0.3); opacity: 0; }
+}
+
 /* Accessibilité : on coupe les animations pour qui le demande au niveau du système. */
 @media (prefers-reduced-motion: reduce) {
   *,

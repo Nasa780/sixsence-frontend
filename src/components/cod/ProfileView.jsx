@@ -6,7 +6,7 @@ import useSession from "../../hooks/useSession";
 import { api } from "../../lib/api";
 import { cn } from "../../lib/cn";
 import { REPORT_REASONS, monthlyMvpBadge } from "../../lib/moderation";
-import { levelFor } from "../../lib/ranks";
+import { levelFor, rankFor, rankGradient } from "../../lib/ranks";
 import { supabase } from "../../lib/supabase";
 import { Avatar } from "../ui/Avatar";
 import { Chip, EmptyState, Loading, Notice, StatTile } from "../ui/Feedback";
@@ -133,7 +133,7 @@ export function ProfileView({ userId, editable = false, ownUser = null }) {
         <div aria-hidden className="absolute -right-10 top-0 h-full w-40 -skew-x-[24deg] bg-linear-to-b from-gold/14 to-transparent" />
         <div className="relative flex flex-col gap-8 lg:flex-row lg:items-center lg:justify-between">
           <div className="flex items-center gap-5">
-            <Avatar src={player.avatar_url} name={player.username} size={96} className="[--cut:18px]" />
+            <Avatar src={player.avatar_url} name={player.username} size={96} className="[--cut:18px]" ring={rankGradient(rankFor(profile.points), 160)} />
             <div className="min-w-0">
               <h2 className="truncate font-display text-5xl font-black uppercase leading-[0.9] sm:text-6xl">{player.username}</h2>
               <p className="mt-2 text-sm text-white/55">

@@ -1,7 +1,7 @@
-import { cn } from "../../lib/cn";
-import { RANKS, WIN_MAX, WIN_MIN, WIN_XP } from "../../lib/ranks";
+import { RANKS, WIN_MAX, WIN_MIN, WIN_XP, rankGradient, rankLevel } from "../../lib/ranks";
 import useSeasons from "../../hooks/useSeasons";
-import { RankBars, isLegend, rankLevel } from "./RankBars";
+import { RankBars } from "./RankBars";
+import { RankEmblem } from "./RankEmblem";
 import { Eyebrow } from "../ui/Typography";
 
 /**
@@ -31,44 +31,30 @@ export function RanksGrid({ highlight = null }) {
       <ol className="mt-8 grid grid-cols-3 gap-px bg-white/10 lg:grid-cols-9">
         {ordered.map((rank, index) => {
           const active = rank.name === highlight;
-          const legend = isLegend(rank);
-          const champion = !legend && rankLevel(rank) === 8;
+          const top = rankLevel(rank) >= 8;
           return (
             <li
               key={rank.name}
-              className={cn(
-                "relative overflow-hidden bg-ink-800 px-4 py-5",
-                active && "bg-gold/10",
-                champion && "bg-linear-to-b from-gold/[0.09] to-ink-800",
-                legend && "bg-linear-to-b from-[#ff6b4a]/[0.16] via-[#e8364a]/[0.05] to-ink-800",
-              )}
+              className="relative overflow-hidden bg-ink-800 px-4 pb-5 pt-4"
+              style={{ backgroundImage: `linear-gradient(180deg, ${rank.color}${top ? "2e" : active ? "26" : "14"} 0%, transparent 70%)` }}
             >
               {active ? (
-                <span
-                  aria-hidden
-                  className={cn(
-                    "absolute inset-x-0 top-0 h-0.5",
-                    legend ? "bg-[#ff6b4a] shadow-[0_0_10px_#ff6b4a]" : "bg-gold shadow-[0_0_10px_var(--color-gold)]",
-                  )}
-                />
+                <span aria-hidden className="absolute inset-x-0 top-0 h-0.5" style={{ background: rank.color, boxShadow: `0 0 10px ${rank.color}` }} />
               ) : null}
-              <RankBars rank={rank} />
+              <RankEmblem rank={rank} size={52} />
               <p
-                className={cn(
-                  "mt-4 font-display text-xl font-bold uppercase leading-none tracking-wide",
-                  active && "text-gold",
-                  champion && "text-gold-gradient",
-                  legend && "bg-linear-to-b from-[#ffd36b] via-[#ff8a3d] to-[#e8364a] bg-clip-text text-transparent",
-                )}
+                className="mt-3 bg-clip-text font-display text-xl font-bold uppercase leading-none tracking-wide text-transparent"
+                style={{ backgroundImage: rankGradient(rank) }}
               >
                 {rank.name}
                 {active ? <span className="sr-only"> (ton rang)</span> : null}
               </p>
-              <p className="mt-1.5 font-tech text-[11px] tabular-nums text-white/50">
+              <RankBars rank={rank} className="mt-2.5" />
+              <p className="mt-2.5 font-tech text-[11px] tabular-nums text-white/50">
                 {rank.min}
                 {ordered[index + 1] ? `–${ordered[index + 1].min - 1}` : "+"} pts
               </p>
-              <p className="mt-3 text-xs text-white/40">
+              <p className="mt-2 text-xs text-white/40">
                 Défaite <span className="font-tech font-bold text-loss">−{rank.loss}</span>
               </p>
             </li>

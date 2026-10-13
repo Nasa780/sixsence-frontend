@@ -1,27 +1,17 @@
 import { cn } from "../../lib/cn";
-import { RANKS } from "../../lib/ranks";
+import { rankGradient, rankLevel } from "../../lib/ranks";
 
-/** Barres de niveau : 8 paliers de Bronze à Champion ; Légende les remplit toutes, en couleur chaude. */
+/** Barres de niveau : 8 paliers de Bronze à Champion ; Légende les remplit toutes. */
 const BAR_COUNT = 8;
-const LEGEND_GRADIENT = "linear-gradient(180deg, #ffd36b 0%, #ff8a3d 55%, #e8364a 100%)";
-
-/** Niveau d'un rang : 1 = Bronze … 8 = Champion, 9 = Légende. */
-export function rankLevel(rank) {
-  return RANKS.length - RANKS.findIndex((item) => item.name === rank.name);
-}
-
-export function isLegend(rank) {
-  return rankLevel(rank) > BAR_COUNT;
-}
 
 /**
- * Chevrons de rang, du plus petit au plus grand.
+ * Chevrons de progression, dans la teinte métallique du rang (Bronze cuivré,
+ * Argent argenté…). Champion et Légende : toutes remplies, avec un halo.
  *   size : "sm" (insigne) ou "md" (grille des rangs)
  */
 export function RankBars({ rank, size = "md", className = "" }) {
   const level = rankLevel(rank);
-  const legend = level > BAR_COUNT;
-  const champion = level === BAR_COUNT;
+  const full = level >= BAR_COUNT;
   const base = size === "sm" ? 6 : 5;
   const step = size === "sm" ? 2 : 1.6;
 
@@ -32,14 +22,12 @@ export function RankBars({ rank, size = "md", className = "" }) {
         return (
           <span
             key={bar}
-            className={cn(
-              "w-1 -skew-x-[18deg] transition-colors",
-              !filled && "bg-white/12",
-              filled && !legend && "bg-gold",
-              filled && !legend && (champion || size === "sm") && "shadow-[0_0_6px_var(--color-gold)]",
-              legend && "shadow-[0_0_8px_rgba(255,107,74,0.85)]",
-            )}
-            style={{ height: base + bar * step, ...(legend ? { backgroundImage: LEGEND_GRADIENT } : null) }}
+            className={cn("w-1 -skew-x-[18deg]", !filled && "bg-white/12")}
+            style={{
+              height: base + bar * step,
+              ...(filled ? { backgroundImage: rankGradient(rank) } : null),
+              ...(filled && full ? { boxShadow: `0 0 7px ${rank.color}` } : null),
+            }}
           />
         );
       })}
