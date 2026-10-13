@@ -3,7 +3,7 @@ import { nextRank, RANKS, rankFor } from "../../lib/ranks";
 
 /**
  * Insigne de rang : nom du palier et chevrons (un par niveau, de 1 = Bronze
- * à 8 = Champion). Avec `showProgress`, ajoute la barre vers le palier suivant.
+ * à 9 = Légende). Avec `showProgress`, ajoute la barre vers le palier suivant.
  */
 export function RankBadge({ points = 0, showProgress = false, className = "" }) {
   const rank = rankFor(points);

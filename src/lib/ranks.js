@@ -3,6 +3,7 @@
  * barème du backend (fonction SQL cod_loss_penalty).
  */
 export const RANKS = [
+  { name: "Légende", min: 3000, color: "#ff6b4a", icon: "/assets/Iconlegende.svg", loss: 50 },
   { name: "Champion", min: 2100, color: "#e8b4f8", icon: "/assets/Iconchampion.svg", loss: 50 },
   { name: "Grand Maître", min: 1800, color: "#c084fc", icon: "/assets/Icongrandmaitre.svg", loss: 50 },
   { name: "Maître", min: 1500, color: "#a78bfa", icon: "/assets/Iconmaitre.svg", loss: 50 },
@@ -29,7 +30,7 @@ export function nextRank(points = 0) {
 
 /**
  * Barème (calculé par le backend, fonction SQL cod_points_preview) :
- *   victoire : 50 points contre une équipe de même niveau, de +35 à +65 selon l'écart ;
+ *   victoire : 50 points contre une équipe de même niveau, de +45 à +55 selon l'écart ;
  *   défaite  : pénalité du rang, réduite contre plus fort, augmentée contre plus faible,
  *              et réduite de 25 % pour un joueur seul ;
  *   placement : les 10 premiers matchs de la saison comptent double ;
@@ -37,8 +38,8 @@ export function nextRank(points = 0) {
  * Les points en jeu de chaque joueur sont affichés avant le match (PointsAtStake).
  */
 export const WIN_POINTS = 50;
-export const WIN_MIN = 35;
-export const WIN_MAX = 65;
+export const WIN_MIN = 45;
+export const WIN_MAX = 55;
 export const WIN_XP = 500;
 export const PLACEMENT_MATCHES = 10;
 export const STREAK_BONUSES = [

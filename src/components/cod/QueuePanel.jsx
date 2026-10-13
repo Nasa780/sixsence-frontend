@@ -299,7 +299,7 @@ export function QueuePanel({ profileComplete, userId }) {
           </div>
 
           <p className="mt-4 text-xs text-white/45">
-            <span className="text-white/70">Victoire : +35 à +65 points</span> selon le niveau adverse. <span className="text-white/70">Défaite en solo</span> :
+            <span className="text-white/70">Victoire : +45 à +55 points</span> selon le niveau adverse. <span className="text-white/70">Défaite en solo</span> :
             tu perds 25 % de points en moins. Les points en jeu s&apos;affichent avant chaque match.
           </p>
 

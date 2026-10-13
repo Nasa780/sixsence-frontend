@@ -48,6 +48,7 @@ function badgesFor(profile, seasons) {
     { key: "diamond", label: "Diamant", description: "Atteindre 1 200 points.", unlocked: profile.peak_points >= 1200 },
     { key: "veteran", label: "Vétéran", description: "Jouer 50 matchs.", unlocked: played >= 50 },
     { key: "champion", label: "Champion", description: "Atteindre 2 100 points.", unlocked: profile.peak_points >= 2100 },
+    { key: "legende", label: "Légende", description: "Atteindre 3 000 points.", unlocked: profile.peak_points >= 3000 },
   ];
 }
 

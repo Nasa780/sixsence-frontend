@@ -4,12 +4,12 @@ import useSeasons from "../../hooks/useSeasons";
 import { Eyebrow } from "../ui/Typography";
 
 /**
- * Les 8 rangs du classé et le barème (identique au backend) :
- * victoire de +35 à +65 pts (+50 à niveau égal) / +500 XP, défaite de -15 (Bronze) à -50 (Maître et au-delà).
+ * Les 9 rangs du classé et le barème (identique au backend) :
+ * victoire de +45 à +55 pts (+50 à niveau égal) / +500 XP, défaite de -15 (Bronze) à -50 (Maître et au-delà).
  * highlight : nom du rang à mettre en avant (celui du joueur).
  */
 export function RanksGrid({ highlight = null }) {
-  const ordered = [...RANKS].reverse(); // de Bronze à Champion
+  const ordered = [...RANKS].reverse(); // de Bronze à Légende
   const { label } = useSeasons();
 
   return (
@@ -27,7 +27,7 @@ export function RanksGrid({ highlight = null }) {
         </p>
       </div>
 
-      <ol className="mt-8 grid grid-cols-2 gap-px bg-white/10 sm:grid-cols-4 lg:grid-cols-8">
+      <ol className="mt-8 grid grid-cols-3 gap-px bg-white/10 lg:grid-cols-9">
         {ordered.map((rank, index) => {
           const active = rank.name === highlight;
           return (
