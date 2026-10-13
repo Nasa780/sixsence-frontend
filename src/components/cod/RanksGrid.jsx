@@ -41,13 +41,16 @@ export function RanksGrid({ highlight = null }) {
                 <span aria-hidden className="absolute inset-x-0 top-0 h-0.5" style={{ background: rank.color, boxShadow: `0 0 10px ${rank.color}` }} />
               ) : null}
               <RankEmblem rank={rank} size={52} />
-              <p
-                className="mt-3 bg-clip-text font-display text-xl font-bold uppercase leading-none tracking-wide text-transparent"
-                style={{ backgroundImage: rankGradient(rank) }}
-              >
-                {rank.name}
-                {active ? <span className="sr-only"> (ton rang)</span> : null}
-              </p>
+              {/* Place pour deux lignes (« Grand Maître ») : toutes les cartes restent alignées. */}
+              <div className="mt-3 flex h-10 items-end">
+                <p
+                  className="bg-clip-text font-display text-xl font-bold uppercase leading-none tracking-wide text-transparent"
+                  style={{ backgroundImage: rankGradient(rank) }}
+                >
+                  {rank.name}
+                  {active ? <span className="sr-only"> (ton rang)</span> : null}
+                </p>
+              </div>
               <RankBars rank={rank} className="mt-2.5" />
               <p className="mt-2.5 font-tech text-[11px] tabular-nums text-white/50">
                 {rank.min}
