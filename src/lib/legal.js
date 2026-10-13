@@ -14,5 +14,5 @@ export const LEGAL = {
   /** Directeur ou directrice de la publication (facultatif pour un site non professionnel). */
   director: null,
   /** Date de dernière mise à jour des pages légales. */
-  updated: "11 octobre 2026",
+  updated: "13 octobre 2026",
 };

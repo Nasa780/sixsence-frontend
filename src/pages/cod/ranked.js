@@ -14,8 +14,8 @@ import { rankFor } from "../../lib/ranks";
 
 const RULES = [
   { title: "Choisis ta file", text: "2v2, 3v3, 4v4 ou 5v5, seul ou en groupe. Le match se lance dès que les deux équipes sont complètes ; les premiers arrivés sont servis en premier." },
-  { title: "Joue avec tes amis", text: "Crée un groupe, envoie le lien : vous serez toujours dans la même équipe. Seul, une défaite coûte 25 % de points en moins." },
-  { title: "Des points mérités", text: "+50 à niveau égal : battre plus fort rapporte jusqu'à +55, battre plus faible au moins +45. Tes 10 premiers matchs de la saison comptent double, et les séries de victoires donnent un bonus." },
+  { title: "Joue avec tes amis", text: "Crée un groupe, envoie le lien : vous serez toujours dans la même équipe." },
+  { title: "Des points simples", text: "Victoire +50. Défaite −20 en Bronze et Argent, −35 de l'Or au Diamant, −50 dès Maître. Tes 10 premiers matchs de la saison : victoires doublées." },
   { title: "Une minute pour accepter", text: "Match trouvé : un son te prévient, tu as 60 secondes pour cliquer sur « Accepter »." },
   { title: "Recherche & Destruction Hardcore", text: "Le seul mode du classé, dans toutes les files : partie privée en Recherche & Destruction avec le réglage Hardcore." },
   { title: "Tout est tiré au sort", text: "Équipes, carte, camp et hôte : personne ne choisit. Les groupes restent toujours ensemble." },
