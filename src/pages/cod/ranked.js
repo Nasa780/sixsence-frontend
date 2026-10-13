@@ -15,15 +15,14 @@ import { api } from "../../lib/api";
 import { rankFor } from "../../lib/ranks";
 
 const RULES = [
-  { title: "Choisis ta file", text: "2v2, 3v3, 4v4 ou 5v5, seul ou en groupe. Le match se lance dès que les deux équipes sont complètes ; les premiers arrivés sont servis en premier." },
-  { title: "Joue avec tes amis", text: "Crée un groupe, envoie le lien : vous serez toujours dans la même équipe." },
-  { title: "Des points simples", text: "Victoire +50. Défaite −20 en Bronze et Argent, −35 de l'Or au Diamant, −50 dès Maître. Tes 10 premiers matchs de la saison : victoires doublées." },
-  { title: "Une minute pour accepter", text: "Match trouvé : un son te prévient, tu as 60 secondes pour cliquer sur « Accepter »." },
-  { title: "Recherche & Destruction Hardcore", text: "Le seul mode du classé, dans toutes les files : partie privée en Recherche & Destruction avec le réglage Hardcore." },
-  { title: "Tout est tiré au sort", text: "Équipes, carte, camp et hôte : personne ne choisit. Les groupes restent toujours ensemble." },
-  { title: "L'hôte crée la partie", text: "Le premier joueur de l'équipe 1 ouvre la partie privée en S&D Hardcore et invite les autres." },
-  { title: "Le résultat se confirme à deux", text: "Un joueur déclare le vainqueur, l'équipe adverse valide. Les points bougent ensuite." },
-  { title: "Engagement", text: "Match non accepté = avertissement. 2e oubli en 24 h : 15 min sans file, 3e : 1 h, ensuite 24 h." },
+  { title: "Choisis ta file", text: "2v2, 3v3, 4v4 ou 5v5, seul ou en groupe. Le match se lance dès que les deux équipes sont complètes : les premiers arrivés jouent en premier." },
+  { title: "Joue avec tes amis", text: "Crée un groupe et envoie le lien : vous serez toujours dans la même équipe." },
+  { title: "Une minute pour accepter", text: "Quand ton match est trouvé, un son te prévient : clique sur « Accepter » dans les 60 secondes." },
+  { title: "Recherche & Destruction Hardcore", text: "Toutes les files se jouent en R&D, réglage Hardcore, en partie privée." },
+  { title: "Équipes et carte au hasard", text: "Les joueurs sont répartis au hasard entre les deux équipes, et la carte est tirée au sort. Si tu joues en groupe, vous restez ensemble." },
+  { title: "L'hôte crée la partie", text: "Le premier joueur de l'équipe 1 crée la partie privée en R&D Hardcore et invite les autres." },
+  { title: "Le résultat se confirme à deux", text: "Un joueur déclare le vainqueur, l'équipe adverse confirme. Les points sont ensuite mis à jour." },
+  { title: "Engagement", text: "Ne pas accepter un match donne un avertissement. Au 2e en 24 h : 15 min sans file ; au 3e : 1 h ; au-delà : 24 h." },
 ];
 
 /** File d'attente classée : panneau temps réel, règles, rangs. Visible par tous, jouable une fois connecté. */
@@ -59,7 +58,7 @@ export default function RankedPage() {
 
 
         image="/images/mw4.webp"
-        eyebrow="Classé 2v2 → 5v5 · S&D Hardcore"
+        eyebrow="Classé 2v2 → 5v5 · R&D Hardcore"
         title={
           <>
             File <span className="text-gold-gradient">d&apos;attente</span>

@@ -252,8 +252,8 @@ export function QueuePanel({ profileComplete, userId }) {
               <>Tu es dans le groupe de {party.members.find((member) => member.isLeader)?.username ?? "ton chef"} : c&apos;est lui qui lance la recherche.</>
             ) : (
               <>
-                Dès que {needed} joueurs sont en file, les équipes et la carte sont tirées au sort ; un groupe joue toujours dans la même équipe.
-                Tu auras alors une minute pour accepter.
+                Le match se lance dès que {needed} joueurs sont dans la file {selected?.label ?? ""}. Tu auras alors une minute pour
+                l&apos;accepter.
               </>
             )}
           </p>
