@@ -3,6 +3,7 @@ import Link from "next/link";
 import { useEffect, useState } from "react";
 import { LuArrowRight, LuCrosshair, LuTrophy, LuUser } from "react-icons/lu";
 import { LeaderboardView } from "../../components/cod/LeaderboardView";
+import { OnboardingPanel } from "../../components/cod/OnboardingPanel";
 import { RankBadge } from "../../components/cod/RankBadge";
 import { Reveal } from "../../components/effects/Reveal";
 import { ButtonLink } from "../../components/ui/Button";
@@ -81,14 +82,8 @@ export default function CodHubPage() {
           </Notice>
         ) : null}
 
-        {profile && !profile.activision_id ? (
-          <Notice>
-            Dernière étape avant de jouer : renseigne ton identifiant Activision.{" "}
-            <Link href="/cod/profile" className="font-semibold text-gold underline underline-offset-4 hover:text-gold-light">
-              Compléter mon profil
-            </Link>
-          </Notice>
-        ) : null}
+        {/* Mise en route d'un nouveau joueur (identifiant Activision, notifications, Discord, premier match). */}
+        <OnboardingPanel user={user} />
 
         {profile ? (
           <section aria-label="Mon résumé" className="grid grid-cols-1 gap-6 lg:grid-cols-[auto_1fr] lg:items-center">

@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { LuCheck, LuFlag, LuLock, LuMedal, LuShare2 } from "react-icons/lu";
 import useSeasons, { seasonBadge } from "../../hooks/useSeasons";
 import useSession from "../../hooks/useSession";
@@ -14,10 +14,11 @@ import { TacticalCard } from "../ui/TacticalCard";
 import { ReasonDialog } from "../ui/ReasonDialog";
 import { Eyebrow } from "../ui/Typography";
 import { ActivisionForm } from "./ActivisionForm";
+import { PerformancePanel } from "./PerformancePanel";
 import { RankBadge } from "./RankBadge";
 
 const PLATFORM_LABEL = { pc: "PC", playstation: "PlayStation", xbox: "Xbox" };
-const signed = (value) => (value > 0 ? `+${value}` : `${value}`);
+const signed = (value) => (value > 0 ? `+${value}` : value === 0 ? "±0" : `${value}`);
 const winRate = (wins, losses) => (wins + losses > 0 ? Math.round((wins / (wins + losses)) * 100) : null);
 
 /** Distinctions : de vrais objectifs calculés, plus les badges attribués par l'équipe. */
@@ -57,7 +58,7 @@ function badgesFor(profile, seasons) {
 export function ProfileView({ userId, editable = false, ownUser = null }) {
   const [data, setData] = useState(null);
   const [notFound, setNotFound] = useState(false);
-  const { seasons } = useSeasons();
+  const { seasons, active: activeSeason, label: seasonLabel } = useSeasons();
   const { userId: viewerId } = useSession();
   const [reporting, setReporting] = useState(false);
   const [shared, setShared] = useState(false);
@@ -82,7 +83,8 @@ export function ProfileView({ userId, editable = false, ownUser = null }) {
     const [{ data: player }, { data: profile }, { data: history }] = await Promise.all([
       supabase.from("users").select("id, username, avatar_url, created_at").eq("id", userId).maybeSingle(),
       supabase.from("cod_profiles").select("*").eq("user_id", userId).maybeSingle(),
-      supabase.rpc("cod_matches_for", { p_user: userId, p_limit: 20 }),
+      // 100 derniers matchs : la courbe de la saison ; l'historique affiche les 20 premiers.
+      supabase.rpc("cod_matches_for", { p_user: userId, p_limit: 100 }),
     ]);
     if (!player || !profile) {
       setNotFound(true);
@@ -203,15 +205,9 @@ export function ProfileView({ userId, editable = false, ownUser = null }) {
         </div>
       </section>
 
-      {/* --- Progression --------------------------------------------------- */}
-      <section aria-labelledby="titre-progression">
-        <Eyebrow>Progression</Eyebrow>
-        <h2 id="titre-progression" className="mt-3 font-display text-4xl font-black uppercase leading-none">
-          Courbe des points
-        </h2>
-        <TacticalCard cut={20} className="mt-6" innerClassName="p-5 sm:p-6">
-          <ProgressChart points={profile.points} history={history} userId={player.id} />
-        </TacticalCard>
+      {/* --- Performance : courbe, chiffres clés, forme ------------------- */}
+      <section aria-label="Performance">
+        <PerformancePanel history={history} userId={player.id} points={profile.points} seasonId={activeSeason?.id ?? null} seasonLabel={seasonLabel} />
       </section>
 
       <div className="grid grid-cols-1 gap-12 lg:grid-cols-[1fr_22rem]">
@@ -237,7 +233,7 @@ export function ProfileView({ userId, editable = false, ownUser = null }) {
               </EmptyState>
             ) : (
               <ul className="space-y-2">
-                {history.map((match) => (
+                {history.slice(0, 20).map((match) => (
                   <HistoryRow key={match.id} match={match} playerId={player.id} />
                 ))}
               </ul>
@@ -293,54 +289,6 @@ export function ProfileView({ userId, editable = false, ownUser = null }) {
   );
 }
 
-/** Courbe des points après chaque match terminé (SVG, sans dépendance). */
-function ProgressChart({ points, history, userId }) {
-  const series = useMemo(() => {
-    const done = history.filter((match) => match.status === "completed").reverse(); // du plus ancien au plus récent
-    const deltas = done.map((match) => match.points_changes?.[userId] ?? 0);
-    let value = points - deltas.reduce((sum, delta) => sum + delta, 0);
-    const values = [Math.max(0, value)];
-    deltas.forEach((delta) => {
-      value += delta;
-      values.push(Math.max(0, value));
-    });
-    return values;
-  }, [points, history, userId]);
-
-  if (series.length < 2) {
-    return <p className="py-10 text-center text-sm text-white/45">La courbe apparaîtra après le premier match terminé.</p>;
-  }
-
-  const width = 1000;
-  const height = 180;
-  const min = Math.min(...series);
-  const max = Math.max(...series);
-  const span = Math.max(1, max - min);
-  const line = series
-    .map((value, index) => `${((index / (series.length - 1)) * width).toFixed(1)},${(height - 14 - ((value - min) / span) * (height - 28)).toFixed(1)}`)
-    .join(" ");
-
-  return (
-    <div>
-      <svg viewBox={`0 0 ${width} ${height}`} className="h-44 w-full" preserveAspectRatio="none" role="img" aria-label={`Points : de ${series[0]} à ${series[series.length - 1]}`}>
-        <defs>
-          <linearGradient id="courbe-or" x1="0" y1="0" x2="0" y2="1">
-            <stop offset="0%" stopColor="#d4af37" stopOpacity="0.3" />
-            <stop offset="100%" stopColor="#d4af37" stopOpacity="0" />
-          </linearGradient>
-        </defs>
-        <polygon points={`0,${height} ${line} ${width},${height}`} fill="url(#courbe-or)" />
-        <polyline points={line} fill="none" stroke="#d4af37" strokeWidth="2.5" vectorEffect="non-scaling-stroke" />
-      </svg>
-      <div className="mt-2 flex justify-between font-tech text-[10px] uppercase tracking-[0.2em] text-white/40">
-        <span>Min {min} pts</span>
-        <span>{series.length - 1} matchs</span>
-        <span>Max {max} pts</span>
-      </div>
-    </div>
-  );
-}
-
 /** Une ligne de l'historique : résultat, carte, mode, variation de points, date. */
 function HistoryRow({ match, playerId }) {
   const team = match.team_a.includes(playerId) ? "A" : "B";
@@ -382,7 +330,7 @@ function HistoryRow({ match, playerId }) {
           </p>
         </div>
         {typeof delta === "number" ? (
-          <p className={cn("shrink-0 font-tech text-base font-bold tabular-nums", delta >= 0 ? "text-win" : "text-loss")}>
+          <p className={cn("shrink-0 font-tech text-base font-bold tabular-nums", delta > 0 ? "text-win" : delta < 0 ? "text-loss" : "text-white/40")}>
             {signed(delta)}
             <span className="sr-only"> points</span>
           </p>
