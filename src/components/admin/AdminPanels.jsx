@@ -1,13 +1,15 @@
 import Link from "next/link";
 import { useCallback, useEffect, useState } from "react";
-import { LuExternalLink, LuLoaderCircle, LuShieldCheck, LuLockOpen } from "react-icons/lu";
+import { LuExternalLink, LuGavel, LuLoaderCircle, LuLockOpen } from "react-icons/lu";
 import { api } from "../../lib/api";
 import { cn } from "../../lib/cn";
+import { ROLE_LABELS, isModerator, isPermanentBan } from "../../lib/roles";
 import { Avatar } from "../ui/Avatar";
 import { Button } from "../ui/Button";
 import { Chip, EmptyState, Loading, Notice, StatTile } from "../ui/Feedback";
 import { TacticalCard } from "../ui/TacticalCard";
 import { SearchInput } from "./Fields";
+import { SanctionDialog } from "./Sanctions";
 
 /** Petit utilitaire : appelle le backend, gère « en cours » et les erreurs. */
 function useAction() {
@@ -30,7 +32,9 @@ function useAction() {
 
 // --- Tableau de bord -------------------------------------------------------------
 
-export function OverviewPanel({ onNavigate }) {
+export function OverviewPanel({ onNavigate, role = "admin" }) {
+  const admin = role === "admin";
+  const moderator = isModerator(role);
   const [data, setData] = useState(null);
   const [error, setError] = useState(null);
 
@@ -49,21 +53,29 @@ export function OverviewPanel({ onNavigate }) {
         <button type="button" onClick={() => onNavigate("disputes")} className="text-left">
           <StatTile label="Contestations" value={data.disputes} accent={data.disputes > 0} hint="à arbitrer" />
         </button>
-        <button type="button" onClick={() => onNavigate("players")} className="text-left">
-          <StatTile label="Joueurs" value={data.players} />
-        </button>
-        <button type="button" onClick={() => onNavigate("events")} className="text-left">
-          <StatTile label="Événements à venir" value={data.upcomingEvents} />
-        </button>
-        <button type="button" onClick={() => onNavigate("players")} className="text-left">
-          <StatTile label="Exclus de la file" value={data.bannedPlayers} />
-        </button>
+        {admin ? (
+          <>
+            <button type="button" onClick={() => onNavigate("players")} className="text-left">
+              <StatTile label="Joueurs" value={data.players} />
+            </button>
+            <button type="button" onClick={() => onNavigate("events")} className="text-left">
+              <StatTile label="Événements à venir" value={data.upcomingEvents} />
+            </button>
+          </>
+        ) : null}
+        {moderator ? (
+          <button type="button" onClick={() => onNavigate("sanctions")} className="text-left">
+            <StatTile label="Exclus de la file" value={data.bannedPlayers} />
+          </button>
+        ) : null}
         <button type="button" onClick={() => onNavigate("arbitrages")} className="text-left">
           <StatTile label="Arbitrages" value={data.openArbitrations ?? 0} accent={(data.openArbitrations ?? 0) > 0} hint="en attente" />
         </button>
-        <button type="button" onClick={() => onNavigate("signalements")} className="text-left">
-          <StatTile label="Signalements" value={data.openReports ?? 0} accent={(data.openReports ?? 0) > 0} hint="en attente" />
-        </button>
+        {moderator ? (
+          <button type="button" onClick={() => onNavigate("signalements")} className="text-left">
+            <StatTile label="Signalements" value={data.openReports ?? 0} accent={(data.openReports ?? 0) > 0} hint="en attente" />
+          </button>
+        ) : null}
       </div>
       {data.season ? (
         <p className="text-sm text-white/55">
@@ -71,7 +83,7 @@ export function OverviewPanel({ onNavigate }) {
           {new Date(data.season.starts_at).toLocaleDateString("fr-FR", { day: "numeric", month: "long", year: "numeric" })}.
         </p>
       ) : null}
-      <DiscordRolesSync />
+      {admin ? <DiscordRolesSync /> : null}
     </div>
   );
 }
@@ -211,13 +223,13 @@ export function PlayersPanel({ currentUserId }) {
               <li key={player.id} className="border-l-2 border-white/10 bg-white/[0.03] px-4 py-4">
                 <div className="flex flex-wrap items-center gap-3">
                   <Avatar src={player.avatar_url} name={player.username} size={38} />
-                  <div className="min-w-0 flex-1">
+                  <div className="min-w-[11rem] flex-1">
                     <p className="flex flex-wrap items-center gap-2">
                       <Link href={`/cod/profile/${player.id}`} className="truncate font-display text-lg font-bold uppercase tracking-wide hover:text-gold">
                         {player.username}
                       </Link>
-                      {player.role === "admin" ? <Chip>Admin</Chip> : null}
-                      {banned ? <Chip tone="loss">Exclu</Chip> : null}
+                      {player.role && player.role !== "member" ? <Chip>{ROLE_LABELS[player.role] ?? player.role}</Chip> : null}
+                      {banned ? <Chip tone="loss">{isPermanentBan(player.profile.banned_until) ? "Exclu définitivement" : "Exclu"}</Chip> : null}
                     </p>
                     <p className="text-xs text-white/45">
                       {player.profile ? `${player.profile.points} pts · ${player.profile.wins} V / ${player.profile.losses} D` : "Pas de profil COD"}
@@ -232,20 +244,27 @@ export function PlayersPanel({ currentUserId }) {
                       </Button>
                     ) : null}
                     {player.id !== currentUserId ? (
-                      <Button
-                        size="sm"
-                        variant="ghost"
-                        disabled={pending !== null}
-                        onClick={() => {
-                          const role = player.role === "admin" ? "member" : "admin";
-                          if (window.confirm(role === "admin" ? `Donner les droits d'administration à ${player.username} ?` : `Retirer les droits d'administration de ${player.username} ?`)) {
-                            update(player, "role", () => api(`/admin/players/${player.id}/role`, { method: "POST", body: { role } }));
-                          }
-                        }}
-                      >
-                        <LuShieldCheck aria-hidden className="h-4 w-4" />
-                        {player.role === "admin" ? "Retirer admin" : "Passer admin"}
-                      </Button>
+                      <label className="flex items-center gap-2">
+                        <span className="font-tech text-[10px] uppercase tracking-[0.2em] text-white/45">Rôle</span>
+                        <select
+                          value={player.role ?? "member"}
+                          disabled={pending !== null}
+                          aria-label={`Rôle de ${player.username}`}
+                          onChange={(event) => {
+                            const role = event.target.value;
+                            if (window.confirm(`Passer ${player.username} en « ${ROLE_LABELS[role]} » ?`)) {
+                              update(player, "role", () => api(`/admin/players/${player.id}/role`, { method: "POST", body: { role } }));
+                            }
+                          }}
+                          className="border border-white/12 bg-ink px-2 py-1.5 font-display text-sm font-bold uppercase text-white focus:border-gold focus:outline-none disabled:opacity-50"
+                        >
+                          {Object.entries(ROLE_LABELS).map(([key, label]) => (
+                            <option key={key} value={key}>
+                              {label}
+                            </option>
+                          ))}
+                        </select>
+                      </label>
                     ) : null}
                   </div>
                 </div>
@@ -351,6 +370,7 @@ export function CasesPanel({ kind }) {
   const [status, setStatus] = useState("open");
   const [items, setItems] = useState(null);
   const [notes, setNotes] = useState({});
+  const [sanctioning, setSanctioning] = useState(null);
   const { pending, error, run } = useAction();
 
   const load = useCallback(
@@ -446,6 +466,12 @@ export function CasesPanel({ kind }) {
                     <Button size="sm" variant="ghost" onClick={() => close(item, "rejected")} disabled={pending !== null}>
                       Sans suite
                     </Button>
+                    {kind === "reports" && item.target_id ? (
+                      <Button size="sm" variant="danger" onClick={() => setSanctioning(item)} disabled={pending !== null}>
+                        <LuGavel aria-hidden className="h-4 w-4" />
+                        Sanctionner
+                      </Button>
+                    ) : null}
                   </div>
                 ) : (
                   <div className="mt-3">
@@ -459,6 +485,14 @@ export function CasesPanel({ kind }) {
           ))}
         </ul>
       )}
+      {sanctioning ? (
+        <SanctionDialog
+          player={{ id: sanctioning.target_id, username: sanctioning.target_name ?? "Joueur" }}
+          reportId={sanctioning.id}
+          onClose={() => setSanctioning(null)}
+          onDone={() => load().catch(() => {})}
+        />
+      ) : null}
     </div>
   );
 }

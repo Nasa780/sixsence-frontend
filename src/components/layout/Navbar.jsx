@@ -8,6 +8,7 @@ import useSession from "../../hooks/useSession";
 import useUser from "../../hooks/useUser";
 import { signInWithDiscord, signOut } from "../../lib/auth";
 import { cn } from "../../lib/cn";
+import { isReferee } from "../../lib/roles";
 import { Avatar } from "../ui/Avatar";
 import { Button } from "../ui/Button";
 import { Container } from "../ui/Container";
@@ -157,7 +158,7 @@ export function Navbar() {
                     <Link href="/cod/ranked" className="px-4 py-3 text-sm text-white/70 hover:text-gold">
                       File classée
                     </Link>
-                    {user.role === "admin" ? (
+                    {isReferee(user.role) ? (
                       <Link href="/admin" className="px-4 py-3 text-sm text-white/70 hover:text-gold">
                         Administration
                       </Link>
@@ -252,7 +253,7 @@ function UserMenu({ user }) {
               <LuCrosshair aria-hidden className="h-4 w-4" />
               File classée
             </Link>
-            {user.role === "admin" ? (
+            {isReferee(user.role) ? (
               <Link
                 role="menuitem"
                 href="/admin"

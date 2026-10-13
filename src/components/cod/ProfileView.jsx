@@ -7,6 +7,7 @@ import { api } from "../../lib/api";
 import { cn } from "../../lib/cn";
 import { REPORT_REASONS, monthlyMvpBadge } from "../../lib/moderation";
 import { levelFor, rankFor, rankGradient } from "../../lib/ranks";
+import { isPermanentBan } from "../../lib/roles";
 import { supabase } from "../../lib/supabase";
 import { Avatar } from "../ui/Avatar";
 import { Chip, EmptyState, Loading, Notice, StatTile } from "../ui/Feedback";
@@ -122,8 +123,17 @@ export function ProfileView({ userId, editable = false, ownUser = null }) {
     <div className="space-y-12">
       {editable && bannedUntil ? (
         <Notice tone="error">
-          Tu es exclu de la file classée jusqu&apos;à{" "}
-          {bannedUntil.toLocaleTimeString("fr-FR", { hour: "2-digit", minute: "2-digit" })} après plusieurs matchs non acceptés.{" "}
+          {isPermanentBan(profile.banned_until) ? (
+            <>Tu es exclu définitivement de la file classée par l&apos;équipe SixSence : le motif t&apos;a été envoyé sur Discord.</>
+          ) : (
+            <>
+              Tu es exclu de la file classée jusqu&apos;à{" "}
+              {bannedUntil.getTime() - Date.now() < 20 * 3600 * 1000
+                ? bannedUntil.toLocaleTimeString("fr-FR", { hour: "2-digit", minute: "2-digit" })
+                : bannedUntil.toLocaleString("fr-FR", { day: "numeric", month: "long", hour: "2-digit", minute: "2-digit" })}{" "}
+              après des matchs non acceptés ou une sanction de l&apos;équipe.
+            </>
+          )}{" "}
           <Link href="/reglement" className="underline underline-offset-4">
             Voir le règlement
           </Link>

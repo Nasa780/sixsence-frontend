@@ -2,6 +2,7 @@ import Head from "next/head";
 import { useRouter } from "next/router";
 import { CasesPanel, DisputesPanel, OverviewPanel, PlayersPanel, SeasonPanel } from "../components/admin/AdminPanels";
 import { CrudPanel } from "../components/admin/CrudPanel";
+import { SanctionsPanel } from "../components/admin/Sanctions";
 import { EVENTS, FOUNDERS, PARTNERS } from "../components/admin/contentConfigs";
 import { Container } from "../components/ui/Container";
 import { EmptyState, Loading } from "../components/ui/Feedback";
@@ -10,12 +11,17 @@ import { PageHeader } from "../components/ui/Typography";
 import useSession from "../hooks/useSession";
 import useUser from "../hooks/useUser";
 import { cn } from "../lib/cn";
+import { ROLE_LABELS, isModerator, isReferee } from "../lib/roles";
 
-const TABS = [
-  { key: "overview", label: "Tableau de bord" },
-  { key: "disputes", label: "Contestations" },
-  { key: "arbitrages", label: "Arbitrages" },
-  { key: "signalements", label: "Signalements" },
+/** Onglets et rôles qui y ont accès (sans « roles » : admin uniquement). */
+const REFEREES = ["admin", "staff", "arbitre"];
+const MODERATORS = ["admin", "staff"];
+const ALL_TABS = [
+  { key: "overview", label: "Tableau de bord", roles: REFEREES },
+  { key: "disputes", label: "Contestations", roles: REFEREES },
+  { key: "arbitrages", label: "Arbitrages", roles: REFEREES },
+  { key: "signalements", label: "Signalements", roles: MODERATORS },
+  { key: "sanctions", label: "Sanctions", roles: MODERATORS },
   { key: "players", label: "Joueurs" },
   { key: "events", label: "Événements GTA 6" },
   { key: "founders", label: "Fondateurs" },
@@ -24,13 +30,15 @@ const TABS = [
 ];
 
 /**
- * Administration : réservée au rôle admin (vérifié aussi par le backend sur chaque route).
+ * Administration de l'équipe : onglets selon le rôle (admin, staff, arbitre), droits
+ * vérifiés aussi par le backend sur chaque route.
  * L'onglet actif vit dans l'adresse (?onglet=joueurs) pour pouvoir partager un lien.
  */
 export default function AdminPage() {
   const router = useRouter();
   const { session, loading } = useSession();
   const user = useUser();
+  const TABS = ALL_TABS.filter((item) => (item.roles ?? ["admin"]).includes(user?.role));
   const tab = TABS.some((item) => item.key === router.query.onglet) ? router.query.onglet : "overview";
 
   const go = (key) => router.replace({ pathname: "/admin", query: key === "overview" ? {} : { onglet: key } }, undefined, { shallow: true, scroll: false });
@@ -38,7 +46,7 @@ export default function AdminPage() {
   let content;
   if (loading || (session && !user)) content = <Loading />;
   else if (!session) content = <LoginPrompt next="/admin" />;
-  else if (user.role !== "admin") content = <EmptyState title="Accès réservé">Cette page est réservée à l&apos;équipe SixSence.</EmptyState>;
+  else if (!isReferee(user.role)) content = <EmptyState title="Accès réservé">Cette page est réservée à l&apos;équipe SixSence.</EmptyState>;
   else
     content = (
       <div className="grid grid-cols-1 gap-8 lg:grid-cols-[14rem_1fr]">
@@ -59,10 +67,17 @@ export default function AdminPage() {
           ))}
         </nav>
         <section aria-label={TABS.find((item) => item.key === tab).label}>
-          {tab === "overview" ? <OverviewPanel onNavigate={go} /> : null}
+          {user.role !== "admin" ? (
+            <p className="mb-5 font-tech text-[10px] uppercase tracking-[0.24em] text-white/45">
+              Rôle : <span className="text-gold">{ROLE_LABELS[user.role]}</span>
+              {isModerator(user.role) ? " · contestations, arbitrages, signalements et sanctions" : " · contestations et arbitrages"}
+            </p>
+          ) : null}
+          {tab === "overview" ? <OverviewPanel onNavigate={go} role={user.role} /> : null}
           {tab === "disputes" ? <DisputesPanel /> : null}
           {tab === "arbitrages" ? <CasesPanel key="arbitrations" kind="arbitrations" /> : null}
           {tab === "signalements" ? <CasesPanel key="reports" kind="reports" /> : null}
+          {tab === "sanctions" ? <SanctionsPanel /> : null}
           {tab === "players" ? <PlayersPanel currentUserId={user.id} /> : null}
           {tab === "events" ? <CrudPanel key="events" config={EVENTS} /> : null}
           {tab === "founders" ? <CrudPanel key="founders" config={FOUNDERS} /> : null}
@@ -85,7 +100,7 @@ export default function AdminPage() {
             Admini<span className="text-gold-gradient">stration</span>
           </>
         }
-        description="Contestations, joueurs, contenus du site et saisons."
+        description="Contestations, signalements, sanctions, joueurs, contenus du site et saisons."
       />
       <Container className="py-12">{content}</Container>
     </>
