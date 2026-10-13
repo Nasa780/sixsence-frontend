@@ -8,6 +8,7 @@ import { api } from "../../lib/api";
 import { cn } from "../../lib/cn";
 import { ARBITRATION_REASONS, REPORT_REASONS } from "../../lib/moderation";
 import { groupLabel, rankFor, rankGradient } from "../../lib/ranks";
+import { isReferee } from "../../lib/roles";
 import { supabase } from "../../lib/supabase";
 import { Avatar } from "../ui/Avatar";
 import { Button } from "../ui/Button";
@@ -125,7 +126,7 @@ export function MatchView({ matchId }) {
   const reporterTeam = match.reported_by ? (match.team_a.includes(match.reported_by) ? "A" : "B") : null;
   const reporterName = match.reported_by ? playerById.get(match.reported_by)?.username ?? "Un joueur" : "Un joueur";
   const hostName = playerById.get(match.team_a[0])?.username ?? "L'hôte";
-  const isAdmin = user?.role === "admin";
+  const canResolve = isReferee(user?.role);
   const spinner = <LuLoaderCircle aria-hidden className="h-5 w-5 animate-spin" />;
   const readyUsers = match.ready_users || [];
   const canProve = Boolean(myTeam) && ["in_progress", "awaiting_confirmation", "disputed"].includes(match.status);
@@ -237,8 +238,8 @@ export function MatchView({ matchId }) {
 
         {match.status === "disputed" ? (
           <>
-            <Notice tone="error">Le résultat a été contesté. Un administrateur va trancher : aucun point ne bouge d&apos;ici là.</Notice>
-            {isAdmin ? (
+            <Notice tone="error">Le résultat a été contesté. Un arbitre SixSence va trancher : aucun point ne bouge d&apos;ici là.</Notice>
+            {canResolve ? (
               <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
                 <p className="font-display text-xl font-bold uppercase tracking-[0.12em] text-white/80 sm:mr-2">Arbitrage</p>
                 <Button onClick={() => act("resolve", { winner: "A" }, "resolve-A")} disabled={pending !== null}>

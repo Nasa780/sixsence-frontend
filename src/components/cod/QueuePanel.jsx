@@ -7,6 +7,7 @@ import useCountdown from "../../hooks/useCountdown";
 import useQueueSocket from "../../hooks/useQueueSocket";
 import { api } from "../../lib/api";
 import { cn } from "../../lib/cn";
+import { isPermanentBan } from "../../lib/roles";
 import {
   alertMatchFound,
   askNotificationPermission,
@@ -173,6 +174,7 @@ export function QueuePanel({ profileComplete, userId }) {
   const needed = selected?.needed ?? 2;
   const slots = Array.from({ length: needed }, (_, index) => index < size);
   const banned = banLeft > 0;
+  const bannedForever = banned && isPermanentBan(queue.bannedUntil);
   const hasActiveMatch = Boolean(queue.activeMatchId) && !queue.readyCheck && !queue.started;
   const groupSize = party ? party.members.length : 1;
   const tooBig = selected ? groupSize > selected.teamSize : false;
@@ -188,7 +190,7 @@ export function QueuePanel({ profileComplete, userId }) {
           <div className="flex flex-wrap items-center justify-between gap-3">
             <Chip tone={banned ? "loss" : queue.inQueue ? "gold" : "neutral"}>
               {queue.inQueue ? <span aria-hidden className="h-1.5 w-1.5 animate-pulse-gold bg-gold" /> : null}
-              {banned ? "Exclu temporairement" : queue.inQueue ? `Recherche ${queue.format ?? ""} en cours` : "Hors file"}
+              {banned ? (bannedForever ? "Exclu" : "Exclu temporairement") : queue.inQueue ? `Recherche ${queue.format ?? ""} en cours` : "Hors file"}
             </Chip>
             <ConnectionStatus status={queue.status} />
           </div>
@@ -339,9 +341,15 @@ export function QueuePanel({ profileComplete, userId }) {
               <Notice tone="error">
                 <span className="inline-flex items-center gap-2 font-semibold">
                   <LuBan aria-hidden className="h-4 w-4" />
-                  Exclu de la file encore <span className="font-tech tabular-nums">{formatDuration(banLeft)}</span>
+                  {bannedForever ? (
+                    "Exclu définitivement de la file classée"
+                  ) : (
+                    <>
+                      Exclu de la file encore <span className="font-tech tabular-nums">{formatDuration(banLeft)}</span>
+                    </>
+                  )}
                 </span>{" "}
-                après des matchs non acceptés.{" "}
+                {bannedForever ? "par l'équipe SixSence : le motif t'a été envoyé sur Discord." : "après des matchs non acceptés ou une sanction de l'équipe."}{" "}
                 <Link href="/reglement" className="underline underline-offset-4">
                   Voir le règlement
                 </Link>
