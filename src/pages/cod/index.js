@@ -11,6 +11,7 @@ import { Container } from "../../components/ui/Container";
 import { Notice, StatTile } from "../../components/ui/Feedback";
 import { TacticalCard } from "../../components/ui/TacticalCard";
 import { PageHeader, SectionHeading } from "../../components/ui/Typography";
+import useDisputedMatch from "../../hooks/useDisputedMatch";
 import useSeasons from "../../hooks/useSeasons";
 import useSession from "../../hooks/useSession";
 import useUser from "../../hooks/useUser";
@@ -28,6 +29,7 @@ const winRate = (wins, losses) => (wins + losses > 0 ? Math.round((wins / (wins 
 export default function CodHubPage() {
   const { session } = useSession();
   const user = useUser();
+  const disputed = useDisputedMatch(user?.id);
   const profile = user?.profile;
   const { label: seasonLabel } = useSeasons();
   const [extra, setExtra] = useState({ position: null, activeMatchId: null });
@@ -73,6 +75,14 @@ export default function CodHubPage() {
       />
 
       <Container className="space-y-16 py-12">
+        {session && disputed && !extra.activeMatchId ? (
+          <Notice>
+            Ton match {disputed.format ? `${disputed.format} ` : ""}sur {disputed.map} est contesté : un arbitre SixSence va trancher.{" "}
+            <Link href={`/cod/match/${disputed.id}`} className="font-semibold text-gold underline underline-offset-4 hover:text-gold-light">
+              Ouvrir le match
+            </Link>
+          </Notice>
+        ) : null}
         {session && extra.activeMatchId ? (
           <Notice>
             Tu as un match en cours.{" "}
