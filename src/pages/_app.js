@@ -4,7 +4,9 @@ import { useEffect } from "react";
 import { Inter, Orbitron, Saira_Condensed } from "next/font/google";
 import { Footer } from "../components/layout/Footer";
 import { Navbar } from "../components/layout/Navbar";
+import { ErrorBoundary } from "../components/ui/ErrorBoundary";
 import { SITE_URL } from "../lib/config";
+import { installErrorReporting } from "../lib/monitoring";
 import { registerServiceWorker } from "../lib/push";
 import "../styles/globals.css";
 
@@ -28,9 +30,10 @@ export default function App({ Component, pageProps }) {
   // Pages GTA 6 : palette coucher de soleil (voir globals.css).
   const univers = pathname.startsWith("/gta6") ? "gta" : undefined;
 
-  // Service worker : rend le site installable et reçoit les notifications push.
+  // Service worker (appli installable, notifications push) et signalement des erreurs à l'équipe.
   useEffect(() => {
     registerServiceWorker();
+    installErrorReporting();
   }, []);
 
   return (
@@ -85,7 +88,9 @@ export default function App({ Component, pageProps }) {
           </a>
           <Navbar />
           <main id="contenu" className="flex-1">
-            <Component {...pageProps} />
+            <ErrorBoundary resetKey={asPath}>
+              <Component {...pageProps} />
+            </ErrorBoundary>
           </main>
           <Footer />
         </>
