@@ -15,6 +15,7 @@ import { ReasonDialog } from "../ui/ReasonDialog";
 import { Eyebrow } from "../ui/Typography";
 import { ActivisionForm } from "./ActivisionForm";
 import { PerformancePanel } from "./PerformancePanel";
+import { RankBadge } from "./RankBadge";
 import { RankCard } from "./RankCard";
 
 const PLATFORM_LABEL = { pc: "PC", playstation: "PlayStation", xbox: "Xbox" };
@@ -145,6 +146,7 @@ export function ProfileView({ userId, editable = false, ownUser = null }) {
                 {profile.activision_id ?? "Identifiant Activision non renseigné"}
                 {profile.platform ? ` · ${PLATFORM_LABEL[profile.platform] ?? profile.platform}` : ""}
               </p>
+              <RankBadge points={profile.points} showProgress className="mt-4" />
               <div className="mt-4 flex flex-wrap items-center gap-x-5 gap-y-2">
                 <button
                   type="button"
@@ -178,6 +180,10 @@ export function ProfileView({ userId, editable = false, ownUser = null }) {
           </div>
 
           <div className="flex flex-wrap items-end gap-8 lg:text-right">
+            <div>
+              <p className="font-tech text-[11px] uppercase tracking-[0.3em] text-white/45">Points</p>
+              <p className="mt-1 font-display text-7xl font-black leading-[0.8] tabular-nums text-gold-gradient sm:text-8xl">{profile.points}</p>
+            </div>
             <div>
               <p className="font-tech text-[11px] uppercase tracking-[0.3em] text-white/45">Classement</p>
               <p className="mt-1 font-display text-4xl font-black leading-[0.9] tabular-nums sm:text-5xl">{position ? `#${position}` : "—"}</p>

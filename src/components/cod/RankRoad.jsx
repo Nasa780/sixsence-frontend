@@ -63,7 +63,6 @@ export function RankRoad({ points = 0, className = "" }) {
               {next.min - points} pts
             </span>{" "}
             avant {next.name}
-            {next.name !== "Légende" ? <span className="text-white/35"> · Légende à 3 000</span> : null}
           </>
         ) : (
           <span style={{ color: current.text }}>Rang maximal atteint : tu es une Légende.</span>
