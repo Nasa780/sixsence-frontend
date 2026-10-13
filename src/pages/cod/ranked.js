@@ -22,7 +22,7 @@ const RULES = [
   { title: "Équipes et carte au hasard", text: "Les joueurs sont répartis au hasard entre les deux équipes, et la carte est tirée au sort. Si tu joues en groupe, vous restez ensemble." },
   { title: "L'hôte crée la partie", text: "Le premier joueur de l'équipe 1 crée la partie privée en R&D Hardcore et invite les autres." },
   { title: "Le résultat se confirme à deux", text: "Un joueur déclare le vainqueur, l'équipe adverse confirme. Les points sont ensuite mis à jour." },
-  { title: "Accepte tes matchs", text: "Ne pas accepter un match donne un avertissement. Au 2e en 24 h : 15 min sans file ; au 3e : 1 h ; au-delà : 24 h." },
+  { title: "Engagement", text: "Ne pas accepter un match donne un avertissement. Au 2e en 24 h : 15 min sans file ; au 3e : 1 h ; au-delà : 24 h." },
 ];
 
 /** File d'attente classée : panneau temps réel, règles, rangs. Visible par tous, jouable une fois connecté. */
