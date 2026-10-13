@@ -25,7 +25,6 @@ import { Chip, Notice } from "../ui/Feedback";
 import { TacticalCard } from "../ui/TacticalCard";
 import { AppPanel } from "./AppPanel";
 import { PartyPanel } from "./PartyPanel";
-import { Portal } from "../ui/Portal";
 
 const FORMAT_KEY = "sixsence:format";
 
@@ -299,8 +298,8 @@ export function QueuePanel({ profileComplete, userId }) {
           </div>
 
           <p className="mt-4 text-xs text-white/45">
-            Barème : victoire <span className="text-white/70">+30</span> pour tous ; <span className="text-white/70">seul</span>, une défaite
-            coûte 25 % de points en moins.
+            <span className="text-white/70">Victoire : +30 points</span>, seul ou en groupe. <span className="text-white/70">Défaite en solo</span> : tu
+            perds 25 % de points en moins.
           </p>
 
           {/* Ce qui empêche de jouer, du plus bloquant au moins bloquant. */}
@@ -374,9 +373,8 @@ export function QueuePanel({ profileComplete, userId }) {
 
       <AppPanel />
 
-      <Portal>
-        <ReadyCheckOverlay check={queue.readyCheck} started={queue.started} userId={userId} />
-      </Portal>
+      {/* Rendue dans la page (pas dans un Portal) : la barre de menu du site reste visible au-dessus. */}
+      <ReadyCheckOverlay check={queue.readyCheck} started={queue.started} userId={userId} />
     </>
   );
 }
