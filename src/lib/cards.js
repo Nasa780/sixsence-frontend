@@ -45,7 +45,7 @@ const CARDS = {
   invaincu: { rarity: "epique", art: { type: "illustration", glyph: "×10", hue: "#c084fc" } },
   "mvp-du-mois": { rarity: "legendaire", art: { type: "illustration", glyph: "MVP", hue: "#facc15" } },
   "mvp-10": { rarity: "rare", art: { type: "glyph", glyph: "MVP", color: "#facc15" } },
-  fondateur: { rarity: "legendaire", art: { type: "illustration", glyph: "F", hue: "#e8c26a" } },
+  fondateur: { rarity: "legendaire", art: { type: "illustration", glyph: "F", hue: "#e8c26a", video: "/images/cartes/fondateur.mp4", poster: "/images/cartes/fondateur-poster.webp" } },
   beta: { rarity: "rare", art: { type: "glyph", glyph: "β", color: "#5cc8ff", video: "/images/cartes/beta.mp4", poster: "/images/cartes/beta-poster.webp" } },
   partenaire: { rarity: "rare", art: { type: "glyph", glyph: "P", color: "#ff9a5c" } },
   "staff-6": { rarity: "rare", art: { type: "glyph", glyph: "6", color: "#d4af37" } },
