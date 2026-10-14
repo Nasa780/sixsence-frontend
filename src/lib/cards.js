@@ -10,6 +10,7 @@
  *             ajouter { image: "/images/cartes/<clé>.webp", position, mobilePosition } quand
  *             l'illustration existe (bannière 2400 x 900, sujet vers 45 % de la largeur ;
  *             mobilePosition décale le sujet sur le bord droit du profil sur téléphone).
+ *   og        bannière JPEG 1200 x 260 pour l'aperçu partagé (images et vidéos ; sinon dessin simplifié)
  *   video     fond animé : { video: "/images/cartes/<clé>.mp4", poster } (boucle courte sans son,
  *             moins de 1 Mo, vidéo verticale nette au centre et floutée derrière ; image fixe
  *             pour ceux qui ont demandé moins d'animations).
@@ -31,9 +32,9 @@ const CARDS = {
   "rang-platine": { rarity: "rare", art: { type: "rank", rank: "Platine" } },
   "rang-diamant": { rarity: "rare", art: { type: "rank", rank: "Diamant" } },
   "rang-maitre": { rarity: "epique", art: { type: "rank", rank: "Maître" } },
-  "rang-grand-maitre": { rarity: "epique", art: { type: "rank", rank: "Grand Maître", image: "/images/cartes/grand-maitre.webp", position: "45% center", mobilePosition: "24% center" } },
+  "rang-grand-maitre": { rarity: "epique", art: { type: "rank", rank: "Grand Maître", image: "/images/cartes/grand-maitre.webp", og: "/images/cartes/og/grand-maitre.jpg", position: "45% center", mobilePosition: "24% center" } },
   "rang-champion": { rarity: "legendaire", art: { type: "rank", rank: "Champion" } },
-  "rang-legende": { rarity: "legendaire", art: { type: "rank", rank: "Légende", image: "/images/cartes/legende.webp", position: "45% center", mobilePosition: "36% center" } },
+  "rang-legende": { rarity: "legendaire", art: { type: "rank", rank: "Légende", image: "/images/cartes/legende.webp", og: "/images/cartes/og/legende.jpg", position: "45% center", mobilePosition: "36% center" } },
   "premier-sang": { rarity: "commune", art: { type: "glyph", glyph: "1", color: "#f87171" } },
   domination: { rarity: "commune", art: { type: "glyph", glyph: "10", color: "#d4af37" } },
   veteran: { rarity: "commune", art: { type: "glyph", glyph: "50", color: "#b8c2cf" } },
@@ -45,8 +46,8 @@ const CARDS = {
   invaincu: { rarity: "epique", art: { type: "illustration", glyph: "×10", hue: "#c084fc" } },
   "mvp-du-mois": { rarity: "legendaire", art: { type: "illustration", glyph: "MVP", hue: "#facc15" } },
   "mvp-10": { rarity: "rare", art: { type: "glyph", glyph: "MVP", color: "#facc15" } },
-  fondateur: { rarity: "legendaire", art: { type: "illustration", glyph: "F", hue: "#e8c26a", video: "/images/cartes/fondateur.mp4", poster: "/images/cartes/fondateur-poster.webp", aspect: "480/546" } },
-  beta: { rarity: "rare", art: { type: "glyph", glyph: "β", color: "#5cc8ff", video: "/images/cartes/beta.mp4", poster: "/images/cartes/beta-poster.webp" } },
+  fondateur: { rarity: "legendaire", art: { type: "illustration", glyph: "F", hue: "#e8c26a", video: "/images/cartes/fondateur.mp4", og: "/images/cartes/og/fondateur.jpg", poster: "/images/cartes/fondateur-poster.webp", aspect: "480/546" } },
+  beta: { rarity: "rare", art: { type: "glyph", glyph: "β", color: "#5cc8ff", video: "/images/cartes/beta.mp4", og: "/images/cartes/og/beta.jpg", poster: "/images/cartes/beta-poster.webp" } },
   partenaire: { rarity: "rare", art: { type: "glyph", glyph: "P", color: "#ff9a5c" } },
   "staff-6": { rarity: "rare", art: { type: "glyph", glyph: "6", color: "#d4af37" } },
   "premiere-viree": { rarity: "commune", art: { type: "glyph", glyph: "GTA", color: "#ff9a5c" } },
@@ -64,13 +65,4 @@ export function cardInfo(key) {
     return { key, rarity: "legendaire", art: { type: "illustration", glyph: "N°1", hue: "#f5b83d" } };
   }
   return { key: DEFAULT_CARD, ...CARDS[DEFAULT_CARD] };
-}
-
-/** Couleur dominante d'une carte (fond de l'aperçu partagé). */
-export function cardTint(key, ranks) {
-  const { art } = cardInfo(key);
-  if (art.type === "rank") return ranks.find((rank) => rank.name === art.rank)?.color ?? "#d4af37";
-  if (art.type === "glyph") return art.color;
-  if (art.type === "illustration") return art.hue;
-  return "#d4af37";
 }
