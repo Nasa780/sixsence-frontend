@@ -1,6 +1,7 @@
 import Link from "next/link";
+import { useRouter } from "next/router";
 import { useCallback, useEffect, useState } from "react";
-import { LuCheck, LuFlag, LuLock, LuMedal, LuShare2 } from "react-icons/lu";
+import { LuCheck, LuFlag, LuImage, LuLock, LuMedal, LuShare2 } from "react-icons/lu";
 import useSeasons, { seasonBadge } from "../../hooks/useSeasons";
 import useSession from "../../hooks/useSession";
 import { api } from "../../lib/api";
@@ -15,6 +16,8 @@ import { TacticalCard } from "../ui/TacticalCard";
 import { ReasonDialog } from "../ui/ReasonDialog";
 import { Eyebrow } from "../ui/Typography";
 import { ActivisionForm } from "./ActivisionForm";
+import { CardBackdrop } from "./CallingCard";
+import { CardPicker } from "./CardPicker";
 import { PerformancePanel } from "./PerformancePanel";
 import { RankBadge } from "./RankBadge";
 import { RankCard } from "./RankCard";
@@ -65,6 +68,24 @@ export function ProfileView({ userId, editable = false, ownUser = null }) {
   const { userId: viewerId } = useSession();
   const [reporting, setReporting] = useState(false);
   const [shared, setShared] = useState(false);
+  const router = useRouter();
+  // Cartes de visite (son propre profil) : fenêtre de choix, point doré s'il y a des nouveautés.
+  const [picking, setPicking] = useState(false);
+  const [newCards, setNewCards] = useState(0);
+
+  useEffect(() => {
+    if (!editable) return;
+    api("/cod/cards")
+      .then((result) => setNewCards(result.newCount))
+      .catch(() => {});
+    // Lien d'une notification « Nouvelle carte » : la fenêtre s'ouvre directement.
+    if (router.query.cartes) setPicking(true);
+  }, [editable, router.query.cartes]);
+
+  const closePicker = useCallback(() => {
+    setPicking(false);
+    setNewCards(0);
+  }, []);
 
   /** Copie le lien public du profil : collé sur Discord, il affiche la carte du joueur. */
   async function shareProfile() {
@@ -146,6 +167,7 @@ export function ProfileView({ userId, editable = false, ownUser = null }) {
 
       {/* --- Identité et rang --------------------------------------------- */}
       <TacticalCard highlight cut={28} innerClassName="holo overflow-hidden p-6 sm:p-10">
+        <CardBackdrop cardKey={profile.calling_card} />
         <div aria-hidden className="absolute -right-10 top-0 h-full w-40 -skew-x-[24deg] bg-linear-to-b from-gold/14 to-transparent" />
         <div className="relative flex flex-col gap-8 lg:flex-row lg:items-center lg:justify-between">
           <div className="flex items-center gap-5">
@@ -166,6 +188,20 @@ export function ProfileView({ userId, editable = false, ownUser = null }) {
                   {shared ? <LuCheck aria-hidden className="h-3.5 w-3.5" /> : <LuShare2 aria-hidden className="h-3.5 w-3.5" />}
                   {shared ? "Lien copié : colle-le sur Discord" : editable ? "Partager mon profil" : "Partager ce profil"}
                 </button>
+                {editable ? (
+                  <button
+                    type="button"
+                    onClick={() => setPicking(true)}
+                    className="relative inline-flex items-center gap-1.5 text-xs text-gold/80 transition-colors hover:text-gold"
+                  >
+                    {newCards > 0 ? (
+                      <span aria-hidden className="absolute -left-2.5 top-0.5 h-1.5 w-1.5 rounded-full bg-gold shadow-[0_0_6px_var(--color-gold)]" />
+                    ) : null}
+                    <LuImage aria-hidden className="h-3.5 w-3.5" />
+                    Changer de carte
+                    {newCards > 0 ? <span className="sr-only"> ({newCards} nouvelle{newCards > 1 ? "s" : ""})</span> : null}
+                  </button>
+                ) : null}
                 {viewerId && viewerId !== userId ? (
                   <button
                     type="button"
@@ -177,6 +213,15 @@ export function ProfileView({ userId, editable = false, ownUser = null }) {
                   </button>
                 ) : null}
               </div>
+              {editable ? (
+                <CardPicker
+                  open={picking}
+                  onClose={closePicker}
+                  player={player}
+                  points={profile.points}
+                  onEquipped={(key) => setData((prev) => ({ ...prev, profile: { ...prev.profile, calling_card: key } }))}
+                />
+              ) : null}
               <ReasonDialog
                 open={reporting}
                 onClose={() => setReporting(false)}

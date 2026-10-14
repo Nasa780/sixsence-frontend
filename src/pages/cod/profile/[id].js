@@ -23,7 +23,7 @@ export async function getServerSideProps({ params, res }) {
   try {
     const [users, profiles] = await Promise.all([
       supabaseRest(`users?id=eq.${id}&select=username`),
-      supabaseRest(`cod_profiles?user_id=eq.${id}&select=points,wins,losses`),
+      supabaseRest(`cod_profiles?user_id=eq.${id}&select=points,wins,losses,calling_card`),
     ]);
     const user = users[0];
     const profile = profiles[0];
@@ -31,7 +31,7 @@ export async function getServerSideProps({ params, res }) {
     res.setHeader("Cache-Control", "public, s-maxage=300, stale-while-revalidate=3600");
     return {
       props: {
-        meta: { username: user.username, points: profile.points, wins: profile.wins, losses: profile.losses },
+        meta: { username: user.username, points: profile.points, wins: profile.wins, losses: profile.losses, card: profile.calling_card ?? "sixsence" },
       },
     };
   } catch {
@@ -54,8 +54,8 @@ export default function PlayerProfilePage({ meta }) {
       ? `Classé MW4 sur SixSence : ${meta.wins} victoire${meta.wins > 1 ? "s" : ""}, ${meta.losses} défaite${meta.losses > 1 ? "s" : ""} (${Math.round((meta.wins / played) * 100)} % de victoires).`
       : "Joueur du classé MW4 sur SixSence. Viens l'affronter !"
     : "Profil d'un joueur du classé MW4 sur SixSence.";
-  // Le paramètre v change avec les résultats : Discord recharge la carte à chaque évolution.
-  const image = meta ? `${SITE_URL}/api/og/player?id=${id}&v=r4-${meta.points}-${meta.wins}-${meta.losses}` : null;
+  // Le paramètre v change avec les résultats et la carte de visite : Discord recharge l'image à chaque évolution.
+  const image = meta ? `${SITE_URL}/api/og/player?id=${id}&v=r5-${meta.points}-${meta.wins}-${meta.losses}-${meta.card}` : null;
 
   return (
     <>
