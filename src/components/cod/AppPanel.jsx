@@ -6,7 +6,7 @@ import { InstallButton } from "../ui/InstallButton";
 import { TacticalCard } from "../ui/TacticalCard";
 
 /**
- * « Ne rate plus aucun match » (variant="gta" : « Ne rate aucun événement ») : installer
+ * « Ne rate plus aucun match » (variant="gta" : « Ne rate aucun événement ») : installer
  * l'appli et activer les notifications (match trouvé, événements GTA), même site fermé.
  * L'installation passe par InstallButton (un clic, ou marche à suivre selon le navigateur).
  */
@@ -79,8 +79,8 @@ export function AppPanel({ variant = "cod", className = "mt-6" }) {
       {support === "denied" && !enabled ? (
         <p className="mt-3 text-sm text-loss">
           {isMobile
-            ? "Pour débloquer les notifications sur ton téléphone : touche l'icône à gauche de l'adresse, puis Autorisations > Notifications > Autoriser. Recharge la page, puis touche « Activer les notifications »."
-            : "Pour débloquer les notifications sur ton PC : clique sur l'icône à gauche de l'adresse, puis Notifications > Autoriser. Recharge la page, puis clique sur « Activer les notifications »."}
+            ? "Pour débloquer les notifications sur ton téléphone : touche l'icône à gauche de l'adresse, puis Autorisations > Notifications > Autoriser. Recharge la page, puis touche « Activer les notifications »."
+            : "Pour débloquer les notifications sur ton PC : clique sur l'icône à gauche de l'adresse, puis Notifications > Autoriser. Recharge la page, puis clique sur « Activer les notifications »."}
         </p>
       ) : null}
       {support === "unsupported" ? <p className="mt-3 text-sm text-white/45">Ce navigateur ne gère pas les notifications.</p> : null}

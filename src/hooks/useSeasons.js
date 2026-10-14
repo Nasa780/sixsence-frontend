@@ -27,7 +27,7 @@ function fetchSeasons() {
  * Saisons du classé COD (lecture publique).
  *   seasons : toutes les saisons, la plus récente d'abord (null pendant le chargement)
  *   active  : la saison en cours, ou null
- *   label   : nom de la saison en cours, « Saison 1 » par défaut
+ *   label   : nom de la saison en cours, « Saison 1 » par défaut
  */
 export default function useSeasons() {
   const [seasons, setSeasons] = useState(cache);
@@ -44,7 +44,7 @@ export default function useSeasons() {
   return { seasons, active, label: active?.name ?? "Saison 1" };
 }
 
-/** Libellé d'un badge de fin de saison (« s2-top10 » -> Top 10 de la saison 2), ou null. */
+/** Libellé d'un badge de fin de saison (« s2-top10 » -> Top 10 de la saison 2), ou null. */
 export function seasonBadge(key, seasons) {
   const match = /^s(\d+)-(top10|champion)$/.exec(key);
   if (!match) return null;

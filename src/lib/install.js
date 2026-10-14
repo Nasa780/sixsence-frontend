@@ -27,25 +27,25 @@ export function detectBrowser() {
 export function browserGuide(browser) {
   switch (browser) {
     case "ios-safari":
-      return ["Touche « ••• » en bas à droite (ou le bouton Partager, un carré avec une flèche).", "Touche « Partager », puis « Sur l'écran d'accueil ».", "Touche « Ajouter » : l'icône SixSence apparaît sur ton écran d'accueil."];
+      return ["Touche « ••• » en bas à droite (ou le bouton Partager, un carré avec une flèche).", "Touche « Partager », puis « Sur l'écran d'accueil ».", "Touche « Ajouter » : l'icône SixSence apparaît sur ton écran d'accueil."];
     case "ios-autre":
-      return ["Touche le bouton Partager à côté de la barre d'adresse.", "Choisis « Ajouter à l'écran d'accueil ».", "Si l'option n'apparaît pas, ouvre sixsence.fr dans Safari et recommence."];
+      return ["Touche le bouton Partager à côté de la barre d'adresse.", "Choisis « Ajouter à l'écran d'accueil ».", "Si l'option n'apparaît pas, ouvre sixsence.fr dans Safari et recommence."];
     case "samsung":
-      return ["Touche le menu ≡ en bas à droite.", "Choisis « Ajouter la page à », puis « Écran d'accueil »."];
+      return ["Touche le menu ≡ en bas à droite.", "Choisis « Ajouter la page à », puis « Écran d'accueil »."];
     case "firefox-android":
-      return ["Touche le menu ⋮.", "Choisis « Installer » ou « Ajouter à l'écran d'accueil »."];
+      return ["Touche le menu ⋮.", "Choisis « Installer » ou « Ajouter à l'écran d'accueil »."];
     case "chrome-android":
-      return ["Touche le menu ⋮ en haut à droite.", "Choisis « Ajouter à l'écran d'accueil », puis « Installer »."];
+      return ["Touche le menu ⋮ en haut à droite.", "Choisis « Ajouter à l'écran d'accueil », puis « Installer »."];
     case "chrome":
-      return ["Clique sur l'icône d'installation à droite de la barre d'adresse (un écran avec une flèche).", "Ou : menu ⋮ → « Caster, enregistrer et partager » → « Installer la page en tant qu'appli »."];
+      return ["Clique sur l'icône d'installation à droite de la barre d'adresse (un écran avec une flèche).", "Ou : menu ⋮ → « Caster, enregistrer et partager » → « Installer la page en tant qu'appli »."];
     case "edge":
-      return ["Menu ⋯ en haut à droite → « Applications ».", "Choisis « Installer ce site en tant qu'application »."];
+      return ["Menu ⋯ en haut à droite → « Applications ».", "Choisis « Installer ce site en tant qu'application »."];
     case "safari-mac":
-      return ["Menu Fichier (ou bouton Partager) → « Ajouter au Dock »."];
+      return ["Menu Fichier (ou bouton Partager) → « Ajouter au Dock »."];
     case "firefox":
       return ["Firefox sur ordinateur n'installe pas les applis web : ouvre sixsence.fr dans Chrome ou Edge pour l'installer."];
     default:
-      return ["Dans le menu de ton navigateur, cherche « Installer » ou « Ajouter à l'écran d'accueil »."];
+      return ["Dans le menu de ton navigateur, cherche « Installer » ou « Ajouter à l'écran d'accueil »."];
   }
 }
 

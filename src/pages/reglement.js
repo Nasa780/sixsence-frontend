@@ -9,7 +9,7 @@ const SECTIONS = [
     title: "Compte et identité",
     content: (
       <ul>
-        <li>Un seul compte Discord par joueur. Les comptes multiples (« smurfs ») sont interdits.</li>
+        <li>Un seul compte Discord par joueur. Les comptes multiples (« smurfs ») sont interdits.</li>
         <li>
           L&apos;identifiant Activision renseigné doit être le tien et celui avec lequel tu joues le match. Un identifiant ne peut être
           lié qu&apos;à un seul compte SixSence.
@@ -20,7 +20,7 @@ const SECTIONS = [
   },
   {
     id: "file",
-    title: "File d'attente et « Prêt ? »",
+    title: "File d'attente et « Prêt ? »",
     content: (
       <>
         <p>
@@ -31,7 +31,7 @@ const SECTIONS = [
         </p>
         <p>
           Quand assez de joueurs sont en file, les premiers arrivés sont retenus, puis les équipes et la carte sont tirées au sort (un groupe reste toujours ensemble). Chaque joueur dispose alors de{" "}
-          <strong>1 minute</strong> pour cliquer sur « Accepter le match ». Un son et une notification te préviennent.
+          <strong>1 minute</strong> pour cliquer sur « Accepter le match ». Un son et une notification te préviennent.
         </p>
         <p>
           Sur ordinateur, garde la page ouverte pendant ta recherche : si tu la fermes, tu quittes la file au bout de 30 secondes. Sur
@@ -39,8 +39,8 @@ const SECTIONS = [
           notifications pour être prévenu du match trouvé ; si ta recherche s&apos;arrête, une notification te le dit aussi.
         </p>
         <p>
-          Une recherche dure <strong>30 minutes</strong> au plus. 5 minutes avant la fin, le message « Toujours là ? » s&apos;affiche
-          (et arrive en notification) : clique sur « Rester en file » pour repartir pour 30 minutes <strong>sans perdre ta place</strong>.
+          Une recherche dure <strong>30 minutes</strong> au plus. 5 minutes avant la fin, le message « Toujours là ? » s&apos;affiche
+          (et arrive en notification) : clique sur « Rester en file » pour repartir pour 30 minutes <strong>sans perdre ta place</strong>.
           Sans réponse, la recherche s&apos;arrête et tu peux la relancer quand tu veux. Dans un groupe, n&apos;importe quel membre peut
           répondre pour tout le groupe.
         </p>
@@ -124,7 +124,7 @@ const SECTIONS = [
           Le plus élu est MVP du match. À égalité, les votes reçus des autres joueurs départagent ; si l&apos;égalité persiste, les joueurs
           sont co-MVP.
         </li>
-        <li>Le joueur le plus élu du mois reçoit le badge « MVP du mois » sur son profil.</li>
+        <li>Le joueur le plus élu du mois reçoit le badge « MVP du mois » sur son profil.</li>
       </ul>
     ),
   },
@@ -144,7 +144,7 @@ const SECTIONS = [
           <strong>Placement</strong> : pendant tes {PLACEMENT_MATCHES} premiers matchs de la saison, chaque victoire compte double (
           <strong>+{WIN_POINTS * 2}</strong>), les défaites restent normales.
         </p>
-        <p>Les points en jeu (victoire et défaite) s&apos;affichent avant chaque match, dans la fenêtre « Match trouvé » et le salon.</p>
+        <p>Les points en jeu (victoire et défaite) s&apos;affichent avant chaque match, dans la fenêtre « Match trouvé » et le salon.</p>
         <p>Les rangs :</p>
         <ul>
           {[...RANKS].reverse().map((rank) => (

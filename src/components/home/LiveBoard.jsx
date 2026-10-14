@@ -10,7 +10,7 @@ import { StatTile } from "../ui/Feedback";
 import { TacticalCard } from "../ui/TacticalCard";
 import { SectionHeading } from "../ui/Typography";
 
-/** Section « En direct » : vrais compteurs de la plateforme et top 5 du classement. */
+/** Section « En direct » : vrais compteurs de la plateforme et top 5 du classement. */
 export function LiveBoard() {
   const stats = useSiteStats();
   const top = useTopPlayers(5);

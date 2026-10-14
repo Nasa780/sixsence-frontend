@@ -5,7 +5,7 @@ import { createPortal } from "react-dom";
  * Affiche son contenu directement dans <body>, hors de la page.
  *
  * Indispensable pour les fenêtres en plein écran (position: fixed) : placées dans un
- * élément découpé (clip-path des cartes « tactiques »), transformé ou flouté, elles
+ * élément découpé (clip-path des cartes « tactiques »), transformé ou flouté, elles
  * seraient sinon enfermées et rognées par cet élément.
  */
 export function Portal({ children }) {

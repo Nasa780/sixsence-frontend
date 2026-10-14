@@ -10,7 +10,7 @@ export function getEventState(event, now = Date.now()) {
   return { cancelled, started, full, remaining, open: !cancelled && !started && !full };
 }
 
-/** Jour et mois courts pour la pastille calendrier (« 12 », « JUIN »). */
+/** Jour et mois courts pour la pastille calendrier (« 12 », « JUIN »). */
 export function dayMonth(value) {
   const date = new Date(value);
   return {

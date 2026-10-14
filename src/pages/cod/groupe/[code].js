@@ -13,7 +13,7 @@ import { api } from "../../../lib/api";
 
 /**
  * Invitation à un groupe (lien partagé par le chef) : aperçu du groupe, puis
- * « Rejoindre » ; une fois dans le groupe, direction la file classée.
+ * « Rejoindre » ; une fois dans le groupe, direction la file classée.
  */
 export default function PartyInvitePage() {
   const router = useRouter();

@@ -1,7 +1,7 @@
 import { SUPABASE_PUBLISHABLE_KEY, SUPABASE_URL } from "./config";
 
 /**
- * Outils des images d'aperçu générées à la volée (routes /api/og*, exécution « edge »).
+ * Outils des images d'aperçu générées à la volée (routes /api/og*, exécution « edge »).
  * Aucune dépendance au navigateur : fetch uniquement.
  */
 
@@ -33,7 +33,7 @@ export function loadFonts() {
 
 /**
  * Polices de secours pour les caractères absents des polices du site (pseudos en
- * écritures étrangères, lettres « stylées » 𝓪𝓫𝓬, symboles…). Seuls les caractères du
+ * écritures étrangères, lettres « stylées » 𝓪𝓫𝓬, symboles…). Seuls les caractères du
  * texte sont téléchargés (paramètre text de Google Fonts), donc chaque police est minuscule.
  */
 const FALLBACK_FAMILIES = [

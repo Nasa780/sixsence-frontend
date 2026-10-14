@@ -57,7 +57,7 @@ function keyBytes(base64) {
 
 export async function enablePush() {
   const support = pushSupport();
-  if (support === "ios-needs-install") throw new Error("Sur iPhone, ajoute d'abord SixSence à l'écran d'accueil (Partager → « Sur l'écran d'accueil »), puis ouvre l'appli.");
+  if (support === "ios-needs-install") throw new Error("Sur iPhone, ajoute d'abord SixSence à l'écran d'accueil (Partager → « Sur l'écran d'accueil »), puis ouvre l'appli.");
   if (support === "denied") throw new Error("Les notifications sont bloquées pour ce site : autorise-les dans les réglages du navigateur.");
   if (support !== "ok") throw new Error("Ce navigateur ne gère pas les notifications.");
 

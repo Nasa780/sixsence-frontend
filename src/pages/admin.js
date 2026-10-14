@@ -13,7 +13,7 @@ import useUser from "../hooks/useUser";
 import { cn } from "../lib/cn";
 import { ROLE_LABELS, isModerator, isReferee } from "../lib/roles";
 
-/** Onglets et rôles qui y ont accès (sans « roles » : admin uniquement). */
+/** Onglets et rôles qui y ont accès (sans « roles » : admin uniquement). */
 const REFEREES = ["admin", "staff", "arbitre"];
 const MODERATORS = ["admin", "staff"];
 const ALL_TABS = [

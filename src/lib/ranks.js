@@ -1,5 +1,5 @@
 /**
- * Rangs du classé, identiques à la page Ranked (section « Les rangs ») et au
+ * Rangs du classé, identiques à la page Ranked (section « Les rangs ») et au
  * barème du backend (fonction SQL cod_loss_penalty).
  *
  * Chaque rang a sa teinte métallique, utilisée par l'emblème, les barres, le nom et
@@ -57,7 +57,7 @@ export const PLACEMENT_MATCHES = 10;
 /** Réduction de la défaite pour un joueur seul (sans groupe), en %. */
 export const SOLO_LOSS_REDUCTION = 25;
 
-/** « Solo », « Duo », « Trio », « Groupe de 4 », « Équipe de 5 ». */
+/** « Solo », « Duo », « Trio », « Groupe de 4 », « Équipe de 5 ». */
 export function groupLabel(size = 1) {
   return ["Solo", "Solo", "Duo", "Trio", "Groupe de 4", "Équipe de 5"][size] ?? `Groupe de ${size}`;
 }

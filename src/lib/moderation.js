@@ -22,7 +22,7 @@ export const REPORT_REASONS = {
 
 const MONTHS = ["janvier", "février", "mars", "avril", "mai", "juin", "juillet", "août", "septembre", "octobre", "novembre", "décembre"];
 
-/** Badge « MVP du mois » (« mvp-2026-09 »), ou null pour un autre badge. */
+/** Badge « MVP du mois » (« mvp-2026-09 »), ou null pour un autre badge. */
 export function monthlyMvpBadge(key) {
   const match = /^mvp-(\d{4})-(\d{2})$/.exec(key);
   if (!match) return null;

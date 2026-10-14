@@ -11,7 +11,7 @@ import { TacticalCard } from "../ui/TacticalCard";
 import { SearchInput } from "./Fields";
 import { SanctionDialog } from "./Sanctions";
 
-/** Petit utilitaire : appelle le backend, gère « en cours » et les erreurs. */
+/** Petit utilitaire : appelle le backend, gère « en cours » et les erreurs. */
 function useAction() {
   const [pending, setPending] = useState(null);
   const [error, setError] = useState(null);
@@ -104,7 +104,7 @@ function DiscordRolesSync() {
       <div>
         <p className="font-display text-xl font-black uppercase leading-none">Rôles Discord</p>
         <p className="mt-1 text-sm text-white/55">
-          Les rôles de rang et « COD » se mettent à jour après chaque match. Ce bouton les recalcule pour tous les joueurs classés.
+          Les rôles de rang et « COD » se mettent à jour après chaque match. Ce bouton les recalcule pour tous les joueurs classés.
         </p>
         {result !== null ? <p className="mt-1 text-sm text-win">{result} joueur(s) mis à jour sur Discord.</p> : null}
         {error ? <p className="mt-1 text-sm text-loss">{error}</p> : null}
@@ -252,7 +252,7 @@ export function PlayersPanel({ currentUserId }) {
                           aria-label={`Rôle de ${player.username}`}
                           onChange={(event) => {
                             const role = event.target.value;
-                            if (window.confirm(`Passer ${player.username} en « ${ROLE_LABELS[role]} » ?`)) {
+                            if (window.confirm(`Passer ${player.username} en « ${ROLE_LABELS[role]} » ?`)) {
                               update(player, "role", () => api(`/admin/players/${player.id}/role`, { method: "POST", body: { role } }));
                             }
                           }}
@@ -319,7 +319,7 @@ export function SeasonPanel() {
 
   async function close(event) {
     event.preventDefault();
-    if (!window.confirm(`Clôturer « ${overview?.season?.name} » ? Les points, victoires et défaites de tous les joueurs seront remis à zéro (l'XP est conservée). Action irréversible.`)) return;
+    if (!window.confirm(`Clôturer « ${overview?.season?.name} » ? Les points, victoires et défaites de tous les joueurs seront remis à zéro (l'XP est conservée). Action irréversible.`)) return;
     const data = await run("close", () => api("/admin/season/close", { method: "POST", body: { nextName } }));
     if (data) setResult(data.archived);
   }
@@ -433,7 +433,7 @@ export function CasesPanel({ kind }) {
                       )}{" "}
                       · {new Date(item.created_at).toLocaleString("fr-FR", { day: "numeric", month: "short", hour: "2-digit", minute: "2-digit" })}
                     </p>
-                    {item.details ? <p className="mt-2 whitespace-pre-wrap text-sm text-white/80">« {item.details} »</p> : null}
+                    {item.details ? <p className="mt-2 whitespace-pre-wrap text-sm text-white/80">« {item.details} »</p> : null}
                     {item.match_id ? (
                       <Link href={`/cod/match/${item.match_id}`} className="mt-2 inline-flex items-center gap-1.5 text-sm text-gold underline underline-offset-4">
                         Voir le match, le chat et les preuves

@@ -29,7 +29,7 @@ const INPUT = "w-full border border-white/12 bg-ink px-3 py-2 text-sm text-white
 const dateTime = (value) => new Date(value).toLocaleString("fr-FR", { day: "numeric", month: "short", year: "numeric", hour: "2-digit", minute: "2-digit" });
 
 /**
- * Fenêtre « Sanctionner » : type, durée ou points, motif. Le joueur est prévenu en
+ * Fenêtre « Sanctionner » : type, durée ou points, motif. Le joueur est prévenu en
  * message privé Discord ; si reportId est fourni, le signalement est clos.
  */
 export function SanctionDialog({ player, reportId = null, onClose, onDone }) {
@@ -169,7 +169,7 @@ export function SanctionDialog({ player, reportId = null, onClose, onDone }) {
           </label>
 
           {error ? <p className="mt-3 text-sm text-loss">{error}</p> : null}
-          {reportId ? <p className="mt-3 text-xs text-white/45">Le signalement sera marqué « Traité ».</p> : null}
+          {reportId ? <p className="mt-3 text-xs text-white/45">Le signalement sera marqué « Traité ».</p> : null}
 
           <div className="mt-5 flex flex-wrap gap-2">
             <Button type="submit" variant="danger" disabled={pending}>
@@ -204,7 +204,7 @@ export function SanctionHistory({ player, refreshKey = 0, onChange }) {
   }, [load, refreshKey]);
 
   async function lift(item) {
-    const reason = window.prompt(`Lever « ${item.label} » ? Motif (facultatif, envoyé au joueur) :`, "");
+    const reason = window.prompt(`Lever « ${item.label} » ? Motif (facultatif, envoyé au joueur) :`, "");
     if (reason === null) return;
     setPending(item.id);
     setError(null);
@@ -259,7 +259,7 @@ export function SanctionHistory({ player, refreshKey = 0, onChange }) {
   );
 }
 
-/** Onglet « Sanctions » : rechercher un joueur, voir son historique, le sanctionner. */
+/** Onglet « Sanctions » : rechercher un joueur, voir son historique, le sanctionner. */
 export function SanctionsPanel() {
   const [query, setQuery] = useState("");
   const [players, setPlayers] = useState(null);

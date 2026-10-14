@@ -10,10 +10,10 @@ import { WS_URL } from "../lib/config";
  *   status        "off" | "connecting" | "online" | "reconnecting"
  *   queues        [{ format, label, teamSize, size, needed }] une entrée par file (2v2, 3v3, 4v4, 5v5)
  *   inQueue, format, groupSize, joinedAt   ma place en file (format de la file, taille de mon groupe)
- *   expiresAt, stillThere   arrêt de la recherche sans confirmation ; « Toujours là ? » en attente
+ *   expiresAt, stillThere   arrêt de la recherche sans confirmation ; « Toujours là ? » en attente
  *   activeMatchId, bannedUntil
  *   party         mon groupe { id, leaderId, format, maxSize, inviteCode, members[] } ou null
- *   readyCheck    { matchId, format, map, mode, deadline, accepted, total, readyUsers } pendant la vérification « Prêt ? »
+ *   readyCheck    { matchId, format, map, mode, deadline, accepted, total, readyUsers } pendant la vérification « Prêt ? »
  *   started       identifiant du match quand tous les joueurs ont accepté
  *   aborted       { reason: "requeued" | "missed" | "released", bannedUntil } quand la vérification échoue
  *   notice        dernier message d'information (recherche annulée par un coéquipier…)

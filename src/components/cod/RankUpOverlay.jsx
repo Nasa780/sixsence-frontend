@@ -7,7 +7,7 @@ import { RankEmblem } from "./RankEmblem";
 const SEEN_KEY = (matchId) => `sixsence:promotion:${matchId}`;
 
 /**
- * Écran « Promotion » : affiché une seule fois au joueur dont le match terminé l'a
+ * Écran « Promotion » : affiché une seule fois au joueur dont le match terminé l'a
  * fait monter de rang (points avant = points actuels - variation du match).
  * Seulement juste après le match (2 h) : plus tard, d'autres matchs ont pu changer ses points.
  */
