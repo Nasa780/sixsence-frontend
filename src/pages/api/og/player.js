@@ -1,7 +1,8 @@
 import { ImageResponse } from "next/og";
 import { OG_COLORS, dataUrl, discordAvatarPng, loadFallbackFonts, loadFonts, supabaseRest } from "../../../lib/og";
 import { emblemDataUrl } from "../../../lib/rankEmblem";
-import { levelFor, nextRank, rankFor } from "../../../lib/ranks";
+import { cardTint } from "../../../lib/cards";
+import { RANKS, levelFor, nextRank, rankFor } from "../../../lib/ranks";
 
 export const config = { runtime: "edge" };
 
@@ -10,7 +11,8 @@ const { gold, goldLight, goldPale, goldDark } = OG_COLORS;
 
 /**
  * Carte de joueur (aperçu du lien d'un profil sur Discord, X…), 1200 x 630 :
- * avatar, pseudo, rang, points, position au classement et statistiques.
+ * avatar, pseudo, rang, points, position au classement et statistiques, sur l'ambiance de la
+ * carte de visite équipée (couleurs seulement : le motif gênerait la lecture).
  * /api/og/player?id=<joueur>  (le paramètre v ne sert qu'à forcer le rafraîchissement).
  */
 export default async function handler(request) {
@@ -21,7 +23,7 @@ export default async function handler(request) {
   const [fonts, users, profiles] = await Promise.all([
     loadFonts(),
     supabaseRest(`users?id=eq.${id}&select=username,avatar_url`),
-    supabaseRest(`cod_profiles?user_id=eq.${id}&select=points,wins,losses,xp,best_streak,badges,platform`),
+    supabaseRest(`cod_profiles?user_id=eq.${id}&select=points,wins,losses,xp,best_streak,badges,platform,calling_card`),
   ]);
   const user = users[0];
   const profile = profiles[0];
@@ -42,6 +44,7 @@ export default async function handler(request) {
   const display = fonts.length ? "Saira" : "sans-serif";
   const text = fonts.length ? "Inter" : "sans-serif";
   const initials = (user.username || "?").slice(0, 2).toUpperCase();
+  const tint = cardTint(profile.calling_card ?? "sixsence", RANKS);
 
   const stats = [
     { label: "Classement", value: position ? `#${position}` : "—" },
@@ -53,6 +56,18 @@ export default async function handler(request) {
   return new ImageResponse(
     (
       <div style={{ width: "100%", height: "100%", display: "flex", position: "relative", background: OG_COLORS.ink, color: "#fff" }}>
+        {/* Ambiance de la carte de visite équipée, à droite */}
+        <div
+          style={{
+            position: "absolute",
+            top: 0,
+            left: 0,
+            width: 1200,
+            height: 630,
+            display: "flex",
+            background: `linear-gradient(105deg, rgba(0,0,0,0) 38%, ${tint}2e 72%, ${tint}66 100%)`,
+          }}
+        />
         {/* Halo de la couleur du rang, derrière l'avatar */}
         <div
           style={{
