@@ -252,8 +252,8 @@ export function QueuePanel({ profileComplete, userId }) {
                 En file {queue.groupSize > 1 ? `avec ton groupe (${groupLabel(queue.groupSize).toLowerCase()}) ` : ""}depuis{" "}
                 <span className="font-tech font-bold tabular-nums text-white">{formatDuration(elapsed)}</span>.{" "}
                 {isMobile
-                  ? "Tu peux verrouiller ton téléphone ou changer d'appli : tu gardes ta place 30 min et une notification te prévient dès que ton match est trouvé."
-                  : "Garde cette page ouverte (dans un autre onglet si tu veux) : un son et une notification te préviennent dès que ton match est trouvé."}
+                  ? "Tu peux verrouiller ton téléphone ou changer d'application : tu gardes ta place pendant 30 min, et une notification te prévient dès que ton match est trouvé."
+                  : "Garde cette page ouverte, même dans un autre onglet : un son et une notification te préviennent dès que ton match est trouvé."}
               </>
             ) : party && !isLeader ? (
               <>Tu es dans le groupe de {party.members.find((member) => member.isLeader)?.username ?? "ton chef"} : c&apos;est lui qui lance la recherche.</>
@@ -269,9 +269,9 @@ export function QueuePanel({ profileComplete, userId }) {
             <p className="mt-3 flex items-start gap-2 text-xs text-white/50">
               <LuClock aria-hidden className="mt-0.5 h-3.5 w-3.5 shrink-0 text-gold/80" />
               <span>
-                Si aucun match n&apos;est trouvé d&apos;ici là, on te demandera dans{" "}
-                <span className="font-tech font-bold tabular-nums text-white/80">{formatDuration(confirmLeft)}</span> si tu es toujours là. Tu
-                auras alors 5 min pour cliquer sur « Rester en file » ; sans réponse, ta recherche s&apos;arrêtera.
+                Si aucun match n&apos;est trouvé dans{" "}
+                <span className="font-tech font-bold tabular-nums text-white/80">{formatDuration(confirmLeft)}</span>, on te demandera si tu es
+                toujours là. Tu auras alors 5 min pour cliquer sur « Rester en file », sans réponse ta recherche s&apos;arrêtera.
               </span>
             </p>
           ) : null}
@@ -283,9 +283,9 @@ export function QueuePanel({ profileComplete, userId }) {
                 <div>
                   <p className="font-display text-2xl font-black uppercase leading-none text-gold">Toujours là ?</p>
                   <p className="mt-1.5 text-sm text-white/70">
-                    Aucun match pour l&apos;instant. Clique sur « Rester en file » dans les{" "}
-                    <span className="font-tech font-bold tabular-nums text-white">{formatDuration(stopLeft)}</span> pour continuer{" "}
-                    {queue.groupSize > 1 ? "la recherche du groupe" : "ta recherche"} sans perdre ta place ; sinon, elle s&apos;arrête.
+                    Aucun match pour l&apos;instant. Il te reste{" "}
+                    <span className="font-tech font-bold tabular-nums text-white">{formatDuration(stopLeft)}</span> pour cliquer sur « Rester en file »
+                    et garder ta place, sans réponse {queue.groupSize > 1 ? "la recherche du groupe" : "ta recherche"} s&apos;arrête.
                   </p>
                 </div>
               </div>
@@ -318,8 +318,8 @@ export function QueuePanel({ profileComplete, userId }) {
           </div>
 
           <p className="mt-4 text-xs text-white/45">
-            <span className="text-white/70">Victoire : +50 points</span>. <span className="text-white/70">Défaite</span> : de −15 à −50 selon ton rang,
-            25 % de moins si tu joues seul. <span className="text-white/70">Placement</span> : victoires doublées sur tes 10 premiers matchs.
+            <span className="text-white/70">Victoire : +50 points</span>. <span className="text-white/70">Défaite</span> : −15 à −50 selon ton rang (25 % de
+            perte en moins si tu joues seul). <span className="text-white/70">Placement</span> : victoires doublées sur tes 10 premiers matchs.
           </p>
 
           {/* Ce qui empêche de jouer, du plus bloquant au moins bloquant. */}

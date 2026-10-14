@@ -54,7 +54,7 @@ export function AppPanel({ variant = "cod", className = "mt-6" }) {
       <p className="mt-2 max-w-xl text-sm text-white/55">
         {gta
           ? "Installe l'appli SixSence et active les notifications : tu es prévenu des nouveaux événements GTA 6 et 1 h avant ceux où tu es inscrit, même si le site est fermé."
-          : "Installe l'appli SixSence et active les notifications : ton téléphone sonne quand ton match est trouvé, même si le site est fermé."}
+          : "Installe l'application SixSence et active les notifications : ton téléphone sonne dès que ton match est trouvé, même si la page du site est fermée."}
       </p>
 
       <div className="mt-5 flex flex-col gap-3 sm:flex-row sm:flex-wrap">
