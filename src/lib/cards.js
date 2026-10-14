@@ -6,6 +6,7 @@
  *   default   carte « SixSence » (motif or et emblème du site)
  *   rank      emblème du rang sur ses teintes
  *   glyph     chiffre ou sigle (Communes et Rares)
+ *   sunset    cartes GTA 6 : coucher de soleil rétro (palette sunset), ville et palmiers ; glyph facultatif
  *   illustration  visuel provisoire des Épiques et Légendaires, remplacé par une image :
  *             ajouter { image: "/images/cartes/<clé>.webp", position, mobilePosition } quand
  *             l'illustration existe (bannière 2400 x 900, sujet vers 45 % de la largeur ;
@@ -50,8 +51,8 @@ const CARDS = {
   beta: { rarity: "rare", art: { type: "glyph", glyph: "β", color: "#5cc8ff", video: "/images/cartes/beta.mp4", og: "/images/cartes/og/beta.jpg", poster: "/images/cartes/beta-poster.webp" } },
   partenaire: { rarity: "rare", art: { type: "glyph", glyph: "P", color: "#ff9a5c" } },
   "staff-6": { rarity: "rare", art: { type: "glyph", glyph: "6", color: "#d4af37" } },
-  "premiere-viree": { rarity: "commune", art: { type: "glyph", glyph: "GTA", color: "#ff9a5c" } },
-  habitue: { rarity: "rare", art: { type: "glyph", glyph: "×5", color: "#ff7a59" } },
+  "premiere-viree": { rarity: "commune", art: { type: "sunset", color: "#ff9a5c" } },
+  habitue: { rarity: "rare", art: { type: "sunset", glyph: "×5", color: "#ff5f8a" } },
 };
 
 /** Rareté et dessin d'une carte (cartes de saison « s<id>-… » comprises). */

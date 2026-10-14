@@ -69,6 +69,46 @@ export function CardArt({ cardKey, place = "tile", motif = true }) {
       </div>
     );
   }
+  if (art.type === "sunset") {
+    // Cartes GTA 6 : ciel violet → orange, soleil rayé, silhouette de ville et de palmiers.
+    return (
+      <div className="absolute inset-0 overflow-hidden" style={{ background: "linear-gradient(180deg,#1a0b2e 0%,#4a1450 38%,#b3305e 68%,#ff7a4a 88%,#ffb45c 100%)" }}>
+        {motif ? (
+          <div className={spot}>
+            <div
+              className={cn("rounded-full", big ? "h-56 w-56" : "h-20 w-20")}
+              style={{
+                background: "linear-gradient(180deg,#ffe08a 0%,#ffb05c 45%,#ff5f8a 100%)",
+                maskImage: "linear-gradient(180deg,#000 52%,transparent 52%,transparent 58%,#000 58%,#000 66%,transparent 66%,transparent 71%,#000 71%,#000 78%,transparent 78%,transparent 82%,#000 82%)",
+                WebkitMaskImage: "linear-gradient(180deg,#000 52%,transparent 52%,transparent 58%,#000 58%,#000 66%,transparent 66%,transparent 71%,#000 71%,#000 78%,transparent 78%,transparent 82%,#000 82%)",
+                boxShadow: "0 0 40px rgba(255,120,120,.45)",
+              }}
+            />
+          </div>
+        ) : null}
+        <svg className="absolute inset-x-0 bottom-0 h-[42%] w-full" viewBox="0 0 400 60" preserveAspectRatio="none" aria-hidden>
+          <path
+            fill="#12061c"
+            d="M0 60V44h10v-8h8v8h6V30h10v14h8v-6h10v6h6V24h12v20h6v-10h8v10h10V36h6v8h8V28h14v16h6v-8h10v8h12V32h8v12h6V20h10v24h8v-6h12v6h10V38h6v6h8V26h12v18h6v-8h10v8h10V34h8v10h10V30h12v14h8v-10h10v10h12V40h10v20Z"
+          />
+          <g fill="#12061c">
+            <path d="M330 60 L333 22 L335 22 L337 60Z" />
+            <path d="M334 22 q-14 -4 -22 4 q10 -6 22 -2Z M334 22 q14 -4 22 4 q-10 -6 -22 -2Z M334 22 q-8 -10 -18 -10 q10 2 18 12Z M334 22 q8 -10 18 -10 q-10 2 -18 12Z" />
+            <path d="M372 60 L374 30 L376 30 L377 60Z" />
+            <path d="M375 30 q-11 -3 -17 3 q8 -5 17 -1Z M375 30 q11 -3 17 3 q-8 -5 -17 -1Z M375 30 q-6 -8 -14 -8 q8 2 14 9Z" />
+          </g>
+        </svg>
+        {art.glyph && motif && !big ? (
+          <div
+            className={cn("absolute font-display font-black italic leading-none", big ? "right-[6%] top-[12%]" : "right-[3%] top-[8%]")}
+            style={{ fontSize: big ? "6rem" : "2.2rem", color: "#fff", textShadow: `0 0 18px ${art.color}, 0 0 4px ${art.color}` }}
+          >
+            {art.glyph}
+          </div>
+        ) : null}
+      </div>
+    );
+  }
   if (art.type === "glyph") {
     return (
       <div className="absolute inset-0" style={{ background: `linear-gradient(105deg,#0c0c0c 40%,${art.color}33 100%)` }}>
