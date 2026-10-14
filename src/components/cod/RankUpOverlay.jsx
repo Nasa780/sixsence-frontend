@@ -9,7 +9,7 @@ const SEEN_KEY = (matchId) => `sixsence:promotion:${matchId}`;
 /**
  * Écran « Promotion » : affiché une seule fois au joueur dont le match terminé l'a
  * fait monter de rang (points avant = points actuels - variation du match).
- * Seulement juste après le match (2 h) : plus tard, d'autres matchs ont pu changer ses points.
+ * Seulement juste après le match (2 h) : plus tard, d'autres matchs ont pu changer ses points.
  */
 export function RankUpOverlay({ matchId, points, delta, completedAt }) {
   const [open, setOpen] = useState(false);
@@ -97,7 +97,7 @@ export function RankUpOverlay({ matchId, points, delta, completedAt }) {
                 <span style={{ color: after.text }}>{after.name}</span>
               </p>
               <p className="mt-2 font-tech text-sm tabular-nums text-white/60">
-                <span className="font-bold text-win">+{delta}</span> pts · {points} pts
+                <span className="font-bold text-win">+{delta}</span> pts · {points} pts
               </p>
               <button
                 type="button"

@@ -38,7 +38,7 @@ const teamLabel = (team) => (team === "A" ? "Équipe 1" : "Équipe 2");
  * Salon de match : carte, mode, les deux équipes, le chat, et les actions selon l'état.
  *
  * Cycle de vie d'un match :
- *   « Prêt ? » (1 min) -> en cours -> un joueur déclare le vainqueur -> l'équipe adverse confirme -> terminé (points mis à jour)
+ *   « Prêt ? » (1 min) -> en cours -> un joueur déclare le vainqueur -> l'équipe adverse confirme -> terminé (points mis à jour)
  *                                              -> ou conteste -> un admin tranche
  *
  * Tout le monde peut regarder le match ; le chat et les captures sont réservés à ses
@@ -217,7 +217,7 @@ export function MatchView({ matchId }) {
             <Notice>
               <strong className="font-semibold text-white">{reporterName}</strong> a déclaré la victoire de l&apos;
               <strong className="font-semibold text-gold">{teamLabel(match.reported_winner).toLowerCase()}</strong>. Sans réponse de
-              l&apos;équipe adverse, le résultat est validé automatiquement après 15 minutes.
+              l&apos;équipe adverse, le résultat est validé automatiquement après 15 minutes.
             </Notice>
             {myTeam && reporterTeam && myTeam !== reporterTeam ? (
               <div className="flex flex-col gap-3 sm:flex-row">
@@ -308,7 +308,7 @@ export function MatchView({ matchId }) {
         ) : null}
       </div>
 
-      {/* --- Vote du MVP (24 h après la fin du match) ---------------------- */}
+      {/* --- Vote du MVP (24 h après la fin du match) ---------------------- */}
       {match.status === "completed" ? (
         <MvpVote match={match} playerById={playerById} votes={mvpVotes} myVote={me.myVote} userId={userId} isPlayer={isPlayer} onVoted={() => Promise.all([load(), loadMe()])} />
       ) : null}
@@ -390,7 +390,7 @@ function mvpWinners(total, fromOthers) {
 
 /**
  * Vote du MVP : chaque joueur du match élit un joueur de l'équipe gagnante (lui-même
- * compris), pendant 24 h après la fin. Le plus élu du mois reçoit le badge « MVP du mois ».
+ * compris), pendant 24 h après la fin. Le plus élu du mois reçoit le badge « MVP du mois ».
  */
 function MvpVote({ match, playerById, votes, myVote, userId, isPlayer, onVoted }) {
   const [pending, setPending] = useState(null);
@@ -424,8 +424,8 @@ function MvpVote({ match, playerById, votes, myVote, userId, isPlayer, onVoted }
         <p className="text-xs text-white/45">
           {open
             ? isPlayer
-              ? "Vote pour le meilleur joueur de l'équipe gagnante (toi compris), pendant 24 h."
-              : "Les joueurs du match votent pendant 24 h."
+              ? "Vote pour le meilleur joueur de l'équipe gagnante (toi compris), pendant 24 h."
+              : "Les joueurs du match votent pendant 24 h."
             : "Vote terminé."}{" "}
           {total} vote
           {total > 1 ? "s" : ""}
@@ -489,7 +489,7 @@ function TeamColumn({ team, match, ids, stakes = null, playerById, currentUserId
         </h2>
         <div className="flex items-center gap-3">
           {won ? <Chip tone="win">Victoire</Chip> : null}
-          {average !== null ? <span className="font-tech text-xs uppercase tracking-[0.2em] text-white/45">Moy. {average} pts</span> : null}
+          {average !== null ? <span className="font-tech text-xs uppercase tracking-[0.2em] text-white/45">Moy. {average} pts</span> : null}
         </div>
       </header>
 
@@ -676,10 +676,10 @@ function ReadyCheckBlock({ match, isPlayer, iAmReady, pending, onAccept }) {
     <TacticalCard highlight cut={20} innerClassName="flex flex-col gap-5 p-6 sm:flex-row sm:items-center sm:justify-between">
       <div>
         <p className="font-display text-2xl font-black uppercase tracking-wide">
-          {accepted} / {total} joueurs prêts
+          {accepted} / {total} joueurs prêts
         </p>
         <p className="mt-1 text-sm text-white/60">
-          Encore <span className="font-tech font-bold tabular-nums text-white">{Math.ceil(left)} s</span> pour accepter. Sans réponse de
+          Encore <span className="font-tech font-bold tabular-nums text-white">{Math.ceil(left)} s</span> pour accepter. Sans réponse de
           tous, le match est annulé et les absents reçoivent un avertissement.
         </p>
       </div>

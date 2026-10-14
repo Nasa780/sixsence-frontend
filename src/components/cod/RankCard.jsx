@@ -44,13 +44,13 @@ export function RankCard({ points = 0, peak = 0, position = null, total = null, 
               <div className="h-full" style={{ width: `${Math.round(upcoming.progress * 100)}%`, backgroundImage: rankGradient(upcoming.rank ?? rank, 90) }} />
             </div>
             <div className="mt-2 flex flex-wrap justify-between gap-x-4 gap-y-1 text-xs text-white/50">
-              <span>{upcoming.rank ? `${upcoming.rank.min - points} pts avant ${upcoming.rank.name}` : "Rang maximal atteint"}</span>
+              <span>{upcoming.rank ? `${upcoming.rank.min - points} pts avant ${upcoming.rank.name}` : "Rang maximal atteint"}</span>
               <span>
                 Pic de la saison : <span className="font-tech font-bold text-white/75">{Math.max(peak, points)}</span>
                 {top ? (
                   <>
                     {" "}
-                    · <span className="font-tech font-bold text-white/75">Top {top} %</span>
+                    · <span className="font-tech font-bold text-white/75">Top {top} %</span>
                   </>
                 ) : null}
               </span>

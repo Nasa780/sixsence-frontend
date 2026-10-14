@@ -29,7 +29,7 @@ export function RankRoad({ points = 0, className = "" }) {
 
   return (
     <div className={className}>
-      <div className="relative" role="img" aria-label={`Progression : ${current.name}, ${points} points${next ? `, ${next.min - points} points avant ${next.name}` : ""}.`}>
+      <div className="relative" role="img" aria-label={`Progression : ${current.name}, ${points} points${next ? `, ${next.min - points} points avant ${next.name}` : ""}.`}>
         <div aria-hidden className="absolute top-[17px] h-1 -translate-y-1/2 bg-white/10" style={{ left: 18, right: 18 }} />
         <div
           aria-hidden
@@ -40,7 +40,7 @@ export function RankRoad({ points = 0, className = "" }) {
           {LADDER.map((rank, i) => {
             const reached = i <= index;
             return (
-              <li key={rank.name} className="flex w-9 justify-center" title={`${rank.name} · ${rank.min} pts`}>
+              <li key={rank.name} className="flex w-9 justify-center" title={`${rank.name} · ${rank.min} pts`}>
                 <span className={cn("transition-[filter,opacity]", !reached && "opacity-35 grayscale")}>
                   <RankEmblem rank={rank} size={i === index ? 36 : 30} animated={i === index} />
                 </span>
@@ -60,7 +60,7 @@ export function RankRoad({ points = 0, className = "" }) {
         {next ? (
           <>
             <span className="font-bold" style={{ color: next.text }}>
-              {next.min - points} pts
+              {next.min - points} pts
             </span>{" "}
             avant {next.name}
           </>

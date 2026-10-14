@@ -103,7 +103,7 @@ export function InstallButton({ variant = "panel", className = "" }) {
                     <LuX aria-hidden className="h-5 w-5" />
                   </button>
                 </div>
-                <p className="mt-2 text-sm text-white/55">L&apos;installation en un clic n&apos;est pas disponible ici. Ça prend 10 secondes :</p>
+                <p className="mt-2 text-sm text-white/55">L&apos;installation en un clic n&apos;est pas disponible ici. Ça prend 10 secondes :</p>
                 <ol className="mt-4 space-y-3">
                   {browserGuide(browser).map((step, index) => (
                     <li key={step} className="flex gap-3 text-sm text-white/80">

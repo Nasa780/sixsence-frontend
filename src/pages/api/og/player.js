@@ -143,7 +143,7 @@ export default async function handler(request) {
               <span style={{ fontSize: 22, fontWeight: 700, letterSpacing: 4, color: "rgba(255,255,255,0.6)" }}>POINTS</span>
               {next.rank ? (
                 <span style={{ fontSize: 18, fontWeight: 500, color: "rgba(255,255,255,0.45)" }}>
-                  {next.rank.min - profile.points} pts avant {next.rank.name}
+                  {next.rank.min - profile.points} pts avant {next.rank.name}
                 </span>
               ) : (
                 <span style={{ fontSize: 18, fontWeight: 500, color: goldLight }}>Rang maximal</span>

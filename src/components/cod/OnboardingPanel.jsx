@@ -44,7 +44,7 @@ export function OnboardingPanel({ user }) {
     setHidden(read(HIDDEN_KEY) === user.id);
     setDiscordJoined(read(DISCORD_KEY) === "1");
     const support = pushSupport();
-    // Le service worker peut tarder (ou manquer) : on n'attend pas plus de 3 s.
+    // Le service worker peut tarder (ou manquer) : on n'attend pas plus de 3 s.
     const timeout = new Promise((resolve) => setTimeout(() => resolve(false), 3000));
     Promise.race([isPushEnabled(), timeout]).then((enabled) => {
       setPush({ support, enabled });

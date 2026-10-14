@@ -6,7 +6,7 @@ import { Eyebrow } from "../ui/Typography";
 
 /**
  * Les 9 rangs du classé et le barème (identique au backend) :
- * victoire +50 pts / +500 XP, défaite de -15 (Bronze) à -50 (Maître et au-delà).
+ * victoire +50 pts / +500 XP, défaite de -15 (Bronze) à -50 (Maître et au-delà).
  * highlight : nom du rang à mettre en avant (celui du joueur).
  */
 export function RanksGrid({ highlight = null }) {
@@ -23,8 +23,8 @@ export function RanksGrid({ highlight = null }) {
           </h2>
         </div>
         <p className="text-sm text-white/60">
-          Victoire : <span className="font-tech font-bold text-gold">+{WIN_POINTS} pts</span> ·{" "}
-          <span className="font-tech font-bold text-gold">+{WIN_XP} XP</span>
+          Victoire : <span className="font-tech font-bold text-gold">+{WIN_POINTS} pts</span> ·{" "}
+          <span className="font-tech font-bold text-gold">+{WIN_XP} XP</span>
         </p>
       </div>
 
@@ -53,7 +53,7 @@ export function RanksGrid({ highlight = null }) {
               <RankBars rank={rank} className="mt-2.5" />
               <p className="mt-2.5 font-tech text-[11px] tabular-nums text-white/50">
                 {rank.min}
-                {ordered[index + 1] ? `–${ordered[index + 1].min - 1}` : "+"} pts
+                {ordered[index + 1] ? `–${ordered[index + 1].min - 1}` : "+"} pts
               </p>
               <p className="mt-2 text-xs text-white/40">
                 Défaite <span className="font-tech font-bold text-loss">−{rank.loss}</span>

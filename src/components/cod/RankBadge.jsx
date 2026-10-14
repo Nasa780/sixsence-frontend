@@ -43,7 +43,7 @@ export function RankBadge({ points = 0, showProgress = false, className = "" }) 
             />
           </div>
           <p className="mt-1.5 text-xs text-white/45">
-            {upcoming.rank ? `${upcoming.rank.min - points} pts avant ${upcoming.rank.name}` : "Rang maximal atteint"}
+            {upcoming.rank ? `${upcoming.rank.min - points} pts avant ${upcoming.rank.name}` : "Rang maximal atteint"}
           </p>
         </div>
       ) : null}

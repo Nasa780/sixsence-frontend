@@ -105,7 +105,7 @@ const SECTIONS = [
       <ul>
         <li>Compte, profil, statistiques et historique : tant que ton compte existe.</li>
         <li>Archives de fin de saison (classement final) : conservées pour l&apos;historique de la plateforme.</li>
-        <li>Avertissements pour match non accepté : seuls ceux des dernières 24 heures comptent pour les sanctions.</li>
+        <li>Avertissements pour match non accepté : seuls ceux des dernières 24 heures comptent pour les sanctions.</li>
         <li>Journaux techniques des hébergeurs : quelques jours à quelques semaines selon l&apos;hébergeur.</li>
       </ul>
     ),

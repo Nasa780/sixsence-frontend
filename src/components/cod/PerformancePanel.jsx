@@ -6,8 +6,8 @@ import { RANKS, rankFor } from "../../lib/ranks";
 import { TacticalCard } from "../ui/TacticalCard";
 
 const RANGES = [
-  { id: 10, label: "10 matchs" },
-  { id: 25, label: "25 matchs" },
+  { id: 10, label: "10 matchs" },
+  { id: 25, label: "25 matchs" },
   { id: "saison", label: "Saison" },
 ];
 
@@ -222,7 +222,7 @@ export function PerformancePanel({ history, userId, points, seasonId, seasonLabe
               <p className="mt-1.5 truncate text-xs text-white/60">
                 {activeEntry.map} · {activeEntry.format} · {shortDate(activeEntry.date)}
               </p>
-              <p className="mt-2 font-tech text-xs font-bold tabular-nums text-white">{activeEntry.points} pts</p>
+              <p className="mt-2 font-tech text-xs font-bold tabular-nums text-white">{activeEntry.points} pts</p>
             </div>
           ) : null}
         </div>

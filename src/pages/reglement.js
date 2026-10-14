@@ -34,13 +34,13 @@ const SECTIONS = [
           <strong>1 minute</strong> pour cliquer sur « Accepter le match ». Un son et une notification te préviennent.
         </p>
         <p>
-          Sur ordinateur, garde la page ouverte pendant ta recherche : si tu la fermes, tu quittes la file au bout de 30 secondes. Sur
-          téléphone, tu peux verrouiller l&apos;écran ou changer d&apos;appli : tu gardes ta place <strong>30 minutes</strong>. Active les
+          Sur ordinateur, garde la page ouverte pendant ta recherche : si tu la fermes, tu quittes la file au bout de 30 secondes. Sur
+          téléphone, tu peux verrouiller l&apos;écran ou changer d&apos;appli : tu gardes ta place <strong>30 minutes</strong>. Active les
           notifications pour être prévenu du match trouvé ; si ta recherche s&apos;arrête, une notification te le dit aussi.
         </p>
         <p>
-          Une recherche dure <strong>30 minutes</strong> au plus. 5 minutes avant la fin, le message « Toujours là ? » s&apos;affiche
-          (et arrive en notification) : clique sur « Rester en file » pour repartir pour 30 minutes <strong>sans perdre ta place</strong>.
+          Une recherche dure <strong>30 minutes</strong> au plus. 5 minutes avant la fin, le message « Toujours là ? » s&apos;affiche
+          (et arrive en notification) : clique sur « Rester en file » pour repartir pour 30 minutes <strong>sans perdre ta place</strong>.
           Sans réponse, la recherche s&apos;arrête et tu peux la relancer quand tu veux. Dans un groupe, n&apos;importe quel membre peut
           répondre pour tout le groupe.
         </p>
@@ -56,12 +56,12 @@ const SECTIONS = [
     title: "Sanctions",
     content: (
       <>
-        <p>Les avertissements se comptent sur 24 heures glissantes :</p>
+        <p>Les avertissements se comptent sur 24 heures glissantes :</p>
         <ul>
           <li>1er avertissement : aucun effet, simple rappel ;</li>
-          <li>2e avertissement : 15 minutes sans accès à la file ;</li>
+          <li>2e avertissement : 15 minutes sans accès à la file ;</li>
           <li>3e avertissement : 1 heure sans accès à la file ;</li>
-          <li>au-delà : 24 heures sans accès à la file.</li>
+          <li>au-delà : 24 heures sans accès à la file.</li>
         </ul>
         <p>
           Triche, logiciels tiers, arrangement de résultats, fausse déclaration de score ou abandon volontaire d&apos;un match lancé
@@ -97,10 +97,10 @@ const SECTIONS = [
         <ul>
           <li>À la fin de la partie, n&apos;importe quel joueur déclare l&apos;équipe gagnante.</li>
           <li>
-            L&apos;équipe adverse confirme ou conteste. Sans réponse sous 15 minutes, le résultat déclaré est validé
+            L&apos;équipe adverse confirme ou conteste. Sans réponse sous 15 minutes, le résultat déclaré est validé
             automatiquement.
           </li>
-          <li>Un match jamais déclaré est annulé au bout de 3 heures, sans changement de points.</li>
+          <li>Un match jamais déclaré est annulé au bout de 3 heures, sans changement de points.</li>
           <li>
             En cas de contestation, ajoute une <strong>capture du tableau des scores</strong> dans le salon de match : un
             administrateur tranche (victoire d&apos;une équipe ou annulation). Sa décision est définitive.
@@ -115,11 +115,11 @@ const SECTIONS = [
     content: (
       <ul>
         <li>
-          Après un match terminé, chaque joueur (gagnant ou perdant) a <strong>24 heures</strong> pour élire le meilleur joueur de
+          Après un match terminé, chaque joueur (gagnant ou perdant) a <strong>24 heures</strong> pour élire le meilleur joueur de
           l&apos;<strong>équipe gagnante</strong>.
         </li>
         <li>Si tu as gagné, tu peux voter pour toi-même.</li>
-        <li>Tu peux changer ton vote tant que les 24 heures ne sont pas écoulées.</li>
+        <li>Tu peux changer ton vote tant que les 24 heures ne sont pas écoulées.</li>
         <li>
           Le plus élu est MVP du match. À égalité, les votes reçus des autres joueurs départagent ; si l&apos;égalité persiste, les joueurs
           sont co-MVP.
@@ -134,11 +134,11 @@ const SECTIONS = [
     content: (
       <>
         <p>
-          <strong>Victoire : +{WIN_POINTS} points</strong> (et +{WIN_XP} XP), pour tout le monde, seul ou en groupe.
+          <strong>Victoire : +{WIN_POINTS} points</strong> (et +{WIN_XP} XP), pour tout le monde, seul ou en groupe.
         </p>
         <p>
           <strong>Défaite</strong> : plus tu montes, plus elle coûte cher (détail par rang ci-dessous). <strong>Seul</strong>, tu perds{" "}
-          {SOLO_LOSS_REDUCTION} % de points en moins. Tu ne descends jamais en dessous de 0.
+          {SOLO_LOSS_REDUCTION} % de points en moins. Tu ne descends jamais en dessous de 0.
         </p>
         <p>
           <strong>Placement</strong> : pendant tes {PLACEMENT_MATCHES} premiers matchs de la saison, chaque victoire compte double (
@@ -149,7 +149,7 @@ const SECTIONS = [
         <ul>
           {[...RANKS].reverse().map((rank) => (
             <li key={rank.name}>
-              <strong>{rank.name}</strong> : à partir de {rank.min} points, défaite <strong>-{rank.loss}</strong>
+              <strong>{rank.name}</strong> : à partir de {rank.min} points, défaite <strong>-{rank.loss}</strong>
             </li>
           ))}
         </ul>
