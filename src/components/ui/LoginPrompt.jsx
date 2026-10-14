@@ -5,7 +5,7 @@ import { Button } from "./Button";
 import { TacticalCard } from "./TacticalCard";
 
 /**
- * Encadré « connecte-toi » : affiché à la place d'une action réservée aux
+ * Encadré « connecte-toi » : affiché à la place d'une action réservée aux
  * joueurs connectés (le reste de la page reste visible par tous).
  */
 export function LoginPrompt({

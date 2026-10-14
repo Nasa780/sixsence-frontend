@@ -15,7 +15,7 @@ const signed = (value) => (value > 0 ? `+${value}` : value === 0 ? "±0" : `${va
 const shortDate = (date) => new Date(date).toLocaleDateString("fr-FR", { day: "numeric", month: "short" });
 
 /**
- * Panneau « Performance » façon diffusion e-sport : chiffres clés de la période,
+ * Panneau « Performance » façon diffusion e-sport : chiffres clés de la période,
  * courbe des points avec les paliers de rang, détail de chaque match au survol
  * (ou au toucher) et forme récente.
  */

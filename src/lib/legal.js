@@ -4,7 +4,7 @@
  *
  * Site édité à titre non professionnel : la loi pour la confiance dans l'économie
  * numérique (art. 6, III-2) dispense d'afficher identité et adresse, à condition
- * de les avoir confiées à l'hébergeur. Une valeur à null s'affiche « à compléter ».
+ * de les avoir confiées à l'hébergeur. Une valeur à null s'affiche « à compléter ».
  */
 export const LEGAL = {
   /** Nom affiché de l'éditeur. */

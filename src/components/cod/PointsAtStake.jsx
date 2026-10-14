@@ -3,7 +3,7 @@ import { cn } from "../../lib/cn";
 import { PLACEMENT_MATCHES } from "../../lib/ranks";
 
 /**
- * Points en jeu pour un joueur, avant le match : « Victoire +35 · Défaite −9 »,
+ * Points en jeu pour un joueur, avant le match : « Victoire +35 · Défaite −9 »,
  * avec le match de placement s'il y a lieu (victoire doublée).
  * stake : { win, loss, bonus, placement } renvoyé par le backend (cod_points_preview).
  */

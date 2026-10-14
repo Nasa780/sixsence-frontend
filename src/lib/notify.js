@@ -1,9 +1,9 @@
 /**
- * Alertes « Match trouvé » : son, notification du navigateur et titre d'onglet
+ * Alertes « Match trouvé » : son, notification du navigateur et titre d'onglet
  * qui clignote, pour prévenir le joueur même si l'onglet est en arrière-plan.
  *
  * Les sons sont synthétisés par le navigateur (Web Audio) : aucun fichier à charger.
- * Un seul AudioContext est partagé et « débloqué » au premier clic du joueur
+ * Un seul AudioContext est partagé et « débloqué » au premier clic du joueur
  * (rejoindre la file), sinon certains navigateurs refusent de jouer un son
  * déclenché plus tard par le serveur.
  */
@@ -69,7 +69,7 @@ export function setSoundMuted(muted) {
   if (muted) stopMatchAlarm();
 }
 
-/** Note « cloche » : fondamentale + harmoniques qui s'éteignent vite. */
+/** Note « cloche » : fondamentale + harmoniques qui s'éteignent vite. */
 function bell(ctx, frequency, start, { duration = 0.9, volume = 0.32 } = {}) {
   [
     [1, 1],
@@ -105,8 +105,8 @@ function impact(ctx, start) {
 }
 
 // --- Sons enregistrés (public/sounds) ---------------------------------------------
-// Extraits de « War Is War » (audioknap, Pixabay, licence libre d'usage) :
-//   match-found.mp3 : 0:00.3 → 1:03 de la piste, jouée pendant la vérification « Prêt ? » ;
+// Extraits de « War Is War » (audioknap, Pixabay, licence libre d'usage) :
+//   match-found.mp3 : 0:00.3 → 1:03 de la piste, jouée pendant la vérification « Prêt ? » ;
 //   match-start.wav : l'impact de 0:29, quand le match démarre.
 // Chargés une fois, au premier clic ; en cas d'échec, les sons synthétisés prennent le relais.
 const SAMPLES = { found: "/sounds/match-found.mp3", start: "/sounds/match-start.wav" };
@@ -114,13 +114,13 @@ const SAMPLES = { found: "/sounds/match-found.mp3", start: "/sounds/match-start.
 const FOUND_OFFSET = 0.065;
 /** Durée jouée : de 0,3 s à 1:03 de la piste. */
 const FOUND_LENGTH = 62.7;
-/** « Tester le son » : de 0:17 à 0:22 de la piste (le fichier commence à 0,235 s). */
+/** « Tester le son » : de 0:17 à 0:22 de la piste (le fichier commence à 0,235 s). */
 const PREVIEW_OFFSET = 17 - 0.235;
 const PREVIEW_LENGTH = 5;
 const buffers = {};
 let samplesLoading = null;
-let music = null; // { source, gain } de la musique « match trouvé » en cours
-let alarmArmed = false; // vrai entre « match trouvé » et l'arrêt de l'alarme
+let music = null; // { source, gain } de la musique « match trouvé » en cours
+let alarmArmed = false; // vrai entre « match trouvé » et l'arrêt de l'alarme
 
 export function loadSamples() {
   const ctx = audio();
@@ -241,7 +241,7 @@ export function stopMatchAlarm({ fade = 0.5 } = {}) {
   }
 }
 
-/** Bouton « Tester le son » : de 0:17 à 0:22 de la piste (ou l'alerte de secours). */
+/** Bouton « Tester le son » : de 0:17 à 0:22 de la piste (ou l'alerte de secours). */
 export async function previewMatchSound() {
   unlockAudio();
   await loadSamples();

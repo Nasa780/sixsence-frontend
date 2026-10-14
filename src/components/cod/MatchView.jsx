@@ -38,7 +38,7 @@ const teamLabel = (team) => (team === "A" ? "Équipe 1" : "Équipe 2");
  * Salon de match : carte, mode, les deux équipes, le chat, et les actions selon l'état.
  *
  * Cycle de vie d'un match :
- *   « Prêt ? » (1 min) -> en cours -> un joueur déclare le vainqueur -> l'équipe adverse confirme -> terminé (points mis à jour)
+ *   « Prêt ? » (1 min) -> en cours -> un joueur déclare le vainqueur -> l'équipe adverse confirme -> terminé (points mis à jour)
  *                                              -> ou conteste -> un admin tranche
  *
  * Tout le monde peut regarder le match ; le chat et les captures sont réservés à ses
@@ -297,7 +297,7 @@ export function MatchView({ matchId }) {
             {me.arbitrations.map((request) => (
               <li key={request.id} className="flex flex-wrap items-center gap-2 border-l-2 border-gold/40 bg-white/[0.03] px-3 py-2 text-sm text-white/70">
                 <LuShieldAlert aria-hidden className="h-4 w-4 text-gold" />
-                Ta demande « {ARBITRATION_REASONS[request.reason] ?? request.reason} » :
+                Ta demande « {ARBITRATION_REASONS[request.reason] ?? request.reason} » :
                 <span className={cn("font-semibold", request.status === "open" ? "text-gold" : request.status === "resolved" ? "text-win" : "text-white/60")}>
                   {request.status === "open" ? "en attente d'un admin" : request.status === "resolved" ? "traitée" : "classée sans suite"}
                 </span>
@@ -390,7 +390,7 @@ function mvpWinners(total, fromOthers) {
 
 /**
  * Vote du MVP : chaque joueur du match élit un joueur de l'équipe gagnante (lui-même
- * compris), pendant 24 h après la fin. Le plus élu du mois reçoit le badge « MVP du mois ».
+ * compris), pendant 24 h après la fin. Le plus élu du mois reçoit le badge « MVP du mois ».
  */
 function MvpVote({ match, playerById, votes, myVote, userId, isPlayer, onVoted }) {
   const [pending, setPending] = useState(null);
@@ -666,7 +666,7 @@ function MatchChat({ matchId, messages, canWrite, currentUserId }) {
   );
 }
 
-/** Vérification « Prêt ? » : chaque joueur a une minute pour accepter. */
+/** Vérification « Prêt ? » : chaque joueur a une minute pour accepter. */
 function ReadyCheckBlock({ match, isPlayer, iAmReady, pending, onAccept }) {
   const left = useCountdown(match.ready_deadline);
   const total = match.team_a.length + match.team_b.length;

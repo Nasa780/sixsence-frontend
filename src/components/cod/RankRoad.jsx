@@ -16,7 +16,7 @@ function ladderPosition(points) {
 }
 
 /**
- * Frise « Road to Légende » : les 9 emblèmes reliés par une ligne qui se remplit
+ * Frise « Road to Légende » : les 9 emblèmes reliés par une ligne qui se remplit
  * jusqu'aux points du joueur ; les rangs à venir sont grisés.
  */
 export function RankRoad({ points = 0, className = "" }) {

@@ -40,7 +40,7 @@ export function RanksGrid({ highlight = null }) {
                 <span aria-hidden className="absolute inset-x-0 top-0 h-0.5" style={{ background: rank.color, boxShadow: `0 0 10px ${rank.color}` }} />
               ) : null}
               <RankEmblem rank={rank} size={52} />
-              {/* Place pour deux lignes (« Grand Maître ») : toutes les cartes restent alignées. */}
+              {/* Place pour deux lignes (« Grand Maître ») : toutes les cartes restent alignées. */}
               <div className="mt-3 flex h-10 items-end">
                 <p
                   className="bg-clip-text font-display text-xl font-bold uppercase leading-none tracking-wide text-transparent"

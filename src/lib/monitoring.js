@@ -11,7 +11,7 @@ import { API_URL } from "./config";
 const MAX_REPORTS = 5;
 const sent = new Set();
 
-/** « Chrome · Android », « Safari · iPhone »… */
+/** « Chrome · Android », « Safari · iPhone »… */
 function browserName() {
   const ua = navigator.userAgent;
   const browser = /Edg\//.test(ua)

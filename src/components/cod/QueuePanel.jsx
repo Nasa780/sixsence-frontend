@@ -38,7 +38,7 @@ const FORMAT_KEY = "sixsence:format";
  *    le groupe n'est jamais séparé.
  *  - L'état (files, ma place, mon groupe) arrive en direct par WebSocket ;
  *    les actions passent par l'API REST du backend.
- *  - Match trouvé : musique + notification, puis vérification « Prêt ? » d'une minute.
+ *  - Match trouvé : musique + notification, puis vérification « Prêt ? » d'une minute.
  *    Tous prêts : la page du match s'ouvre. Délai dépassé : les groupes complets
  *    repartent en tête de file, les absents reçoivent un avertissement.
  *
@@ -53,9 +53,9 @@ export function QueuePanel({ profileComplete, userId }) {
   const [chosen, setChosen] = useState(null);
   const elapsed = useElapsedSeconds(queue.inQueue ? queue.joinedAt : null);
   const banLeft = useCountdown(queue.bannedUntil);
-  // Durée maximale de recherche : « Toujours là ? » 5 min avant l'arrêt (backend : COD_QUEUE_MAX_MINUTES).
+  // Durée maximale de recherche : « Toujours là ? » 5 min avant l'arrêt (backend : COD_QUEUE_MAX_MINUTES).
   const stopLeft = useCountdown(queue.inQueue && queue.stillThere ? queue.expiresAt : null);
-  // Avant le « Toujours là ? » : temps restant jusqu'à la demande de confirmation (5 min avant l'arrêt).
+  // Avant le « Toujours là ? » : temps restant jusqu'à la demande de confirmation (5 min avant l'arrêt).
   const warnAt = queue.inQueue && !queue.stillThere && queue.expiresAt ? new Date(new Date(queue.expiresAt).getTime() - 5 * 60_000).toISOString() : null;
   const confirmLeft = useCountdown(warnAt);
   // Sur téléphone, le serveur garde la place 30 min après la fermeture de l'appli (COD_MOBILE_GRACE_MINUTES).
@@ -106,7 +106,7 @@ export function QueuePanel({ profileComplete, userId }) {
     null;
   const selected = queue.queues.find((item) => item.format === selectedId) ?? null;
 
-  /** Applique l'état renvoyé par l'API (même forme que le message « ready » du WebSocket). */
+  /** Applique l'état renvoyé par l'API (même forme que le message « ready » du WebSocket). */
   function applyState(next) {
     queue.patch({
       queues: next.queues ?? queue.queues,
@@ -149,7 +149,7 @@ export function QueuePanel({ profileComplete, userId }) {
     });
   }
 
-  /** « Rester en file » : confirme la présence, la place dans la file est conservée. */
+  /** « Rester en file » : confirme la présence, la place dans la file est conservée. */
   function stayInQueue() {
     return run(async () => applyState(await api("/cod/queue/stay", { method: "POST" })));
   }
@@ -271,7 +271,7 @@ export function QueuePanel({ profileComplete, userId }) {
               <span>
                 Si aucun match n&apos;est trouvé après{" "}
                 <span className="font-tech font-bold tabular-nums text-white/80">{formatDuration(confirmLeft)}</span>, on te demandera si tu es
-                toujours là. Tu auras alors 5 minutes pour cliquer sur « Rester en file », sinon ta recherche s&apos;arrêtera.
+                toujours là. Tu auras alors 5 minutes pour cliquer sur « Rester en file », sinon ta recherche s&apos;arrêtera.
               </span>
             </p>
           ) : null}
@@ -284,7 +284,7 @@ export function QueuePanel({ profileComplete, userId }) {
                   <p className="font-display text-2xl font-black uppercase leading-none text-gold">Toujours là ?</p>
                   <p className="mt-1.5 text-sm text-white/70">
                     Aucun match pour l&apos;instant. Il te reste{" "}
-                    <span className="font-tech font-bold tabular-nums text-white">{formatDuration(stopLeft)}</span> pour cliquer sur « Rester en file »
+                    <span className="font-tech font-bold tabular-nums text-white">{formatDuration(stopLeft)}</span> pour cliquer sur « Rester en file »
                     et garder ta place, sinon {queue.groupSize > 1 ? "la recherche du groupe" : "ta recherche"} s&apos;arrêtera.
                   </p>
                 </div>
@@ -415,7 +415,7 @@ export function QueuePanel({ profileComplete, userId }) {
   );
 }
 
-/** « 1 min 05 s » à partir d'un nombre de secondes. */
+/** « 1 min 05 s » à partir d'un nombre de secondes. */
 export function formatDuration(seconds) {
   const total = Math.max(0, Math.floor(seconds));
   const hours = Math.floor(total / 3600);
@@ -484,7 +484,7 @@ function ConnectionStatus({ status }) {
   );
 }
 
-/** Écran plein « Match trouvé » : une minute pour accepter. */
+/** Écran plein « Match trouvé » : une minute pour accepter. */
 function ReadyCheckOverlay({ check, started, userId }) {
   const [accepting, setAccepting] = useState(false);
   const [acceptedByMe, setAcceptedByMe] = useState(false);

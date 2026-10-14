@@ -14,7 +14,7 @@ export const SUPABASE_URL = process.env.NEXT_PUBLIC_SUPABASE_URL || "https://trl
 export const SUPABASE_PUBLISHABLE_KEY =
   process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || "sb_publishable_b9GLgoUc1BbOaUo1EoKh8w_Nu1FfIcr";
 
-/** Lien d'invitation vers le serveur Discord (facultatif : affiche les boutons « Rejoindre le Discord »). */
+/** Lien d'invitation vers le serveur Discord (facultatif : affiche les boutons « Rejoindre le Discord »). */
 export const DISCORD_INVITE_URL = process.env.NEXT_PUBLIC_DISCORD_INVITE_URL || "https://discord.gg/Crynp3C5ru";
 
 /** Adresse publique du site (liens absolus : aperçus de partage, plan du site). */

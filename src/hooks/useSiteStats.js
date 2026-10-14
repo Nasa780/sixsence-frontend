@@ -31,7 +31,7 @@ export default function useSiteStats() {
   return stats;
 }
 
-/** Nombre formaté à la française (12 847), ou « — » pendant le chargement. */
+/** Nombre formaté à la française (12 847), ou « — » pendant le chargement. */
 export function formatCount(value) {
   return typeof value === "number" ? value.toLocaleString("fr-FR") : "—";
 }

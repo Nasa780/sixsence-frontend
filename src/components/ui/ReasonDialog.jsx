@@ -6,7 +6,7 @@ import { Notice } from "./Feedback";
 import { Portal } from "./Portal";
 
 /**
- * Fenêtre « motif + description » : demande d'arbitrage, signalement d'un joueur.
+ * Fenêtre « motif + description » : demande d'arbitrage, signalement d'un joueur.
  *
  *   open, onClose      affichage
  *   title, intro       textes

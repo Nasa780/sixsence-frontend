@@ -13,7 +13,7 @@ const SUNSET = "#ff9a5c";
  * Image d'aperçu des liens (Discord, X, WhatsApp…), 1200 x 630.
  * Visuels MW4 (bichromie or) et GTA 6 (bichromie coucher de soleil) séparés par une
  * diagonale dorée, cadre fin, accroche en dégradé or.
- * Paramètre facultatif : ?title=Classement (remplace l'accroche « Entre dans l'arène »).
+ * Paramètre facultatif : ?title=Classement (remplace l'accroche « Entre dans l'arène »).
  *
  * Polices du site chargées depuis Google Fonts au premier appel (voir lib/og.js).
  */
@@ -31,7 +31,7 @@ function Emblem({ size }) {
 
 const box = { position: "absolute", top: 0, left: 0, width: 1200, height: 630, display: "flex" };
 
-/** Coin de cadre « tactique » : deux traits dorés. */
+/** Coin de cadre « tactique » : deux traits dorés. */
 function Corner({ x, y, flipX, flipY }) {
   const h = { position: "absolute", width: 44, height: 2, background: GOLD, [flipX ? "right" : "left"]: 0, [flipY ? "bottom" : "top"]: 0 };
   const v = { position: "absolute", width: 2, height: 44, background: GOLD, [flipX ? "right" : "left"]: 0, [flipY ? "bottom" : "top"]: 0 };

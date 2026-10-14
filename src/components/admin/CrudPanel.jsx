@@ -16,7 +16,7 @@ import { Field } from "./Fields";
  *   table, endpoint, order: [colonne, croissant], fields,
  *   title(item), subtitle(item),
  *   toForm(item) -> valeurs du formulaire, fromForm(values) -> corps de la requête,
- *   noun : « un événement », etc.
+ *   noun : « un événement », etc.
  * }
  */
 export function CrudPanel({ config }) {
@@ -64,7 +64,7 @@ export function CrudPanel({ config }) {
   }
 
   async function remove(item) {
-    if (!window.confirm(`Supprimer définitivement « ${config.title(item)} » ?`)) return;
+    if (!window.confirm(`Supprimer définitivement « ${config.title(item)} » ?`)) return;
     setPending(item.id);
     setError(null);
     try {
