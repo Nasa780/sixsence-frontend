@@ -227,7 +227,7 @@ function CardBanner({ card, image, display }) {
   );
 }
 
-/** Ligne du bas : série record à gauche (et MVP du mois), lien du site en or à droite. */
+/** Ligne du bas : série record à gauche (et MVP du mois), lien du site discret à droite. */
 function Footer({ streak, mvpMonths, text }) {
   return (
     <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginTop: 10, fontFamily: text, fontSize: 15, fontWeight: 500, color: "rgba(255,255,255,0.5)" }}>
@@ -237,7 +237,8 @@ function Footer({ streak, mvpMonths, text }) {
         </span>
         {mvpMonths > 0 ? <span style={{ color: goldLight }}>MVP du mois ×{mvpMonths}</span> : null}
       </div>
-      <span style={{ color: gold, fontWeight: 700, letterSpacing: 3 }}>SIXSENCE.FR</span>
+      {/* Lien discret : l'en-tête affiche déjà SIXSENCE en or. */}
+      <span style={{ color: "rgba(255,255,255,0.4)" }}>sixsence.fr</span>
     </div>
   );
 }
