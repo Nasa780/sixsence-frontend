@@ -67,7 +67,7 @@ export function PartyPanel({ party, userId, format, locked, onChange }) {
           <p className="mt-2 max-w-md text-sm text-white/55">
             {solo
               ? "Cette file se joue seul. Choisis une file de 2v2 à 5v5 pour jouer avec tes amis."
-              : `Crée un groupe et envoie le lien à tes amis : vous serez toujours dans la même équipe (jusqu'à ${format.teamSize} en ${format.label}).`}
+              : `Crée un groupe et envoie le lien à tes amis (jusqu'à ${format.teamSize} joueurs en ${format.label}).`}
           </p>
           {error ? <p className="mt-2 text-sm text-loss">{error}</p> : null}
         </div>
