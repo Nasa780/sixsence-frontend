@@ -596,7 +596,7 @@ function ReadyCheckOverlay({ check, started, userId }) {
                   ))}
                 </div>
                 <p className="mt-3 text-sm text-white/60">
-                  {accepted} / {total} joueur{total > 1 ? "s" : ""} prêt{accepted > 1 ? "s" : ""}
+                  {accepted} / {total} joueur{total > 1 ? "s" : ""} prêt{accepted > 1 ? "s" : ""}
                 </p>
 
                 <div className="mt-8 flex justify-center">

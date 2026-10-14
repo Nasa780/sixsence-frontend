@@ -78,7 +78,7 @@ export default function PartyInvitePage() {
               Groupe de <span className="text-gold-gradient">{preview.leader}</span>
             </h2>
             <p className="mt-3 text-white/60">
-              {preview.size} joueur{preview.size > 1 ? "s" : ""} sur {preview.maxSize} · file {preview.format}
+              {preview.size} joueur{preview.size > 1 ? "s" : ""} sur {preview.maxSize} · file {preview.format}
             </p>
 
             <div className="mt-8">

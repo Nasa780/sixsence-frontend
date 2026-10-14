@@ -106,7 +106,7 @@ function DiscordRolesSync() {
         <p className="mt-1 text-sm text-white/55">
           Les rôles de rang et « COD » se mettent à jour après chaque match. Ce bouton les recalcule pour tous les joueurs classés.
         </p>
-        {result !== null ? <p className="mt-1 text-sm text-win">{result} joueur(s) mis à jour sur Discord.</p> : null}
+        {result !== null ? <p className="mt-1 text-sm text-win">{result} joueur(s) mis à jour sur Discord.</p> : null}
         {error ? <p className="mt-1 text-sm text-loss">{error}</p> : null}
       </div>
       <Button size="sm" variant="outline" onClick={sync} disabled={pending !== null}>
@@ -334,7 +334,7 @@ export function SeasonPanel() {
         cours.
       </p>
       {error ? <Notice tone="error">{error}</Notice> : null}
-      {result !== null ? <Notice tone="success">Saison clôturée : {result} joueur(s) archivé(s). Bonne nouvelle saison !</Notice> : null}
+      {result !== null ? <Notice tone="success">Saison clôturée : {result} joueur(s) archivé(s). Bonne nouvelle saison !</Notice> : null}
       <form onSubmit={close} className="flex flex-col gap-3 sm:flex-row sm:items-end">
         <div className="flex-1">
           <label htmlFor="nom-saison" className="mb-1.5 block font-tech text-[10px] uppercase tracking-[0.24em] text-white/50">
