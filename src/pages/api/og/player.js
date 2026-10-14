@@ -177,6 +177,8 @@ export default async function handler(request) {
           </div>
         </div>
 
+        {/* Liseré du bas, aux couleurs or et rang */}
+        <div style={{ position: "absolute", left: 0, bottom: 0, width: 1200, height: 6, display: "flex", background: `linear-gradient(90deg, ${goldDark}, ${goldLight}, ${gold}, ${rank.color})` }} />
         <img src={frameLine(goldLight)} width={1200} height={630} style={{ position: "absolute", left: 0, top: 0 }} />
       </div>
     ),
