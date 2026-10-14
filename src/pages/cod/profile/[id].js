@@ -13,7 +13,7 @@ import { rankFor } from "../../../lib/ranks";
 const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 
 /**
- * Les balises de partage (titre, description, carte du joueur) sont calculées côté
+ * Les balises de partage (titre « Profil », carte du joueur) sont calculées côté
  * serveur : Discord et les réseaux sociaux lisent la page sans exécuter son JavaScript.
  * Le reste du profil se charge ensuite dans le navigateur, comme avant.
  */
@@ -47,23 +47,18 @@ export default function PlayerProfilePage({ meta }) {
   const id = typeof query.id === "string" ? query.id : "";
   const isOwn = Boolean(userId) && id === userId;
 
-  const played = meta ? meta.wins + meta.losses : 0;
-  const title = meta ? `${meta.username} · ${rankFor(meta.points).name} — ${meta.points} pts` : "Profil joueur";
-  const description = meta
-    ? played > 0
-      ? `Classé MW4 sur SixSence : ${meta.wins} victoire${meta.wins > 1 ? "s" : ""}, ${meta.losses} défaite${meta.losses > 1 ? "s" : ""} (${Math.round((meta.wins / played) * 100)} % de victoires).`
-      : "Joueur du classé MW4 sur SixSence. Viens l'affronter !"
-    : "Profil d'un joueur du classé MW4 sur SixSence.";
+  const title = meta ? `${meta.username} · ${rankFor(meta.points).name} — ${meta.points} pts` : "Profil joueur";
   // Le paramètre v change avec les résultats et la carte de visite : Discord recharge l'image à chaque évolution.
-  const image = meta ? `${SITE_URL}/api/og/player?id=${id}&v=r9-${meta.points}-${meta.wins}-${meta.losses}-${meta.card}` : null;
+  const image = meta ? `${SITE_URL}/api/og/player?id=${id}&v=r10-${meta.points}-${meta.wins}-${meta.losses}-${meta.card}` : null;
 
   return (
     <>
       <Head>
         <title>{`${title} | SixSence`}</title>
-        <meta key="description" name="description" content={description} />
-        <meta key="og:title" property="og:title" content={title} />
-        <meta key="og:description" property="og:description" content={description} />
+        {/* Aperçu des liens (Discord…) : titre court « Profil » ; pas de texte sous le titre, la carte suffit. */}
+        <meta key="description" name="description" content="" />
+        <meta key="og:title" property="og:title" content={meta ? `Profil · ${meta.username}` : "Profil"} />
+        <meta key="og:description" property="og:description" content="" />
         {image ? <meta key="og:image" property="og:image" content={image} /> : null}
         {image ? <meta key="og:image:alt" property="og:image:alt" content={`Carte de joueur de ${meta.username}`} /> : null}
       </Head>
