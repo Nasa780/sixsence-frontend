@@ -347,3 +347,7 @@
   .cc-sweep, .cc-drift, .cc-breathe, .cc-glow { animation: none; }
   .cc-sweep, .cc-drift { display: none; }
 }
+@media (prefers-reduced-motion: reduce) {
+  .cc-video { display: none; }
+  .cc-video-still { display: block; }
+}
