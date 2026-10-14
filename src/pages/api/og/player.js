@@ -172,11 +172,8 @@ export default async function handler(request) {
             <div style={{ display: "flex", marginTop: 8, height: 10, width: 790, background: "rgba(255,255,255,0.08)" }}>
               <div style={{ display: "flex", height: 10, width: Math.max(8, Math.round(790 * Math.min(1, next.progress))), background: next.rank ? `linear-gradient(90deg, ${rank.color}, ${next.rank.color})` : `linear-gradient(90deg, ${goldDark}, ${goldLight})` }} />
             </div>
-            <div style={{ display: "flex", gap: 24, marginTop: 10, fontFamily: text, fontSize: 15, fontWeight: 500, color: "rgba(255,255,255,0.5)" }}>
-              <span>Meilleure série : {profile.best_streak}</span>
-              {mvpMonths > 0 ? <span style={{ color: goldLight }}>⭐ MVP du mois ×{mvpMonths}</span> : null}
-              <span>sixsence.fr</span>
-            </div>
+            <Footer streak={profile.best_streak} mvpMonths={mvpMonths} text={text} />
+
           </div>
         </div>
 
@@ -226,6 +223,21 @@ function CardBanner({ card, image, display }) {
       <div style={{ position: "absolute", left: 700, top: 10, display: "flex", fontFamily: display, fontSize: 200, fontWeight: 900, fontStyle: "italic", color, opacity: 0.55, lineHeight: 1 }}>
         {glyph}
       </div>
+    </div>
+  );
+}
+
+/** Ligne du bas : série record à gauche (et MVP du mois), lien du site en or à droite. */
+function Footer({ streak, mvpMonths, text }) {
+  return (
+    <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginTop: 10, fontFamily: text, fontSize: 15, fontWeight: 500, color: "rgba(255,255,255,0.5)" }}>
+      <div style={{ display: "flex", gap: 24 }}>
+        <span style={{ display: "flex", gap: 6 }}>
+          <span style={{ color: "#fff", fontWeight: 700 }}>Record</span> : {streak} victoire{streak > 1 ? "s" : ""} d'affilée
+        </span>
+        {mvpMonths > 0 ? <span style={{ color: goldLight }}>MVP du mois ×{mvpMonths}</span> : null}
+      </div>
+      <span style={{ color: gold, fontWeight: 700, letterSpacing: 3 }}>SIXSENCE.FR</span>
     </div>
   );
 }
