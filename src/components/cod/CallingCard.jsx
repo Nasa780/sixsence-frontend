@@ -27,7 +27,17 @@ export function CardArt({ cardKey, place = "tile", motif = true }) {
   const spot = cn("absolute", SPOT[place] ?? SPOT.tile);
 
   if (art.image) {
-    return <div className="absolute inset-0 bg-cover bg-center" style={{ backgroundImage: `url(${art.image})` }} />;
+    // Profil sur téléphone (carte haute) : cadrage à part (art.mobilePosition), sujet sur le bord droit.
+    const mobile = place === "profile" && art.mobilePosition;
+    return (
+      <div
+        className={cn("absolute inset-0 bg-cover", mobile && "[background-position:var(--pos-m)] lg:[background-position:var(--pos)]")}
+        style={{
+          backgroundImage: `url(${art.image})`,
+          ...(mobile ? { "--pos": art.position ?? "center", "--pos-m": art.mobilePosition } : { backgroundPosition: art.position ?? "center" }),
+        }}
+      />
+    );
   }
   if (art.type === "default") {
     return (

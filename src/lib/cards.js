@@ -7,7 +7,9 @@
  *   rank      emblème du rang sur ses teintes
  *   glyph     chiffre ou sigle (Communes et Rares)
  *   illustration  visuel provisoire des Épiques et Légendaires, remplacé par une image :
- *             ajouter { image: "/images/cartes/<clé>.webp" } quand l'illustration existe.
+ *             ajouter { image: "/images/cartes/<clé>.webp", position, mobilePosition } quand
+ *             l'illustration existe (bannière 2400 x 900, sujet vers 45 % de la largeur ;
+ *             mobilePosition décale le sujet sur le bord droit du profil sur téléphone).
  */
 
 export const RARITY = {
@@ -26,7 +28,7 @@ const CARDS = {
   "rang-platine": { rarity: "rare", art: { type: "rank", rank: "Platine" } },
   "rang-diamant": { rarity: "rare", art: { type: "rank", rank: "Diamant" } },
   "rang-maitre": { rarity: "epique", art: { type: "rank", rank: "Maître" } },
-  "rang-grand-maitre": { rarity: "epique", art: { type: "rank", rank: "Grand Maître" } },
+  "rang-grand-maitre": { rarity: "epique", art: { type: "rank", rank: "Grand Maître", image: "/images/cartes/grand-maitre.webp", position: "45% center", mobilePosition: "24% center" } },
   "rang-champion": { rarity: "legendaire", art: { type: "rank", rank: "Champion" } },
   "rang-legende": { rarity: "legendaire", art: { type: "rank", rank: "Légende" } },
   "premier-sang": { rarity: "commune", art: { type: "glyph", glyph: "1", color: "#f87171" } },
