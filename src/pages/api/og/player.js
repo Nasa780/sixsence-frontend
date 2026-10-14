@@ -115,8 +115,8 @@ export default async function handler(request) {
         </div>
 
         {/* Identité, points, statistiques */}
-        <div style={{ position: "absolute", left: 350, top: BANNER + 8, width: 790, display: "flex", flexDirection: "column" }}>
-          <div style={{ display: "flex", alignItems: "center", gap: 12, fontFamily: text, fontSize: 16, fontWeight: 700, letterSpacing: 6, color: goldLight }}>
+        <div style={{ position: "absolute", left: 350, top: BANNER + 2, width: 790, display: "flex", flexDirection: "column" }}>
+          <div style={{ display: "flex", alignItems: "center", gap: 12, fontFamily: text, fontSize: 19, fontWeight: 700, letterSpacing: 5, color: goldLight }}>
             <div style={{ display: "flex" }}>
               SIX<span style={{ color: gold }}>SENCE</span>
             </div>
@@ -143,23 +143,23 @@ export default async function handler(request) {
                 {profile.points}
               </div>
               <div style={{ display: "flex", marginBottom: 6, fontFamily: text }}>
-                <span style={{ fontSize: 18, fontWeight: 700, letterSpacing: 4, color: "rgba(255,255,255,0.6)" }}>POINTS</span>
+                <span style={{ fontSize: 20, fontWeight: 700, letterSpacing: 4, color: "rgba(255,255,255,0.7)" }}>POINTS</span>
               </div>
             </div>
           </div>
 
-          <div style={{ display: "flex", gap: 2, marginTop: 16, background: "rgba(255,255,255,0.1)" }}>
+          <div style={{ display: "flex", gap: 2, marginTop: 10, background: "rgba(255,255,255,0.1)" }}>
             {stats.map((stat) => (
-              <div key={stat.label} style={{ display: "flex", flexDirection: "column", flex: 1, padding: "10px 16px", background: "#0d0c0a" }}>
-                <span style={{ fontFamily: text, fontSize: 13, fontWeight: 700, letterSpacing: 3, color: "rgba(255,255,255,0.45)", textTransform: "uppercase" }}>{stat.label}</span>
-                <span style={{ fontFamily: display, fontSize: 36, fontWeight: 900, marginTop: 4 }}>{stat.value}</span>
+              <div key={stat.label} style={{ display: "flex", flexDirection: "column", flex: 1, padding: "8px 16px", background: "#0d0c0a" }}>
+                <span style={{ fontFamily: text, fontSize: 16, fontWeight: 700, letterSpacing: 2, color: "rgba(255,255,255,0.6)", textTransform: "uppercase" }}>{stat.label}</span>
+                <span style={{ fontFamily: display, fontSize: 42, fontWeight: 900, marginTop: 2 }}>{stat.value}</span>
               </div>
             ))}
           </div>
 
           {/* Progression vers le rang suivant */}
-          <div style={{ display: "flex", flexDirection: "column", marginTop: 16 }}>
-            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-end", fontFamily: text, fontSize: 15, fontWeight: 700, letterSpacing: 3, textTransform: "uppercase" }}>
+          <div style={{ display: "flex", flexDirection: "column", marginTop: 12 }}>
+            <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-end", fontFamily: text, fontSize: 18, fontWeight: 700, letterSpacing: 3, textTransform: "uppercase" }}>
               <div style={{ display: "flex", gap: 10, alignItems: "center" }}>
                 <span style={{ color: rank.text }}>{rank.name}</span>
                 {next.rank ? <span style={{ color: "rgba(255,255,255,0.35)" }}>→</span> : null}
@@ -232,7 +232,7 @@ function CardBanner({ card, image, display }) {
 /** Ligne du bas : série record à gauche (et MVP du mois), lien du site discret à droite. */
 function Footer({ streak, mvpMonths, text }) {
   return (
-    <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginTop: 10, fontFamily: text, fontSize: 15, fontWeight: 500, color: "rgba(255,255,255,0.5)" }}>
+    <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginTop: 10, fontFamily: text, fontSize: 18, fontWeight: 500, color: "rgba(255,255,255,0.6)" }}>
       <div style={{ display: "flex", gap: 24 }}>
         <span style={{ display: "flex", gap: 6 }}>
           <span style={{ color: "#fff", fontWeight: 700 }}>Record</span> : {streak} victoire{streak > 1 ? "s" : ""} d'affilée
@@ -240,7 +240,7 @@ function Footer({ streak, mvpMonths, text }) {
         {mvpMonths > 0 ? <span style={{ color: goldLight }}>MVP du mois ×{mvpMonths}</span> : null}
       </div>
       {/* Lien discret : l'en-tête affiche déjà SIXSENCE en or. */}
-      <span style={{ color: "rgba(255,255,255,0.4)" }}>sixsence.fr</span>
+      <span style={{ color: "rgba(255,255,255,0.45)" }}>sixsence.fr</span>
     </div>
   );
 }
