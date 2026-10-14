@@ -10,6 +10,9 @@
  *             ajouter { image: "/images/cartes/<clé>.webp", position, mobilePosition } quand
  *             l'illustration existe (bannière 2400 x 900, sujet vers 45 % de la largeur ;
  *             mobilePosition décale le sujet sur le bord droit du profil sur téléphone).
+ *   video     fond animé : { video: "/images/cartes/<clé>.mp4", poster } (boucle courte sans son,
+ *             moins de 1 Mo, vidéo verticale nette au centre et floutée derrière ; image fixe
+ *             pour ceux qui ont demandé moins d'animations).
  */
 
 export const RARITY = {
@@ -43,7 +46,7 @@ const CARDS = {
   "mvp-du-mois": { rarity: "legendaire", art: { type: "illustration", glyph: "MVP", hue: "#facc15" } },
   "mvp-10": { rarity: "rare", art: { type: "glyph", glyph: "MVP", color: "#facc15" } },
   fondateur: { rarity: "legendaire", art: { type: "illustration", glyph: "F", hue: "#e8c26a" } },
-  beta: { rarity: "rare", art: { type: "glyph", glyph: "β", color: "#94a3b8" } },
+  beta: { rarity: "rare", art: { type: "glyph", glyph: "β", color: "#5cc8ff", video: "/images/cartes/beta.mp4", poster: "/images/cartes/beta-poster.webp" } },
   partenaire: { rarity: "rare", art: { type: "glyph", glyph: "P", color: "#ff9a5c" } },
   "staff-6": { rarity: "rare", art: { type: "glyph", glyph: "6", color: "#d4af37" } },
   "premiere-viree": { rarity: "commune", art: { type: "glyph", glyph: "GTA", color: "#ff9a5c" } },

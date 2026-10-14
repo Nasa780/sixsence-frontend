@@ -26,6 +26,9 @@ export function CardArt({ cardKey, place = "tile", motif = true }) {
   const big = place !== "tile";
   const spot = cn("absolute", SPOT[place] ?? SPOT.tile);
 
+  if (art.video) {
+    return <CardVideo art={art} place={place} />;
+  }
   if (art.image) {
     // Profil sur téléphone (carte haute) : cadrage à part (art.mobilePosition), sujet sur le bord droit.
     const mobile = place === "profile" && art.mobilePosition;
@@ -98,6 +101,26 @@ export function CardArt({ cardKey, place = "tile", motif = true }) {
           {art.glyph}
         </div>
       ) : null}
+    </div>
+  );
+}
+
+/**
+ * Fond vidéo : la vidéo (verticale) nette, en fondu sur les bords, au centre du profil sur
+ * ordinateur et à droite ailleurs ; la même vidéo floutée et assombrie remplit la bannière.
+ * Moins d'animations demandées : l'image fixe (poster) seulement.
+ */
+const FADE = "linear-gradient(90deg,transparent,#000 25%,#000 75%,transparent)";
+function CardVideo({ art, place }) {
+  const sharp = place === "profile" ? "right-0 w-[60%] lg:left-[30%] lg:right-auto lg:w-[32%]" : "right-0 w-[55%]";
+  return (
+    <div className="absolute inset-0 overflow-hidden bg-black">
+      <div className="absolute inset-0 scale-110 bg-cover bg-center opacity-70 blur-2xl brightness-50" style={{ backgroundImage: `url(${art.poster})` }} />
+      <div className="cc-video absolute inset-0">
+        <video src={art.video} poster={art.poster} autoPlay muted loop playsInline aria-hidden className="absolute inset-0 h-full w-full scale-110 object-cover opacity-70 blur-2xl brightness-50" />
+        <video src={art.video} poster={art.poster} autoPlay muted loop playsInline aria-hidden className={cn("absolute inset-y-0 h-full object-cover", sharp)} style={{ maskImage: FADE, WebkitMaskImage: FADE }} />
+      </div>
+      <div className={cn("cc-video-still absolute inset-y-0 hidden bg-cover bg-center", sharp)} style={{ backgroundImage: `url(${art.poster})`, maskImage: FADE, WebkitMaskImage: FADE }} />
     </div>
   );
 }
