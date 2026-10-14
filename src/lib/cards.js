@@ -27,7 +27,7 @@ export const RARITY = {
 export const DEFAULT_CARD = "sixsence";
 
 const CARDS = {
-  sixsence: { rarity: "commune", art: { type: "default" } },
+  sixsence: { rarity: "commune", art: { type: "default", og: "/images/cartes/og/sixsence.jpg" } },
   "rang-argent": { rarity: "commune", art: { type: "rank", rank: "Argent" } },
   "rang-or": { rarity: "commune", art: { type: "rank", rank: "Or" } },
   "rang-platine": { rarity: "rare", art: { type: "rank", rank: "Platine" } },
