@@ -48,10 +48,10 @@ export default function PlayerProfilePage({ meta }) {
   const isOwn = Boolean(userId) && id === userId;
 
   const played = meta ? meta.wins + meta.losses : 0;
-  const title = meta ? `${meta.username} · ${rankFor(meta.points).name} — ${meta.points} pts` : "Profil joueur";
+  const title = meta ? `${meta.username} · ${rankFor(meta.points).name} — ${meta.points} pts` : "Profil joueur";
   const description = meta
     ? played > 0
-      ? `Classé MW4 sur SixSence : ${meta.wins} victoire${meta.wins > 1 ? "s" : ""}, ${meta.losses} défaite${meta.losses > 1 ? "s" : ""} (${Math.round((meta.wins / played) * 100)} % de victoires).`
+      ? `Classé MW4 sur SixSence : ${meta.wins} victoire${meta.wins > 1 ? "s" : ""}, ${meta.losses} défaite${meta.losses > 1 ? "s" : ""} (${Math.round((meta.wins / played) * 100)} % de victoires).`
       : "Joueur du classé MW4 sur SixSence. Viens l'affronter !"
     : "Profil d'un joueur du classé MW4 sur SixSence.";
   // Le paramètre v change avec les résultats : Discord recharge la carte à chaque évolution.

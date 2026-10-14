@@ -232,7 +232,7 @@ export function PlayersPanel({ currentUserId }) {
                       {banned ? <Chip tone="loss">{isPermanentBan(player.profile.banned_until) ? "Exclu définitivement" : "Exclu"}</Chip> : null}
                     </p>
                     <p className="text-xs text-white/45">
-                      {player.profile ? `${player.profile.points} pts · ${player.profile.wins} V / ${player.profile.losses} D` : "Pas de profil COD"}
+                      {player.profile ? `${player.profile.points} pts · ${player.profile.wins} V / ${player.profile.losses} D` : "Pas de profil COD"}
                       {player.profile?.activision_id ? ` · ${player.profile.activision_id}` : ""}
                     </p>
                   </div>

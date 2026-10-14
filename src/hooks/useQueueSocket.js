@@ -157,7 +157,7 @@ export default function useQueueSocket(enabled) {
       socket.onclose = () => {
         clearInterval(pingTimer);
         if (closed) return;
-        // Reconnexion progressive : 1 s, 2 s, 4 s… jusqu'à 30 s
+        // Reconnexion progressive : 1 s, 2 s, 4 s… jusqu'à 30 s
         // (le serveur gratuit de Render peut mettre une minute à se réveiller).
         retry += 1;
         setState((prev) => ({ ...prev, status: "reconnecting" }));

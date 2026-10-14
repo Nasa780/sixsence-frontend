@@ -46,7 +46,7 @@ export function nextRank(points = 0) {
  * Barème (calculé par le backend, fonctions SQL cod_points_preview et cod_loss_penalty) :
  *   victoire : +50 pour tout le monde ;
  *   défaite  : Bronze -15, Argent -20, Or -25, Platine -30, Diamant -35, -50 dès Maître
- *              (champ loss de chaque rang), réduite de 25 % pour un joueur seul ;
+ *              (champ loss de chaque rang), réduite de 25 % pour un joueur seul ;
  *   placement : pendant les 10 premiers matchs de la saison, victoires doublées (+100).
  * Les points en jeu de chaque joueur sont affichés avant le match (PointsAtStake).
  */
@@ -62,7 +62,7 @@ export function groupLabel(size = 1) {
   return ["Solo", "Solo", "Duo", "Trio", "Groupe de 4", "Équipe de 5"][size] ?? `Groupe de ${size}`;
 }
 
-/** Niveau du joueur : un niveau tous les 1 000 XP (2 victoires). */
+/** Niveau du joueur : un niveau tous les 1 000 XP (2 victoires). */
 export function levelFor(xp = 0) {
   return Math.floor(xp / 1000) + 1;
 }

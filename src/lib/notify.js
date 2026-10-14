@@ -110,11 +110,11 @@ function impact(ctx, start) {
 //   match-start.wav : l'impact de 0:29, quand le match démarre.
 // Chargés une fois, au premier clic ; en cas d'échec, les sons synthétisés prennent le relais.
 const SAMPLES = { found: "/sounds/match-found.mp3", start: "/sounds/match-start.wav" };
-/** Le fichier commence à 0,235 s de la piste : décalage pour démarrer pile à 0,3 s. */
+/** Le fichier commence à 0,235 s de la piste : décalage pour démarrer pile à 0,3 s. */
 const FOUND_OFFSET = 0.065;
-/** Durée jouée : de 0,3 s à 1:03 de la piste. */
+/** Durée jouée : de 0,3 s à 1:03 de la piste. */
 const FOUND_LENGTH = 62.7;
-/** « Tester le son » : de 0:17 à 0:22 de la piste (le fichier commence à 0,235 s). */
+/** « Tester le son » : de 0:17 à 0:22 de la piste (le fichier commence à 0,235 s). */
 const PREVIEW_OFFSET = 17 - 0.235;
 const PREVIEW_LENGTH = 5;
 const buffers = {};

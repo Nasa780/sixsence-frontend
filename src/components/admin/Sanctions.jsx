@@ -19,10 +19,10 @@ const TYPES = [
 ];
 
 const DURATIONS = [
-  { minutes: 60, label: "1 h" },
-  { minutes: 1440, label: "24 h" },
-  { minutes: 10080, label: "7 jours" },
-  { minutes: 43200, label: "30 jours" },
+  { minutes: 60, label: "1 h" },
+  { minutes: 1440, label: "24 h" },
+  { minutes: 10080, label: "7 jours" },
+  { minutes: 43200, label: "30 jours" },
 ];
 
 const INPUT = "w-full border border-white/12 bg-ink px-3 py-2 text-sm text-white placeholder:text-white/35 focus:border-gold focus:outline-none";
@@ -302,7 +302,7 @@ export function SanctionsPanel() {
                       </Link>
                       {banned ? <Chip tone="loss">{isPermanentBan(until) ? "Exclu définitivement" : "Exclu"}</Chip> : null}
                     </p>
-                    <p className="text-xs text-white/45">{player.profile ? `${player.profile.points} pts · ${player.profile.wins} V / ${player.profile.losses} D` : "Pas de profil COD"}</p>
+                    <p className="text-xs text-white/45">{player.profile ? `${player.profile.points} pts · ${player.profile.wins} V / ${player.profile.losses} D` : "Pas de profil COD"}</p>
                   </div>
                   <div className="flex flex-wrap gap-2">
                     {player.profile ? (

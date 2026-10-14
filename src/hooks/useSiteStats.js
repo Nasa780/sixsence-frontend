@@ -5,7 +5,7 @@ import { api } from "../lib/api";
  * Compteurs publics du site (page d'accueil et page Ranked) :
  *   players, matchesPlayed, matchesInProgress, averagePoints  (GET /stats)
  *   playersInQueue, playersOnline                              (GET /cod/status)
- * Rafraîchis toutes les 30 secondes. Valeurs à null tant qu'elles chargent.
+ * Rafraîchis toutes les 30 secondes. Valeurs à null tant qu'elles chargent.
  */
 export default function useSiteStats() {
   const [stats, setStats] = useState(null);

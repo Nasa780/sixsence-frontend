@@ -53,12 +53,12 @@ export function QueuePanel({ profileComplete, userId }) {
   const [chosen, setChosen] = useState(null);
   const elapsed = useElapsedSeconds(queue.inQueue ? queue.joinedAt : null);
   const banLeft = useCountdown(queue.bannedUntil);
-  // Durée maximale de recherche : « Toujours là ? » 5 min avant l'arrêt (backend : COD_QUEUE_MAX_MINUTES).
+  // Durée maximale de recherche : « Toujours là ? » 5 min avant l'arrêt (backend : COD_QUEUE_MAX_MINUTES).
   const stopLeft = useCountdown(queue.inQueue && queue.stillThere ? queue.expiresAt : null);
-  // Avant le « Toujours là ? » : temps restant jusqu'à la demande de confirmation (5 min avant l'arrêt).
+  // Avant le « Toujours là ? » : temps restant jusqu'à la demande de confirmation (5 min avant l'arrêt).
   const warnAt = queue.inQueue && !queue.stillThere && queue.expiresAt ? new Date(new Date(queue.expiresAt).getTime() - 5 * 60_000).toISOString() : null;
   const confirmLeft = useCountdown(warnAt);
-  // Sur téléphone, le serveur garde la place 30 min après la fermeture de l'appli (COD_MOBILE_GRACE_MINUTES).
+  // Sur téléphone, le serveur garde la place 30 min après la fermeture de l'appli (COD_MOBILE_GRACE_MINUTES).
   const [isMobile, setIsMobile] = useState(false);
   useEffect(() => setIsMobile(/Android|iPhone|iPad|iPod|Mobi/i.test(navigator.userAgent)), []);
 
@@ -211,7 +211,7 @@ export function QueuePanel({ profileComplete, userId }) {
                     aria-selected={active}
                     disabled={!active && (!canSwitch || !fits)}
                     onClick={() => chooseFormat(item.format)}
-                    title={!fits ? `Ton groupe compte ${groupSize} joueurs : trop pour du ${item.format}.` : undefined}
+                    title={!fits ? `Ton groupe compte ${groupSize} joueurs : trop pour du ${item.format}.` : undefined}
                     className={cn(
                       "clip-slant flex items-baseline justify-between gap-3 px-5 py-3 text-left transition-colors disabled:cursor-not-allowed disabled:opacity-40",
                       active ? "bg-gold text-ink" : "bg-white/[0.05] text-white/70 hover:bg-white/10 hover:text-white",
@@ -252,14 +252,14 @@ export function QueuePanel({ profileComplete, userId }) {
                 En file {queue.groupSize > 1 ? `avec ton groupe (${groupLabel(queue.groupSize).toLowerCase()}) ` : ""}depuis{" "}
                 <span className="font-tech font-bold tabular-nums text-white">{formatDuration(elapsed)}</span>.{" "}
                 {isMobile
-                  ? "Tu peux verrouiller ton téléphone ou changer d'application : tu gardes ta place pendant 30 min, et une notification te prévient dès que ton match est trouvé."
+                  ? "Tu peux verrouiller ton téléphone ou changer d'application : tu gardes ta place pendant 30 min, et une notification te prévient dès que ton match est trouvé."
                   : "Garde cette page ouverte, même dans un autre onglet : un son et une notification te préviennent dès que ton match est trouvé."}
               </>
             ) : party && !isLeader ? (
               <>Tu es dans le groupe de {party.members.find((member) => member.isLeader)?.username ?? "ton chef"} : c&apos;est lui qui lance la recherche.</>
             ) : (
               <>
-                Le match se lance dès que {needed} joueurs sont dans la file {selected?.label ?? ""}. Tu auras alors une minute pour
+                Le match se lance dès que {needed} joueurs sont dans la file {selected?.label ?? ""}. Tu auras alors une minute pour
                 l&apos;accepter.
               </>
             )}
@@ -271,7 +271,7 @@ export function QueuePanel({ profileComplete, userId }) {
               <span>
                 Si aucun match n&apos;est trouvé après{" "}
                 <span className="font-tech font-bold tabular-nums text-white/80">{formatDuration(confirmLeft)}</span>, on te demandera si tu es
-                toujours là. Tu auras alors 5 minutes pour cliquer sur « Rester en file », sinon ta recherche s&apos;arrêtera.
+                toujours là. Tu auras alors 5 minutes pour cliquer sur « Rester en file », sinon ta recherche s&apos;arrêtera.
               </span>
             </p>
           ) : null}
@@ -318,8 +318,8 @@ export function QueuePanel({ profileComplete, userId }) {
           </div>
 
           <p className="mt-4 text-xs text-white/45">
-            Une victoire rapporte <span className="text-white/70">50 pts</span> et tes 10 premiers matchs de placement doublent tes gains, tandis
-            qu&apos;une défaite te fait perdre <span className="text-white/70">entre 15 et 50 pts</span> selon ton rang, avec une réduction de 25 % si tu
+            Une victoire rapporte <span className="text-white/70">50 pts</span> et tes 10 premiers matchs de placement doublent tes gains, tandis
+            qu&apos;une défaite te fait perdre <span className="text-white/70">entre 15 et 50 pts</span> selon ton rang, avec une réduction de 25 % si tu
             joues seul.
           </p>
 
@@ -337,7 +337,7 @@ export function QueuePanel({ profileComplete, userId }) {
             {queue.aborted?.reason === "missed" ? (
               <Notice tone="error">
                 Tu n&apos;as pas accepté le match à temps : avertissement enregistré.
-                {queue.aborted.bannedUntil ? " Plusieurs avertissements en 24 h entraînent une exclusion temporaire de la file." : " Au prochain oubli dans les 24 h, tu seras exclu 15 minutes."}
+                {queue.aborted.bannedUntil ? " Plusieurs avertissements en 24 h entraînent une exclusion temporaire de la file." : " Au prochain oubli dans les 24 h, tu seras exclu 15 minutes."}
               </Notice>
             ) : null}
 
@@ -360,7 +360,7 @@ export function QueuePanel({ profileComplete, userId }) {
               </Notice>
             ) : null}
 
-            {tooBig ? <Notice tone="error">Ton groupe compte {groupSize} joueurs : trop pour du {selected?.label}. Choisis une autre file.</Notice> : null}
+            {tooBig ? <Notice tone="error">Ton groupe compte {groupSize} joueurs : trop pour du {selected?.label}. Choisis une autre file.</Notice> : null}
 
             {hasActiveMatch ? (
               <Notice>
@@ -415,14 +415,14 @@ export function QueuePanel({ profileComplete, userId }) {
   );
 }
 
-/** « 1 min 05 s » à partir d'un nombre de secondes. */
+/** « 1 min 05 s » à partir d'un nombre de secondes. */
 export function formatDuration(seconds) {
   const total = Math.max(0, Math.floor(seconds));
   const hours = Math.floor(total / 3600);
   const minutes = Math.floor((total % 3600) / 60);
   const rest = String(total % 60).padStart(2, "0");
-  if (hours > 0) return `${hours} h ${String(minutes).padStart(2, "0")} min`;
-  return minutes > 0 ? `${minutes} min ${rest} s` : `${total} s`;
+  if (hours > 0) return `${hours} h ${String(minutes).padStart(2, "0")} min`;
+  return minutes > 0 ? `${minutes} min ${rest} s` : `${total} s`;
 }
 
 /** Secondes écoulées depuis une date, rafraîchies chaque seconde. */
