@@ -269,9 +269,9 @@ export function QueuePanel({ profileComplete, userId }) {
             <p className="mt-3 flex items-start gap-2 text-xs text-white/50">
               <LuClock aria-hidden className="mt-0.5 h-3.5 w-3.5 shrink-0 text-gold/80" />
               <span>
-                Si aucun match n&apos;est trouvé dans{" "}
+                Si aucun match n&apos;est trouvé après{" "}
                 <span className="font-tech font-bold tabular-nums text-white/80">{formatDuration(confirmLeft)}</span>, on te demandera si tu es
-                toujours là. Tu auras alors 5 min pour cliquer sur « Rester en file », sans réponse ta recherche s&apos;arrêtera.
+                toujours là. Tu auras alors 5 minutes pour cliquer sur « Rester en file », sinon ta recherche s&apos;arrêtera.
               </span>
             </p>
           ) : null}
@@ -285,7 +285,7 @@ export function QueuePanel({ profileComplete, userId }) {
                   <p className="mt-1.5 text-sm text-white/70">
                     Aucun match pour l&apos;instant. Il te reste{" "}
                     <span className="font-tech font-bold tabular-nums text-white">{formatDuration(stopLeft)}</span> pour cliquer sur « Rester en file »
-                    et garder ta place, sans réponse {queue.groupSize > 1 ? "la recherche du groupe" : "ta recherche"} s&apos;arrête.
+                    et garder ta place, sinon {queue.groupSize > 1 ? "la recherche du groupe" : "ta recherche"} s&apos;arrêtera.
                   </p>
                 </div>
               </div>
@@ -318,8 +318,9 @@ export function QueuePanel({ profileComplete, userId }) {
           </div>
 
           <p className="mt-4 text-xs text-white/45">
-            <span className="text-white/70">Victoire : +50 points</span>. <span className="text-white/70">Défaite</span> : −15 à −50 selon ton rang (25 % de
-            perte en moins si tu joues seul). <span className="text-white/70">Placement</span> : victoires doublées sur tes 10 premiers matchs.
+            Une victoire rapporte <span className="text-white/70">50 points</span> et tes 10 premiers matchs de placement doublent tes gains, tandis
+            qu&apos;une défaite te fait perdre <span className="text-white/70">entre 15 et 50 points</span> selon ton rang, avec une réduction de 25 % si tu
+            joues seul.
           </p>
 
           {/* Ce qui empêche de jouer, du plus bloquant au moins bloquant. */}
