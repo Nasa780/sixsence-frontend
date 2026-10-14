@@ -15,15 +15,15 @@ import { api } from "../../lib/api";
 import { rankFor } from "../../lib/ranks";
 
 const RULES = [
-  { title: "Choisis ta file", text: "2v2, 3v3, 4v4 ou 5v5, seul ou en groupe. Le match se lance dès que les deux équipes sont complètes : les premiers arrivés jouent en premier." },
-  { title: "Joue avec tes amis", text: "Crée un groupe et envoie le lien : vous serez toujours dans la même équipe. Seul, une défaite coûte 25 % de points en moins." },
+  { title: "Choisis ta file", text: "En 2v2, 3v3, 4v4 ou 5v5, rejoins la file seul ou en groupe. Le match se lance dès que les deux équipes sont complètes : les premiers arrivés jouent en premier." },
+  { title: "Joue avec tes amis", text: "Crée un groupe et envoie le lien à tes amis : vous serez toujours dans la même équipe. Si tu joues seul, une défaite te coûte 25 % de points en moins." },
   { title: "Une minute pour accepter", text: "Quand ton match est trouvé, un effet sonore et une notification te préviennent : tu as alors 60 secondes pour cliquer sur « Accepter »." },
   { title: "30 minutes de recherche", text: "Après 25 minutes de recherche, le message « Toujours là ? » s'affiche. Tu as alors 5 minutes pour cliquer sur « Rester en file », sinon tu seras automatiquement retiré (la recherche étant limitée à 30 minutes au total)." },
   { title: "Recherche & Destruction Hardcore", text: "Toutes les files se jouent en R&D Hardcore, en partie privée." },
   { title: "Équipes et carte au hasard", text: "Les joueurs sont répartis au hasard entre les deux équipes, et la carte est tirée au sort. Si tu joues en groupe, vous restez ensemble." },
   { title: "L'hôte crée la partie", text: "Le premier joueur de l'équipe 1 crée la partie privée en R&D Hardcore et invite les autres." },
-  { title: "Le résultat se confirme à deux", text: "Un joueur déclare le vainqueur, l'équipe adverse confirme. Les points sont ensuite mis à jour. Sans confirmation sous 15 min, le résultat est validé. En cas de désaccord, un arbitre tranche." },
-  { title: "Engagement", text: "Ne pas accepter un match donne un avertissement. Sur 24 h : au 2ème, sanction de 15 min sans file ; au 3ème, 1 h ; au-delà, 24 h." },
+  { title: "Le résultat se confirme à deux", text: "Déclare ton match, attends la confirmation adverse et tes points s'actualisent. Attention : après 15 minutes sans réponse, le résultat déclaré est validé par défaut. Un arbitre intervient si un litige ou une contestation des scores est ouvert." },
+  { title: "Engagement", text: "Refuser un match donne un avertissement, mais répéter l'infraction sur 24 heures t'exclut de la file d'attente pendant 15 minutes au 2e refus, 1 heure au 3e, et 24 heures au-delà." },
 ];
 
 /** File d'attente classée : panneau temps réel, règles, rangs. Visible par tous, jouable une fois connecté. */
