@@ -9,6 +9,10 @@ export const config = { runtime: "edge" };
 const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 const { gold, goldLight, goldPale, goldDark } = OG_COLORS;
 const BANNER = 300;
+/** Silhouette de ville et de palmiers (cartes GTA 6). */
+const SKYLINE = `data:image/svg+xml;utf8,${encodeURIComponent(
+  '<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="110" viewBox="0 0 400 60" preserveAspectRatio="none"><g fill="#12061c"><path d="M0 60V44h10v-8h8v8h6V30h10v14h8v-6h10v6h6V24h12v20h6v-10h8v10h10V36h6v8h8V28h14v16h6v-8h10v8h12V32h8v12h6V20h10v24h8v-6h12v6h10V38h6v6h8V26h12v18h6v-8h10v8h10V34h8v10h10V30h12v14h8v-10h10v10h12V40h10v20Z"/><path d="M330 60 L333 22 L335 22 L337 60Z"/><path d="M334 22 q-14 -4 -22 4 q10 -6 22 -2Z M334 22 q14 -4 22 4 q-10 -6 -22 -2Z M334 22 q-8 -10 -18 -10 q10 2 18 12Z M334 22 q8 -10 18 -10 q-10 2 -18 12Z"/><path d="M372 60 L374 30 L376 30 L377 60Z"/><path d="M375 30 q-11 -3 -17 3 q8 -5 17 -1Z M375 30 q11 -3 17 3 q-8 -5 -17 -1Z M375 30 q-6 -8 -14 -8 q8 2 14 9Z"/></g></svg>',
+)}`;
 /** Coins taillés (façon interface militaire) : coupe en haut à gauche et en bas à droite. */
 const CUT = 34;
 const FRAME = `polygon(${CUT}px 0, 1200px 0, 1200px ${630 - CUT}px, ${1200 - CUT}px 630px, 0 630px, 0 ${CUT}px)`;
@@ -29,10 +33,11 @@ export default async function handler(request) {
   const id = searchParams.get("id") ?? "";
   if (!UUID.test(id)) return new Response("Joueur invalide", { status: 400 });
 
-  const [fonts, users, profiles] = await Promise.all([
+  const [fonts, users, profiles, seasons] = await Promise.all([
     loadFonts(),
     supabaseRest(`users?id=eq.${id}&select=username,avatar_url`),
     supabaseRest(`cod_profiles?user_id=eq.${id}&select=points,wins,losses,xp,best_streak,badges,platform,calling_card`),
+    supabaseRest("seasons?is_active=eq.true&select=name&limit=1").catch(() => []),
   ]);
   const user = users[0];
   const profile = profiles[0];
@@ -117,6 +122,8 @@ export default async function handler(request) {
             </div>
             <span style={{ color: "rgba(255,255,255,0.35)" }}>·</span>
             <span>CLASSÉ MW4</span>
+            {seasons?.[0]?.name ? <span style={{ color: "rgba(255,255,255,0.35)" }}>·</span> : null}
+            {seasons?.[0]?.name ? <span style={{ textTransform: "uppercase" }}>{seasons[0].name}</span> : null}
           </div>
           <div style={{ display: "flex", alignItems: "flex-end", justifyContent: "space-between", marginTop: 6 }}>
             <div style={{ display: "flex", fontFamily: display, fontSize: user.username.length > 14 ? 58 : 72, fontWeight: 900, lineHeight: 1, textTransform: "uppercase" }}>{user.username}</div>
@@ -165,11 +172,8 @@ export default async function handler(request) {
             <div style={{ display: "flex", marginTop: 8, height: 10, width: 790, background: "rgba(255,255,255,0.08)" }}>
               <div style={{ display: "flex", height: 10, width: Math.max(8, Math.round(790 * Math.min(1, next.progress))), background: next.rank ? `linear-gradient(90deg, ${rank.color}, ${next.rank.color})` : `linear-gradient(90deg, ${goldDark}, ${goldLight})` }} />
             </div>
-            <div style={{ display: "flex", gap: 24, marginTop: 10, fontFamily: text, fontSize: 15, fontWeight: 500, color: "rgba(255,255,255,0.5)" }}>
-              <span>Meilleure série : {profile.best_streak}</span>
-              {mvpMonths > 0 ? <span style={{ color: goldLight }}>⭐ MVP du mois ×{mvpMonths}</span> : null}
-              <span>sixsence.fr</span>
-            </div>
+            <Footer streak={profile.best_streak} mvpMonths={mvpMonths} text={text} />
+
           </div>
         </div>
 
@@ -198,6 +202,20 @@ function CardBanner({ card, image, display }) {
       </div>
     );
   }
+  if (art.type === "sunset") {
+    return (
+      <div style={{ ...box, background: "linear-gradient(180deg,#1a0b2e 0%,#4a1450 38%,#b3305e 68%,#ff7a4a 88%,#ffb45c 100%)" }}>
+        <div style={{ position: "absolute", left: 760, top: 40, width: 220, height: 220, borderRadius: 999, display: "flex", background: "linear-gradient(180deg,#ffe08a 0%,#ffb05c 45%,#ff5f8a 100%)" }} />
+        {[150, 175, 198, 218].map((top) => (
+          <div key={top} style={{ position: "absolute", left: 740, top, width: 260, height: 7, display: "flex", background: "#c23a63" }} />
+        ))}
+        <img src={SKYLINE} width={1200} height={110} style={{ position: "absolute", left: 0, top: BANNER - 110 }} />
+        {art.glyph ? (
+          <div style={{ position: "absolute", left: 1010, top: 30, display: "flex", fontFamily: display, fontSize: 110, fontWeight: 900, color: "#fff", lineHeight: 1 }}>{art.glyph}</div>
+        ) : null}
+      </div>
+    );
+  }
   const color = art.color ?? art.hue ?? gold;
   const glyph = art.glyph ?? "VI";
   return (
@@ -205,6 +223,21 @@ function CardBanner({ card, image, display }) {
       <div style={{ position: "absolute", left: 700, top: 10, display: "flex", fontFamily: display, fontSize: 200, fontWeight: 900, fontStyle: "italic", color, opacity: 0.55, lineHeight: 1 }}>
         {glyph}
       </div>
+    </div>
+  );
+}
+
+/** Ligne du bas : série record à gauche (et MVP du mois), lien du site en or à droite. */
+function Footer({ streak, mvpMonths, text }) {
+  return (
+    <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginTop: 10, fontFamily: text, fontSize: 15, fontWeight: 500, color: "rgba(255,255,255,0.5)" }}>
+      <div style={{ display: "flex", gap: 24 }}>
+        <span style={{ display: "flex", gap: 6 }}>
+          <span style={{ color: "#fff", fontWeight: 700 }}>Record</span> : {streak} victoire{streak > 1 ? "s" : ""} d'affilée
+        </span>
+        {mvpMonths > 0 ? <span style={{ color: goldLight }}>MVP du mois ×{mvpMonths}</span> : null}
+      </div>
+      <span style={{ color: gold, fontWeight: 700, letterSpacing: 3 }}>SIXSENCE.FR</span>
     </div>
   );
 }

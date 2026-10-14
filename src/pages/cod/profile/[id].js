@@ -55,7 +55,7 @@ export default function PlayerProfilePage({ meta }) {
       : "Joueur du classé MW4 sur SixSence. Viens l'affronter !"
     : "Profil d'un joueur du classé MW4 sur SixSence.";
   // Le paramètre v change avec les résultats et la carte de visite : Discord recharge l'image à chaque évolution.
-  const image = meta ? `${SITE_URL}/api/og/player?id=${id}&v=r7-${meta.points}-${meta.wins}-${meta.losses}-${meta.card}` : null;
+  const image = meta ? `${SITE_URL}/api/og/player?id=${id}&v=r8-${meta.points}-${meta.wins}-${meta.losses}-${meta.card}` : null;
 
   return (
     <>
