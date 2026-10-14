@@ -34,7 +34,7 @@ export function RanksGrid({ highlight = null }) {
           return (
             <li
               key={rank.name}
-              className="relative overflow-hidden bg-ink-800 px-4 pb-5 pt-4"
+              className="relative flex flex-col overflow-hidden bg-ink-800 px-4 pb-5 pt-4"
             >
               {active ? (
                 <span aria-hidden className="absolute inset-x-0 top-0 h-0.5" style={{ background: rank.color, boxShadow: `0 0 10px ${rank.color}` }} />
@@ -55,7 +55,8 @@ export function RanksGrid({ highlight = null }) {
                 {rank.min}
                 {ordered[index + 1] ? `–${ordered[index + 1].min - 1}` : "+"} pts
               </p>
-              <p className="mt-2 text-xs text-white/40">
+              {/* Collée en bas de la carte : alignée même si la ligne des points passe sur deux lignes. */}
+              <p className="mt-auto pt-2 text-xs text-white/40">
                 Défaite <span className="font-tech font-bold text-loss">−{rank.loss}</span>
               </p>
             </li>

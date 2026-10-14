@@ -31,7 +31,7 @@ const SECTIONS = [
         </p>
         <p>
           Quand assez de joueurs sont en file, les premiers arrivés sont retenus, puis les équipes et la carte sont tirées au sort (un groupe reste toujours ensemble). Chaque joueur dispose alors de{" "}
-          <strong>1 minute</strong> pour cliquer sur « Accepter le match ». Un son et une notification te préviennent.
+          <strong>1 minute</strong> pour cliquer sur « Accepter le match ». Un son et une notification te préviennent.
         </p>
         <p>
           Sur ordinateur, garde la page ouverte pendant ta recherche : si tu la fermes, tu quittes la file au bout de 30 secondes. Sur
@@ -60,7 +60,7 @@ const SECTIONS = [
         <ul>
           <li>1er avertissement : aucun effet, simple rappel ;</li>
           <li>2e avertissement : 15 minutes sans accès à la file ;</li>
-          <li>3e avertissement : 1 heure sans accès à la file ;</li>
+          <li>3e avertissement : 1 heure sans accès à la file ;</li>
           <li>au-delà : 24 heures sans accès à la file.</li>
         </ul>
         <p>

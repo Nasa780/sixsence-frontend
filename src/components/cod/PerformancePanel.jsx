@@ -113,7 +113,7 @@ export function PerformancePanel({ history, userId, points, seasonId, seasonLabe
           value={signed(stats.change)}
           tone={stats.change > 0 ? "win" : stats.change < 0 ? "loss" : null}
           icon={stats.change >= 0 ? LuTrendingUp : LuTrendingDown}
-          hint={`sur ${entries.length} match${entries.length > 1 ? "s" : ""}`}
+          hint={`sur ${entries.length} match${entries.length > 1 ? "s" : ""}`}
         />
         <Kpi label="Pic" value={stats.peak} hint={`creux ${stats.low}`} />
         <Kpi label="Bilan" value={`${stats.wins}V – ${stats.losses}D`} hint={stats.ratio === null ? "invaincu" : `ratio ${stats.ratio.toFixed(2)}`} />
