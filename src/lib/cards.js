@@ -30,7 +30,7 @@ const CARDS = {
   "rang-maitre": { rarity: "epique", art: { type: "rank", rank: "Maître" } },
   "rang-grand-maitre": { rarity: "epique", art: { type: "rank", rank: "Grand Maître", image: "/images/cartes/grand-maitre.webp", position: "45% center", mobilePosition: "24% center" } },
   "rang-champion": { rarity: "legendaire", art: { type: "rank", rank: "Champion" } },
-  "rang-legende": { rarity: "legendaire", art: { type: "rank", rank: "Légende" } },
+  "rang-legende": { rarity: "legendaire", art: { type: "rank", rank: "Légende", image: "/images/cartes/legende.webp", position: "45% center", mobilePosition: "36% center" } },
   "premier-sang": { rarity: "commune", art: { type: "glyph", glyph: "1", color: "#f87171" } },
   domination: { rarity: "commune", art: { type: "glyph", glyph: "10", color: "#d4af37" } },
   veteran: { rarity: "commune", art: { type: "glyph", glyph: "50", color: "#b8c2cf" } },
