@@ -5,7 +5,6 @@ import { RARITY } from "../../lib/cards";
 import { cn } from "../../lib/cn";
 import { rankFor, rankGradient } from "../../lib/ranks";
 import { Avatar } from "../ui/Avatar";
-import { Button } from "../ui/Button";
 import { Loading, Notice } from "../ui/Feedback";
 import { Portal } from "../ui/Portal";
 import { TacticalCard } from "../ui/TacticalCard";
@@ -58,15 +57,21 @@ export function CardPicker({ open, onClose, player, points, onEquipped }) {
   const families = data ? [...new Set(data.cards.map((card) => card.family))] : [];
   const current = data && selected ? [...data.cards, ...data.previousSeasons].find((card) => card.key === selected) : null;
 
-  async function equip() {
+  /** Clic sur une carte débloquée : aperçu et enregistrement immédiat (sans bouton à part). */
+  async function equip(key) {
+    setSelected(key);
+    if (key === data?.equipped) return;
     setPending(true);
     setError(null);
     try {
-      const { equipped } = await api("/cod/cards/equip", { method: "POST", body: { key: selected } });
+      // Serveur en veille ou lent : on n'attend pas indéfiniment.
+      const timeout = new Promise((_, reject) => setTimeout(() => reject(new Error("Le serveur ne répond pas : réessaie dans un instant.")), 20_000));
+      const { equipped } = await Promise.race([api("/cod/cards/equip", { method: "POST", body: { key } }), timeout]);
       setData((prev) => ({ ...prev, equipped }));
       onEquipped?.(equipped);
     } catch (caught) {
       setError(caught.message);
+      setSelected(data?.equipped ?? null);
     } finally {
       setPending(false);
     }
@@ -114,15 +119,22 @@ export function CardPicker({ open, onClose, player, points, onEquipped }) {
                     </div>
                   </TacticalCard>
                   <div className="mt-3 flex flex-wrap items-center gap-3">
-                    <Button onClick={equip} disabled={pending || selected === data.equipped}>
-                      {pending ? <LuLoaderCircle aria-hidden className="h-4 w-4 animate-spin" /> : <LuCheck aria-hidden className="h-4 w-4" />}
-                      {selected === data.equipped ? "Carte équipée" : `Équiper « ${current?.name ?? ""} »`}
-                    </Button>
-                    {selected !== data.equipped ? (
-                      <span className="text-xs text-white/45">
-                        Carte actuelle : {[...data.cards, ...data.previousSeasons].find((card) => card.key === data.equipped)?.name ?? "SixSence"}
-                      </span>
-                    ) : null}
+                    <p role="status" className="inline-flex items-center gap-2 text-sm">
+                      {pending ? (
+                        <>
+                          <LuLoaderCircle aria-hidden className="h-4 w-4 animate-spin text-gold" />
+                          <span className="text-white/70">Enregistrement…</span>
+                        </>
+                      ) : (
+                        <>
+                          <LuCheck aria-hidden className="h-4 w-4 text-win" />
+                          <span className="text-white/70">
+                            Carte équipée : <span className="font-semibold text-white">{current?.name ?? "SixSence"}</span>
+                          </span>
+                        </>
+                      )}
+                    </p>
+                    <span className="text-xs text-white/40">Clique sur une carte débloquée pour l'équiper.</span>
                   </div>
                 </div>
 
@@ -155,7 +167,7 @@ export function CardPicker({ open, onClose, player, points, onEquipped }) {
                       </p>
                       <div className="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
                         {cards.map((card) => (
-                          <CardTile key={card.key} card={card} selected={selected === card.key} onSelect={(item) => setSelected(item.key)} />
+                          <CardTile key={card.key} card={card} selected={selected === card.key} onSelect={(item) => equip(item.key)} />
                         ))}
                       </div>
                     </section>
@@ -170,7 +182,7 @@ export function CardPicker({ open, onClose, player, points, onEquipped }) {
                     </summary>
                     <div className="mt-3 grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
                       {data.previousSeasons.filter(visible).map((card) => (
-                        <CardTile key={card.key} card={card} selected={selected === card.key} onSelect={(item) => setSelected(item.key)} />
+                        <CardTile key={card.key} card={card} selected={selected === card.key} onSelect={(item) => equip(item.key)} />
                       ))}
                     </div>
                   </details>
