@@ -89,7 +89,10 @@ export function ProfileView({ userId, editable = false, ownUser = null }) {
 
   /** Copie le lien public du profil : collé sur Discord, il affiche la carte du joueur. */
   async function shareProfile() {
-    const url = `${window.location.origin}/cod/profile/${userId}`;
+    // Marqueur qui change avec la carte et les points : Discord met en cache l'aperçu d'un lien,
+    // un nouveau lien l'oblige à afficher la carte et les chiffres à jour.
+    const stamp = data?.profile ? `?v=${data.profile.calling_card ?? "sixsence"}-${data.profile.points}` : "";
+    const url = `${window.location.origin}/cod/profile/${userId}${stamp}`;
     try {
       if (navigator.share && window.matchMedia("(pointer: coarse)").matches) {
         await navigator.share({ title: "Mon profil SixSence", url });
