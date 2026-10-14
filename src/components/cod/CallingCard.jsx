@@ -112,15 +112,24 @@ export function CardArt({ cardKey, place = "tile", motif = true }) {
  */
 const FADE = "linear-gradient(90deg,transparent,#000 25%,#000 75%,transparent)";
 function CardVideo({ art, place }) {
-  const sharp = place === "profile" ? "right-0 w-[60%] lg:left-[30%] lg:right-auto lg:w-[32%]" : "right-0 w-[55%]";
+  // art.aspect (« largeur/hauteur ») : vidéo affichée entière, sans être rognée (sujet qui se déplace).
+  const whole = Boolean(art.aspect);
+  const sharp = whole
+    ? place === "profile"
+      ? "w-auto right-[3%] lg:right-auto lg:left-[45%] lg:-translate-x-1/2"
+      : "w-auto right-[4%]"
+    : place === "profile"
+      ? "right-0 w-[60%] lg:left-[30%] lg:right-auto lg:w-[32%]"
+      : "right-0 w-[55%]";
+  const shape = whole ? { aspectRatio: art.aspect } : {};
   return (
     <div className="absolute inset-0 overflow-hidden bg-black">
       <div className="absolute inset-0 scale-110 bg-cover bg-center opacity-70 blur-2xl brightness-50" style={{ backgroundImage: `url(${art.poster})` }} />
       <div className="cc-video absolute inset-0">
         <video src={art.video} poster={art.poster} autoPlay muted loop playsInline aria-hidden className="absolute inset-0 h-full w-full scale-110 object-cover opacity-70 blur-2xl brightness-50" />
-        <video src={art.video} poster={art.poster} autoPlay muted loop playsInline aria-hidden className={cn("absolute inset-y-0 h-full object-cover", sharp)} style={{ maskImage: FADE, WebkitMaskImage: FADE }} />
+        <video src={art.video} poster={art.poster} autoPlay muted loop playsInline aria-hidden className={cn("absolute inset-y-0 h-full object-cover", sharp)} style={{ ...shape, maskImage: FADE, WebkitMaskImage: FADE }} />
       </div>
-      <div className={cn("cc-video-still absolute inset-y-0 hidden bg-cover bg-center", sharp)} style={{ backgroundImage: `url(${art.poster})`, maskImage: FADE, WebkitMaskImage: FADE }} />
+      <div className={cn("cc-video-still absolute inset-y-0 hidden bg-cover bg-center", sharp)} style={{ ...shape, backgroundImage: `url(${art.poster})`, maskImage: FADE, WebkitMaskImage: FADE }} />
     </div>
   );
 }
