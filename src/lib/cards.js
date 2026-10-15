@@ -11,6 +11,7 @@
  *             ajouter { image: "/images/cartes/<clé>.webp", position, mobilePosition } quand
  *             l'illustration existe (bannière 2400 x 900, sujet vers 45 % de la largeur ;
  *             mobilePosition décale le sujet sur le bord droit du profil sur téléphone).
+ *   light     voile du profil allégé (illustration sombre)
  *   og        bannière JPEG 1200 x 260 pour l'aperçu partagé (images et vidéos ; sinon dessin simplifié)
  *   video     fond animé : { video: "/images/cartes/<clé>.mp4", poster } (boucle courte sans son,
  *             moins de 1 Mo, vidéo verticale nette au centre et floutée derrière ; image fixe
@@ -32,7 +33,7 @@ const CARDS = {
   "rang-or": { rarity: "commune", art: { type: "rank", rank: "Or" } },
   "rang-platine": { rarity: "rare", art: { type: "rank", rank: "Platine" } },
   "rang-diamant": { rarity: "rare", art: { type: "rank", rank: "Diamant" } },
-  "rang-maitre": { rarity: "epique", art: { type: "rank", rank: "Maître", image: "/images/cartes/maitre.webp", og: "/images/cartes/og/maitre.jpg", position: "45% center", mobilePosition: "24% center" } },
+  "rang-maitre": { rarity: "epique", art: { type: "rank", rank: "Maître", image: "/images/cartes/maitre.webp", og: "/images/cartes/og/maitre.jpg", position: "45% center", mobilePosition: "24% center", light: true } },
   "rang-grand-maitre": { rarity: "epique", art: { type: "rank", rank: "Grand Maître", image: "/images/cartes/grand-maitre.webp", og: "/images/cartes/og/grand-maitre.jpg", position: "45% center", mobilePosition: "24% center" } },
   "rang-champion": { rarity: "legendaire", art: { type: "rank", rank: "Champion" } },
   "rang-legende": { rarity: "legendaire", art: { type: "rank", rank: "Légende", video: "/images/cartes/legende.mp4", poster: "/images/cartes/legende-poster.webp", cover: true, position: "center", mobilePosition: "40% center", og: "/images/cartes/og/legende.jpg" } },
@@ -56,9 +57,7 @@ const CARDS = {
 };
 
 /** Illustrations propres à une saison (même clé que la carte, ex. « s1-champion »). */
-const SEASON_ART = {
-  "s1-champion": { image: "/images/cartes/s1-champion.webp", og: "/images/cartes/og/s1-champion.jpg", position: "45% center", mobilePosition: "24% center" },
-};
+const SEASON_ART = {};
 
 /** Rareté et dessin d'une carte (cartes de saison « s<id>-… » comprises). */
 export function cardInfo(key) {

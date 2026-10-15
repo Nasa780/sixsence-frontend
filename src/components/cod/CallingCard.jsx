@@ -205,7 +205,11 @@ export function RarityFx({ rarity }) {
 
 /** Fond de la 1re section du profil : carte, effets et voile de lisibilité. */
 export function CardBackdrop({ cardKey, compact = false }) {
-  const { rarity } = cardInfo(cardKey);
+  const { rarity, art } = cardInfo(cardKey);
+  // art.light : voile allégé pour une illustration qui paraîtrait trop sombre sous le voile habituel.
+  const veil = art.light
+    ? "bg-ink/30 lg:bg-transparent lg:bg-linear-to-r lg:from-ink/75 lg:via-ink/10 lg:to-ink/45"
+    : "bg-ink/45 lg:bg-transparent lg:bg-linear-to-r lg:from-ink/90 lg:via-ink/35 lg:to-ink/85";
   return (
     <div aria-hidden className="pointer-events-none absolute inset-0">
       <CardArt cardKey={cardKey} place={compact ? "tile" : "profile"} />
@@ -213,7 +217,7 @@ export function CardBackdrop({ cardKey, compact = false }) {
       <div
         className={cn(
           "absolute inset-0",
-          compact ? "bg-linear-to-r from-ink/90 via-ink/50 to-ink/10" : "bg-ink/45 lg:bg-transparent lg:bg-linear-to-r lg:from-ink/90 lg:via-ink/35 lg:to-ink/85",
+          compact ? "bg-linear-to-r from-ink/90 via-ink/50 to-ink/10" : veil,
         )}
       />
     </div>
