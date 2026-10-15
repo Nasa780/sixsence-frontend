@@ -13,6 +13,7 @@
  *             l'illustration existe (bannière 2400 x 900, sujet vers 45 % de la largeur ;
  *             mobilePosition décale le sujet sur le bord droit du profil sur téléphone).
  *   mobileImage  image verticale propre au profil sur téléphone (remplace la bannière recadrée)
+ *   title     couleur du halo du nom du rang (« Classe compétitive »), en haut à droite du profil ; site seulement
  *   light     voile du profil allégé (illustration sombre)
  *   og        bannière JPEG 1200 x 260 pour l'aperçu partagé (images et vidéos ; sinon dessin simplifié)
  *   video     fond animé : { video: "/images/cartes/<clé>.mp4", poster } (boucle courte sans son,
@@ -31,9 +32,9 @@ export const DEFAULT_CARD = "sixsence";
 
 const CARDS = {
   sixsence: { rarity: "commune", art: { type: "default", og: "/images/cartes/og/sixsence.jpg" } },
-  "rang-argent": { rarity: "commune", art: { type: "rank", rank: "Argent", image: "/images/cartes/argent.webp", og: "/images/cartes/og/argent.jpg", position: "center", mobileImage: "/images/cartes/argent-mobile.webp" } },
-  "rang-or": { rarity: "commune", art: { type: "rank", rank: "Or" } },
-  "rang-platine": { rarity: "rare", art: { type: "rank", rank: "Platine" } },
+  "rang-argent": { rarity: "commune", art: { type: "rank", rank: "Argent", title: "#7cc8ff" } },
+  "rang-or": { rarity: "commune", art: { type: "rank", rank: "Or", title: "#ffb43a" } },
+  "rang-platine": { rarity: "rare", art: { type: "rank", rank: "Platine", title: "#2ff3e0" } },
   "rang-diamant": { rarity: "rare", art: { type: "rank", rank: "Diamant" } },
   "rang-maitre": { rarity: "epique", art: { type: "rank", rank: "Maître", image: "/images/cartes/maitre.webp", og: "/images/cartes/og/maitre.jpg", position: "45% center", mobilePosition: "24% center", light: true } },
   "rang-grand-maitre": { rarity: "epique", art: { type: "rank", rank: "Grand Maître", image: "/images/cartes/grand-maitre.webp", og: "/images/cartes/og/grand-maitre.jpg", position: "45% center", mobilePosition: "24% center" } },
