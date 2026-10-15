@@ -32,6 +32,15 @@ export function CardArt({ cardKey, place = "tile", motif = true }) {
   if (art.image) {
     // Profil sur téléphone (carte haute) : cadrage à part (art.mobilePosition), sujet sur le bord droit.
     const mobile = place === "profile" && art.mobilePosition;
+    if (place === "profile" && art.mobileImage) {
+      // Image verticale à part sur téléphone (art.mobileImage), bannière dès l'écran large.
+      return (
+        <>
+          <div className="absolute inset-0 bg-cover bg-center lg:hidden" style={{ backgroundImage: `url(${art.mobileImage})` }} />
+          <div className="absolute inset-0 hidden bg-cover lg:block" style={{ backgroundImage: `url(${art.image})`, backgroundPosition: art.position ?? "center" }} />
+        </>
+      );
+    }
     return (
       <div
         className={cn("absolute inset-0 bg-cover", mobile && "[background-position:var(--pos-m)] lg:[background-position:var(--pos)]")}
