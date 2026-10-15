@@ -283,8 +283,7 @@ function HudTitle({ art }) {
   const neon = art.hud?.neon ?? art.title;
   return (
     <div className="absolute bottom-[12%] right-[6%] text-right lg:bottom-auto lg:right-[5%] lg:top-[9%]">
-      <p className="font-tech text-[9px] uppercase tracking-[0.35em] text-white/50 lg:text-[10px]">Classe compétitive</p>
-      <p className="mt-1 font-tech text-2xl font-black uppercase leading-none text-white lg:text-4xl" style={{ textShadow: `0 0 18px ${neon}, 0 0 4px ${neon}` }}>
+      <p className="font-tech text-2xl font-black uppercase leading-none text-white lg:text-4xl" style={{ textShadow: `0 0 18px ${neon}, 0 0 4px ${neon}` }}>
         {art.rank}
       </p>
     </div>

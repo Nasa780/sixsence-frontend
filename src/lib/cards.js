@@ -13,7 +13,7 @@
  *             l'illustration existe (bannière 2400 x 900, sujet vers 45 % de la largeur ;
  *             mobilePosition décale le sujet sur le bord droit du profil sur téléphone).
  *   mobileImage  image verticale propre au profil sur téléphone (remplace la bannière recadrée)
- *   title     couleur du halo du nom du rang (« Classe compétitive »), en haut à droite du profil ; site seulement
+ *   title     couleur du halo du nom du rang, en haut à droite du profil ; site seulement
  *   light     voile du profil allégé (illustration sombre)
  *   og        bannière JPEG 1200 x 260 pour l'aperçu partagé (images et vidéos ; sinon dessin simplifié)
  *   video     fond animé : { video: "/images/cartes/<clé>.mp4", poster } (boucle courte sans son,
@@ -36,7 +36,7 @@ const CARDS = {
   "rang-or": { rarity: "commune", art: { type: "rank", rank: "Or", title: "#ffb43a" } },
   "rang-platine": { rarity: "rare", art: { type: "rank", rank: "Platine", title: "#2ff3e0" } },
   "rang-diamant": { rarity: "rare", art: { type: "rank", rank: "Diamant", title: "#5cc8ff" } },
-  "rang-maitre": { rarity: "epique", art: { type: "rank", rank: "Maître", title: "#a78bfa", image: "/images/cartes/maitre.webp", og: "/images/cartes/og/maitre.jpg", position: "45% center", mobilePosition: "24% center", light: true } },
+  "rang-maitre": { rarity: "epique", art: { type: "rank", rank: "Maître", title: "#a78bfa", image: "/images/cartes/maitre.webp", og: "/images/cartes/og/maitre.jpg", position: "center", mobilePosition: "50% center", light: true } },
   "rang-grand-maitre": { rarity: "epique", art: { type: "rank", rank: "Grand Maître", title: "#e05cc6", image: "/images/cartes/grand-maitre.webp", og: "/images/cartes/og/grand-maitre.jpg", position: "45% center", mobilePosition: "24% center" } },
   "rang-champion": { rarity: "legendaire", art: { type: "rank", rank: "Champion", title: "#f0a6e8" } },
   "rang-legende": { rarity: "legendaire", art: { type: "rank", rank: "Légende", title: "#ff8a3d", video: "/images/cartes/legende.mp4", poster: "/images/cartes/legende-poster.webp", cover: true, position: "center", mobilePosition: "40% center", og: "/images/cartes/og/legende.jpg", light: true } },
