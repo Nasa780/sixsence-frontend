@@ -46,7 +46,7 @@ function Corner({ x, y, flipX, flipY }) {
 export default async function handler(request) {
   const { searchParams, origin } = new URL(request.url);
   const custom = searchParams.get("title")?.slice(0, 32);
-  const [fonts, mw4, gta] = await Promise.all([loadFonts(), dataUrl(`${origin}/og/og-mw4.jpg`), dataUrl(`${origin}/og/og-gta6.jpg`)]);
+  const [fonts, mw4, gta] = await Promise.all([loadFonts(origin), dataUrl(`${origin}/og/og-mw4.jpg`), dataUrl(`${origin}/og/og-gta6.jpg`)]);
   const display = fonts.length ? "Saira" : "sans-serif";
   const text = fonts.length ? "Inter" : "sans-serif";
 

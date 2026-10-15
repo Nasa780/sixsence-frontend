@@ -7,17 +7,20 @@ import { SUPABASE_PUBLISHABLE_KEY, SUPABASE_URL } from "./config";
 
 let fontsPromise = null;
 
-async function googleFont(family, weight) {
-  const css = await (await fetch(`https://fonts.googleapis.com/css2?family=${family}:wght@${weight}`)).text();
-  const url = /src:\s*url\(([^)]+)\)\s*format\('(?:truetype|opentype)'\)/.exec(css)?.[1];
-  if (!url) throw new Error("police introuvable");
-  return (await fetch(url)).arrayBuffer();
+async function siteFont(origin, file) {
+  const res = await fetch(`${origin}/og-fonts/${file}`);
+  if (!res.ok) throw new Error("police introuvable");
+  return res.arrayBuffer();
 }
 
-/** Polices du site (Saira Condensed 900, Inter 500/700) ; tableau vide en cas d'échec. */
-export function loadFonts() {
+/**
+ * Polices du site (Saira Condensed 900, Inter 500/700), servies par le site lui-même
+ * (public/og-fonts) : rapide même au démarrage à froid, sans dépendre de Google Fonts.
+ * Tableau vide en cas d'échec.
+ */
+export function loadFonts(origin) {
   if (!fontsPromise) {
-    fontsPromise = Promise.all([googleFont("Saira+Condensed", 900), googleFont("Inter", 500), googleFont("Inter", 700)])
+    fontsPromise = Promise.all([siteFont(origin, "saira-condensed-900.ttf"), siteFont(origin, "inter-500.ttf"), siteFont(origin, "inter-700.ttf")])
       .then(([saira, inter, interBold]) => [
         { name: "Saira", data: saira, weight: 900, style: "normal" },
         { name: "Inter", data: inter, weight: 500, style: "normal" },

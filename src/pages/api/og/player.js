@@ -34,7 +34,7 @@ export default async function handler(request) {
   if (!UUID.test(id)) return new Response("Joueur invalide", { status: 400 });
 
   const [fonts, users, profiles, seasons] = await Promise.all([
-    loadFonts(),
+    loadFonts(origin),
     supabaseRest(`users?id=eq.${id}&select=username,avatar_url`),
     supabaseRest(`cod_profiles?user_id=eq.${id}&select=points,wins,losses,xp,best_streak,badges,platform,calling_card`),
     supabaseRest("seasons?is_active=eq.true&select=name&limit=1").catch(() => []),
@@ -186,7 +186,7 @@ export default async function handler(request) {
       width: 1200,
       height: 630,
       fonts: [...fonts, ...fallbackFonts],
-      headers: { "Cache-Control": "public, max-age=600, s-maxage=3600, stale-while-revalidate=86400" },
+      headers: { "Cache-Control": "public, max-age=600, s-maxage=604800, stale-while-revalidate=86400" },
     },
   );
 }
