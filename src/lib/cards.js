@@ -38,7 +38,7 @@ const CARDS = {
   "rang-diamant": { rarity: "rare", art: { type: "rank", rank: "Diamant", title: "#5cc8ff" } },
   "rang-maitre": { rarity: "epique", art: { type: "rank", rank: "Maître", title: "#a78bfa", image: "/images/cartes/maitre.webp", og: "/images/cartes/og/maitre.jpg", position: "center", mobilePosition: "50% center", light: true } },
   "rang-grand-maitre": { rarity: "epique", art: { type: "rank", rank: "Grand Maître", title: "#e05cc6", image: "/images/cartes/grand-maitre.webp", og: "/images/cartes/og/grand-maitre.jpg", position: "45% center", mobilePosition: "24% center" } },
-  "rang-champion": { rarity: "legendaire", art: { type: "rank", rank: "Champion", title: "#f0a6e8", image: "/images/cartes/champion.webp", og: "/images/cartes/og/champion.jpg", position: "center", mobilePosition: "50% center", light: true } },
+  "rang-champion": { rarity: "legendaire", art: { type: "rank", rank: "Champion", title: "#f0a6e8", video: "/images/cartes/champion.mp4", poster: "/images/cartes/champion-poster.webp", cover: true, position: "center", mobilePosition: "75% center", og: "/images/cartes/og/champion.jpg" } },
   "rang-legende": { rarity: "legendaire", art: { type: "rank", rank: "Légende", title: "#ff8a3d", video: "/images/cartes/legende.mp4", poster: "/images/cartes/legende-poster.webp", cover: true, position: "center", mobilePosition: "40% center", og: "/images/cartes/og/legende.jpg", light: true } },
   "premier-sang": { rarity: "commune", art: { type: "glyph", glyph: "1", color: "#f87171" } },
   domination: { rarity: "commune", art: { type: "glyph", glyph: "10", color: "#d4af37" } },
