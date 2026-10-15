@@ -11,6 +11,7 @@
  *             ajouter { image: "/images/cartes/<clé>.webp", position, mobilePosition } quand
  *             l'illustration existe (bannière 2400 x 900, sujet vers 45 % de la largeur ;
  *             mobilePosition décale le sujet sur le bord droit du profil sur téléphone).
+ *   mobileImage  image verticale propre au profil sur téléphone (remplace la bannière recadrée)
  *   light     voile du profil allégé (illustration sombre)
  *   og        bannière JPEG 1200 x 260 pour l'aperçu partagé (images et vidéos ; sinon dessin simplifié)
  *   video     fond animé : { video: "/images/cartes/<clé>.mp4", poster } (boucle courte sans son,
@@ -29,7 +30,7 @@ export const DEFAULT_CARD = "sixsence";
 
 const CARDS = {
   sixsence: { rarity: "commune", art: { type: "default", og: "/images/cartes/og/sixsence.jpg" } },
-  "rang-argent": { rarity: "commune", art: { type: "rank", rank: "Argent", image: "/images/cartes/argent.webp", og: "/images/cartes/og/argent.jpg", position: "center", mobilePosition: "30% center" } },
+  "rang-argent": { rarity: "commune", art: { type: "rank", rank: "Argent", image: "/images/cartes/argent.webp", og: "/images/cartes/og/argent.jpg", position: "center", mobileImage: "/images/cartes/argent-mobile.webp" } },
   "rang-or": { rarity: "commune", art: { type: "rank", rank: "Or" } },
   "rang-platine": { rarity: "rare", art: { type: "rank", rank: "Platine" } },
   "rang-diamant": { rarity: "rare", art: { type: "rank", rank: "Diamant" } },
