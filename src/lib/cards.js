@@ -61,9 +61,37 @@ const CARDS = {
 /** Illustrations propres à une saison (même clé que la carte, ex. « s1-champion »). */
 const SEASON_ART = {};
 
+/**
+ * Cartes de rang de saison « s<id>-rang-<rang> » : rang atteint pendant la saison, même rareté
+ * que la carte de rang ; illustration de la saison aux couleurs du rang
+ * (public/images/cartes/s<id>/<rang>.webp, version verticale <rang>-mobile.webp pour le téléphone).
+ */
+const SEASON_RANKS = {
+  bronze: ["Bronze", "commune"],
+  argent: ["Argent", "commune"],
+  or: ["Or", "commune"],
+  platine: ["Platine", "rare"],
+  diamant: ["Diamant", "rare"],
+  maitre: ["Maître", "epique"],
+  "grand-maitre": ["Grand Maître", "epique"],
+  champion: ["Champion", "legendaire"],
+  legende: ["Légende", "legendaire"],
+};
+/** Saisons dont les cartes de rang ont leur illustration. */
+const SEASON_RANK_ART = new Set(["1"]);
+
 /** Rareté et dessin d'une carte (cartes de saison « s<id>-… » comprises). */
 export function cardInfo(key) {
   if (CARDS[key]) return { key, ...CARDS[key] };
+  const seasonRank = /^s(\d+)-rang-([a-z-]+)$/.exec(key ?? "");
+  if (seasonRank && SEASON_RANKS[seasonRank[2]]) {
+    const [, id, slug] = seasonRank;
+    const [rank, rarity] = SEASON_RANKS[slug];
+    const art = SEASON_RANK_ART.has(id)
+      ? { image: `/images/cartes/s${id}/${slug}.webp`, mobileImage: `/images/cartes/s${id}/${slug}-mobile.webp`, og: `/images/cartes/og/s${id}-${slug}.jpg`, position: "center" }
+      : {};
+    return { key, rarity, art: { type: "rank", rank, season: `Saison ${id}`, ...art } };
+  }
   const season = /^s(\d+)-(participant|top10|champion)$/.exec(key ?? "");
   if (season) {
     const [, id, kind] = season;
