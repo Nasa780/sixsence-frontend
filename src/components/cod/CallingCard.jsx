@@ -169,6 +169,21 @@ const FADE = "linear-gradient(90deg,transparent,#000 25%,#000 75%,transparent)";
 const FADE_SOFT = "linear-gradient(90deg,transparent,#000 10%,#000 90%,transparent)";
 function CardVideo({ art, place }) {
   // art.cover : vidéo déjà au format bannière (fond prolongé), affichée en plein cadre.
+  if (art.cover && place === "profile" && art.mobileVideo) {
+    // Version à part pour le profil sur téléphone (art.mobileVideo, verticale), bannière dès l'écran large.
+    return (
+      <div className="absolute inset-0 overflow-hidden bg-black">
+        <div className="absolute inset-0 lg:hidden">
+          <video src={art.mobileVideo} poster={art.mobilePoster} autoPlay muted loop playsInline aria-hidden className="cc-video absolute inset-0 h-full w-full object-cover" />
+          <img src={art.mobilePoster} alt="" aria-hidden className="cc-video-still absolute inset-0 hidden h-full w-full object-cover" />
+        </div>
+        <div className="absolute inset-0 hidden lg:block">
+          <video src={art.video} poster={art.poster} autoPlay muted loop playsInline aria-hidden className="cc-video absolute inset-0 h-full w-full object-cover" style={{ objectPosition: art.position ?? "center" }} />
+          <img src={art.poster} alt="" aria-hidden className="cc-video-still absolute inset-0 hidden h-full w-full object-cover" style={{ objectPosition: art.position ?? "center" }} />
+        </div>
+      </div>
+    );
+  }
   if (art.cover) {
     const pos = place === "profile" && art.mobilePosition ? "[object-position:var(--pos-m)] lg:[object-position:var(--pos)]" : "[object-position:var(--pos)]";
     const vars = { "--pos": art.position ?? "center", "--pos-m": art.mobilePosition ?? art.position ?? "center" };
