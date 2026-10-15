@@ -31,9 +31,9 @@ export const DEFAULT_CARD = "sixsence";
 
 const CARDS = {
   sixsence: { rarity: "commune", art: { type: "default", og: "/images/cartes/og/sixsence.jpg" } },
-  "rang-argent": { rarity: "commune", art: { type: "rank", rank: "Argent", hud: { neon: "#7cc8ff", deep: "#0b1520" } } },
-  "rang-or": { rarity: "commune", art: { type: "rank", rank: "Or", hud: { neon: "#ffb43a", deep: "#1c1306" } } },
-  "rang-platine": { rarity: "rare", art: { type: "rank", rank: "Platine", hud: { neon: "#2ff3e0", deep: "#041a1a" } } },
+  "rang-argent": { rarity: "commune", art: { type: "rank", rank: "Argent", image: "/images/cartes/argent.webp", og: "/images/cartes/og/argent.jpg", position: "center", mobileImage: "/images/cartes/argent-mobile.webp" } },
+  "rang-or": { rarity: "commune", art: { type: "rank", rank: "Or" } },
+  "rang-platine": { rarity: "rare", art: { type: "rank", rank: "Platine" } },
   "rang-diamant": { rarity: "rare", art: { type: "rank", rank: "Diamant" } },
   "rang-maitre": { rarity: "epique", art: { type: "rank", rank: "Maître", image: "/images/cartes/maitre.webp", og: "/images/cartes/og/maitre.jpg", position: "45% center", mobilePosition: "24% center", light: true } },
   "rang-grand-maitre": { rarity: "epique", art: { type: "rank", rank: "Grand Maître", image: "/images/cartes/grand-maitre.webp", og: "/images/cartes/og/grand-maitre.jpg", position: "45% center", mobilePosition: "24% center" } },
