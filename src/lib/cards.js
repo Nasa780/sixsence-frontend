@@ -4,7 +4,8 @@
  *
  * Dessin (art) :
  *   default   carte « SixSence » (motif or et emblème du site)
- *   rank      emblème du rang sur ses teintes
+ *   rank      emblème du rang sur ses teintes ; avec hud { neon, deep } : interface « HUD » (cadre fin,
+ *             coins néon, hachures, nom du rang en haut à droite sur le profil), image de fond possible
  *   glyph     chiffre ou sigle (Communes et Rares)
  *   sunset    cartes GTA 6 : coucher de soleil rétro (palette sunset), ville et palmiers ; glyph facultatif
  *   illustration  visuel provisoire des Épiques et Légendaires, remplacé par une image :
@@ -30,9 +31,9 @@ export const DEFAULT_CARD = "sixsence";
 
 const CARDS = {
   sixsence: { rarity: "commune", art: { type: "default", og: "/images/cartes/og/sixsence.jpg" } },
-  "rang-argent": { rarity: "commune", art: { type: "rank", rank: "Argent", image: "/images/cartes/argent.webp", og: "/images/cartes/og/argent.jpg", position: "center", mobileImage: "/images/cartes/argent-mobile.webp" } },
-  "rang-or": { rarity: "commune", art: { type: "rank", rank: "Or" } },
-  "rang-platine": { rarity: "rare", art: { type: "rank", rank: "Platine" } },
+  "rang-argent": { rarity: "commune", art: { type: "rank", rank: "Argent", hud: { neon: "#7cc8ff", deep: "#0b1520" } } },
+  "rang-or": { rarity: "commune", art: { type: "rank", rank: "Or", hud: { neon: "#ffb43a", deep: "#1c1306" } } },
+  "rang-platine": { rarity: "rare", art: { type: "rank", rank: "Platine", hud: { neon: "#2ff3e0", deep: "#041a1a" } } },
   "rang-diamant": { rarity: "rare", art: { type: "rank", rank: "Diamant" } },
   "rang-maitre": { rarity: "epique", art: { type: "rank", rank: "Maître", image: "/images/cartes/maitre.webp", og: "/images/cartes/og/maitre.jpg", position: "45% center", mobilePosition: "24% center", light: true } },
   "rang-grand-maitre": { rarity: "epique", art: { type: "rank", rank: "Grand Maître", image: "/images/cartes/grand-maitre.webp", og: "/images/cartes/og/grand-maitre.jpg", position: "45% center", mobilePosition: "24% center" } },

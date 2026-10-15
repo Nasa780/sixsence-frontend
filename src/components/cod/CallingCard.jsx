@@ -29,6 +29,9 @@ export function CardArt({ cardKey, place = "tile", motif = true }) {
   if (art.video) {
     return <CardVideo art={art} place={place} />;
   }
+  if (art.hud) {
+    return <HudArt art={art} big={big} />;
+  }
   if (art.image) {
     // Profil sur téléphone (carte haute) : cadrage à part (art.mobilePosition), sujet sur le bord droit.
     const mobile = place === "profile" && art.mobilePosition;
@@ -199,6 +202,91 @@ function CardVideo({ art, place }) {
   );
 }
 
+/** Points lumineux du dessin « HUD » : positions fixes (rendu identique serveur / navigateur). */
+const HUD_DOTS = Array.from({ length: 22 }, (_, i) => ({ x: (i * 41.3 + 7) % 100, y: (i * 67.1 + 11) % 100, delay: (i % 6) * 0.7 }));
+
+/** Coin en équerre néon. */
+function HudCorner({ neon, className, flip = false }) {
+  return (
+    <svg className={cn("absolute h-10 w-12", className)} viewBox="0 0 48 40" aria-hidden style={{ filter: `drop-shadow(0 0 4px ${neon})` }}>
+      <path d={flip ? "M48 0 V40 H0" : "M0 40 V0 H48"} fill="none" stroke={neon} strokeWidth="2" />
+    </svg>
+  );
+}
+
+/**
+ * Dessin « HUD » des cartes de rang (art.hud { neon, deep }) : fond sombre teinté, sol en
+ * perspective, diagonales fines, arcs, hachures, points lumineux, lignes et coins néon.
+ * art.image (facultatif) se place dessous, en fond.
+ */
+function HudArt({ art, big }) {
+  const { neon, deep } = art.hud;
+  return (
+    <div className="absolute inset-0 overflow-hidden" style={{ background: `radial-gradient(ellipse at 60% 40%,${deep} 0%,#06080a 70%)` }}>
+      {art.image ? <div className="absolute inset-0 bg-cover bg-center opacity-60" style={{ backgroundImage: `url(${art.image})`, backgroundPosition: art.position ?? "center" }} /> : null}
+      <div
+        className="absolute inset-x-[-20%] bottom-0 h-[45%] opacity-40"
+        style={{
+          backgroundImage: `linear-gradient(${neon}22 1px,transparent 1px),linear-gradient(90deg,${neon}22 1px,transparent 1px)`,
+          backgroundSize: "48px 48px",
+          transform: "perspective(300px) rotateX(60deg)",
+          transformOrigin: "bottom",
+          maskImage: "linear-gradient(0deg,#000,transparent)",
+          WebkitMaskImage: "linear-gradient(0deg,#000,transparent)",
+        }}
+      />
+      <svg className="absolute inset-0 h-full w-full" viewBox="0 0 400 100" preserveAspectRatio="none" aria-hidden>
+        <line x1="110" y1="0" x2="40" y2="100" stroke={neon} strokeOpacity=".12" strokeWidth=".4" />
+        <line x1="330" y1="0" x2="260" y2="100" stroke={neon} strokeOpacity=".12" strokeWidth=".4" />
+      </svg>
+      {big ? (
+        <svg className="absolute left-[40%] top-1/2 hidden h-[130%] -translate-y-1/2 lg:block" viewBox="0 0 200 200" style={{ aspectRatio: "1" }} aria-hidden>
+          <path d="M30 150 A80 80 0 0 1 170 60" fill="none" stroke={neon} strokeOpacity=".35" strokeWidth=".8" />
+          <path d="M40 40 A90 90 0 0 1 190 120" fill="none" stroke={neon} strokeOpacity=".18" strokeWidth=".6" />
+        </svg>
+      ) : null}
+      <div
+        className="absolute bottom-[8%] right-[3%] h-[42%] w-[26%] opacity-50"
+        style={{
+          backgroundImage: `repeating-linear-gradient(-55deg,${neon}55 0 1.5px,transparent 1.5px 16px)`,
+          maskImage: "linear-gradient(135deg,transparent 15%,#000 60%)",
+          WebkitMaskImage: "linear-gradient(135deg,transparent 15%,#000 60%)",
+        }}
+      />
+      {HUD_DOTS.map((dot, index) => (
+        <span
+          key={index}
+          className="cc-hud-dot absolute h-[3px] w-[3px] rounded-full"
+          style={{ left: `${dot.x}%`, top: `${dot.y}%`, background: neon, boxShadow: `0 0 6px ${neon}`, animationDelay: `${dot.delay}s` }}
+        />
+      ))}
+      <div className="absolute left-[4%] right-[4%] top-[7%] h-px bg-white/15" />
+      <div className="absolute right-[6%] top-[7%] h-[2px] w-[28%] -translate-y-px" style={{ background: `linear-gradient(90deg,transparent,${neon})`, boxShadow: `0 0 10px ${neon}` }} />
+      <div className="absolute bottom-[7%] left-[4%] right-[4%] h-px bg-white/10" />
+      <div className="absolute bottom-[7%] left-[8%] h-[2px] w-[18%] translate-y-px" style={{ background: `linear-gradient(90deg,${neon},transparent)`, boxShadow: `0 0 10px ${neon}` }} />
+      {big ? (
+        <>
+          <HudCorner neon={neon} className="left-[2.5%] top-[10%]" />
+          <HudCorner neon={neon} className="bottom-[10%] right-[2.5%]" flip />
+        </>
+      ) : null}
+    </div>
+  );
+}
+
+/** Nom du rang en haut à droite du profil, en bas à droite sur téléphone (cartes « HUD », sur le site seulement). */
+function HudTitle({ art }) {
+  const { neon } = art.hud;
+  return (
+    <div className="absolute bottom-[12%] right-[6%] text-right lg:bottom-auto lg:right-[5%] lg:top-[9%]">
+      <p className="font-tech text-[9px] uppercase tracking-[0.35em] text-white/50 lg:text-[10px]">Classe compétitive</p>
+      <p className="mt-1 font-tech text-2xl font-black uppercase leading-none text-white lg:text-4xl" style={{ textShadow: `0 0 18px ${neon}, 0 0 4px ${neon}` }}>
+        {art.rank}
+      </p>
+    </div>
+  );
+}
+
 /** Effets de rareté : reflet et particules pour les Légendaires (le halo des Épiques est sur le cadre). */
 export function RarityFx({ rarity }) {
   if (rarity !== "legendaire") return null;
@@ -215,8 +303,8 @@ export function RarityFx({ rarity }) {
 /** Fond de la 1re section du profil : carte, effets et voile de lisibilité. */
 export function CardBackdrop({ cardKey, compact = false }) {
   const { rarity, art } = cardInfo(cardKey);
-  // art.light : voile allégé pour une illustration qui paraîtrait trop sombre sous le voile habituel.
-  const veil = art.light
+  // art.light : voile allégé pour une illustration qui paraîtrait trop sombre sous le voile habituel (et cartes « HUD », déjà sombres).
+  const veil = art.light || art.hud
     ? "bg-ink/30 lg:bg-transparent lg:bg-linear-to-r lg:from-ink/75 lg:via-ink/10 lg:to-ink/45"
     : "bg-ink/45 lg:bg-transparent lg:bg-linear-to-r lg:from-ink/90 lg:via-ink/35 lg:to-ink/85";
   return (
@@ -229,6 +317,7 @@ export function CardBackdrop({ cardKey, compact = false }) {
           compact ? "bg-linear-to-r from-ink/90 via-ink/50 to-ink/10" : veil,
         )}
       />
+      {art.hud && !compact ? <HudTitle art={art} /> : null}
     </div>
   );
 }
