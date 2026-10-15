@@ -49,7 +49,7 @@ export default function PlayerProfilePage({ meta }) {
 
   const title = meta ? `${meta.username} · ${rankFor(meta.points).name} — ${meta.points} pts` : "Profil joueur";
   // Le paramètre v change avec les résultats et la carte de visite : Discord recharge l'image à chaque évolution.
-  const image = meta ? `${SITE_URL}/api/og/player?id=${id}&v=r19-${meta.points}-${meta.wins}-${meta.losses}-${meta.card}` : null;
+  const image = meta ? `${SITE_URL}/api/og/player?id=${id}&v=r20-${meta.points}-${meta.wins}-${meta.losses}-${meta.card}` : null;
 
   return (
     <>

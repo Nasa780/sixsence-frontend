@@ -55,15 +55,21 @@ const CARDS = {
   habitue: { rarity: "rare", art: { type: "sunset", glyph: "×5", color: "#ff5f8a" } },
 };
 
+/** Illustrations propres à une saison (même clé que la carte, ex. « s1-champion »). */
+const SEASON_ART = {
+  "s1-champion": { image: "/images/cartes/s1-champion.webp", og: "/images/cartes/og/s1-champion.jpg", position: "45% center", mobilePosition: "24% center" },
+};
+
 /** Rareté et dessin d'une carte (cartes de saison « s<id>-… » comprises). */
 export function cardInfo(key) {
   if (CARDS[key]) return { key, ...CARDS[key] };
   const season = /^s(\d+)-(participant|top10|champion)$/.exec(key ?? "");
   if (season) {
     const [, id, kind] = season;
-    if (kind === "participant") return { key, rarity: "commune", art: { type: "glyph", glyph: `S${id}`, color: "#d4af37" } };
-    if (kind === "top10") return { key, rarity: "epique", art: { type: "illustration", glyph: "10", hue: "#8b5cf6" } };
-    return { key, rarity: "legendaire", art: { type: "illustration", glyph: "N°1", hue: "#f5b83d" } };
+    const extra = SEASON_ART[key];
+    if (kind === "participant") return { key, rarity: "commune", art: { type: "glyph", glyph: `S${id}`, color: "#d4af37", ...extra } };
+    if (kind === "top10") return { key, rarity: "epique", art: { type: "illustration", glyph: "10", hue: "#8b5cf6", ...extra } };
+    return { key, rarity: "legendaire", art: { type: "illustration", glyph: "N°1", hue: "#f5b83d", ...extra } };
   }
   return { key: DEFAULT_CARD, ...CARDS[DEFAULT_CARD] };
 }
