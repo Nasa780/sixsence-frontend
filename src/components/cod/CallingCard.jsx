@@ -151,7 +151,20 @@ export function CardArt({ cardKey, place = "tile", motif = true }) {
  * Moins d'animations demandées : l'image fixe (poster) seulement.
  */
 const FADE = "linear-gradient(90deg,transparent,#000 25%,#000 75%,transparent)";
+/** Fondu plus court : sujet large (art.vivid) qui doit garder ses bords. */
+const FADE_SOFT = "linear-gradient(90deg,transparent,#000 10%,#000 90%,transparent)";
 function CardVideo({ art, place }) {
+  // art.cover : vidéo déjà au format bannière (fond prolongé), affichée en plein cadre.
+  if (art.cover) {
+    const pos = place === "profile" && art.mobilePosition ? "[object-position:var(--pos-m)] lg:[object-position:var(--pos)]" : "[object-position:var(--pos)]";
+    const vars = { "--pos": art.position ?? "center", "--pos-m": art.mobilePosition ?? art.position ?? "center" };
+    return (
+      <div className="absolute inset-0 overflow-hidden bg-black" style={vars}>
+        <video src={art.video} poster={art.poster} autoPlay muted loop playsInline aria-hidden className={cn("cc-video absolute inset-0 h-full w-full object-cover", pos)} />
+        <img src={art.poster} alt="" aria-hidden className={cn("cc-video-still absolute inset-0 hidden h-full w-full object-cover", pos)} />
+      </div>
+    );
+  }
   // art.aspect (« largeur/hauteur ») : vidéo affichée entière, sans être rognée (sujet qui se déplace).
   const whole = Boolean(art.aspect);
   const sharp = whole
@@ -162,14 +175,17 @@ function CardVideo({ art, place }) {
       ? "right-0 w-[60%] lg:left-[30%] lg:right-auto lg:w-[32%]"
       : "right-0 w-[55%]";
   const shape = whole ? { aspectRatio: art.aspect } : {};
+  // art.vivid : fond flouté plus lumineux et fondu plus court (couleurs vives qui remplissent la carte).
+  const fade = art.vivid ? FADE_SOFT : FADE;
+  const blurred = art.vivid ? "opacity-90 blur-2xl brightness-75 saturate-150" : "opacity-70 blur-2xl brightness-50";
   return (
     <div className="absolute inset-0 overflow-hidden bg-black">
-      <div className="absolute inset-0 scale-110 bg-cover bg-center opacity-70 blur-2xl brightness-50" style={{ backgroundImage: `url(${art.poster})` }} />
+      <div className={cn("absolute inset-0 scale-110 bg-cover bg-center", blurred)} style={{ backgroundImage: `url(${art.poster})` }} />
       <div className="cc-video absolute inset-0">
-        <video src={art.video} poster={art.poster} autoPlay muted loop playsInline aria-hidden className="absolute inset-0 h-full w-full scale-110 object-cover opacity-70 blur-2xl brightness-50" />
-        <video src={art.video} poster={art.poster} autoPlay muted loop playsInline aria-hidden className={cn("absolute inset-y-0 h-full object-cover", sharp)} style={{ ...shape, maskImage: FADE, WebkitMaskImage: FADE }} />
+        <video src={art.video} poster={art.poster} autoPlay muted loop playsInline aria-hidden className={cn("absolute inset-0 h-full w-full scale-110 object-cover", blurred)} />
+        <video src={art.video} poster={art.poster} autoPlay muted loop playsInline aria-hidden className={cn("absolute inset-y-0 h-full object-cover", sharp)} style={{ ...shape, maskImage: fade, WebkitMaskImage: fade }} />
       </div>
-      <div className={cn("cc-video-still absolute inset-y-0 hidden bg-cover bg-center", sharp)} style={{ ...shape, backgroundImage: `url(${art.poster})`, maskImage: FADE, WebkitMaskImage: FADE }} />
+      <div className={cn("cc-video-still absolute inset-y-0 hidden bg-cover bg-center", sharp)} style={{ ...shape, backgroundImage: `url(${art.poster})`, maskImage: fade, WebkitMaskImage: fade }} />
     </div>
   );
 }
