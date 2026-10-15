@@ -28,7 +28,7 @@ export const DEFAULT_CARD = "sixsence";
 
 const CARDS = {
   sixsence: { rarity: "commune", art: { type: "default", og: "/images/cartes/og/sixsence.jpg" } },
-  "rang-argent": { rarity: "commune", art: { type: "rank", rank: "Argent", image: "/images/cartes/argent.webp", og: "/images/cartes/og/argent.jpg", position: "45% center", mobilePosition: "40% center" } },
+  "rang-argent": { rarity: "commune", art: { type: "rank", rank: "Argent", image: "/images/cartes/argent.webp", og: "/images/cartes/og/argent.jpg", position: "center", mobilePosition: "30% center" } },
   "rang-or": { rarity: "commune", art: { type: "rank", rank: "Or" } },
   "rang-platine": { rarity: "rare", art: { type: "rank", rank: "Platine" } },
   "rang-diamant": { rarity: "rare", art: { type: "rank", rank: "Diamant" } },
