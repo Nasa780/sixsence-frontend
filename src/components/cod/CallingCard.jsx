@@ -1,6 +1,7 @@
 import { LuCheck, LuLock, LuSparkles } from "react-icons/lu";
 import { RARITY, cardInfo } from "../../lib/cards";
 import { cn } from "../../lib/cn";
+import useSeasons from "../../hooks/useSeasons";
 import { RANKS } from "../../lib/ranks";
 import { LogoMark } from "../ui/Logo";
 import { RankEmblem } from "./RankEmblem";
@@ -293,14 +294,17 @@ function HudTitle({ art }) {
 /** Nom de la saison sur le profil (art.season) : rang dans sa teinte, « SAISON 1 » avec un halo du rang ; site seulement. */
 function SeasonTitle({ art }) {
   const rank = rankByName(art.rank);
-  const glow = rank?.color ?? "#d4af37";
+  const glow = art.title ?? rank?.color ?? "#d4af37";
+  // Cartes de rang (art.title) : saison en cours ; cartes de saison : leur propre saison.
+  const { label } = useSeasons();
+  const season = art.season ?? label;
   return (
     <div className="absolute bottom-[12%] right-[6%] text-right lg:bottom-auto lg:right-[5%] lg:top-[9%]">
       <p className="font-tech text-[9px] font-bold uppercase tracking-[0.35em] lg:text-[10px]" style={{ color: rank?.light ?? "#fff", textShadow: "0 1px 2px rgba(0,0,0,.9)" }}>
         {art.rank ?? "Carte de saison"}
       </p>
       <p className="mt-1 font-tech text-2xl font-black uppercase leading-none text-white lg:text-4xl" style={{ textShadow: `0 2px 0 rgba(0,0,0,.7), 0 0 18px ${glow}, 0 0 4px ${glow}` }}>
-        {art.season}
+        {season}
       </p>
     </div>
   );
@@ -339,8 +343,8 @@ export function CardBackdrop({ cardKey, compact = false }) {
           compact ? "bg-linear-to-r from-ink/90 via-ink/50 to-ink/10" : veil,
         )}
       />
-      {(art.hud || art.title) && !compact ? <HudTitle art={art} /> : null}
-      {art.season && !compact ? <SeasonTitle art={art} /> : null}
+      {art.hud && !art.title && !compact ? <HudTitle art={art} /> : null}
+      {(art.season || art.title) && !compact ? <SeasonTitle art={art} /> : null}
     </div>
   );
 }
