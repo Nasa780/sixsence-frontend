@@ -154,6 +154,17 @@ const FADE = "linear-gradient(90deg,transparent,#000 25%,#000 75%,transparent)";
 /** Fondu plus court : sujet large (art.vivid) qui doit garder ses bords. */
 const FADE_SOFT = "linear-gradient(90deg,transparent,#000 10%,#000 90%,transparent)";
 function CardVideo({ art, place }) {
+  // art.cover : vidéo déjà au format bannière (fond prolongé), affichée en plein cadre.
+  if (art.cover) {
+    const pos = place === "profile" && art.mobilePosition ? "[object-position:var(--pos-m)] lg:[object-position:var(--pos)]" : "[object-position:var(--pos)]";
+    const vars = { "--pos": art.position ?? "center", "--pos-m": art.mobilePosition ?? art.position ?? "center" };
+    return (
+      <div className="absolute inset-0 overflow-hidden bg-black" style={vars}>
+        <video src={art.video} poster={art.poster} autoPlay muted loop playsInline aria-hidden className={cn("cc-video absolute inset-0 h-full w-full object-cover", pos)} />
+        <img src={art.poster} alt="" aria-hidden className={cn("cc-video-still absolute inset-0 hidden h-full w-full object-cover", pos)} />
+      </div>
+    );
+  }
   // art.aspect (« largeur/hauteur ») : vidéo affichée entière, sans être rognée (sujet qui se déplace).
   const whole = Boolean(art.aspect);
   const sharp = whole
