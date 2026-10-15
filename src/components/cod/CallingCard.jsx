@@ -74,7 +74,8 @@ export function CardArt({ cardKey, place = "tile", motif = true }) {
         <div className="absolute inset-0" style={{ backgroundImage: `radial-gradient(circle at 82% 50%,${rank.color}55,transparent 55%)` }} />
         <div className="absolute inset-0 opacity-40" style={{ backgroundImage: `repeating-linear-gradient(100deg,${rank.light}14 0 1px,transparent 1px 22px)` }} />
         {motif ? (
-          <div className={spot}>
+          // Profil sur téléphone : avec art.title, le nom du rang prend la place de l'emblème.
+          <div className={cn(spot, art.title && place === "profile" && "hidden lg:block")}>
             <RankEmblem rank={rank} size={big ? 220 : 64} animated={false} />
           </div>
         ) : null}
@@ -274,9 +275,12 @@ function HudArt({ art, big }) {
   );
 }
 
-/** Nom du rang en haut à droite du profil, en bas à droite sur téléphone (cartes « HUD », sur le site seulement). */
+/**
+ * Nom du rang en haut à droite du profil, en bas à droite sur téléphone (sur le site seulement) :
+ * cartes « HUD » (halo néon du dessin) et cartes de rang avec art.title (couleur du halo).
+ */
 function HudTitle({ art }) {
-  const { neon } = art.hud;
+  const neon = art.hud?.neon ?? art.title;
   return (
     <div className="absolute bottom-[12%] right-[6%] text-right lg:bottom-auto lg:right-[5%] lg:top-[9%]">
       <p className="font-tech text-[9px] uppercase tracking-[0.35em] text-white/50 lg:text-[10px]">Classe compétitive</p>
@@ -336,7 +340,7 @@ export function CardBackdrop({ cardKey, compact = false }) {
           compact ? "bg-linear-to-r from-ink/90 via-ink/50 to-ink/10" : veil,
         )}
       />
-      {art.hud && !compact ? <HudTitle art={art} /> : null}
+      {(art.hud || art.title) && !compact ? <HudTitle art={art} /> : null}
       {art.season && !compact ? <SeasonTitle art={art} /> : null}
     </div>
   );
