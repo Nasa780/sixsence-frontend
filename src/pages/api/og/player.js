@@ -196,6 +196,22 @@ function CardBanner({ card, image, display }) {
   const box = { position: "absolute", left: 0, top: 0, width: 1200, height: BANNER, display: "flex" };
   const { art } = card;
   if (image) return <img src={image} width={1200} height={BANNER} style={{ ...box, objectFit: "cover" }} />;
+  if (art.hud) {
+    // Cartes de rang « HUD » : fond teinté, lignes et coins néon (le nom du rang reste sur le site).
+    const { neon, deep } = art.hud;
+    const line = (style) => <div style={{ position: "absolute", display: "flex", ...style }} />;
+    return (
+      <div style={{ ...box, background: `radial-gradient(ellipse at 60% 40%, ${deep} 0%, #06080a 70%)` }}>
+        {line({ left: 48, right: 48, top: 24, height: 1, background: "rgba(255,255,255,0.15)" })}
+        {line({ right: 72, top: 23, width: 340, height: 3, background: `linear-gradient(90deg, transparent, ${neon})` })}
+        {line({ left: 48, right: 48, bottom: 24, height: 1, background: "rgba(255,255,255,0.1)" })}
+        {line({ left: 96, bottom: 23, width: 220, height: 3, background: `linear-gradient(90deg, ${neon}, transparent)` })}
+        {line({ right: 30, bottom: 36, width: 2, height: 44, background: neon })}
+        {line({ right: 30, bottom: 36, width: 56, height: 2, background: neon })}
+        {line({ right: 120, top: 40, width: 260, height: BANNER - 90, background: `repeating-linear-gradient(-55deg, ${neon}55 0px, ${neon}55 2px, transparent 2px, transparent 18px)` })}
+      </div>
+    );
+  }
   if (art.type === "rank") {
     const r = RANKS.find((item) => item.name === art.rank) ?? RANKS[RANKS.length - 1];
     return (

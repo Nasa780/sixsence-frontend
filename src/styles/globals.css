@@ -341,10 +341,16 @@
 }
 .cc-sweep { animation: cc-sweep 3.4s ease-in-out infinite; }
 .cc-drift { animation: cc-drift 4s linear infinite; }
+/* Points lumineux des cartes « HUD » : scintillement lent. */
+@keyframes cc-hud-dot {
+  0%, 100% { opacity: 0.2; }
+  50% { opacity: 0.85; }
+}
+.cc-hud-dot { opacity: 0.55; animation: cc-hud-dot 3s ease-in-out infinite; }
 .cc-breathe { animation: cc-breathe 4s ease-in-out infinite; }
 .cc-glow { animation: cc-glow 3s ease-in-out infinite; }
 @media (prefers-reduced-motion: reduce) {
-  .cc-sweep, .cc-drift, .cc-breathe, .cc-glow { animation: none; }
+  .cc-sweep, .cc-drift, .cc-breathe, .cc-glow, .cc-hud-dot { animation: none; }
   .cc-sweep, .cc-drift { display: none; }
 }
 @media (prefers-reduced-motion: reduce) {
