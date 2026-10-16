@@ -5,6 +5,7 @@ import { LuCheck, LuFlag, LuImage, LuLock, LuMedal, LuShare2 } from "react-icons
 import useSeasons, { seasonBadge } from "../../hooks/useSeasons";
 import useSession from "../../hooks/useSession";
 import { api } from "../../lib/api";
+import { cardInfo } from "../../lib/cards";
 import { cn } from "../../lib/cn";
 import { REPORT_REASONS, monthlyMvpBadge } from "../../lib/moderation";
 import { levelFor, rankFor, rankGradient } from "../../lib/ranks";
@@ -169,7 +170,8 @@ export function ProfileView({ userId, editable = false, ownUser = null }) {
       ) : null}
 
       {/* --- Identité et rang --------------------------------------------- */}
-      <TacticalCard highlight cut={28} innerClassName="holo overflow-hidden p-6 sm:p-10">
+      {/* Cartes de saison : sans les lignes dorées « holo » par-dessus l'image. */}
+      <TacticalCard highlight cut={28} innerClassName={cn(!cardInfo(profile.calling_card).art.season && "holo", "overflow-hidden p-6 sm:p-10")}>
         <CardBackdrop cardKey={profile.calling_card} />
         <div aria-hidden className="absolute -right-10 top-0 h-full w-40 -skew-x-[24deg] bg-linear-to-b from-gold/14 to-transparent" />
         <div className="relative flex flex-col gap-8 lg:flex-row lg:items-center lg:justify-between">
