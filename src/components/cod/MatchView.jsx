@@ -246,12 +246,13 @@ export function MatchView({ matchId }) {
     setDialog({ kind: "confirm", result: kind, team, action, body, key });
   }
   const readyUsers = match.ready_users || [];
-  const canProve = Boolean(myTeam) && ["in_progress", "awaiting_confirmation", "disputed"].includes(match.status);
   // Correction d'un match terminé : demande du joueur pendant 24 h, correction par l'équipe pendant 48 h (admin sans limite).
   const hoursSinceEnd = match.completed_at ? (Date.now() - new Date(match.completed_at).getTime()) / 3_600_000 : Infinity;
   const canRequestCorrection = Boolean(myTeam) && match.status === "completed" && hoursSinceEnd < 24;
   const canCorrect = canResolve && match.status === "completed" && (user?.role === "admin" || hoursSinceEnd < 48);
-  const canArbitrate = canProve || canRequestCorrection;
+  // Captures : pendant le match, et 24 h après la validation pour appuyer une demande de correction.
+  const canProve = Boolean(myTeam) && (["in_progress", "awaiting_confirmation", "disputed"].includes(match.status) || canRequestCorrection);
+  const canArbitrate = canProve;
   const canReport = Boolean(userId);
   const mvpVotes = data.mvpVotes || {};
   const mvpIds = mvpWinners(mvpVotes, data.mvpVotesFromOthers || {});
