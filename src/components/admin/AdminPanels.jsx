@@ -252,6 +252,7 @@ export function PlayersPanel({ currentUserId }) {
                     <p className="text-xs text-white/45">
                       {player.profile ? `${player.profile.points} pts · ${player.profile.wins} V / ${player.profile.losses} D` : "Pas de profil COD"}
                       {player.profile?.activision_id ? ` · ${player.profile.activision_id}` : ""}
+                      {player.last_match_at ? ` · dernier match le ${new Date(player.last_match_at).toLocaleDateString("fr-FR", { day: "numeric", month: "short" })}` : " · aucun match"}
                     </p>
                   </div>
                   <div className="flex flex-wrap gap-2">
