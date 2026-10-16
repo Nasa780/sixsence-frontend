@@ -298,7 +298,7 @@ function HudArt({ art, big }) {
 function HudTitle({ art }) {
   const neon = art.hud?.neon ?? art.title;
   return (
-    <div className="absolute bottom-[12%] right-[6%] text-right lg:bottom-auto lg:right-[5%] lg:top-[9%]">
+    <div className="absolute bottom-[12%] right-[6%] text-right min-[480px]:bottom-auto min-[480px]:top-[6%] lg:right-[5%] lg:top-[9%]">
       <p className="font-tech text-2xl font-black uppercase leading-none text-white lg:text-4xl" style={{ textShadow: `0 0 18px ${neon}, 0 0 4px ${neon}` }}>
         {art.rank}
       </p>
@@ -314,7 +314,7 @@ function SeasonTitle({ art }) {
   const { label } = useSeasons();
   const season = art.season ?? label;
   return (
-    <div className="absolute bottom-[12%] right-[6%] text-right lg:bottom-auto lg:right-[5%] lg:top-[9%]">
+    <div className="absolute bottom-[12%] right-[6%] text-right min-[480px]:bottom-auto min-[480px]:top-[6%] lg:right-[5%] lg:top-[9%]">
       <p className="font-tech text-[9px] font-bold uppercase tracking-[0.35em] lg:text-[10px]" style={{ color: rank?.light ?? "#fff", textShadow: "0 1px 2px rgba(0,0,0,.9)" }}>
         {art.rank ?? "Carte de saison"}
       </p>
@@ -344,7 +344,7 @@ export function CardBackdrop({ cardKey, compact = false }) {
   // art.light : voile allégé pour une illustration qui paraîtrait trop sombre sous le voile habituel (et cartes « HUD », déjà sombres).
   const veil = art.season
     ? // cartes de saison (fonds vifs) : centre dégagé, côtés assombris pour le pseudo et les chiffres
-      "bg-ink/40 lg:bg-transparent lg:bg-linear-to-r lg:from-ink/80 lg:via-ink/10 lg:to-ink/70"
+      "bg-ink/20 lg:bg-transparent lg:bg-linear-to-r lg:from-ink/60 lg:via-transparent lg:to-ink/35"
     : art.light || art.hud
     ? "bg-ink/30 lg:bg-transparent lg:bg-linear-to-r lg:from-ink/75 lg:via-ink/10 lg:to-ink/45"
     : "bg-ink/45 lg:bg-transparent lg:bg-linear-to-r lg:from-ink/90 lg:via-ink/35 lg:to-ink/85";
