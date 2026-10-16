@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { LuCheck, LuCrown, LuFlag, LuImagePlus, LuLoaderCircle, LuLock, LuMap, LuSend, LuShieldAlert, LuStar, LuSwords, LuX } from "react-icons/lu";
+import { LuCheck, LuCrown, LuFlag, LuImagePlus, LuLoaderCircle, LuLock, LuMap, LuRotateCcw, LuSend, LuShieldAlert, LuStar, LuSwords, LuX } from "react-icons/lu";
 import useCountdown from "../../hooks/useCountdown";
 import useSession from "../../hooks/useSession";
 import useUser from "../../hooks/useUser";
@@ -34,6 +34,110 @@ const PLATFORM_LABEL = { pc: "PC", playstation: "PlayStation", xbox: "Xbox" };
 
 const signed = (value) => (value > 0 ? `+${value}` : value === 0 ? "±0" : `${value}`);
 const teamLabel = (team) => (team === "A" ? "Équipe 1" : "Équipe 2");
+/** Durée lisible : « 23 h 41 », « 45 min ». */
+const formatHours = (hours) => {
+  const minutes = Math.max(0, Math.floor(hours * 60));
+  return minutes >= 60 ? `${Math.floor(minutes / 60)} h ${String(minutes % 60).padStart(2, "0")}` : `${minutes} min`;
+};
+
+/**
+ * Correction d'un match terminé par l'équipe (mauvais clic, erreur de déclaration) : inverser le
+ * vainqueur ou annuler, motif obligatoire, confirmation avec les points du match.
+ */
+function CorrectionPanel({ match, hoursSinceEnd, isAdmin, onCorrect, playerById }) {
+  const [reason, setReason] = useState("");
+  const [confirm, setConfirm] = useState(null); // "swap" | "cancel"
+  const [pending, setPending] = useState(false);
+  const [error, setError] = useState(null);
+  const late = hoursSinceEnd >= 48;
+  const newWinner = match.winner === "A" ? "B" : "A";
+  const names = (ids) => ids.map((id) => playerById.get(id)?.username ?? "?").join(", ");
+
+  function ask(action) {
+    if (reason.trim().length < 3) return setError("Indique un motif (au moins 3 caractères).");
+    setError(null);
+    setConfirm(action);
+  }
+
+  async function run() {
+    setPending(true);
+    try {
+      await onCorrect(confirm, reason.trim());
+      setConfirm(null);
+      setReason("");
+    } catch (caught) {
+      setError(caught.message);
+      setConfirm(null);
+    } finally {
+      setPending(false);
+    }
+  }
+
+  return (
+    <div className="space-y-4 border-t border-white/10 pt-4">
+      <div className="flex items-start gap-3">
+        <LuShieldAlert aria-hidden className="mt-1 h-6 w-6 shrink-0 text-gold" />
+        <div>
+          <p className="font-display text-2xl font-black uppercase leading-none">Corriger le résultat</p>
+          <p className="mt-1 text-sm text-white/55">
+            Validé il y a {formatHours(hoursSinceEnd)} ·{" "}
+            {late ? (isAdmin ? "hors délai (48 h) : correction réservée à l'admin" : "délai dépassé") : `correction possible encore ${formatHours(48 - hoursSinceEnd)}`}
+          </p>
+        </div>
+      </div>
+      <label className="block">
+        <span className="mb-1.5 block text-xs uppercase tracking-[0.2em] text-white/50">Motif (obligatoire)</span>
+        <textarea
+          value={reason}
+          onChange={(event) => setReason(event.target.value)}
+          maxLength={500}
+          rows={2}
+          placeholder="Ex. : mauvais clic, l'équipe 1 a gagné 6-3 (capture dans les preuves)."
+          className="w-full resize-y border border-white/15 bg-ink-800 px-3 py-2.5 text-sm text-white placeholder:text-white/30 focus:border-gold/60 focus:outline-none"
+        />
+      </label>
+      {error ? <Notice tone="error">{error}</Notice> : null}
+      <div className="flex flex-col gap-3 sm:flex-row">
+        <Button onClick={() => ask("swap")} disabled={pending}>
+          <LuRotateCcw aria-hidden className="h-5 w-5" />
+          Inverser le vainqueur
+        </Button>
+        <Button variant="danger" onClick={() => ask("cancel")} disabled={pending}>
+          <LuX aria-hidden className="h-5 w-5" />
+          Annuler le match
+        </Button>
+      </div>
+
+      <ConfirmDialog
+        open={confirm !== null}
+        onClose={() => setConfirm(null)}
+        pending={pending}
+        tone={confirm === "cancel" ? "danger" : "gold"}
+        title={confirm === "cancel" ? "Annuler le match ?" : "Inverser le vainqueur ?"}
+        confirmLabel={confirm === "cancel" ? "Annuler le match" : "Inverser"}
+        onConfirm={run}
+      >
+        {confirm === "swap" ? (
+          <p>
+            La victoire passe à l&apos;<strong className="font-semibold text-gold">{teamLabel(newWinner).toLowerCase()}</strong> (
+            {names(newWinner === "A" ? match.team_a : match.team_b)}). Les points du match sont retirés puis recalculés.
+          </p>
+        ) : (
+          <p>Les points, victoires et défaites du match sont rendus à tous les joueurs.</p>
+        )}
+        <ul className="grid grid-cols-1 gap-1 font-tech text-xs sm:grid-cols-2">
+          {[...match.team_a, ...match.team_b].map((id) => (
+            <li key={id}>
+              {playerById.get(id)?.username ?? "?"} : {signed(match.points_changes?.[id] ?? 0)} annulé
+            </li>
+          ))}
+        </ul>
+        <p className="text-white/50">Motif : {reason.trim()}</p>
+        <p>Les joueurs sont prévenus (message privé) et l&apos;équipe en garde une trace.</p>
+      </ConfirmDialog>
+    </div>
+  );
+}
 
 /**
  * Salon de match : carte, mode, les deux équipes, le chat, et les actions selon l'état.
@@ -143,7 +247,11 @@ export function MatchView({ matchId }) {
   }
   const readyUsers = match.ready_users || [];
   const canProve = Boolean(myTeam) && ["in_progress", "awaiting_confirmation", "disputed"].includes(match.status);
-  const canArbitrate = canProve;
+  // Correction d'un match terminé : demande du joueur pendant 24 h, correction par l'équipe pendant 48 h (admin sans limite).
+  const hoursSinceEnd = match.completed_at ? (Date.now() - new Date(match.completed_at).getTime()) / 3_600_000 : Infinity;
+  const canRequestCorrection = Boolean(myTeam) && match.status === "completed" && hoursSinceEnd < 24;
+  const canCorrect = canResolve && match.status === "completed" && (user?.role === "admin" || hoursSinceEnd < 48);
+  const canArbitrate = canProve || canRequestCorrection;
   const canReport = Boolean(userId);
   const mvpVotes = data.mvpVotes || {};
   const mvpIds = mvpWinners(mvpVotes, data.mvpVotesFromOthers || {});
@@ -295,13 +403,42 @@ export function MatchView({ matchId }) {
           </Notice>
         ) : null}
 
-        {/* Demande d'arbitrage : pendant le match, pour les joueurs. */}
+        {match.correction_action ? (
+          <Notice>
+            <strong className="font-semibold text-white">Résultat corrigé par l&apos;équipe SixSence</strong>
+            {match.corrected_at
+              ? ` le ${new Date(match.corrected_at).toLocaleString("fr-FR", { day: "numeric", month: "numeric", hour: "2-digit", minute: "2-digit" })}`
+              : ""}
+            {match.correction_action === "cancel" ? " : match annulé, points rendus." : " : vainqueur inversé, points recalculés."}
+            {match.correction_reason ? <span className="text-white/60"> Motif : {match.correction_reason}</span> : null}
+          </Notice>
+        ) : null}
+
+        {/* Correction d'un match terminé par l'équipe (mauvais clic…). */}
+        {canCorrect ? (
+          <CorrectionPanel
+            match={match}
+            hoursSinceEnd={hoursSinceEnd}
+            isAdmin={user?.role === "admin"}
+            onCorrect={async (action, reason) => {
+              await api(`/cod/matches/${matchId}/correct`, { method: "POST", body: { action, reason } });
+              await load();
+            }}
+            playerById={playerById}
+          />
+        ) : null}
+
+        {/* Demande d'arbitrage : pendant le match, ou correction pendant 24 h après la validation. */}
         {canArbitrate ? (
           <div className="flex flex-col gap-3 border-t border-white/10 pt-4 sm:flex-row sm:items-center sm:justify-between">
-            <p className="text-sm text-white/55">Un problème pendant le match (triche, joueur absent, partie impossible…) ?</p>
+            <p className="text-sm text-white/55">
+              {canRequestCorrection
+                ? `Le résultat est faux (mauvais clic, erreur de déclaration) ? Tu peux demander une correction pendant encore ${formatHours(24 - hoursSinceEnd)}.`
+                : "Un problème pendant le match (triche, joueur absent, partie impossible…) ?"}
+            </p>
             <Button variant="outline" size="sm" onClick={() => setDialog({ kind: "arbitration" })}>
-              <LuShieldAlert aria-hidden className="h-4 w-4" />
-              Demander un arbitrage
+              {canRequestCorrection ? <LuFlag aria-hidden className="h-4 w-4" /> : <LuShieldAlert aria-hidden className="h-4 w-4" />}
+              {canRequestCorrection ? "Demander une correction" : "Demander un arbitrage"}
             </Button>
           </div>
         ) : null}
@@ -312,7 +449,7 @@ export function MatchView({ matchId }) {
                 <LuShieldAlert aria-hidden className="h-4 w-4 text-gold" />
                 Ta demande « {ARBITRATION_REASONS[request.reason] ?? request.reason} » :
                 <span className={cn("font-semibold", request.status === "open" ? "text-gold" : request.status === "resolved" ? "text-win" : "text-white/60")}>
-                  {request.status === "open" ? "en attente d'un admin" : request.status === "resolved" ? "traitée" : "classée sans suite"}
+                  {request.status === "open" ? "en attente d'un arbitre" : request.status === "resolved" ? "traitée" : "classée sans suite"}
                 </span>
                 {request.resolution ? <span className="text-white/50">— {request.resolution}</span> : null}
               </li>
