@@ -187,7 +187,25 @@ export function PlayersPanel({ currentUserId }) {
   const [players, setPlayers] = useState(null);
   const { pending, error, run } = useAction();
 
-  const search = useCallback((term) => api(`/admin/players?q=${encodeURIComponent(term)}`).then((data) => setPlayers(data.players)), []);
+  const [more, setMore] = useState({ hasMore: false, total: 0, loading: false });
+  // Pseudo (même stylisé) ou identifiant Activision ; 50 par page, « Voir plus » pour la suite.
+  const search = useCallback(
+    (term) =>
+      api(`/admin/players?q=${encodeURIComponent(term)}`).then((data) => {
+        setPlayers(data.players);
+        setMore({ hasMore: Boolean(data.hasMore), total: data.total ?? data.players.length, loading: false });
+      }),
+    [],
+  );
+  const loadMore = () => {
+    setMore((state) => ({ ...state, loading: true }));
+    api(`/admin/players?q=${encodeURIComponent(query)}&offset=${players.length}`)
+      .then((data) => {
+        setPlayers((list) => [...list, ...data.players]);
+        setMore({ hasMore: Boolean(data.hasMore), total: data.total ?? 0, loading: false });
+      })
+      .catch(() => setMore((state) => ({ ...state, loading: false })));
+  };
 
   useEffect(() => {
     const timer = setTimeout(() => search(query).catch(() => setPlayers([])), 300);
@@ -208,12 +226,12 @@ export function PlayersPanel({ currentUserId }) {
 
   return (
     <div className="space-y-5">
-      <SearchInput value={query} onChange={setQuery} label="Rechercher un joueur" placeholder="Rechercher un pseudo Discord…" />
+      <SearchInput value={query} onChange={setQuery} label="Rechercher un joueur" placeholder="Pseudo Discord (même stylisé) ou identifiant Activision…" />
       {error ? <Notice tone="error">{error}</Notice> : null}
       {players === null ? (
         <Loading />
       ) : players.length === 0 ? (
-        <EmptyState title="Aucun joueur">Aucun pseudo ne correspond à la recherche.</EmptyState>
+        <EmptyState title="Aucun joueur">Aucun pseudo ni identifiant Activision ne correspond à la recherche.</EmptyState>
       ) : (
         <ul className="space-y-2">
           {players.map((player) => {
@@ -295,6 +313,19 @@ export function PlayersPanel({ currentUserId }) {
           })}
         </ul>
       )}
+      {players && players.length > 0 ? (
+        <div className="flex flex-wrap items-center justify-between gap-3 text-xs text-white/45">
+          <span>
+            {players.length} joueur{players.length > 1 ? "s" : ""} affiché{players.length > 1 ? "s" : ""} sur {more.total}
+          </span>
+          {more.hasMore ? (
+            <Button size="sm" variant="outline" onClick={loadMore} disabled={more.loading}>
+              {more.loading ? <LuLoaderCircle aria-hidden className="h-4 w-4 animate-spin" /> : null}
+              Voir plus
+            </Button>
+          ) : null}
+        </div>
+      ) : null}
     </div>
   );
 }
