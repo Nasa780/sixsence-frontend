@@ -14,6 +14,7 @@ import { Avatar } from "../ui/Avatar";
 import { Button } from "../ui/Button";
 import { Chip, EmptyState, Loading, Notice } from "../ui/Feedback";
 import { TacticalCard } from "../ui/TacticalCard";
+import { ConfirmDialog } from "../ui/ConfirmDialog";
 import { ReasonDialog } from "../ui/ReasonDialog";
 import { PointsAtStake } from "./PointsAtStake";
 import { RankEmblem } from "./RankEmblem";
@@ -53,7 +54,7 @@ export function MatchView({ matchId }) {
   const [pending, setPending] = useState(null);
   const [error, setError] = useState(null);
   const [me, setMe] = useState({ myVote: null, arbitrations: [] });
-  const [dialog, setDialog] = useState(null); // { kind: "arbitration" } | { kind: "report", target }
+  const [dialog, setDialog] = useState(null); // { kind: "arbitration" } | { kind: "report", target } | { kind: "confirm", … }
 
   const loadMe = useCallback(async () => {
     try {
@@ -128,6 +129,18 @@ export function MatchView({ matchId }) {
   const hostName = playerById.get(match.team_a[0])?.username ?? "L'hôte";
   const canResolve = isReferee(user?.role);
   const spinner = <LuLoaderCircle aria-hidden className="h-5 w-5 animate-spin" />;
+  const namesOf = (team) => (team === "A" ? match.team_a : match.team_b).map((id) => playerById.get(id)?.username ?? "?").join(", ");
+
+  /**
+   * Fenêtre de confirmation avant d'envoyer un résultat (évite les erreurs de clic) :
+   * déclaration (report), confirmation de l'équipe adverse (accept), arbitrage (resolve).
+   */
+  function askResult(kind, team) {
+    const action = kind === "accept" ? "confirm" : kind;
+    const body = kind === "accept" ? { accept: true } : { winner: team };
+    const key = kind === "accept" ? "accept" : `${kind}-${team ?? "cancel"}`;
+    setDialog({ kind: "confirm", result: kind, team, action, body, key });
+  }
   const readyUsers = match.ready_users || [];
   const canProve = Boolean(myTeam) && ["in_progress", "awaiting_confirmation", "disputed"].includes(match.status);
   const canArbitrate = canProve;
@@ -199,11 +212,11 @@ export function MatchView({ matchId }) {
             {myTeam ? (
               <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
                 <p className="font-display text-xl font-bold uppercase tracking-[0.12em] text-white/80 sm:mr-2">Qui a gagné ?</p>
-                <Button onClick={() => act("report", { winner: "A" }, "report-A")} disabled={pending !== null}>
+                <Button onClick={() => askResult("report", "A")} disabled={pending !== null}>
                   {pending === "report-A" ? spinner : <LuSwords aria-hidden className="h-5 w-5" />}
                   Équipe 1
                 </Button>
-                <Button variant="outline" onClick={() => act("report", { winner: "B" }, "report-B")} disabled={pending !== null}>
+                <Button variant="outline" onClick={() => askResult("report", "B")} disabled={pending !== null}>
                   {pending === "report-B" ? spinner : <LuSwords aria-hidden className="h-5 w-5" />}
                   Équipe 2
                 </Button>
@@ -221,7 +234,7 @@ export function MatchView({ matchId }) {
             </Notice>
             {myTeam && reporterTeam && myTeam !== reporterTeam ? (
               <div className="flex flex-col gap-3 sm:flex-row">
-                <Button onClick={() => act("confirm", { accept: true }, "accept")} disabled={pending !== null}>
+                <Button onClick={() => askResult("accept", match.reported_winner)} disabled={pending !== null}>
                   {pending === "accept" ? spinner : <LuCheck aria-hidden className="h-5 w-5" />}
                   Confirmer le résultat
                 </Button>
@@ -242,15 +255,15 @@ export function MatchView({ matchId }) {
             {canResolve ? (
               <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
                 <p className="font-display text-xl font-bold uppercase tracking-[0.12em] text-white/80 sm:mr-2">Arbitrage</p>
-                <Button onClick={() => act("resolve", { winner: "A" }, "resolve-A")} disabled={pending !== null}>
+                <Button onClick={() => askResult("resolve", "A")} disabled={pending !== null}>
                   {pending === "resolve-A" ? spinner : null}
                   Victoire équipe 1
                 </Button>
-                <Button variant="outline" onClick={() => act("resolve", { winner: "B" }, "resolve-B")} disabled={pending !== null}>
+                <Button variant="outline" onClick={() => askResult("resolve", "B")} disabled={pending !== null}>
                   {pending === "resolve-B" ? spinner : null}
                   Victoire équipe 2
                 </Button>
-                <Button variant="danger" onClick={() => act("resolve", { winner: null }, "resolve-cancel")} disabled={pending !== null}>
+                <Button variant="danger" onClick={() => askResult("resolve", null)} disabled={pending !== null}>
                   {pending === "resolve-cancel" ? spinner : null}
                   Annuler le match
                 </Button>
@@ -322,6 +335,35 @@ export function MatchView({ matchId }) {
         <TeamColumn team="B" match={match} ids={match.team_b} stakes={data.pointsAtStake} playerById={playerById} currentUserId={userId} readyUsers={readyUsers} mvpIds={mvpIds} onReport={canReport ? (target) => setDialog({ kind: "report", target }) : null} />
       </div>
 
+      <ConfirmDialog
+        open={dialog?.kind === "confirm"}
+        onClose={() => setDialog(null)}
+        pending={pending !== null}
+        tone={dialog?.team === null ? "danger" : "gold"}
+        title={dialog?.result === "accept" ? "Confirmer le résultat ?" : dialog?.team === null ? "Annuler le match ?" : "Déclarer le vainqueur ?"}
+        confirmLabel={dialog?.result === "accept" ? "Oui, je confirme" : dialog?.team === null ? "Annuler le match" : "Oui, valider"}
+        onConfirm={async () => {
+          await act(dialog.action, dialog.body, dialog.key);
+          setDialog(null);
+        }}
+      >
+        {dialog?.team ? (
+          <>
+            <p>
+              {dialog.result === "accept" ? "Tu confirmes la victoire de l'" : "Tu déclares la victoire de l'"}
+              <strong className="font-semibold text-gold">{teamLabel(dialog.team).toLowerCase()}</strong> :
+            </p>
+            <p className="border-l-2 border-gold/50 pl-3 font-semibold text-white">{namesOf(dialog.team)}</p>
+            <p>
+              {dialog.result === "report"
+                ? "L'équipe adverse devra confirmer (validation automatique après 15 minutes)."
+                : "Les points seront appliqués tout de suite."}
+            </p>
+          </>
+        ) : (
+          <p>Aucun point ne sera appliqué et les joueurs seront prévenus.</p>
+        )}
+      </ConfirmDialog>
       <ReasonDialog
         open={dialog?.kind === "arbitration"}
         onClose={() => setDialog(null)}
