@@ -3,6 +3,7 @@
  * services/moderation.ts et les contraintes de la migration 0005).
  */
 export const ARBITRATION_REASONS = {
+  misclick: "Erreur de déclaration (mauvais clic)",
   cheating: "Triche suspectée",
   afk: "Joueur absent ou AFK",
   lobby: "Problème de partie (hôte, lobby, déconnexion)",
