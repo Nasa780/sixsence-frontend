@@ -2,6 +2,7 @@ import Head from "next/head";
 import { useRouter } from "next/router";
 import { CasesPanel, DisputesPanel, OverviewPanel, PlayersPanel, SeasonPanel } from "../components/admin/AdminPanels";
 import { CrudPanel } from "../components/admin/CrudPanel";
+import { CorrectionsPanel, MatchesPanel } from "../components/admin/MatchesPanels";
 import { SanctionsPanel } from "../components/admin/Sanctions";
 import { EVENTS, FOUNDERS, PARTNERS } from "../components/admin/contentConfigs";
 import { Container } from "../components/ui/Container";
@@ -20,6 +21,8 @@ const ALL_TABS = [
   { key: "overview", label: "Tableau de bord", roles: REFEREES },
   { key: "disputes", label: "Contestations", roles: REFEREES },
   { key: "arbitrages", label: "Arbitrages", roles: REFEREES },
+  { key: "matchs", label: "Matchs", roles: REFEREES },
+  { key: "corrections", label: "Corrections" },
   { key: "signalements", label: "Signalements", roles: MODERATORS },
   { key: "sanctions", label: "Sanctions", roles: MODERATORS },
   { key: "players", label: "Joueurs" },
@@ -76,6 +79,8 @@ export default function AdminPage() {
           {tab === "overview" ? <OverviewPanel onNavigate={go} role={user.role} /> : null}
           {tab === "disputes" ? <DisputesPanel /> : null}
           {tab === "arbitrages" ? <CasesPanel key="arbitrations" kind="arbitrations" /> : null}
+          {tab === "matchs" ? <MatchesPanel /> : null}
+          {tab === "corrections" ? <CorrectionsPanel /> : null}
           {tab === "signalements" ? <CasesPanel key="reports" kind="reports" /> : null}
           {tab === "sanctions" ? <SanctionsPanel /> : null}
           {tab === "players" ? <PlayersPanel currentUserId={user.id} /> : null}
