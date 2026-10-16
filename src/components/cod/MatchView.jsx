@@ -52,6 +52,14 @@ function CorrectionPanel({ match, hoursSinceEnd, isAdmin, onCorrect, playerById 
   const late = hoursSinceEnd >= 48;
   const newWinner = match.winner === "A" ? "B" : "A";
   const names = (ids) => ids.map((id) => playerById.get(id)?.username ?? "?").join(", ");
+  const teamOf = (userId) => (match.team_a.includes(userId) ? "A" : "B");
+  // Demandes de correction ou d'arbitrage encore ouvertes pour ce match.
+  const [requests, setRequests] = useState([]);
+  useEffect(() => {
+    api(`/admin/arbitrations?status=open&match=${match.id}`)
+      .then((data) => setRequests(data.items ?? []))
+      .catch(() => setRequests([]));
+  }, [match.id]);
 
   function ask(action) {
     if (reason.trim().length < 3) return setError("Indique un motif (au moins 3 caractères).");
@@ -85,6 +93,29 @@ function CorrectionPanel({ match, hoursSinceEnd, isAdmin, onCorrect, playerById 
           </p>
         </div>
       </div>
+      {requests.length > 0 ? (
+        <ul className="space-y-2">
+          {requests.map((request) => (
+            <li key={request.id} className="border-l-2 border-loss/60 bg-white/[0.03] px-3 py-2 text-sm text-white/70">
+              <p>
+                <span className="font-semibold text-white">{request.user_name ?? "Un joueur"}</span>{" "}
+                <span className="text-white/40">
+                  ({teamLabel(teamOf(request.user_id)).toLowerCase()}, {teamOf(request.user_id) === match.winner ? "gagnante" : "perdante"})
+                </span>{" "}
+                · <span className="text-gold">{request.reason_label}</span>
+              </p>
+              {request.details ? <p className="mt-1 text-white/55">« {request.details} »</p> : null}
+              <button
+                type="button"
+                onClick={() => setReason(`${request.reason_label}${request.details ? ` : ${request.details}` : ""}`.slice(0, 500))}
+                className="mt-1 text-xs text-gold underline underline-offset-4 hover:text-gold-light"
+              >
+                Reprendre comme motif
+              </button>
+            </li>
+          ))}
+        </ul>
+      ) : null}
       <label className="block">
         <span className="mb-1.5 block text-xs uppercase tracking-[0.2em] text-white/50">Motif (obligatoire)</span>
         <textarea
