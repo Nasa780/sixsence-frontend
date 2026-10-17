@@ -8,7 +8,7 @@ const FEATURES = [
   { icon: LuRadio, title: "File en temps réel", text: "Le compteur de joueurs bouge sous tes yeux. Pas besoin de recharger la page." },
   { icon: LuSwords, title: "Matchmaking automatique", text: "Équipes et carte sont tirées au sort dès que la file est pleine." },
   { icon: LuShieldCheck, title: "Résultats vérifiés", text: "Un résultat ne compte qu'une fois confirmé par l'équipe adverse." },
-  { icon: LuTrendingUp, title: "Classement dynamique", text: "Neuf rangs, de Bronze à Légende : +50 points par victoire, et des défaites qui coûtent plus cher en montant." },
+  { icon: LuTrendingUp, title: "Classement dynamique", text: "Neuf rangs, de Bronze à Légende : +40 à +60 points par victoire selon le niveau de l'équipe adverse, et des défaites qui coûtent plus cher en montant." },
   { icon: LuMedal, title: "Profil complet", text: "Statistiques, historique des matchs, courbe de progression et trophées." },
   { icon: LuCalendarDays, title: "Événements GTA 6", text: "Planning, places limitées et suivi des inscrits pour chaque session.", univers: "gta" },
 ];
