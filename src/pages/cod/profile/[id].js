@@ -4,6 +4,7 @@ import { ProfileView } from "../../../components/cod/ProfileView";
 import { Container } from "../../../components/ui/Container";
 import { EmptyState } from "../../../components/ui/Feedback";
 import { Eyebrow } from "../../../components/ui/Typography";
+import { CodModeNav } from "../../../components/cod/CodModeNav";
 import useSession from "../../../hooks/useSession";
 import useUser from "../../../hooks/useUser";
 import { SITE_URL } from "../../../lib/config";
@@ -65,6 +66,7 @@ export default function PlayerProfilePage({ meta }) {
       <div className="relative isolate overflow-hidden">
         <div aria-hidden className="absolute inset-x-0 top-0 -z-10 h-96 bg-grid mask-fade opacity-70" />
         <Container className="pt-28 pb-12 sm:pt-32">
+          <CodModeNav className="mb-8" />
           <Eyebrow className="mb-6">Profil joueur</Eyebrow>
           {isReady && !UUID.test(id) ? <EmptyState title="Joueur introuvable">Ce profil n&apos;existe pas.</EmptyState> : null}
           {isReady && UUID.test(id) ? <ProfileView key={id} userId={id} editable={isOwn} ownUser={isOwn ? user : null} /> : null}

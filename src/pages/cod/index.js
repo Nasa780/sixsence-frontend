@@ -1,32 +1,58 @@
 import Head from "next/head";
 import Link from "next/link";
 import { useEffect, useState } from "react";
-import { LuArrowRight, LuCrosshair, LuShield, LuTrophy, LuUser } from "react-icons/lu";
+import { LuArrowRight, LuCrosshair, LuShield } from "react-icons/lu";
 import { LeaderboardView } from "../../components/cod/LeaderboardView";
 import { OnboardingPanel } from "../../components/cod/OnboardingPanel";
 import { RankBadge } from "../../components/cod/RankBadge";
 import { Reveal } from "../../components/effects/Reveal";
 import { ButtonLink } from "../../components/ui/Button";
 import { Container } from "../../components/ui/Container";
-import { Notice, StatTile } from "../../components/ui/Feedback";
+import { Chip, Notice, StatTile } from "../../components/ui/Feedback";
 import { TacticalCard } from "../../components/ui/TacticalCard";
-import { PageHeader, SectionHeading } from "../../components/ui/Typography";
+import { Eyebrow, PageHeader, SectionHeading } from "../../components/ui/Typography";
+import { TeamCrest } from "../../components/teams/TeamParts";
 import useDisputedMatch from "../../hooks/useDisputedMatch";
 import useSeasons from "../../hooks/useSeasons";
 import useSession from "../../hooks/useSession";
 import useUser from "../../hooks/useUser";
 import { supabase } from "../../lib/supabase";
+import { api } from "../../lib/api";
+import { cn } from "../../lib/cn";
 
-const SECTIONS = [
-  { href: "/cod/ranked", icon: LuCrosshair, title: "File classée", text: "Lance une recherche en 2v2, 3v3, 4v4 ou 5v5, seul ou avec ton groupe. Le match démarre dès que les équipes sont complètes." },
-  { href: "/cod/equipes", icon: LuShield, title: "Match team", text: "Crée ton équipe ou rejoins-en une : BO3 en 4v4, classement des équipes et tournoi de fin de saison." },
-  { href: "/cod/leaderboard", icon: LuTrophy, title: "Classement", text: "Les meilleurs joueurs de la saison, mis à jour en direct après chaque match." },
-  { href: "/cod/profile", icon: LuUser, title: "Mon profil", text: "Tes statistiques, ton rang, tes distinctions et ton historique de matchs." },
+/** Les deux modes de jeu, présentés séparément sur le hub. */
+const MODES = [
+  {
+    key: "classe",
+    icon: LuCrosshair,
+    eyebrow: "Mode joueur",
+    title: "Classé",
+    text: "Seul ou en groupe, du 2v2 au 5v5. Tes points, ton rang et ta place au classement des joueurs.",
+    facts: ["2v2 → 5v5", "Points individuels", "Rangs Bronze → Légende"],
+    primary: { href: "/cod/ranked", label: "Jouer en classé" },
+    links: [
+      { href: "/cod/leaderboard", label: "Classement des joueurs" },
+      { href: "/cod/profile", label: "Mon profil" },
+    ],
+  },
+  {
+    key: "team",
+    icon: LuShield,
+    eyebrow: "Mode équipe",
+    title: "Match team",
+    text: "Ton équipe de 4 titulaires et 4 remplaçants en BO3 4v4. Les points de l'équipe, son classement et le tournoi de fin de saison.",
+    facts: ["BO3 4v4", "Points d'équipe", "Tournoi de fin de saison"],
+    primary: { href: "/cod/equipe", label: "Mon équipe" },
+    links: [
+      { href: "/cod/equipes", label: "Classement des équipes" },
+      { href: "/cod/equipes/tournoi", label: "Tournoi" },
+    ],
+  },
 ];
 
 const winRate = (wins, losses) => (wins + losses > 0 ? Math.round((wins / (wins + losses)) * 100) : null);
 
-/** Hub COD : résumé du joueur connecté, accès aux sections, top 10. Public. */
+/** Hub COD : résumé du joueur connecté, les deux modes (Classé, Match team) séparés, top joueurs et top équipes. Public. */
 export default function CodHubPage() {
   const { session } = useSession();
   const user = useUser();
@@ -65,13 +91,19 @@ export default function CodHubPage() {
           </>
         }
         description={
-          user ? `Content de te revoir, ${user.username}. La file classée est ouverte.` : "Classé du 2v2 au 5v5 en Recherche & Destruction Hardcore : les files sont ouvertes."
+          user ? `Content de te revoir, ${user.username}. Deux modes t'attendent : le classé et les match team.` : "Recherche & Destruction Hardcore : le classé pour les joueurs (2v2 à 5v5), les match team pour les équipes (BO3 4v4)."
         }
         actions={
-          <ButtonLink href="/cod/ranked" size="lg">
-            <LuCrosshair aria-hidden className="h-5 w-5" />
-            Jouer en classé
-          </ButtonLink>
+          <>
+            <ButtonLink href="/cod/ranked" size="lg">
+              <LuCrosshair aria-hidden className="h-5 w-5" />
+              Classé
+            </ButtonLink>
+            <ButtonLink href="/cod/equipes" size="lg" variant="outline">
+              <LuShield aria-hidden className="h-5 w-5" />
+              Match team
+            </ButtonLink>
+          </>
         }
       />
 
@@ -108,31 +140,102 @@ export default function CodHubPage() {
           </section>
         ) : null}
 
-        <div className="grid grid-cols-1 gap-5 md:grid-cols-2 xl:grid-cols-4">
-          {SECTIONS.map((section, index) => (
-            <Reveal key={section.href} delay={index * 0.08} className="h-full">
-              <Link href={section.href} className="block h-full">
-                <TacticalCard interactive className="h-full" innerClassName="flex h-full flex-col p-7">
-                  <section.icon aria-hidden className="h-9 w-9 text-gold" />
-                  <h2 className="mt-6 font-display text-4xl font-black uppercase leading-none">{section.title}</h2>
-                  <p className="mt-3 text-sm leading-relaxed text-white/60">{section.text}</p>
-                  <p className="mt-auto inline-flex items-center gap-2 pt-8 font-display text-base font-bold uppercase tracking-[0.14em] text-gold">
-                    Ouvrir
-                    <LuArrowRight aria-hidden className="h-4 w-4 transition-transform duration-300 group-hover/card:translate-x-1.5" />
-                  </p>
-                </TacticalCard>
-              </Link>
+        <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
+          {MODES.map((mode, index) => (
+            <Reveal key={mode.key} delay={index * 0.08} className="h-full">
+              <TacticalCard highlight={mode.key === "classe"} cut={28} className="h-full" innerClassName={cn("flex h-full flex-col overflow-hidden p-7 sm:p-9", mode.key === "classe" && "holo")}>
+                <div aria-hidden className="absolute -right-6 -top-8 select-none font-display text-[9rem] font-black uppercase leading-none text-outline opacity-40">
+                  {mode.key === "classe" ? "#1" : "4v4"}
+                </div>
+                <div className="relative flex h-full flex-col">
+                  <mode.icon aria-hidden className="h-10 w-10 text-gold" />
+                  <Eyebrow className="mt-6">{mode.eyebrow}</Eyebrow>
+                  <h2 className="mt-2 font-display text-5xl font-black uppercase leading-none sm:text-6xl">{mode.title}</h2>
+                  <p className="mt-4 max-w-md text-sm leading-relaxed text-white/60">{mode.text}</p>
+                  <ul className="mt-5 flex flex-wrap gap-2">
+                    {mode.facts.map((fact) => (
+                      <li key={fact}>
+                        <Chip tone="neutral">{fact}</Chip>
+                      </li>
+                    ))}
+                  </ul>
+                  <div className="mt-auto flex flex-wrap items-center gap-x-6 gap-y-3 pt-8">
+                    <ButtonLink href={mode.primary.href}>
+                      <mode.icon aria-hidden className="h-5 w-5" />
+                      {mode.primary.label}
+                    </ButtonLink>
+                    {mode.links.map((link) => (
+                      <Link key={link.href} href={link.href} className="inline-flex items-center gap-1.5 font-display text-sm font-bold uppercase tracking-[0.14em] text-gold hover:text-gold-light">
+                        {link.label}
+                        <LuArrowRight aria-hidden className="h-4 w-4" />
+                      </Link>
+                    ))}
+                  </div>
+                </div>
+              </TacticalCard>
             </Reveal>
           ))}
         </div>
 
-        <section aria-labelledby="titre-top10">
-          <SectionHeading eyebrow={seasonLabel} title={<span id="titre-top10">Top 10</span>} />
-          <div className="mt-8">
-            <LeaderboardView limit={10} currentUserId={user?.id ?? null} compact />
-          </div>
-        </section>
+        <div className="grid grid-cols-1 gap-12 xl:grid-cols-[3fr_2fr]">
+          <section aria-labelledby="titre-top10">
+            <SectionHeading eyebrow={`${seasonLabel} · Classé`} title={<span id="titre-top10">Top 10 joueurs</span>} />
+            <div className="mt-8">
+              <LeaderboardView limit={10} currentUserId={user?.id ?? null} compact />
+            </div>
+          </section>
+          <TopTeams label={seasonLabel} />
+        </div>
       </Container>
     </>
+  );
+}
+
+/** Top 5 des équipes (mode Match team). */
+function TopTeams({ label }) {
+  const [teams, setTeams] = useState(null);
+  useEffect(() => {
+    api("/teams")
+      .then((data) => setTeams(data.teams.slice(0, 5)))
+      .catch(() => setTeams([]));
+  }, []);
+
+  return (
+    <section aria-labelledby="titre-top-equipes">
+      <SectionHeading eyebrow={`${label} · Match team`} title={<span id="titre-top-equipes">Top équipes</span>} />
+      <div className="mt-8">
+        {teams === null ? null : teams.length === 0 ? (
+          <p className="text-sm text-white/50">
+            Aucune équipe pour l&apos;instant.{" "}
+            <Link href="/cod/equipes/creer" className="font-semibold text-gold underline underline-offset-4 hover:text-gold-light">
+              Crée la première
+            </Link>
+            .
+          </p>
+        ) : (
+          <ol className="space-y-1.5">
+            {teams.map((team) => (
+              <li key={team.id}>
+                <Link href={`/cod/equipes/${team.id}`} className="flex items-center gap-3 border-l-2 border-transparent bg-white/[0.03] px-4 py-3 transition-colors hover:border-gold hover:bg-white/[0.06]">
+                  <span className="w-6 font-tech text-sm font-bold tabular-nums text-white/50">{team.position}</span>
+                  <TeamCrest team={team} size={34} />
+                  <span className="min-w-0 flex-1">
+                    <span className="block truncate font-display text-lg font-bold uppercase leading-none tracking-wide">{team.name}</span>
+                    <span className="mt-1 block font-tech text-[10px] tracking-[0.2em]" style={{ color: team.color }}>
+                      [{team.tag}]
+                    </span>
+                  </span>
+                  <span className="font-tech text-base font-bold tabular-nums text-gold">{team.points}</span>
+                </Link>
+              </li>
+            ))}
+          </ol>
+        )}
+        <Link href="/cod/equipes" className="mt-5 inline-flex items-center gap-1.5 font-display text-sm font-bold uppercase tracking-[0.14em] text-gold hover:text-gold-light">
+          Classement des équipes
+          <LuArrowRight aria-hidden className="h-4 w-4" />
+        </Link>
+      </div>
+    </section>
   );
 }

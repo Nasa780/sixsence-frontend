@@ -8,6 +8,7 @@ import useSession from "../../hooks/useSession";
 import useUser from "../../hooks/useUser";
 import { signInWithDiscord, signOut } from "../../lib/auth";
 import { cn } from "../../lib/cn";
+import { codModeOf } from "../cod/CodModeNav";
 import { isReferee } from "../../lib/roles";
 import { Avatar } from "../ui/Avatar";
 import { Button } from "../ui/Button";
@@ -17,7 +18,15 @@ import { Logo } from "../ui/Logo";
 
 const LINKS = [
   { href: "/", label: "Accueil" },
-  { href: "/cod", label: "MW4" },
+  {
+    href: "/cod",
+    label: "MW4",
+    // Les deux modes de jeu COD, chacun avec ses pages.
+    children: [
+      { href: "/cod/ranked", label: "Classé", hint: "Joueurs · 2v2 à 5v5" },
+      { href: "/cod/equipes", label: "Match team", hint: "Équipes · BO3 4v4 · tournoi" },
+    ],
+  },
   { href: "/gta6", label: "GTA 6", univers: "gta" },
   { href: "/founders", label: "Fondateurs" },
   { href: "/partners", label: "Partenaires" },
@@ -61,7 +70,7 @@ export function Navbar() {
           <nav aria-label="Navigation principale" className="hidden items-center lg:flex">
             {LINKS.map((link) => {
               const active = isActive(pathname, link.href);
-              return (
+              const item = (
                 <Link
                   key={link.href}
                   href={link.href}
@@ -81,6 +90,32 @@ export function Navbar() {
                     />
                   ) : null}
                 </Link>
+              );
+              if (!link.children) return item;
+              const mode = codModeOf(pathname);
+              return (
+                <div key={link.href} className="group relative">
+                  {item}
+                  <div className="invisible absolute left-0 top-full z-10 pt-2 opacity-0 transition duration-150 group-focus-within:visible group-focus-within:opacity-100 group-hover:visible group-hover:opacity-100">
+                    <div className="clip-tactical w-64 bg-gold/40 p-px [--cut:12px]">
+                      <div className="clip-tactical bg-ink-800 p-2 [--cut:12px]">
+                        {link.children.map((child) => {
+                          const current = (child.href === "/cod/ranked" && mode === "classe") || (child.href === "/cod/equipes" && mode === "team");
+                          return (
+                            <Link
+                              key={child.href}
+                              href={child.href}
+                              className={cn("block border-l-2 px-3 py-2.5 transition-colors", current ? "border-gold bg-gold/10" : "border-transparent hover:bg-white/[0.06]")}
+                            >
+                              <span className={cn("block font-display text-base font-bold uppercase tracking-[0.14em]", current ? "text-gold" : "text-white")}>{child.label}</span>
+                              <span className="mt-0.5 block text-xs text-white/50">{child.hint}</span>
+                            </Link>
+                          );
+                        })}
+                      </div>
+                    </div>
+                  </div>
+                </div>
               );
             })}
           </nav>
@@ -141,7 +176,30 @@ export function Navbar() {
                       {link.label}
                     </Link>
                   );
-                })}
+                }).flatMap((element, index) =>
+                  LINKS[index].children
+                    ? [
+                        element,
+                        ...LINKS[index].children.map((child) => {
+                          const mode = codModeOf(pathname);
+                          const current = (child.href === "/cod/ranked" && mode === "classe") || (child.href === "/cod/equipes" && mode === "team");
+                          return (
+                            <Link
+                              key={child.href}
+                              href={child.href}
+                              className={cn(
+                                "ml-4 border-l-2 px-4 py-2.5 font-display text-base font-bold uppercase tracking-[0.14em] transition-colors",
+                                current ? "border-gold text-gold" : "border-white/10 text-white/60 hover:text-white",
+                              )}
+                            >
+                              {child.label}
+                              <span className="ml-2 font-sans text-xs font-normal normal-case tracking-normal text-white/40">{child.hint}</span>
+                            </Link>
+                          );
+                        }),
+                      ]
+                    : [element],
+                )}
               </nav>
 
               <div className="mt-4 border-t border-white/10 pt-4">

@@ -1,4 +1,6 @@
 import Image from "next/image";
+import { useRouter } from "next/router";
+import { CodModeNav, codModeOf } from "../cod/CodModeNav";
 import { cn } from "../../lib/cn";
 import { Container } from "./Container";
 
@@ -30,6 +32,8 @@ export function SectionHeading({ eyebrow, title, description = null, center = fa
  * image : visuel de fond facultatif (ex. une image du jeu), assombri pour garder le texte lisible.
  */
 export function PageHeader({ eyebrow, title, description = null, actions = null, image = null }) {
+  // Pages COD : sélecteur « Classé | Match team » sous le titre.
+  const codMode = codModeOf(useRouter().pathname);
   return (
     <header
       className={cn(
@@ -61,6 +65,11 @@ export function PageHeader({ eyebrow, title, description = null, actions = null,
         </div>
         {actions ? <div className="flex shrink-0 flex-wrap items-center gap-3">{actions}</div> : null}
       </Container>
+      {codMode ? (
+        <Container className="mt-8">
+          <CodModeNav />
+        </Container>
+      ) : null}
     </header>
   );
 }
