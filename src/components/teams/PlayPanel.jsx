@@ -2,6 +2,7 @@ import Link from "next/link";
 import { useCallback, useEffect, useState } from "react";
 import { LuLoaderCircle, LuSwords, LuX } from "react-icons/lu";
 import { api } from "../../lib/api";
+import { supabase } from "../../lib/supabase";
 import { cn } from "../../lib/cn";
 import { rankFor, rankGradient } from "../../lib/ranks";
 import { Avatar } from "../ui/Avatar";
@@ -28,11 +29,20 @@ export function PlayPanel({ team, isLeader }) {
 
   const load = useCallback(() => api("/teams/me/play").then(setPlay).catch(() => {}), []);
 
+  // Match créé ou terminé pour l'équipe : mis à jour aussitôt (temps réel) ; le reste toutes les 15 s.
   useEffect(() => {
     load();
-    const timer = setInterval(load, 5000);
-    return () => clearInterval(timer);
-  }, [load]);
+    const timer = setInterval(load, 15000);
+    const channel = supabase
+      .channel(`team-play-${team.id}-${Math.random().toString(36).slice(2)}`)
+      .on("postgres_changes", { event: "*", schema: "public", table: "team_matches", filter: `team_a=eq.${team.id}` }, load)
+      .on("postgres_changes", { event: "*", schema: "public", table: "team_matches", filter: `team_b=eq.${team.id}` }, load)
+      .subscribe();
+    return () => {
+      clearInterval(timer);
+      supabase.removeChannel(channel);
+    };
+  }, [load, team.id]);
 
   useEffect(() => {
     if (!play?.queued) return undefined;

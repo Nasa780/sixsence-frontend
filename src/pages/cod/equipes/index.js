@@ -12,6 +12,7 @@ import { PageHeader } from "../../../components/ui/Typography";
 import useSeasons from "../../../hooks/useSeasons";
 import useSession from "../../../hooks/useSession";
 import { api } from "../../../lib/api";
+import { supabase } from "../../../lib/supabase";
 import { cn } from "../../../lib/cn";
 import { TEAM_LIMITS } from "../../../lib/teams";
 
@@ -29,10 +30,25 @@ export default function TeamsPage() {
   const [error, setError] = useState(null);
   const [mine, setMine] = useState(undefined);
 
+  // Classement en direct : rechargé à chaque changement d'une équipe (points, nom…), regroupé sur 1 s.
   useEffect(() => {
-    api("/teams")
-      .then((data) => setTeams(data.teams))
-      .catch((caught) => setError(caught.message));
+    const load = () =>
+      api("/teams")
+        .then((data) => setTeams(data.teams))
+        .catch((caught) => setError(caught.message));
+    load();
+    let timer = null;
+    const channel = supabase
+      .channel(`teams-${Math.random().toString(36).slice(2)}`)
+      .on("postgres_changes", { event: "*", schema: "public", table: "teams" }, () => {
+        clearTimeout(timer);
+        timer = setTimeout(load, 1000);
+      })
+      .subscribe();
+    return () => {
+      clearTimeout(timer);
+      supabase.removeChannel(channel);
+    };
   }, []);
 
   useEffect(() => {

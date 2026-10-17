@@ -11,6 +11,7 @@ import { TacticalCard } from "../../../components/ui/TacticalCard";
 import { Eyebrow, PageHeader } from "../../../components/ui/Typography";
 import useSession from "../../../hooks/useSession";
 import { api } from "../../../lib/api";
+import { supabase } from "../../../lib/supabase";
 import { cn } from "../../../lib/cn";
 import { TEAM_LIMITS } from "../../../lib/teams";
 
@@ -43,9 +44,23 @@ export default function TournamentPage() {
 
   useEffect(() => {
     load();
-    const timer = setInterval(load, 15000);
+    const timer = setInterval(load, 60000);
     return () => clearInterval(timer);
   }, [load, userId]);
+
+  // Temps réel : tableau et matchs du tournoi.
+  const tournamentId = tournament?.id;
+  useEffect(() => {
+    if (!tournamentId) return undefined;
+    const channel = supabase
+      .channel(`tournament-${tournamentId}-${Math.random().toString(36).slice(2)}`)
+      .on("postgres_changes", { event: "*", schema: "public", table: "tournament_bracket", filter: `tournament_id=eq.${tournamentId}` }, load)
+      .on("postgres_changes", { event: "*", schema: "public", table: "team_matches", filter: `tournament_id=eq.${tournamentId}` }, load)
+      .subscribe();
+    return () => {
+      supabase.removeChannel(channel);
+    };
+  }, [tournamentId, load]);
 
   useEffect(() => {
     const timer = setInterval(() => setNow(Date.now()), 1000);

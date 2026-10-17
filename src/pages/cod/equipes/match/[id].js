@@ -21,7 +21,7 @@ import { supabase } from "../../../../lib/supabase";
 const ROUNDS = 6;
 const mapsWon = (scores, side) => scores.filter(([a, b]) => (side === "A" ? a > b : b > a)).length;
 
-/** Feuille d'un match d'équipe (BO3, BO5 en finale de tournoi) : maps, scores, map décisive, déclaration et confirmation par les Leaders. Public. */
+/** Feuille d'un match d'équipe en direct (BO3, BO5 en finale de tournoi) : maps, scores, map décisive, déclaration et confirmation par les Leaders. Public. */
 export default function TeamMatchPage() {
   const router = useRouter();
   const { id } = router.query;
@@ -39,11 +39,20 @@ export default function TeamMatchPage() {
     }
   }, [id]);
 
+  // Temps réel : chaque changement du match recharge la feuille ; filet de sécurité toutes les 30 s (captures, coupure).
   useEffect(() => {
     load();
-    const timer = setInterval(load, 5000);
-    return () => clearInterval(timer);
-  }, [load, userId]);
+    if (!id) return undefined;
+    const channel = supabase
+      .channel(`team-match-${id}-${Math.random().toString(36).slice(2)}`)
+      .on("postgres_changes", { event: "UPDATE", schema: "public", table: "team_matches", filter: `id=eq.${id}` }, load)
+      .subscribe();
+    const timer = setInterval(load, 30000);
+    return () => {
+      clearInterval(timer);
+      supabase.removeChannel(channel);
+    };
+  }, [load, userId, id]);
 
   if (error && !match) {
     return (
