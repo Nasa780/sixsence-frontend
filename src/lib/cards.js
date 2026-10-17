@@ -64,9 +64,8 @@ const CARDS = {
 const SEASON_ART = {};
 
 /**
- * Cartes de rang de saison « s<id>-rang-<rang> » : rang atteint pendant la saison, même rareté
- * que la carte de rang ; illustration de la saison aux couleurs du rang
- * (public/images/cartes/s<id>/<rang>.webp, version verticale <rang>-mobile.webp pour le téléphone).
+ * Anciennes cartes de rang de saison « s<id>-rang-<rang> » (retirées du catalogue : les cartes de rang
+ * « rang-… » sont désormais exclusives à une saison). Une carte déjà obtenue garde le dessin du rang.
  */
 const SEASON_RANKS = {
   bronze: ["Bronze", "commune"],
@@ -79,8 +78,8 @@ const SEASON_RANKS = {
   champion: ["Champion", "legendaire"],
   legende: ["Légende", "legendaire"],
 };
-/** Saisons dont les cartes de rang ont leur illustration. */
-const SEASON_RANK_ART = new Set(["1"]);
+/** Saisons dont les cartes de rang de saison ont leur illustration (aucune : illustrations Saison 1 archivées hors du site). */
+const SEASON_RANK_ART = new Set();
 
 /** Rareté et dessin d'une carte (cartes de saison « s<id>-… » comprises). */
 export function cardInfo(key) {
