@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { LegalPage } from "../components/ui/LegalPage";
 import { LEGAL } from "../lib/legal";
-import { LOSS_XP, PLACEMENT_MATCHES, RANKS, SOLO_LOSS_REDUCTION, WIN_POINTS, WIN_XP } from "../lib/ranks";
+import { LOSS_ADJUST, LOSS_XP, PLACEMENT_MATCHES, RANKS, SOLO_LOSS_REDUCTION, WIN_POINTS, WIN_POINTS_MAX, WIN_POINTS_MIN, WIN_XP } from "../lib/ranks";
 
 const SECTIONS = [
   {
@@ -134,15 +134,25 @@ const SECTIONS = [
     content: (
       <>
         <p>
-          <strong>Victoire : +{WIN_POINTS} points</strong> (et +{WIN_XP} XP), pour tout le monde, seul ou en groupe.
+          <strong>
+            Victoire : +{WIN_POINTS_MIN} à +{WIN_POINTS_MAX} points
+          </strong>{" "}
+          (et +{WIN_XP} XP), selon le niveau des deux équipes : on additionne les points de tous les joueurs de chaque équipe. À niveau égal,
+          c&apos;est +{WIN_POINTS} ; battre une équipe plus forte rapporte plus (jusqu&apos;à +{WIN_POINTS_MAX}), une équipe plus faible moins (jusqu&apos;à
+          +{WIN_POINTS_MIN}). Toute l&apos;équipe gagne la même chose.
         </p>
         <p>
-          <strong>Défaite</strong> : plus tu montes, plus elle coûte cher (détail par rang ci-dessous). <strong>Seul</strong>, tu perds{" "}
+          <strong>Défaite</strong> : plus tu montes, plus elle coûte cher (détail par rang ci-dessous), puis la perte est ajustée selon l&apos;équipe
+          adverse : jusqu&apos;à {LOSS_ADJUST} % de moins contre une équipe plus forte, jusqu&apos;à {LOSS_ADJUST} % de plus contre une équipe plus faible.{" "}
+          <strong>Seul</strong>, tu perds{" "}
           {SOLO_LOSS_REDUCTION} % de points en moins. Tu ne descends jamais en dessous de 0. Tu gagnes quand même +{LOSS_XP} XP.
         </p>
         <p>
           <strong>Placement</strong> : pendant tes {PLACEMENT_MATCHES} premiers matchs de la saison, chaque victoire compte double (
-          <strong>+{WIN_POINTS * 2}</strong>), les défaites restent normales.
+          <strong>
+            +{WIN_POINTS_MIN * 2} à +{WIN_POINTS_MAX * 2}
+          </strong>
+          ), les défaites restent normales.
         </p>
         <p>Les points en jeu (victoire et défaite) s&apos;affichent avant chaque match, dans la fenêtre « Match trouvé » et le salon.</p>
         <p>Les rangs :</p>
