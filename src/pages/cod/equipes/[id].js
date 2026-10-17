@@ -28,6 +28,7 @@ export default function TeamPage() {
   const [message, setMessage] = useState(null);
   const [pending, setPending] = useState(false);
   const [reporting, setReporting] = useState(false);
+  const [history, setHistory] = useState(null);
 
   const load = useCallback(async () => {
     if (!id) return;
@@ -41,6 +42,13 @@ export default function TeamPage() {
   useEffect(() => {
     load();
   }, [load]);
+
+  useEffect(() => {
+    if (!id) return;
+    api(`/teams/${id}/matches`)
+      .then((data) => setHistory(data.matches))
+      .catch(() => setHistory([]));
+  }, [id]);
 
   useEffect(() => {
     if (!userId) return setMine(null);
@@ -187,7 +195,7 @@ export default function TeamPage() {
             </TacticalCard>
             <TacticalCard innerClassName="p-6">
               <Eyebrow>Derniers matchs</Eyebrow>
-              <p className="mt-4 text-sm text-white/45">Les matchs d&apos;équipe (BO3 en 4v4) arrivent bientôt.</p>
+              <MatchHistory history={history} />
             </TacticalCard>
             {userId && !isMember ? (
               <button type="button" onClick={() => setReporting(true)} className="inline-flex items-center gap-2 text-xs text-white/45 hover:text-loss">
@@ -214,5 +222,34 @@ export default function TeamPage() {
         onSubmit={({ reason, details }) => api(`/teams/${team.id}/report`, { method: "POST", body: { reason, details } })}
       />
     </>
+  );
+}
+
+/** Derniers matchs d'équipe : adversaire, maps gagnées, points. */
+function MatchHistory({ history }) {
+  if (history === null) return <p className="mt-4 text-sm text-white/45">Chargement…</p>;
+  if (history.length === 0) return <p className="mt-4 text-sm text-white/45">Aucun match d&apos;équipe pour l&apos;instant.</p>;
+  return (
+    <ul className="mt-4 space-y-2">
+      {history.map((match) => (
+        <li key={match.id}>
+          <Link
+            href={`/cod/equipes/match/${match.id}`}
+            className="flex items-center gap-3 border-l-2 border-white/10 bg-white/[0.03] px-3 py-2.5 text-sm transition hover:bg-white/[0.06]"
+          >
+            <TeamCrest team={match.opponent} size={30} />
+            <span className="min-w-0 flex-1 truncate font-display text-lg font-bold uppercase leading-none">{match.opponent?.name ?? "Équipe"}</span>
+            {match.status === "completed" ? (
+              <span className={match.won ? "font-tech text-sm font-bold text-win" : "font-tech text-sm font-bold text-loss"}>
+                {match.mapsFor} – {match.mapsAgainst}
+                {typeof match.points === "number" ? <span className="ml-2">{match.points >= 0 ? `+${match.points}` : match.points}</span> : null}
+              </span>
+            ) : (
+              <span className="font-tech text-[10px] uppercase tracking-[0.2em] text-gold">En cours</span>
+            )}
+          </Link>
+        </li>
+      ))}
+    </ul>
   );
 }
