@@ -10,6 +10,8 @@ import { ARBITRATION_REASONS, REPORT_REASONS } from "../../lib/moderation";
 import { groupLabel, rankFor, rankGradient } from "../../lib/ranks";
 import { isReferee } from "../../lib/roles";
 import { supabase } from "../../lib/supabase";
+import useTeamTags from "../../hooks/useTeamTags";
+import { TeamTag } from "../teams/TeamParts";
 import { Avatar } from "../ui/Avatar";
 import { Button } from "../ui/Button";
 import { Chip, EmptyState, Loading, Notice } from "../ui/Feedback";
@@ -680,6 +682,7 @@ function MvpVote({ match, playerById, votes, myVote, userId, isPlayer, onVoted }
 }
 
 function TeamColumn({ team, match, ids, stakes = null, playerById, currentUserId, readyUsers = [], mvpIds = [], onReport = null }) {
+  const teamTags = useTeamTags(ids);
   const groupMarks = new Map();
   for (const id of [...match.team_a, ...match.team_b]) {
     const group = match.groups?.[id];
@@ -729,6 +732,7 @@ function TeamColumn({ team, match, ids, stakes = null, playerById, currentUserId
                   >
                     {player?.username ?? "Joueur inconnu"}
                   </Link>
+                  <TeamTag team={teamTags.get(id)} />
                   {isMe ? <Chip className="shrink-0">Toi</Chip> : null}
                   {groupMark ? (
                     <span

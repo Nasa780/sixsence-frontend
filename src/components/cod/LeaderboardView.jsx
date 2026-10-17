@@ -4,6 +4,8 @@ import { LuCrown, LuFlame } from "react-icons/lu";
 import { cn } from "../../lib/cn";
 import { rankFor, rankGradient } from "../../lib/ranks";
 import { supabase } from "../../lib/supabase";
+import useTeamTags from "../../hooks/useTeamTags";
+import { TeamTag } from "../teams/TeamParts";
 import { Avatar } from "../ui/Avatar";
 import { EmptyState, Loading } from "../ui/Feedback";
 import { TacticalCard } from "../ui/TacticalCard";
@@ -23,6 +25,7 @@ const winRate = (wins, losses) => (wins + losses > 0 ? Math.round((wins / (wins 
  */
 export function LeaderboardView({ limit = 100, currentUserId = null, compact = false }) {
   const [rows, setRows] = useState(null);
+  const teamTags = useTeamTags((rows || []).map((row) => row.user_id));
   const [live, setLive] = useState(false);
   const refreshTimer = useRef(null);
   const instanceId = useId();
@@ -103,6 +106,7 @@ export function LeaderboardView({ limit = 100, currentUserId = null, compact = f
                         <p className="mt-1.5 flex items-center gap-1.5 font-display text-sm font-bold uppercase tracking-[0.16em]" style={{ color: rank.text }}>
                           <RankEmblem rank={rank} size={22} animated={false} />
                           {rank.name}
+                          <TeamTag team={teamTags.get(row.user_id)} className="ml-1" />
                           {row.user_id === currentUserId ? <span className="ml-2 text-white/60">· Toi</span> : null}
                         </p>
                       </div>
@@ -159,6 +163,7 @@ export function LeaderboardView({ limit = 100, currentUserId = null, compact = f
                           <span className="mt-1 flex items-center gap-1 text-xs text-white/45">
                             <RankEmblem rank={rank} size={16} animated={false} />
                             {rank.name}
+                            <TeamTag team={teamTags.get(row.user_id)} link={false} className="ml-1" />
                           </span>
                         </span>
                       </Link>

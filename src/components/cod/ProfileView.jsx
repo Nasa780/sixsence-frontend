@@ -11,6 +11,8 @@ import { REPORT_REASONS, monthlyMvpBadge } from "../../lib/moderation";
 import { levelFor, rankFor, rankGradient } from "../../lib/ranks";
 import { isPermanentBan } from "../../lib/roles";
 import { supabase } from "../../lib/supabase";
+import useTeamTags from "../../hooks/useTeamTags";
+import { TeamCrest } from "../teams/TeamParts";
 import { Avatar } from "../ui/Avatar";
 import { Chip, EmptyState, Loading, Notice, StatTile } from "../ui/Feedback";
 import { TacticalCard } from "../ui/TacticalCard";
@@ -63,6 +65,7 @@ function badgesFor(profile, seasons) {
  * Public ; seul le propriétaire voit le formulaire de ses identifiants.
  */
 export function ProfileView({ userId, editable = false, ownUser = null }) {
+  const team = useTeamTags([userId]).get(userId);
   const [data, setData] = useState(null);
   const [notFound, setNotFound] = useState(false);
   const { seasons, active: activeSeason, label: seasonLabel } = useSeasons();
@@ -183,6 +186,15 @@ export function ProfileView({ userId, editable = false, ownUser = null }) {
                 {profile.activision_id ?? "Identifiant Activision non renseigné"}
                 {profile.platform ? ` · ${PLATFORM_LABEL[profile.platform] ?? profile.platform}` : ""}
               </p>
+              {team ? (
+                <Link href={`/cod/equipes/${team.id}`} className="mt-3 flex w-fit items-center gap-2 text-sm font-semibold text-white/80 transition-colors hover:text-gold">
+                  <TeamCrest team={team} size={24} />
+                  <span className="font-tech text-xs tracking-[0.16em]" style={{ color: team.color }}>
+                    [{team.tag}]
+                  </span>
+                  {team.name}
+                </Link>
+              ) : null}
               <RankBadge points={profile.points} showProgress className="mt-4" />
               <div className="mt-4 flex flex-wrap items-center gap-x-5 gap-y-2">
                 <button
