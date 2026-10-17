@@ -18,7 +18,7 @@ const STEPS = [
   {
     icon: LuTrophy,
     title: "Grimpe au classement",
-    text: "+50 points par victoire, de Bronze à Légende. Le classement se met à jour à l'instant.",
+    text: "+40 à +60 points par victoire selon le niveau adverse, de Bronze à Légende. Le classement se met à jour à l'instant.",
   },
 ];
 

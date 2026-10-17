@@ -44,13 +44,21 @@ export function nextRank(points = 0) {
 
 /**
  * Barème (calculé par le backend, fonctions SQL cod_points_preview et cod_loss_penalty) :
- *   victoire : +50 pour tout le monde ;
+ *   niveau d'une équipe = total des points de ses joueurs (Elo par équipe, migration 0031) ;
+ *   victoire : +40 à +60 selon l'écart entre les deux équipes (+50 à niveau égal), même gain pour
+ *              toute l'équipe ;
  *   défaite  : Bronze -15, Argent -20, Or -25, Platine -30, Diamant -35, -50 dès Maître
- *              (champ loss de chaque rang), réduite de 25 % pour un joueur seul ;
- *   placement : pendant les 10 premiers matchs de la saison, victoires doublées (+100).
+ *              (champ loss de chaque rang), ajustée de -30 % (équipe adverse plus forte) à +30 %
+ *              (plus faible), réduite de 25 % pour un joueur seul ;
+ *   placement : pendant les 10 premiers matchs de la saison, victoires doublées (+80 à +120).
  * Les points en jeu de chaque joueur sont affichés avant le match (PointsAtStake).
  */
+/** Victoire à niveau égal, et bornes selon l'écart entre les deux équipes. */
 export const WIN_POINTS = 50;
+export const WIN_POINTS_MIN = 40;
+export const WIN_POINTS_MAX = 60;
+/** Ajustement maximal de la défaite selon l'écart entre les deux équipes, en %. */
+export const LOSS_ADJUST = 30;
 export const WIN_XP = 500;
 export const LOSS_XP = 150;
 export const PLACEMENT_MATCHES = 10;
