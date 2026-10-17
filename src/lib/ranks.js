@@ -52,6 +52,7 @@ export function nextRank(points = 0) {
  */
 export const WIN_POINTS = 50;
 export const WIN_XP = 500;
+export const LOSS_XP = 150;
 export const PLACEMENT_MATCHES = 10;
 
 /** Réduction de la défaite pour un joueur seul (sans groupe), en %. */

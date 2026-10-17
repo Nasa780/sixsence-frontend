@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { LegalPage } from "../components/ui/LegalPage";
 import { LEGAL } from "../lib/legal";
-import { PLACEMENT_MATCHES, RANKS, SOLO_LOSS_REDUCTION, WIN_POINTS, WIN_XP } from "../lib/ranks";
+import { LOSS_XP, PLACEMENT_MATCHES, RANKS, SOLO_LOSS_REDUCTION, WIN_POINTS, WIN_XP } from "../lib/ranks";
 
 const SECTIONS = [
   {
@@ -138,7 +138,7 @@ const SECTIONS = [
         </p>
         <p>
           <strong>Défaite</strong> : plus tu montes, plus elle coûte cher (détail par rang ci-dessous). <strong>Seul</strong>, tu perds{" "}
-          {SOLO_LOSS_REDUCTION} % de points en moins. Tu ne descends jamais en dessous de 0.
+          {SOLO_LOSS_REDUCTION} % de points en moins. Tu ne descends jamais en dessous de 0. Tu gagnes quand même +{LOSS_XP} XP.
         </p>
         <p>
           <strong>Placement</strong> : pendant tes {PLACEMENT_MATCHES} premiers matchs de la saison, chaque victoire compte double (
