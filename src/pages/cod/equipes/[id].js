@@ -4,6 +4,7 @@ import { useRouter } from "next/router";
 import { useCallback, useEffect, useState } from "react";
 import { LuFlag, LuSettings, LuTrophy, LuUserPlus } from "react-icons/lu";
 import { MemberRow, RosterHeading, TeamCrest } from "../../../components/teams/TeamParts";
+import { TeamStats } from "../../../components/teams/TeamStats";
 import { Button, ButtonLink } from "../../../components/ui/Button";
 import { Container } from "../../../components/ui/Container";
 import { Chip, EmptyState, Loading, Notice, StatTile } from "../../../components/ui/Feedback";
@@ -222,6 +223,8 @@ export default function TeamPage() {
             </p>
           </aside>
         </div>
+
+        <TeamStats teamId={team.id} />
       </Container>
 
       <ReasonDialog
