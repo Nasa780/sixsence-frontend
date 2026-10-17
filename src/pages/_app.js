@@ -5,7 +5,8 @@ import { Inter, Orbitron, Saira_Condensed } from "next/font/google";
 import { Footer } from "../components/layout/Footer";
 import { Navbar } from "../components/layout/Navbar";
 import { ErrorBoundary } from "../components/ui/ErrorBoundary";
-import { SITE_URL } from "../lib/config";
+import { MATCH_TEAM_ENABLED, SITE_URL } from "../lib/config";
+import NotFound from "./404";
 import { installErrorReporting } from "../lib/monitoring";
 import { registerServiceWorker } from "../lib/push";
 import "../styles/globals.css";
@@ -27,6 +28,8 @@ const BARE_PAGES = ["/auth/callback"];
 export default function App({ Component, pageProps }) {
   const { pathname, asPath } = useRouter();
   const bare = BARE_PAGES.includes(pathname);
+  // Mode Match team en pause : ses pages sont introuvables.
+  const teamPaused = !MATCH_TEAM_ENABLED && (pathname === "/cod/equipe" || pathname.startsWith("/cod/equipes"));
   // Pages GTA 6 : palette coucher de soleil (voir globals.css).
   const univers = pathname.startsWith("/gta6") ? "gta" : undefined;
 
@@ -89,7 +92,7 @@ export default function App({ Component, pageProps }) {
           <Navbar />
           <main id="contenu" className="flex-1">
             <ErrorBoundary resetKey={asPath}>
-              <Component {...pageProps} />
+              {teamPaused ? <NotFound /> : <Component {...pageProps} />}
             </ErrorBoundary>
           </main>
           <Footer />

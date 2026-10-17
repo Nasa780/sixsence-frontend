@@ -9,6 +9,7 @@ import useUser from "../../hooks/useUser";
 import { signInWithDiscord, signOut } from "../../lib/auth";
 import { cn } from "../../lib/cn";
 import { codModeOf } from "../cod/CodModeNav";
+import { MATCH_TEAM_ENABLED } from "../../lib/config";
 import { isReferee } from "../../lib/roles";
 import { Avatar } from "../ui/Avatar";
 import { Button } from "../ui/Button";
@@ -21,8 +22,8 @@ const LINKS = [
   {
     href: "/cod",
     label: "MW4",
-    // Les deux modes de jeu COD, chacun avec ses pages.
-    children: [
+    // Les deux modes de jeu COD, chacun avec ses pages (seulement si le mode Match team est actif).
+    children: MATCH_TEAM_ENABLED && [
       { href: "/cod/ranked", label: "Classé", hint: "Joueurs · 2v2 à 5v5" },
       { href: "/cod/equipes", label: "Match team", hint: "Équipes · BO3 4v4 · tournoi" },
     ],

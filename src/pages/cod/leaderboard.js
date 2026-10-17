@@ -11,6 +11,7 @@ import useSession from "../../hooks/useSession";
 import useUser from "../../hooks/useUser";
 import { cn } from "../../lib/cn";
 import { rankFor } from "../../lib/ranks";
+import { MATCH_TEAM_ENABLED } from "../../lib/config";
 
 /** Classement COD complet, en direct, avec les archives des saisons passées. Public. */
 export default function LeaderboardPage() {
@@ -25,7 +26,7 @@ export default function LeaderboardPage() {
   return (
     <>
       <Head>
-        <title>Classement des joueurs — SixSence</title>
+        <title>{MATCH_TEAM_ENABLED ? "Classement des joueurs — SixSence" : "Classement COD — SixSence"}</title>
         <meta name="description" content="Classement en direct du classé Call of Duty de SixSence : points, rangs, victoires et archives des saisons." />
       </Head>
       <PageHeader
@@ -33,7 +34,7 @@ export default function LeaderboardPage() {
         eyebrow={label}
         title={
           <>
-            Classement <span className="text-gold-gradient">joueurs</span>
+            Classement <span className="text-gold-gradient">{MATCH_TEAM_ENABLED ? "joueurs" : "COD"}</span>
           </>
         }
         description="Les meilleurs joueurs du classé Call of Duty, mis à jour en direct après chaque match confirmé."

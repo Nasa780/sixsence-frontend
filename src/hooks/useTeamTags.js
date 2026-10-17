@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { MATCH_TEAM_ENABLED } from "../lib/config";
 import { supabase } from "../lib/supabase";
 
 /** Équipe de chaque joueur déjà lue (gardée pendant la visite) : userId → équipe ou null. */
@@ -13,7 +14,7 @@ export default function useTeamTags(userIds) {
   const [tags, setTags] = useState(() => fromCache(key));
 
   useEffect(() => {
-    if (!key) return undefined;
+    if (!key || !MATCH_TEAM_ENABLED) return undefined;
     let active = true;
     const missing = key.split(",").filter((id) => !cache.has(id));
     if (missing.length === 0) {
@@ -42,6 +43,7 @@ export default function useTeamTags(userIds) {
 
 function fromCache(key) {
   const map = new Map();
+  if (!MATCH_TEAM_ENABLED) return map;
   for (const id of key ? key.split(",") : []) {
     const team = cache.get(id);
     if (team) map.set(id, team);
