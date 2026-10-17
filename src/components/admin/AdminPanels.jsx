@@ -86,6 +86,7 @@ export function OverviewPanel({ onNavigate, role = "admin" }) {
         </p>
       ) : null}
       {admin ? <DiscordRolesSync /> : null}
+      {admin ? <DiscordRulesPublish /> : null}
     </div>
   );
 }
@@ -114,6 +115,35 @@ function DiscordRolesSync() {
       <Button size="sm" variant="outline" onClick={sync} disabled={pending !== null}>
         {pending === "sync" ? <LuLoaderCircle aria-hidden className="h-4 w-4 animate-spin" /> : null}
         Synchroniser les rôles
+      </Button>
+    </TacticalCard>
+  );
+}
+
+/** Publie (ou met à jour) le règlement du serveur Discord via le bot. */
+function DiscordRulesPublish() {
+  const [result, setResult] = useState(null);
+  const { pending, error, run } = useAction();
+
+  const publish = () =>
+    run("rules", async () => {
+      const { action } = await api("/admin/discord/rules", { method: "POST" });
+      setResult(action === "updated" ? "Règlement mis à jour sur Discord." : "Règlement publié sur Discord.");
+    });
+
+  return (
+    <TacticalCard cut={16} innerClassName="flex flex-col gap-3 p-5 sm:flex-row sm:items-center sm:justify-between">
+      <div>
+        <p className="font-display text-xl font-black uppercase leading-none">Règlement Discord</p>
+        <p className="mt-1 text-sm text-white/55">
+          Le bot publie le règlement du serveur dans le salon prévu. Un nouveau clic met à jour le même message (pas de doublon).
+        </p>
+        {result ? <p className="mt-1 text-sm text-win">{result}</p> : null}
+        {error ? <p className="mt-1 text-sm text-loss">{error}</p> : null}
+      </div>
+      <Button size="sm" variant="outline" onClick={publish} disabled={pending !== null}>
+        {pending === "rules" ? <LuLoaderCircle aria-hidden className="h-4 w-4 animate-spin" /> : null}
+        Publier le règlement
       </Button>
     </TacticalCard>
   );
