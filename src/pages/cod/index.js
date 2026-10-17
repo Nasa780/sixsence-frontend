@@ -1,7 +1,7 @@
 import Head from "next/head";
 import Link from "next/link";
 import { useEffect, useState } from "react";
-import { LuArrowRight, LuCrosshair, LuTrophy, LuUser } from "react-icons/lu";
+import { LuArrowRight, LuCrosshair, LuShield, LuTrophy, LuUser } from "react-icons/lu";
 import { LeaderboardView } from "../../components/cod/LeaderboardView";
 import { OnboardingPanel } from "../../components/cod/OnboardingPanel";
 import { RankBadge } from "../../components/cod/RankBadge";
@@ -19,13 +19,14 @@ import { supabase } from "../../lib/supabase";
 
 const SECTIONS = [
   { href: "/cod/ranked", icon: LuCrosshair, title: "File classée", text: "Lance une recherche en 2v2, 3v3, 4v4 ou 5v5, seul ou avec ton groupe. Le match démarre dès que les équipes sont complètes." },
+  { href: "/cod/equipes", icon: LuShield, title: "Match team", text: "Crée ton équipe ou rejoins-en une : BO3 en 4v4, classement des équipes et tournoi de fin de saison." },
   { href: "/cod/leaderboard", icon: LuTrophy, title: "Classement", text: "Les meilleurs joueurs de la saison, mis à jour en direct après chaque match." },
   { href: "/cod/profile", icon: LuUser, title: "Mon profil", text: "Tes statistiques, ton rang, tes distinctions et ton historique de matchs." },
 ];
 
 const winRate = (wins, losses) => (wins + losses > 0 ? Math.round((wins / (wins + losses)) * 100) : null);
 
-/** Hub COD : résumé du joueur connecté, accès aux trois sections, top 10. Public. */
+/** Hub COD : résumé du joueur connecté, accès aux sections, top 10. Public. */
 export default function CodHubPage() {
   const { session } = useSession();
   const user = useUser();
@@ -107,7 +108,7 @@ export default function CodHubPage() {
           </section>
         ) : null}
 
-        <div className="grid grid-cols-1 gap-5 md:grid-cols-3">
+        <div className="grid grid-cols-1 gap-5 md:grid-cols-2 xl:grid-cols-4">
           {SECTIONS.map((section, index) => (
             <Reveal key={section.href} delay={index * 0.08} className="h-full">
               <Link href={section.href} className="block h-full">
