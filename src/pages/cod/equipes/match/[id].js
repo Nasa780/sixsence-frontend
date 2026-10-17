@@ -1,8 +1,8 @@
 import Head from "next/head";
 import Link from "next/link";
 import { useRouter } from "next/router";
-import { useCallback, useEffect, useState } from "react";
-import { LuCheck, LuCrown, LuLoaderCircle, LuX } from "react-icons/lu";
+import { useCallback, useEffect, useRef, useState } from "react";
+import { LuCheck, LuCrown, LuImagePlus, LuLoaderCircle, LuX } from "react-icons/lu";
 import { RankEmblem } from "../../../../components/cod/RankEmblem";
 import { TeamCrest, fieldClass, labelClass } from "../../../../components/teams/TeamParts";
 import { Avatar } from "../../../../components/ui/Avatar";
@@ -16,6 +16,7 @@ import useSession from "../../../../hooks/useSession";
 import { api } from "../../../../lib/api";
 import { cn } from "../../../../lib/cn";
 import { rankFor, rankGradient } from "../../../../lib/ranks";
+import { supabase } from "../../../../lib/supabase";
 
 const ROUNDS = 6;
 const mapsWon = (scores, side) => scores.filter(([a, b]) => (side === "A" ? a > b : b > a)).length;
@@ -95,6 +96,8 @@ export default function TeamMatchPage() {
         {match.viewer?.canReport ? <ReportForm key={match.scores.length} match={match} onDone={load} /> : null}
         {match.viewer?.canConfirm ? <ConfirmBlock match={match} name={name} onDone={load} /> : null}
         {match.viewer?.canResolve ? <ResolveForm match={match} onDone={load} /> : null}
+
+        {match.proofs ? <Proofs match={match} userId={userId} onDone={load} /> : null}
 
         <div className="grid gap-6 lg:grid-cols-2">
           <Roster match={match} side="A" userId={userId} />
@@ -367,7 +370,7 @@ function ReportForm({ match, onDone }) {
       </div>
       {error ? <Notice tone="error">{error}</Notice> : null}
       <div className="flex flex-wrap items-center justify-between gap-3">
-        <p className="text-xs text-white/45">Un Leader adverse devra confirmer. Garde une capture du tableau des scores en cas de contestation.</p>
+        <p className="text-xs text-white/45">Un Leader adverse devra confirmer. Ajoute une capture du tableau des scores plus bas en cas de doute.</p>
         <Button disabled={scores.some((v) => !v) || pending} onClick={() => setConfirming(true)}>
           Déclarer
         </Button>
@@ -520,6 +523,83 @@ function Roster({ match, side, userId }) {
           );
         })}
       </ul>
+    </section>
+  );
+}
+
+const PROOF_TYPES = { "image/png": "png", "image/jpeg": "jpg", "image/webp": "webp" };
+
+/** Captures du tableau des scores : envoyées par les titulaires, visibles des joueurs du match et des arbitres. */
+function Proofs({ match, userId, onDone }) {
+  const [uploading, setUploading] = useState(false);
+  const [error, setError] = useState(null);
+  const inputRef = useRef(null);
+  const canUpload = match.viewer?.canProve;
+
+  async function upload(event) {
+    const file = event.target.files?.[0];
+    event.target.value = "";
+    if (!file) return;
+    const extension = PROOF_TYPES[file.type];
+    if (!extension) return setError("Formats acceptés : PNG, JPEG ou WebP.");
+    if (file.size > 5 * 1024 * 1024) return setError("Image trop lourde : 5 Mo maximum.");
+    setUploading(true);
+    setError(null);
+    try {
+      const path = `${match.id}/${userId}/${Date.now()}.${extension}`;
+      const { error: storageError } = await supabase.storage.from("team-match-proofs").upload(path, file, { contentType: file.type });
+      if (storageError) throw new Error("Envoi de l'image impossible. Réessaie dans un instant.");
+      await api(`/teams/matches/${match.id}/proofs`, { method: "POST", body: { path } });
+      await onDone();
+    } catch (caught) {
+      setError(caught.message);
+    } finally {
+      setUploading(false);
+    }
+  }
+
+  return (
+    <section aria-labelledby="titre-preuves">
+      <div className="flex flex-wrap items-end justify-between gap-4">
+        <div>
+          <Eyebrow>Preuves</Eyebrow>
+          <h2 id="titre-preuves" className="mt-3 font-display text-4xl font-black uppercase leading-none">
+            Captures du match
+          </h2>
+        </div>
+        {canUpload ? (
+          <>
+            <input ref={inputRef} type="file" accept="image/png,image/jpeg,image/webp" className="sr-only" tabIndex={-1} aria-hidden onChange={upload} />
+            <Button variant="outline" size="sm" onClick={() => inputRef.current?.click()} disabled={uploading}>
+              {uploading ? <LuLoaderCircle aria-hidden className="h-4 w-4 animate-spin" /> : <LuImagePlus aria-hidden className="h-4 w-4" />}
+              Ajouter une capture
+            </Button>
+          </>
+        ) : null}
+      </div>
+      {canUpload ? (
+        <p className="mt-3 text-sm text-white/55">
+          Une capture du tableau des scores de chaque map permet à un arbitre de trancher en cas de contestation (PNG, JPEG ou WebP, 5 Mo max, 5 par joueur).
+        </p>
+      ) : null}
+      {error ? <p className="mt-3 text-sm text-loss">{error}</p> : null}
+      {match.proofs.length > 0 ? (
+        <ul className="mt-6 grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4">
+          {match.proofs.map((proof) => (
+            <li key={proof.id}>
+              <a href={proof.url} target="_blank" rel="noopener noreferrer" className="group block border border-white/10 bg-white/[0.03] hover:border-gold">
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img src={proof.url} alt={`Capture envoyée par ${proof.username}`} loading="lazy" className="aspect-video w-full object-cover" />
+                <p className="truncate px-3 py-2 text-xs text-white/60 group-hover:text-white">
+                  {proof.username} · {new Date(proof.createdAt).toLocaleTimeString("fr-FR", { hour: "2-digit", minute: "2-digit" })}
+                </p>
+              </a>
+            </li>
+          ))}
+        </ul>
+      ) : (
+        <p className="mt-4 text-sm text-white/45">Aucune capture pour l&apos;instant.</p>
+      )}
     </section>
   );
 }
