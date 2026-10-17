@@ -112,3 +112,22 @@ export function SlantTab({ active, onClick, children }) {
 
 export const fieldClass = "w-full border border-white/15 bg-ink-700 px-3.5 py-3 text-sm text-white placeholder:text-white/30 focus:border-gold focus:outline-none";
 export const labelClass = "mb-2 block font-tech text-[10px] uppercase tracking-[0.24em] text-white/45";
+
+/**
+ * Tag d'équipe à côté d'un pseudo (« [SIX] »), dans la couleur de l'équipe.
+ * link : lien vers la fiche d'équipe (false quand le tag est déjà dans un autre lien).
+ */
+export function TeamTag({ team, link = true, className = "" }) {
+  if (!team) return null;
+  const classes = cn("shrink-0 font-tech text-[11px] font-bold uppercase tracking-[0.16em]", link && "hover:underline", className);
+  const label = `[${team.tag}]`;
+  return link ? (
+    <Link href={`/cod/equipes/${team.id}`} title={team.name} className={classes} style={{ color: team.color }}>
+      {label}
+    </Link>
+  ) : (
+    <span title={team.name} className={classes} style={{ color: team.color }}>
+      {label}
+    </span>
+  );
+}
