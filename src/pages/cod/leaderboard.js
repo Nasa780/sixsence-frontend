@@ -25,7 +25,7 @@ export default function LeaderboardPage() {
   return (
     <>
       <Head>
-        <title>Classement COD — SixSence</title>
+        <title>Classement des joueurs — SixSence</title>
         <meta name="description" content="Classement en direct du classé Call of Duty de SixSence : points, rangs, victoires et archives des saisons." />
       </Head>
       <PageHeader
@@ -33,7 +33,7 @@ export default function LeaderboardPage() {
         eyebrow={label}
         title={
           <>
-            Classement <span className="text-gold-gradient">COD</span>
+            Classement <span className="text-gold-gradient">joueurs</span>
           </>
         }
         description="Les meilleurs joueurs du classé Call of Duty, mis à jour en direct après chaque match confirmé."
