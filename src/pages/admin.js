@@ -4,6 +4,7 @@ import { CasesPanel, DisputesPanel, OverviewPanel, PlayersPanel, SeasonPanel } f
 import { CrudPanel } from "../components/admin/CrudPanel";
 import { CorrectionsPanel, MatchesPanel } from "../components/admin/MatchesPanels";
 import { SanctionsPanel } from "../components/admin/Sanctions";
+import { TeamsPanel } from "../components/admin/TeamsPanel";
 import { EVENTS, FOUNDERS, PARTNERS } from "../components/admin/contentConfigs";
 import { Container } from "../components/ui/Container";
 import { EmptyState, Loading } from "../components/ui/Feedback";
@@ -25,6 +26,7 @@ const ALL_TABS = [
   { key: "corrections", label: "Corrections" },
   { key: "signalements", label: "Signalements", roles: MODERATORS },
   { key: "sanctions", label: "Sanctions", roles: MODERATORS },
+  { key: "equipes", label: "Équipes", roles: MODERATORS },
   { key: "players", label: "Joueurs" },
   { key: "events", label: "Événements GTA 6" },
   { key: "founders", label: "Fondateurs" },
@@ -73,7 +75,7 @@ export default function AdminPage() {
           {user.role !== "admin" ? (
             <p className="mb-5 font-tech text-[10px] uppercase tracking-[0.24em] text-white/45">
               Rôle : <span className="text-gold">{ROLE_LABELS[user.role]}</span>
-              {isModerator(user.role) ? " · contestations, arbitrages, signalements et sanctions" : " · contestations et arbitrages"}
+              {isModerator(user.role) ? " · contestations, arbitrages, signalements, sanctions et équipes" : " · contestations et arbitrages"}
             </p>
           ) : null}
           {tab === "overview" ? <OverviewPanel onNavigate={go} role={user.role} /> : null}
@@ -83,6 +85,7 @@ export default function AdminPage() {
           {tab === "corrections" ? <CorrectionsPanel /> : null}
           {tab === "signalements" ? <CasesPanel key="reports" kind="reports" /> : null}
           {tab === "sanctions" ? <SanctionsPanel /> : null}
+          {tab === "equipes" ? <TeamsPanel /> : null}
           {tab === "players" ? <PlayersPanel currentUserId={user.id} /> : null}
           {tab === "events" ? <CrudPanel key="events" config={EVENTS} /> : null}
           {tab === "founders" ? <CrudPanel key="founders" config={FOUNDERS} /> : null}
