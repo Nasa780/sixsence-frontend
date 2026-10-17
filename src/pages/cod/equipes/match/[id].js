@@ -98,6 +98,7 @@ export default function TeamMatchPage() {
         {match.viewer?.canReport ? <ReportForm key={match.scores.length} match={match} onDone={load} /> : null}
         {match.viewer?.canConfirm ? <ConfirmBlock match={match} name={name} onDone={load} /> : null}
         {match.viewer?.canResolve ? <ResolveForm match={match} onDone={load} /> : null}
+        {match.viewer?.canCorrect ? <CorrectionForm key={match.correctedAt ?? "initial"} match={match} onDone={load} /> : null}
 
         {match.proofs ? <Proofs match={match} userId={userId} onDone={load} /> : null}
 
@@ -165,17 +166,28 @@ function StatusChip({ match }) {
 }
 
 function MatchNotices({ match, name }) {
+  const corrected = match.correctedAt ? (
+    <Notice>
+      <strong className="font-semibold text-white">Résultat corrigé par l&apos;équipe SixSence</strong>
+      {` le ${new Date(match.correctedAt).toLocaleString("fr-FR", { day: "numeric", month: "numeric", hour: "2-digit", minute: "2-digit" })}`}
+      {match.correctionReason ? <span className="text-white/60"> · Motif : {match.correctionReason}</span> : null}
+    </Notice>
+  ) : null;
   if (match.status === "completed") {
     return (
+      <>
       <div className="flex flex-wrap items-center gap-x-4 gap-y-2">
         <LuCrown aria-hidden className="h-7 w-7 text-gold" />
         <p className="font-display text-3xl font-black uppercase leading-none tracking-wide sm:text-4xl">
           Victoire de <span className="text-gold-gradient">{name(match.winner)}</span>
         </p>
       </div>
+      {corrected}
+      </>
     );
   }
   if (match.status === "cancelled") {
+    if (corrected) return corrected;
     return <Notice>{match.cancelReason === "abandoned" ? "Match annulé : aucun résultat déclaré à temps. Aucun point n'a bougé." : "Match annulé par un arbitre : aucun point n'a bougé."}</Notice>;
   }
   if (match.status === "disputed") return <Notice tone="error">Les scores ont été contestés : un arbitre SixSence va trancher. Aucun point ne bouge d&apos;ici là.</Notice>;
@@ -608,5 +620,76 @@ function Proofs({ match, userId, onDone }) {
         <p className="mt-4 text-sm text-white/45">Aucune capture pour l&apos;instant.</p>
       )}
     </section>
+  );
+}
+
+/** Correction d'un match terminé (équipe SixSence) : nouveaux scores de la série ou annulation, avec un motif. */
+function CorrectionForm({ match, onDone }) {
+  const [scores, setScores] = useState(() => Array.from({ length: match.bestOf }, (_, i) => match.scores[i] ?? null));
+  const [reason, setReason] = useState("");
+  const [ask, setAsk] = useState(null);
+  const [pending, setPending] = useState(false);
+  const [error, setError] = useState(null);
+  const need = Math.ceil(match.bestOf / 2);
+  const filled = scores.filter(Boolean);
+
+  async function submit() {
+    setPending(true);
+    setError(null);
+    try {
+      await api(`/teams/matches/${match.id}/correct`, { method: "POST", body: { scores: ask === "cancel" ? null : filled, reason } });
+      setAsk(null);
+      await onDone();
+    } catch (caught) {
+      setError(caught.message);
+      setAsk(null);
+    } finally {
+      setPending(false);
+    }
+  }
+
+  return (
+    <TacticalCard innerClassName="space-y-4 p-6">
+      <Eyebrow>Corriger le résultat</Eyebrow>
+      <p className="text-sm text-white/55">Mauvaise déclaration ? Saisis les bons scores (le vainqueur peut changer) ou annule le match : les points des deux équipes sont recalculés.</p>
+      <div className={cn("grid gap-3 md:grid-cols-3", match.bestOf === 5 && "lg:grid-cols-5")}>
+        {scores.map((value, i) => (
+          <div key={i} className="space-y-2">
+            <MapScoreInput label={match.maps[i]?.map ?? `Map ${i + 1}`} teamA={match.teamA} teamB={match.teamB} value={value} onChange={(next) => setScores((current) => current.map((v, j) => (j === i ? next : v)))} />
+            {value && i >= need ? (
+              <button type="button" className="text-xs text-white/45 underline hover:text-loss" onClick={() => setScores((current) => current.map((v, j) => (j >= i ? null : v)))}>
+                Map non jouée
+              </button>
+            ) : null}
+          </div>
+        ))}
+      </div>
+      <div>
+        <label htmlFor="correction-reason" className={labelClass}>
+          Motif (obligatoire)
+        </label>
+        <input id="correction-reason" className={fieldClass} maxLength={500} placeholder="Mauvais clic, capture à l'appui…" value={reason} onChange={(event) => setReason(event.target.value)} />
+      </div>
+      {error ? <Notice tone="error">{error}</Notice> : null}
+      <div className="flex flex-wrap gap-3">
+        <Button disabled={pending || reason.trim().length < 3 || filled.length < need || scores.slice(0, need).some((v) => !v)} onClick={() => setAsk("scores")}>
+          Corriger les scores
+        </Button>
+        <Button variant="danger" disabled={pending || reason.trim().length < 3} onClick={() => setAsk("cancel")}>
+          Annuler le match
+        </Button>
+      </div>
+      <ConfirmDialog
+        open={Boolean(ask)}
+        onClose={() => setAsk(null)}
+        title={ask === "cancel" ? "Annuler ce match ?" : "Corriger les scores ?"}
+        confirmLabel={ask === "cancel" ? "Annuler le match" : "Corriger"}
+        tone={ask === "cancel" ? "danger" : "gold"}
+        pending={pending}
+        onConfirm={submit}
+      >
+        {ask === "cancel" ? "Les points des deux équipes leur sont rendus." : filled.map(([a, b], i) => `${match.maps[i]?.map ?? `Map ${i + 1}`} ${a}-${b}`).join(" · ")}
+      </ConfirmDialog>
+    </TacticalCard>
   );
 }
