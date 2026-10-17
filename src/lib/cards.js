@@ -33,10 +33,11 @@ export const DEFAULT_CARD = "sixsence";
 
 const CARDS = {
   sixsence: { rarity: "commune", art: { type: "default", og: "/images/cartes/og/sixsence.jpg" } },
-  "rang-argent": { rarity: "commune", art: { type: "rank", rank: "Argent", title: "#7cc8ff" } },
-  "rang-or": { rarity: "commune", art: { type: "rank", rank: "Or", title: "#ffb43a" } },
-  "rang-platine": { rarity: "rare", art: { type: "rank", rank: "Platine", title: "#2ff3e0" } },
-  "rang-diamant": { rarity: "rare", art: { type: "rank", rank: "Diamant", title: "#5cc8ff" } },
+  // Cartes de rang exclusives à la saison 1 (illustration Saison 1 aux couleurs du rang).
+  "rang-argent": { rarity: "commune", art: { type: "rank", rank: "Argent", season: "Saison 1", image: "/images/cartes/s1/argent.webp", mobileImage: "/images/cartes/s1/argent-mobile.webp", og: "/images/cartes/og/s1-argent.jpg", position: "center" } },
+  "rang-or": { rarity: "commune", art: { type: "rank", rank: "Or", season: "Saison 1", image: "/images/cartes/s1/or.webp", mobileImage: "/images/cartes/s1/or-mobile.webp", og: "/images/cartes/og/s1-or.jpg", position: "center" } },
+  "rang-platine": { rarity: "rare", art: { type: "rank", rank: "Platine", season: "Saison 1", image: "/images/cartes/s1/platine.webp", mobileImage: "/images/cartes/s1/platine-mobile.webp", og: "/images/cartes/og/s1-platine.jpg", position: "center" } },
+  "rang-diamant": { rarity: "rare", art: { type: "rank", rank: "Diamant", season: "Saison 1", image: "/images/cartes/s1/diamant.webp", mobileImage: "/images/cartes/s1/diamant-mobile.webp", og: "/images/cartes/og/s1-diamant.jpg", position: "center" } },
   "rang-maitre": { rarity: "epique", art: { type: "rank", rank: "Maître", title: "#a78bfa", image: "/images/cartes/maitre.webp", og: "/images/cartes/og/maitre.jpg", position: "center", mobilePosition: "50% center", light: true } },
   "rang-grand-maitre": { rarity: "epique", art: { type: "rank", rank: "Grand Maître", title: "#e05cc6", image: "/images/cartes/grand-maitre.webp", og: "/images/cartes/og/grand-maitre.jpg", position: "45% center", mobilePosition: "24% center" } },
   "rang-champion": { rarity: "legendaire", art: { type: "rank", rank: "Champion", title: "#f0a6e8", video: "/images/cartes/champion.mp4", poster: "/images/cartes/champion-poster.webp", cover: true, position: "center", mobileVideo: "/images/cartes/champion-mobile.mp4", mobilePoster: "/images/cartes/champion-mobile-poster.webp", og: "/images/cartes/og/champion.jpg" } },
