@@ -14,6 +14,7 @@ import { PageHeader } from "../components/ui/Typography";
 import useSession from "../hooks/useSession";
 import useUser from "../hooks/useUser";
 import { cn } from "../lib/cn";
+import { MATCH_TEAM_ENABLED } from "../lib/config";
 import { ROLE_LABELS, isModerator, isReferee } from "../lib/roles";
 
 /** Onglets et rôles qui y ont accès (sans « roles » : admin uniquement). */
@@ -27,12 +28,12 @@ const ALL_TABS = [
   { key: "corrections", label: "Corrections" },
   { key: "signalements", label: "Signalements", roles: MODERATORS },
   { key: "sanctions", label: "Sanctions", roles: MODERATORS },
-  { key: "equipes", label: "Équipes", roles: MODERATORS },
+  ...(MATCH_TEAM_ENABLED ? [{ key: "equipes", label: "Équipes", roles: MODERATORS }] : []),
   { key: "players", label: "Joueurs" },
   { key: "events", label: "Événements GTA 6" },
   { key: "founders", label: "Fondateurs" },
   { key: "partners", label: "Partenaires" },
-  { key: "tournoi", label: "Tournoi" },
+  ...(MATCH_TEAM_ENABLED ? [{ key: "tournoi", label: "Tournoi" }] : []),
   { key: "season", label: "Saison" },
 ];
 
@@ -77,7 +78,7 @@ export default function AdminPage() {
           {user.role !== "admin" ? (
             <p className="mb-5 font-tech text-[10px] uppercase tracking-[0.24em] text-white/45">
               Rôle : <span className="text-gold">{ROLE_LABELS[user.role]}</span>
-              {isModerator(user.role) ? " · contestations, arbitrages, signalements, sanctions et équipes" : " · contestations et arbitrages"}
+              {isModerator(user.role) ? MATCH_TEAM_ENABLED ? " · contestations, arbitrages, signalements, sanctions et équipes" : " · contestations, arbitrages, signalements et sanctions" : " · contestations et arbitrages"}
             </p>
           ) : null}
           {tab === "overview" ? <OverviewPanel onNavigate={go} role={user.role} /> : null}

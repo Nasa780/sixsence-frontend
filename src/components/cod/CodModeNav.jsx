@@ -2,6 +2,7 @@ import Link from "next/link";
 import { useRouter } from "next/router";
 import { LuCrosshair, LuShield } from "react-icons/lu";
 import { cn } from "../../lib/cn";
+import { MATCH_TEAM_ENABLED } from "../../lib/config";
 
 /**
  * Les deux modes de jeu COD, bien séparés : le classé (joueurs, solo ou en groupe) et les match team
@@ -34,6 +35,7 @@ export const COD_MODES = [
 
 /** Mode d'une page COD (« classe », « team »), ou null (hub, pages hors COD). */
 export function codModeOf(pathname) {
+  if (!MATCH_TEAM_ENABLED) return null;
   if (pathname === "/cod/equipe" || pathname.startsWith("/cod/equipes")) return "team";
   if (pathname.startsWith("/cod/ranked") || pathname.startsWith("/cod/leaderboard") || pathname.startsWith("/cod/profile") || pathname.startsWith("/cod/match") || pathname.startsWith("/cod/groupe")) {
     return "classe";

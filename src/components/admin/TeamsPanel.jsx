@@ -3,6 +3,7 @@ import { useCallback, useEffect, useState } from "react";
 import { LuExternalLink, LuSearch } from "react-icons/lu";
 import { api } from "../../lib/api";
 import { cn } from "../../lib/cn";
+import { MATCH_TEAM_ENABLED } from "../../lib/config";
 import { TEAM_LIMITS } from "../../lib/teams";
 import { TeamCrest, fieldClass } from "../teams/TeamParts";
 import { Button } from "../ui/Button";
@@ -266,6 +267,7 @@ export function TeamDisputes() {
   const [matches, setMatches] = useState(null);
 
   useEffect(() => {
+    if (!MATCH_TEAM_ENABLED) return;
     api("/admin/team-disputes")
       .then((data) => setMatches(data.matches))
       .catch(() => setMatches([]));

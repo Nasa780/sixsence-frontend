@@ -3,6 +3,7 @@ import { useCallback, useEffect, useState } from "react";
 import { LuExternalLink, LuGavel, LuLoaderCircle, LuLockOpen } from "react-icons/lu";
 import { api } from "../../lib/api";
 import { cn } from "../../lib/cn";
+import { MATCH_TEAM_ENABLED } from "../../lib/config";
 import { ROLE_LABELS, isModerator, isPermanentBan } from "../../lib/roles";
 import { Avatar } from "../ui/Avatar";
 import { Button } from "../ui/Button";
@@ -364,7 +365,7 @@ export function SeasonPanel() {
       <p className="text-sm leading-relaxed text-white/60">
         Clôturer la saison <strong className="text-white">{overview.season?.name ?? "en cours"}</strong> : le classement final est archivé
         (consultable sur la page Classement), le premier reçoit le badge Champion et les dix premiers le badge Top 10, puis les points,
-        victoires, défaites et séries repartent de zéro. L&apos;XP et les niveaux sont conservés. Équipes : classement final archivé, points remis à 1 000. Impossible tant que des matchs sont en
+        victoires, défaites et séries repartent de zéro. L&apos;XP et les niveaux sont conservés.{MATCH_TEAM_ENABLED ? " Équipes : classement final archivé, points remis à 1 000." : null} Impossible tant que des matchs sont en
         cours.
       </p>
       {error ? <Notice tone="error">{error}</Notice> : null}

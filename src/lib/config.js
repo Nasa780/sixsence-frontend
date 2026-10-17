@@ -20,5 +20,12 @@ export const DISCORD_INVITE_URL = process.env.NEXT_PUBLIC_DISCORD_INVITE_URL || 
 /** Adresse publique du site (liens absolus : aperçus de partage, plan du site). */
 export const SITE_URL = (process.env.NEXT_PUBLIC_SITE_URL || "https://www.sixsence.fr").replace(/\/$/, "");
 
+/**
+ * Mode « Match team » (équipes, matchs d'équipe, tournoi) : en pause tant que NEXT_PUBLIC_MATCH_TEAM
+ * ne vaut pas « on » (Vercel). En pause, le site est celui d'avant le mode : aucune page, lien ou tag
+ * d'équipe. Côté backend, TEAM_MODE=on sur Render. Le code et les données restent en place.
+ */
+export const MATCH_TEAM_ENABLED = process.env.NEXT_PUBLIC_MATCH_TEAM === "on";
+
 /** Adresse WebSocket du backend (file d'attente en temps réel). */
 export const WS_URL = API_URL.replace(/^http/, "ws") + "/ws";
