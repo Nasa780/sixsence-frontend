@@ -2,11 +2,11 @@ import Head from "next/head";
 import Link from "next/link";
 import { useRouter } from "next/router";
 import { useCallback, useEffect, useState } from "react";
-import { LuFlag, LuSettings, LuUserPlus } from "react-icons/lu";
+import { LuFlag, LuSettings, LuTrophy, LuUserPlus } from "react-icons/lu";
 import { MemberRow, RosterHeading, TeamCrest } from "../../../components/teams/TeamParts";
 import { Button, ButtonLink } from "../../../components/ui/Button";
 import { Container } from "../../../components/ui/Container";
-import { EmptyState, Loading, Notice, StatTile } from "../../../components/ui/Feedback";
+import { Chip, EmptyState, Loading, Notice, StatTile } from "../../../components/ui/Feedback";
 import { ReasonDialog } from "../../../components/ui/ReasonDialog";
 import { TacticalCard } from "../../../components/ui/TacticalCard";
 import { Eyebrow } from "../../../components/ui/Typography";
@@ -114,6 +114,18 @@ export default function TeamPage() {
               <p className="mt-3 text-sm text-white/55">
                 {team.disbanded ? "Équipe dissoute" : `Fondée le ${dateFr(team.createdAt)}`} · {team.members.length} / {TEAM_LIMITS.maxMembers} joueurs
               </p>
+              {team.trophies?.length ? (
+                <ul className="mt-4 flex flex-wrap gap-2">
+                  {team.trophies.map((trophy) => (
+                    <li key={`${trophy.tournamentId}-${trophy.place}`}>
+                      <Chip tone={trophy.place === "winner" ? "gold" : "neutral"}>
+                        <LuTrophy aria-hidden className="h-3 w-3" />
+                        {trophy.place === "winner" ? "Vainqueur" : "Finaliste"} · {trophy.name}
+                      </Chip>
+                    </li>
+                  ))}
+                </ul>
+              ) : null}
             </div>
           </div>
           {!team.disbanded ? (
