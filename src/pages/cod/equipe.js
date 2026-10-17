@@ -3,6 +3,7 @@ import Link from "next/link";
 import { useRouter } from "next/router";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { LuCheck, LuCrown, LuExternalLink, LuImagePlus, LuLoaderCircle, LuPlus, LuSearch, LuUserPlus, LuX } from "react-icons/lu";
+import { PlayPanel } from "../../components/teams/PlayPanel";
 import { MemberRow, RosterHeading, SlantTab, TeamCrest, fieldClass, labelClass } from "../../components/teams/TeamParts";
 import { Avatar } from "../../components/ui/Avatar";
 import { Button, ButtonLink } from "../../components/ui/Button";
@@ -271,6 +272,8 @@ function ManageTeam({ state, userId, reload, created, onLeft }) {
         </Notice>
       ) : null}
       {error ? <Notice tone="error">{error}</Notice> : null}
+
+      <PlayPanel team={team} isLeader={isLeader} />
 
       <div role="tablist" aria-label="Gestion de l'équipe" className="flex gap-2 overflow-x-auto pb-1">
         <SlantTab active={tab === "effectif"} onClick={() => setTab("effectif")}>
