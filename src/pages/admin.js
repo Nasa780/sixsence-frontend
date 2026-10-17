@@ -5,6 +5,7 @@ import { CrudPanel } from "../components/admin/CrudPanel";
 import { CorrectionsPanel, MatchesPanel } from "../components/admin/MatchesPanels";
 import { SanctionsPanel } from "../components/admin/Sanctions";
 import { TeamsPanel } from "../components/admin/TeamsPanel";
+import { TournamentPanel } from "../components/admin/TournamentPanel";
 import { EVENTS, FOUNDERS, PARTNERS } from "../components/admin/contentConfigs";
 import { Container } from "../components/ui/Container";
 import { EmptyState, Loading } from "../components/ui/Feedback";
@@ -31,6 +32,7 @@ const ALL_TABS = [
   { key: "events", label: "Événements GTA 6" },
   { key: "founders", label: "Fondateurs" },
   { key: "partners", label: "Partenaires" },
+  { key: "tournoi", label: "Tournoi" },
   { key: "season", label: "Saison" },
 ];
 
@@ -90,6 +92,7 @@ export default function AdminPage() {
           {tab === "events" ? <CrudPanel key="events" config={EVENTS} /> : null}
           {tab === "founders" ? <CrudPanel key="founders" config={FOUNDERS} /> : null}
           {tab === "partners" ? <CrudPanel key="partners" config={PARTNERS} /> : null}
+          {tab === "tournoi" ? <TournamentPanel /> : null}
           {tab === "season" ? <SeasonPanel /> : null}
         </section>
       </div>

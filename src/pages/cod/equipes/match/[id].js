@@ -21,7 +21,7 @@ import { supabase } from "../../../../lib/supabase";
 const ROUNDS = 6;
 const mapsWon = (scores, side) => scores.filter(([a, b]) => (side === "A" ? a > b : b > a)).length;
 
-/** Feuille d'un match d'équipe (BO3) : maps, scores, map 3, déclaration et confirmation par les Leaders. Public. */
+/** Feuille d'un match d'équipe (BO3, BO5 en finale de tournoi) : maps, scores, map décisive, déclaration et confirmation par les Leaders. Public. */
 export default function TeamMatchPage() {
   const router = useRouter();
   const { id } = router.query;
@@ -66,7 +66,9 @@ export default function TeamMatchPage() {
       </Head>
       <Container className="space-y-8 pb-16 pt-28 sm:pt-32">
         <div>
-          <Eyebrow>Match team · BO3 · {match.mode}</Eyebrow>
+          <Eyebrow>
+            {match.tournament ? `${match.tournament.name} · ${match.tournament.round}` : "Match team"} · BO{match.bestOf} · {match.mode}
+          </Eyebrow>
           <h1 className="mt-3 font-display text-5xl font-black uppercase leading-[0.9] sm:text-6xl">Feuille de match</h1>
         </div>
 
@@ -86,13 +88,13 @@ export default function TeamMatchPage() {
 
         <MatchNotices match={match} name={name} />
 
-        <div className="grid gap-4 md:grid-cols-3">
-          {[0, 1, 2].map((index) => (
+        <div className={cn("grid gap-4 md:grid-cols-3", match.bestOf === 5 && "lg:grid-cols-5")}>
+          {Array.from({ length: match.bestOf }, (_, index) => index).map((index) => (
             <MapCard key={index} index={index} match={match} name={name} />
           ))}
         </div>
 
-        {match.status === "in_progress" && match.scores.length === 2 && match.map3Picker ? <Map3Block match={match} name={name} onDone={load} /> : null}
+        {match.status === "in_progress" && match.scores.length === match.bestOf - 1 && match.map3Picker ? <Map3Block match={match} name={name} onDone={load} /> : null}
         {match.viewer?.canReport ? <ReportForm key={match.scores.length} match={match} onDone={load} /> : null}
         {match.viewer?.canConfirm ? <ConfirmBlock match={match} name={name} onDone={load} /> : null}
         {match.viewer?.canResolve ? <ResolveForm match={match} onDone={load} /> : null}
@@ -104,7 +106,7 @@ export default function TeamMatchPage() {
           <Roster match={match} side="B" userId={userId} />
         </div>
 
-        {open ? (
+        {open && !match.tournament ? (
           <TacticalCard innerClassName="p-6">
             <Eyebrow>Points en jeu</Eyebrow>
             <div className="mt-4 grid grid-cols-2 gap-3">
@@ -159,7 +161,7 @@ function StatusChip({ match }) {
   if (match.status === "cancelled") return <Chip tone="neutral" className="mt-2">Annulé</Chip>;
   if (match.status === "disputed") return <Chip tone="loss" className="mt-2">Contesté</Chip>;
   if (match.status === "awaiting_confirmation") return <Chip className="mt-2">Confirmation</Chip>;
-  return <Chip className="mt-2">{match.scores.length === 2 ? "Map 3" : "En cours"}</Chip>;
+  return <Chip className="mt-2">{match.scores.length === match.bestOf - 1 ? "Map décisive" : "En cours"}</Chip>;
 }
 
 function MatchNotices({ match, name }) {
@@ -194,10 +196,11 @@ function MapCard({ index, match, name }) {
   const pending = match.pendingScores && pendingIndex >= 0 ? match.pendingScores[pendingIndex] : null;
   const score = confirmed ?? pending;
   const decided = match.status === "completed" && index >= match.scores.length;
-  const pick = map ? (map.pick === "random" ? "tirée au sort" : `choix ${name(map.pick)}`) : index === 2 ? "décisive" : "";
+  const decider = index === match.bestOf - 1;
+  const pick = map ? (map.pick === "random" ? "tirée au sort" : `choix ${name(map.pick)}`) : decider ? "décisive" : "";
 
   return (
-    <TacticalCard highlight={index === 2 && !map && !decided && match.scores.length === 2} innerClassName={cn("overflow-hidden p-5", decided && "opacity-50")}>
+    <TacticalCard highlight={decider && !map && !decided && match.scores.length === match.bestOf - 1} innerClassName={cn("overflow-hidden p-5", decided && "opacity-50")}>
       {map ? <div aria-hidden className="absolute inset-0 bg-[url('/images/mw4.webp')] bg-cover bg-center opacity-15" /> : <div aria-hidden className="absolute inset-0 bg-grid opacity-40" />}
       <div className="relative">
         <p className="font-tech text-[10px] uppercase tracking-[0.24em] text-white/45">
@@ -211,7 +214,7 @@ function MapCard({ index, match, name }) {
             <span className={score[1] > score[0] ? "text-white" : "text-white/45"}>{score[1]}</span>
           </div>
         ) : (
-          <p className="mt-6 text-sm text-white/40">{map ? "Score pas encore déclaré" : index === 2 ? (match.scores.length === 2 && !decided ? "Choix de la map en cours" : "Jouée seulement à 1 – 1") : ""}</p>
+          <p className="mt-6 text-sm text-white/40">{map ? "Score pas encore déclaré" : decider ? (match.scores.length === match.bestOf - 1 && !decided ? "Choix de la map en cours" : `Jouée seulement à ${match.bestOf === 5 ? "2 – 2" : "1 – 1"}`) : ""}</p>
         )}
       </div>
     </TacticalCard>
@@ -223,7 +226,7 @@ function Map3Block({ match, name, onDone }) {
   const [pending, setPending] = useState(false);
   const [error, setError] = useState(null);
   const [a, b] = match.scores.reduce(([x, y], [sa, sb]) => [x + sa, y + sb], [0, 0]);
-  const picked = match.maps.length === 3;
+  const picked = match.maps.length === match.bestOf;
 
   async function pick() {
     setPending(true);
@@ -242,8 +245,8 @@ function Map3Block({ match, name, onDone }) {
     <TacticalCard innerClassName="space-y-4 p-6">
       <div className="flex flex-wrap items-center justify-between gap-4">
         <div>
-          <Eyebrow>Qui choisit la map 3 ?</Eyebrow>
-          <p className="mt-2 text-sm text-white/55">Total des manches gagnées sur les maps 1 et 2.</p>
+          <Eyebrow>Qui choisit la map décisive ?</Eyebrow>
+          <p className="mt-2 text-sm text-white/55">Total des manches gagnées sur les maps déjà jouées.</p>
         </div>
         <div className="flex min-w-[16rem] flex-1 items-center gap-3">
           <span className="font-display text-3xl font-black text-gold">{a}</span>
@@ -256,16 +259,16 @@ function Map3Block({ match, name, onDone }) {
       </div>
       <p className="font-display text-xl font-bold uppercase tracking-wide">
         {match.map3Picker === "random" ? (
-          <>Égalité de manches : map 3 tirée au sort</>
+          <>Égalité de manches : map décisive tirée au sort</>
         ) : (
           <>
-            <span className="text-white">{name(match.map3Picker)}</span> <span className="text-white/60">{picked ? `a choisi ${match.maps[2].map}` : "choisit la map 3"}</span>
+            <span className="text-white">{name(match.map3Picker)}</span> <span className="text-white/60">{picked ? `a choisi ${match.maps[match.bestOf - 1].map}` : "choisit la map décisive"}</span>
           </>
         )}
       </p>
       {match.viewer?.canPickMap3 ? (
         <div className="flex flex-col gap-3 sm:flex-row">
-          <select className={fieldClass} value={map} onChange={(event) => setMap(event.target.value)} aria-label="Map 3">
+          <select className={fieldClass} value={map} onChange={(event) => setMap(event.target.value)} aria-label="Map décisive">
             <option value="">Choisir la map…</option>
             {match.mapPool.map((option) => (
               <option key={option} value={option}>
@@ -333,7 +336,8 @@ function MapScoreInput({ label, teamA, teamB, value, onChange }) {
 
 function ReportForm({ match, onDone }) {
   const first = match.scores.length === 0;
-  const [scores, setScores] = useState(first ? [null, null] : [null]);
+  const need = Math.ceil(match.bestOf / 2);
+  const [scores, setScores] = useState(Array.from({ length: first ? need : 1 }, () => null));
   const [confirming, setConfirming] = useState(false);
   const [pending, setPending] = useState(false);
   const [error, setError] = useState(null);
@@ -355,8 +359,8 @@ function ReportForm({ match, onDone }) {
 
   return (
     <TacticalCard highlight innerClassName="space-y-4 p-6">
-      <Eyebrow>{first ? "Déclarer les maps 1 et 2" : "Déclarer la map 3"}</Eyebrow>
-      <div className={cn("grid gap-3", first && "md:grid-cols-2")}>
+      <Eyebrow>{first ? `Déclarer les maps 1 à ${need}` : match.scores.length === match.bestOf - 1 ? "Déclarer la map décisive" : `Déclarer la map ${match.scores.length + 1}`}</Eyebrow>
+      <div className={cn("grid gap-3", first && "md:grid-cols-2", first && need === 3 && "lg:grid-cols-3")}>
         {scores.map((value, i) => (
           <MapScoreInput
             key={i}
@@ -444,7 +448,10 @@ function ConfirmBlock({ match, name, onDone }) {
 }
 
 function ResolveForm({ match, onDone }) {
-  const [scores, setScores] = useState(() => [0, 1, 2].map((i) => match.scores[i] ?? match.pendingScores?.[i - match.scores.length] ?? null));
+  const [scores, setScores] = useState(() =>
+    Array.from({ length: match.bestOf }, (_, i) => match.scores[i] ?? match.pendingScores?.[i - match.scores.length] ?? null),
+  );
+  const need = Math.ceil(match.bestOf / 2);
   const [pending, setPending] = useState(false);
   const [error, setError] = useState(null);
   const filled = scores.filter(Boolean);
@@ -465,14 +472,14 @@ function ResolveForm({ match, onDone }) {
   return (
     <TacticalCard innerClassName="space-y-4 p-6">
       <Eyebrow>Arbitrage</Eyebrow>
-      <p className="text-sm text-white/55">Saisis les scores définitifs de la série (la map 3 seulement si elle a été jouée), ou annule le match.</p>
-      <div className="grid gap-3 md:grid-cols-3">
+      <p className="text-sm text-white/55">Saisis les scores définitifs des maps jouées (dans l’ordre, la série se termine sur la dernière), ou annule le match.</p>
+      <div className={cn("grid gap-3 md:grid-cols-3", match.bestOf === 5 && "lg:grid-cols-5")}>
         {scores.map((value, i) => (
           <div key={i} className="space-y-2">
             <MapScoreInput label={match.maps[i]?.map ?? `Map ${i + 1}`} teamA={match.teamA} teamB={match.teamB} value={value} onChange={(next) => setScores((current) => current.map((v, j) => (j === i ? next : v)))} />
-            {value && i === 2 ? (
-              <button type="button" className="text-xs text-white/45 underline hover:text-loss" onClick={() => setScores((current) => [current[0], current[1], null])}>
-                Map 3 non jouée
+            {value && i >= need ? (
+              <button type="button" className="text-xs text-white/45 underline hover:text-loss" onClick={() => setScores((current) => current.map((v, j) => (j >= i ? null : v)))}>
+                Map non jouée
               </button>
             ) : null}
           </div>
@@ -480,7 +487,7 @@ function ResolveForm({ match, onDone }) {
       </div>
       {error ? <Notice tone="error">{error}</Notice> : null}
       <div className="flex flex-wrap gap-3">
-        <Button disabled={pending || filled.length < 2 || !scores[0] || !scores[1]} onClick={() => resolve({ scores: filled })}>
+        <Button disabled={pending || filled.length < need || scores.slice(0, need).some((v) => !v)} onClick={() => resolve({ scores: filled })}>
           Valider les scores
         </Button>
         <Button variant="danger" disabled={pending} onClick={() => resolve({ scores: null })}>

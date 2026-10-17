@@ -1,7 +1,7 @@
 import Head from "next/head";
 import Link from "next/link";
 import { useEffect, useState } from "react";
-import { LuCrown, LuPlus, LuUsers } from "react-icons/lu";
+import { LuCrown, LuPlus, LuTrophy, LuUsers } from "react-icons/lu";
 import { TeamCrest } from "../../../components/teams/TeamParts";
 import { ButtonLink } from "../../../components/ui/Button";
 import { Container } from "../../../components/ui/Container";
@@ -58,7 +58,12 @@ export default function TeamsPage() {
         }
         description={`Équipes de 4 titulaires et 4 remplaçants, BO3 en 4v4. Le top ${QUALIFIED_SPOTS} (${TEAM_LIMITS.qualifyMatches} matchs minimum) dispute le tournoi de fin de saison.`}
         actions={
-          mine ? (
+          <>
+            <ButtonLink href="/cod/equipes/tournoi" variant="outline" size="lg">
+              <LuTrophy aria-hidden className="h-5 w-5" />
+              Tournoi
+            </ButtonLink>
+            {mine ? (
             <ButtonLink href="/cod/equipe" size="lg">
               <LuUsers aria-hidden className="h-5 w-5" />
               Mon équipe
@@ -68,7 +73,8 @@ export default function TeamsPage() {
               <LuPlus aria-hidden className="h-5 w-5" />
               Créer une équipe
             </ButtonLink>
-          )
+          )}
+          </>
         }
       />
       <Container className="py-12">
