@@ -260,3 +260,43 @@ export function TeamsPanel() {
     </div>
   );
 }
+
+/** Matchs d'équipe contestés (onglet « Contestations ») : l'arbitre tranche depuis la feuille de match. */
+export function TeamDisputes() {
+  const [matches, setMatches] = useState(null);
+
+  useEffect(() => {
+    api("/admin/team-disputes")
+      .then((data) => setMatches(data.matches))
+      .catch(() => setMatches([]));
+  }, []);
+
+  if (!matches || matches.length === 0) return null;
+  return (
+    <section aria-labelledby="titre-contestations-equipes" className="space-y-4">
+      <h2 id="titre-contestations-equipes" className="font-display text-3xl font-black uppercase leading-none">
+        Matchs d&apos;équipe contestés · {matches.length}
+      </h2>
+      {matches.map((match) => (
+        <TacticalCard key={match.id} cut={18} innerClassName="flex flex-col gap-4 p-5 lg:flex-row lg:items-center lg:justify-between">
+          <div className="flex items-center gap-4">
+            <TeamCrest team={match.teamA} size={44} />
+            <div className="min-w-0">
+              <p className="font-display text-2xl font-black uppercase leading-none">
+                [{match.teamA?.tag}] vs [{match.teamB?.tag}] <span className="text-white/40">· BO3</span>
+              </p>
+              <p className="mt-2 text-sm text-white/55">
+                Scores déclarés par {match.reportedTeam === "A" ? match.teamA?.name : match.teamB?.name} :{" "}
+                {(match.pendingScores ?? []).map(([a, b], i) => `${match.maps[match.scores.length + i]?.map ?? "Map"} ${a}-${b}`).join(" · ") || "—"} · contesté le {dateFr(match.disputedAt)}
+              </p>
+            </div>
+          </div>
+          <Link href={`/cod/equipes/match/${match.id}`} className="inline-flex items-center gap-1.5 text-sm font-semibold text-gold underline underline-offset-4">
+            Trancher sur la feuille de match
+            <LuExternalLink aria-hidden className="h-3.5 w-3.5" />
+          </Link>
+        </TacticalCard>
+      ))}
+    </section>
+  );
+}

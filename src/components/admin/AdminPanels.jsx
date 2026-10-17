@@ -10,6 +10,7 @@ import { Chip, EmptyState, Loading, Notice, StatTile } from "../ui/Feedback";
 import { TacticalCard } from "../ui/TacticalCard";
 import { SearchInput } from "./Fields";
 import { SanctionDialog } from "./Sanctions";
+import { TeamDisputes } from "./TeamsPanel";
 
 /** Petit utilitaire : appelle le backend, gère « en cours » et les erreurs. */
 function useAction() {
@@ -174,6 +175,7 @@ export function DisputesPanel() {
           </TacticalCard>
         ))
       )}
+      <TeamDisputes />
     </div>
   );
 }
