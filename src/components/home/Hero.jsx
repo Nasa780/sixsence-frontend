@@ -8,7 +8,7 @@ import { Button, ButtonLink } from "../ui/Button";
 import { Container } from "../ui/Container";
 
 const HUD = [
-  { value: "2V2–5V5", label: "Classé MW4" },
+  { value: "MW4", label: "Classé 2v2 à 5v5" },
   { value: "LIVE", label: "File en temps réel" },
   { value: "GTA 6", label: "Événements", univers: "gta" },
 ];
