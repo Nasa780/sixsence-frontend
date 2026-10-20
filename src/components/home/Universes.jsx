@@ -5,6 +5,7 @@ import { Reveal } from "../effects/Reveal";
 import { Container } from "../ui/Container";
 import { TacticalCard } from "../ui/TacticalCard";
 import { SectionHeading } from "../ui/Typography";
+import { MATCH_TEAM_ENABLED } from "../../lib/config";
 
 const UNIVERSES = [
   {
@@ -12,11 +13,21 @@ const UNIVERSES = [
     index: "01",
     game: "Call of Duty · MW4",
     image: "/images/mw4.webp",
-    title: "Classé 2v2 → 5v5",
     watermark: "COD",
-    text: "Rejoins la file, laisse le matchmaking composer les équipes et grimpe au classement match après match.",
-    points: ["File d'attente en temps réel", "Carte et équipes tirées au sort", "9 rangs, emblèmes et trophées"],
-    cta: "Entrer dans la file",
+    // Mêmes trois modes que le menu MW4 (Classé, Division 4v4, Tournoi) ; classé seul si la Division est en pause.
+    ...(MATCH_TEAM_ENABLED
+      ? {
+          title: "Zone de combat",
+          text: "Grimpe seul au classement, monte ton équipe en Division et vise le tournoi de fin de saison.",
+          points: ["Classé en solo, du 2vs2 au 5vs5", "Division en équipe 4vs4", "Tournoi de fin de saison"],
+          cta: "Choisir mon mode",
+        }
+      : {
+          title: "Classé 2v2 → 5v5",
+          text: "Rejoins la file, laisse le matchmaking composer les équipes et grimpe au classement match après match.",
+          points: ["File d'attente en temps réel", "Carte et équipes tirées au sort", "9 rangs, emblèmes et trophées"],
+          cta: "Entrer dans la file",
+        }),
   },
   {
     href: "/gta6",
