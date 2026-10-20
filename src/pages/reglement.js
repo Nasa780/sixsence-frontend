@@ -61,7 +61,7 @@ function DIVISION_SECTIONS() {
             d&apos;égalité).
           </li>
           <li>
-            Une <strong>équipe hôte</strong> est tirée au sort. Elle crée la partie privée et donne son code dans le chat du match dans les{" "}
+            Une <strong>équipe hôte</strong> est tirée au sort. Elle crée la partie privée et donne son code dans le champ « Code de la partie » de la feuille de match (modifiable en cas d&apos;erreur) dans les{" "}
             <strong>10 minutes</strong>.
           </li>
           <li>
@@ -77,7 +77,7 @@ function DIVISION_SECTIONS() {
       content: (
         <ul>
           <li>
-            Si l&apos;équipe hôte n&apos;a rien écrit dans le chat au bout de 10 minutes, ou si une équipe n&apos;est pas « présente en jeu » au
+            Si l&apos;équipe hôte n&apos;a pas donné le code de la partie au bout de 10 minutes, ou si une équipe n&apos;est pas « présente en jeu » au
             bout de 15 minutes, l&apos;autre équipe peut <strong>déclarer forfait</strong>.
           </li>
           <li>
