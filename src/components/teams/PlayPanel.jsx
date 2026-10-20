@@ -180,13 +180,12 @@ export function DivisionLobby({ team, isLeader, play, match, revealed, chosen, o
         <div className="flex flex-col items-center justify-center gap-3 py-2">
           {phase === "searching" ? (
             <>
-              <div className="relative grid h-24 w-24 place-items-center">
-                {[0, 0.7, 1.4].map((delay) => (
-                  <span key={delay} aria-hidden className="absolute inset-0 animate-ping rounded-full border border-gold/60" style={{ animationDelay: `${delay}s`, animationDuration: "2.1s" }} />
+              <span className="font-display text-5xl font-black leading-none text-gold">VS</span>
+              <span aria-hidden className="flex h-5 items-end gap-0.5">
+                {[0, 1, 2, 3, 4, 5, 6].map((bar) => (
+                  <span key={bar} className="lobby-eq block w-1 bg-gold/70" style={{ animationDelay: `${bar * 0.11}s` }} />
                 ))}
-                <span aria-hidden className="absolute inset-3 rounded-full border border-gold/25" />
-                <span className="relative font-display text-3xl font-black text-gold">VS</span>
-              </div>
+              </span>
               <p className="font-display text-4xl font-black leading-none tabular-nums">{clock((now - new Date(play.queued.since).getTime()) / 1000)}</p>
             </>
           ) : (
@@ -329,36 +328,67 @@ function PlayerSlot({ player, onRemove }) {
   );
 }
 
-/** Colonne adverse : silhouette anonyme, puis l'équipe dévoilée quand le match est créé. */
+/**
+ * Colonne adverse, façon transmission radio. Recherche : « Canal 06 », « Recherche de contact… » qui
+ * s'écrit, barres de signal dans chaque emplacement. Révélation : « Contact établi », le nom adverse
+ * s'écrit lettre par lettre.
+ */
 function OpponentColumn({ opponent, phase, size }) {
   const known = Boolean(opponent);
+  const searching = phase === "searching";
+  const reveal = phase === "found";
+
+  const title = searching ? (
+    "Canal 06"
+  ) : reveal && known ? (
+    <span className="lobby-type lobby-type-once" style={{ "--chars": `${opponent.name.length}ch`, "--steps": opponent.name.length }}>
+      {opponent.name}
+    </span>
+  ) : known ? (
+    opponent.name
+  ) : (
+    "Adversaire"
+  );
+  const subtitle = searching ? (
+    <span className="lobby-type" style={{ "--chars": "22ch", "--steps": 22 }}>
+      Recherche de contact…
+    </span>
+  ) : reveal && known ? (
+    <span className="lobby-flash text-gold">Contact établi · [{opponent.tag}]</span>
+  ) : known ? (
+    `[${opponent.tag}]`
+  ) : (
+    "Anonyme jusqu'au match"
+  );
+
   return (
-    <div className="min-w-0 md:text-right">
+    <div className="relative min-w-0 md:text-right">
       <div className="flex items-center gap-3 md:flex-row-reverse">
         {known ? (
           <TeamCrest team={opponent} size={52} />
         ) : (
-          <span className={cn("grid h-[52px] w-[52px] shrink-0 place-items-center border border-dashed font-display text-2xl font-black", phase === "searching" ? "animate-pulse border-gold/60 text-gold" : "border-white/20 text-white/30")}>
+          <span className={cn("grid h-[52px] w-[52px] shrink-0 place-items-center border border-dashed font-display text-2xl font-black", searching ? "animate-pulse border-gold/60 text-gold" : "border-white/20 text-white/30")}>
             ?
           </span>
         )}
         <div className="min-w-0">
-          <p className={cn("truncate font-display text-2xl font-black uppercase leading-none sm:text-3xl", !known && "text-white/35")}>{known ? opponent.name : "Adversaire"}</p>
-          <p className="mt-1 font-tech text-xs uppercase tracking-[0.2em] text-white/40">{known ? `[${opponent.tag}]` : phase === "searching" ? "Recherche…" : "Anonyme jusqu'au match"}</p>
+          <p className={cn("truncate font-display text-2xl font-black uppercase leading-none sm:text-3xl", !known && (searching ? "text-gold/80" : "text-white/35"))}>{title}</p>
+          <p className="mt-1 font-tech text-xs uppercase tracking-[0.2em] text-white/40">{subtitle}</p>
         </div>
       </div>
       <ul className="mt-4 space-y-1.5">
         {Array.from({ length: size }, (_, index) => (
           <li key={index}>
-            <div
-              className={cn(
-                "flex h-11 items-center gap-3 border px-3 md:flex-row-reverse",
-                known ? "border-white/15 bg-white/[0.04]" : "border-dashed border-white/10",
-                phase === "searching" && "animate-pulse",
+            <div className={cn("flex h-11 items-center gap-3 border px-3 md:flex-row-reverse", known ? "border-white/15 bg-white/[0.04]" : "border-dashed border-white/10")}>
+              {searching ? (
+                <span aria-hidden className="flex h-6 items-end gap-0.5">
+                  {[0, 1, 2, 3, 4].map((bar) => (
+                    <span key={bar} className="lobby-eq block w-1 bg-gold/70" style={{ animationDelay: `${(index * 5 + bar) * 0.09}s` }} />
+                  ))}
+                </span>
+              ) : (
+                <LuUserRound aria-hidden className={cn("h-4 w-4", known ? "text-white/60" : "text-white/20")} />
               )}
-              style={phase === "searching" ? { animationDelay: `${index * 0.2}s` } : undefined}
-            >
-              <LuUserRound aria-hidden className={cn("h-4 w-4", known ? "text-white/60" : "text-white/20")} />
               <span className={cn("font-tech text-xs uppercase tracking-[0.3em]", known ? "text-white/60" : "text-white/20")}>{known ? "Prêt" : "???"}</span>
             </div>
           </li>
