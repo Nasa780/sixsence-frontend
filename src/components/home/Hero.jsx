@@ -78,7 +78,7 @@ export function Hero() {
 
           <motion.p variants={item} className="mt-4 max-w-xl text-base leading-relaxed text-white/60 sm:text-lg">
             {MATCH_TEAM_ENABLED
-              ? "Grimpe seul au classement de Call of Duty, du 2vs2 au 5vs5, monte ton équipe en Division et vise le tournoi de fin de saison. Côté GTA 6, rejoins les événements de la communauté. Un seul accès : ton compte Discord."
+              ? "Grimpe seul au classement de Call of Duty en partie classée, monte ton équipe en Division et vise le tournoi de fin de saison. Côté GTA 6, rejoins les événements à venir de la communauté."
               : "Files classées Call of Duty du 2v2 au 5v5 en solo, matchmaking automatique, classement en direct et événements GTA 6. Un seul accès : ton compte Discord."}
           </motion.p>
 
