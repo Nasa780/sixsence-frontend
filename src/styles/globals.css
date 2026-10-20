@@ -68,19 +68,19 @@
   --color-gold-dark: #d6246e;
 }
 
-/* Modes COD : le Classé garde l'or ; la Division passe à l'argent, le Tournoi à l'or blanc
-   (jamais d'orange ni de rose, réservés à GTA 6). Même mécanisme que l'univers GTA. */
+/* Modes COD : le Classé garde l'or ; la Division passe à l'émeraude, le Tournoi au rouge impérial
+   (jamais l'orange ni le rose, réservés à GTA 6). Même mécanisme que l'univers GTA. */
 [data-univers="division"] {
-  --color-gold: #c3ccd6;
-  --color-gold-light: #e8edf3;
-  --color-gold-pale: #f3f6f9;
-  --color-gold-dark: #6f7a88;
+  --color-gold: #34d399;
+  --color-gold-light: #6ee7b7;
+  --color-gold-pale: #d1fae5;
+  --color-gold-dark: #047857;
 }
 [data-univers="tournoi"] {
-  --color-gold: #ecdba3;
-  --color-gold-light: #fbf1cf;
-  --color-gold-pale: #fff8e2;
-  --color-gold-dark: #a8935a;
+  --color-gold: #e5484d;
+  --color-gold-light: #f87171;
+  --color-gold-pale: #fecaca;
+  --color-gold-dark: #991b1b;
 }
 
 @layer base {

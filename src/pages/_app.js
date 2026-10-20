@@ -33,7 +33,7 @@ export default function App({ Component, pageProps }) {
   const teamPaused =
     (!MATCH_TEAM_ENABLED && (pathname === "/cod/equipe" || pathname === "/cod/division" || pathname.startsWith("/cod/equipes") || pathname.startsWith("/cod/tournoi"))) || (!GROUPS_ENABLED && pathname.startsWith("/cod/groupe"));
   // Pages GTA 6 : palette coucher de soleil (voir globals.css).
-  // Couleur d'accent : coucher de soleil sur GTA 6, argent pour la Division, or blanc pour le Tournoi.
+  // Couleur d'accent : coucher de soleil sur GTA 6, émeraude pour la Division, rouge impérial pour le Tournoi.
   const codMode = codModeOf(pathname);
   const univers = pathname.startsWith("/gta6") ? "gta" : codMode === "team" ? "division" : codMode === "tournoi" ? "tournoi" : undefined;
 
