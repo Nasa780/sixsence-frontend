@@ -24,6 +24,9 @@ import { cn } from "../../lib/cn";
 const MODES = [
   {
     key: "classe",
+    univers: "classe",
+    image: "/images/modes/classe.webp",
+    watermark: "#1",
     icon: LuCrosshair,
     eyebrow: "Mode joueur",
     title: "Classé",
@@ -37,6 +40,9 @@ const MODES = [
   },
   {
     key: "team",
+    univers: "division",
+    image: "/images/modes/division.jpg",
+    watermark: "4v4",
     icon: LuShield,
     eyebrow: "Mode équipe",
     title: "Division",
@@ -50,6 +56,9 @@ const MODES = [
   },
   {
     key: "tournoi",
+    univers: "tournoi",
+    image: "/images/modes/tournoi.webp",
+    watermark: "BO5",
     icon: LuTrophy,
     eyebrow: "Fin de saison",
     title: "Tournoi",
@@ -105,14 +114,18 @@ export function ModesHub() {
         }
         actions={
           <>
-            <ButtonLink href="/cod/ranked" size="lg">
-              <LuCrosshair aria-hidden className="h-5 w-5" />
-              Classé
-            </ButtonLink>
-            <ButtonLink href="/cod/division" size="lg" variant="outline">
-              <LuShield aria-hidden className="h-5 w-5" />
-              Division
-            </ButtonLink>
+            <span data-univers="classe">
+              <ButtonLink href="/cod/ranked" size="lg">
+                <LuCrosshair aria-hidden className="h-5 w-5" />
+                Classé
+              </ButtonLink>
+            </span>
+            <span data-univers="division">
+              <ButtonLink href="/cod/division" size="lg" variant="outline">
+                <LuShield aria-hidden className="h-5 w-5" />
+                Division
+              </ButtonLink>
+            </span>
           </>
         }
       />
@@ -153,13 +166,27 @@ export function ModesHub() {
         <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
           {MODES.map((mode, index) => (
             <Reveal key={mode.key} delay={index * 0.08} className="h-full">
-              <TacticalCard highlight={mode.key === "classe"} cut={28} className="h-full" innerClassName={cn("flex h-full flex-col overflow-hidden p-7 sm:p-9", mode.key === "classe" && "holo")}>
-                <div aria-hidden className="absolute -right-6 -top-8 select-none font-display text-[9rem] font-black uppercase leading-none text-outline opacity-40">
-                  {mode.key === "classe" ? "#1" : mode.key === "team" ? "4v4" : "BO5"}
+              <div data-univers={mode.univers} className="group/card h-full transition duration-300 hover:-translate-y-1">
+              <TacticalCard highlight cut={28} className="h-full" innerClassName="flex h-full flex-col overflow-hidden p-7 sm:p-9">
+                {/* Visuel du mode en haut de la carte, fondu vers le bas, teinté de la couleur du mode. */}
+                <div aria-hidden className="pointer-events-none absolute inset-x-0 top-0 h-60 overflow-hidden">
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img src={mode.image} alt="" className="h-full w-full object-cover object-[50%_22%] opacity-40 transition duration-500 group-hover/card:scale-105 group-hover/card:opacity-55" />
+                  <div className="absolute inset-0 bg-gold/20 mix-blend-color" />
+                  <div className="absolute inset-0 bg-linear-to-b from-ink/10 via-ink/60 to-ink-800" />
+                </div>
+                <div aria-hidden className="pointer-events-none absolute -left-10 top-1/3 h-56 w-56 rounded-full bg-gold/10 blur-3xl transition group-hover/card:bg-gold/20" />
+                <div aria-hidden className="absolute -right-6 -top-8 select-none font-display text-[9rem] font-black uppercase leading-none text-outline opacity-30">
+                  {mode.watermark}
                 </div>
                 <div className="relative flex h-full flex-col">
-                  <mode.icon aria-hidden className="h-10 w-10 text-gold" />
-                  <Eyebrow className="mt-6">{mode.eyebrow}</Eyebrow>
+                  <div className="flex items-center justify-between gap-3">
+                    <span className="grid h-14 w-14 place-items-center border border-gold/50 bg-ink/70 clip-corner backdrop-blur-sm">
+                      <mode.icon aria-hidden className="h-7 w-7 text-gold" />
+                    </span>
+                    <LiveBadge mode={mode.key} />
+                  </div>
+                  <Eyebrow className="mt-16">{mode.eyebrow}</Eyebrow>
                   <h2 className="mt-2 font-display text-5xl font-black uppercase leading-none sm:text-6xl">{mode.title}</h2>
                   <p className="mt-4 max-w-md text-sm leading-relaxed text-white/60">{mode.text}</p>
                   <ul className="mt-5 flex flex-wrap gap-2">
@@ -183,6 +210,7 @@ export function ModesHub() {
                   </div>
                 </div>
               </TacticalCard>
+              </div>
             </Reveal>
           ))}
         </div>
@@ -198,6 +226,46 @@ export function ModesHub() {
         </div>
       </Container>
     </>
+  );
+}
+
+/** Info en direct sur chaque carte : joueurs en file (Classé), équipes en recherche (Division), prochain tournoi. */
+function LiveBadge({ mode }) {
+  const [text, setText] = useState(null);
+  useEffect(() => {
+    let alive = true;
+    const load = async () => {
+      try {
+        if (mode === "classe") {
+          const status = await api("/cod/status");
+          if (alive) setText(`${status.playersInQueue} en file · ${status.matchesInProgress} en jeu`);
+        } else if (mode === "team") {
+          const status = await api("/teams/status");
+          if (alive) setText(`${status.teamsSearching} équipe${status.teamsSearching > 1 ? "s" : ""} en recherche`);
+        } else {
+          const { tournament } = await api("/teams/tournament");
+          if (!alive) return;
+          if (!tournament || tournament.status === "completed" || tournament.status === "cancelled") setText("Aucun tournoi prévu");
+          else if (tournament.status === "running") setText("En cours");
+          else setText(new Date(tournament.startsAt).toLocaleDateString("fr-FR", { day: "numeric", month: "short" }));
+        }
+      } catch {
+        // Info facultative.
+      }
+    };
+    load();
+    const timer = setInterval(load, 20_000);
+    return () => {
+      alive = false;
+      clearInterval(timer);
+    };
+  }, [mode]);
+  if (!text) return null;
+  return (
+    <span className="inline-flex items-center gap-2 border border-gold/40 bg-ink/70 px-2.5 py-1 font-tech text-[10px] uppercase tracking-[0.2em] text-gold backdrop-blur-sm">
+      <span aria-hidden className="h-1.5 w-1.5 animate-pulse-gold bg-gold" />
+      {text}
+    </span>
   );
 }
 
