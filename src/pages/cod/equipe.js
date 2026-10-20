@@ -48,7 +48,7 @@ export default function MyTeamPage() {
       </Head>
       <PageHeader
         image="/images/mw4.webp"
-        eyebrow="Match team"
+        eyebrow="Division"
         title={
           <>
             Mon <span className="text-gold-gradient">équipe</span>

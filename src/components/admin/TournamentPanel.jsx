@@ -75,7 +75,7 @@ export function TournamentPanel() {
             <Chip tone={current.status === "running" ? "win" : current.status === "cancelled" ? "loss" : current.status === "completed" ? "neutral" : "gold"}>{STATUS[current.status]}</Chip>
           </div>
           <div className="flex flex-wrap gap-3">
-            <Link href="/cod/equipes/tournoi" className="inline-flex items-center gap-1.5 text-sm font-semibold text-gold underline underline-offset-4">
+            <Link href="/cod/tournoi" className="inline-flex items-center gap-1.5 text-sm font-semibold text-gold underline underline-offset-4">
               Voir le tableau
               <LuExternalLink aria-hidden className="h-3.5 w-3.5" />
             </Link>

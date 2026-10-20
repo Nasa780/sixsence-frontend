@@ -32,7 +32,7 @@ export function SectionHeading({ eyebrow, title, description = null, center = fa
  * image : visuel de fond facultatif (ex. une image du jeu), assombri pour garder le texte lisible.
  */
 export function PageHeader({ eyebrow, title, description = null, actions = null, image = null }) {
-  // Pages COD : sélecteur « Classé | Match team » sous le titre.
+  // Pages COD : sélecteur « Classé | Division | Tournoi » sous le titre.
   const codMode = codModeOf(useRouter().pathname);
   return (
     <header

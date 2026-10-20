@@ -71,12 +71,12 @@ export default function TeamMatchPage() {
   return (
     <>
       <Head>
-        <title>{`[${match.teamA?.tag}] vs [${match.teamB?.tag}] — Match team — SixSence`}</title>
+        <title>{`[${match.teamA?.tag}] vs [${match.teamB?.tag}] — Division — SixSence`}</title>
       </Head>
       <Container className="space-y-8 pb-16 pt-28 sm:pt-32">
         <div>
           <Eyebrow>
-            {match.tournament ? `${match.tournament.name} · ${match.tournament.round}` : "Match team"} · BO{match.bestOf} · {match.mode}
+            {match.tournament ? `${match.tournament.name} · ${match.tournament.round}` : "Division"} · BO{match.bestOf} · {match.mode}
           </Eyebrow>
           <h1 className="mt-3 font-display text-5xl font-black uppercase leading-[0.9] sm:text-6xl">Feuille de match</h1>
         </div>

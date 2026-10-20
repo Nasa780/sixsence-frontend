@@ -1,12 +1,12 @@
 import Link from "next/link";
 import { useRouter } from "next/router";
-import { LuCrosshair, LuShield } from "react-icons/lu";
+import { LuCrosshair, LuShield, LuTrophy } from "react-icons/lu";
 import { cn } from "../../lib/cn";
 import { MATCH_TEAM_ENABLED } from "../../lib/config";
 
 /**
- * Les deux modes de jeu COD, bien séparés : le classé (joueurs, solo ou en groupe) et les match team
- * (équipes). Chaque mode a ses pages ; codModeOf() dit à quel mode appartient une page.
+ * Les trois sections COD, bien séparées : le Classé (joueurs, en solo), la Division (équipes) et le
+ * Tournoi de fin de saison. Chaque section a ses pages ; codModeOf() dit à quelle section appartient une page.
  */
 export const COD_MODES = [
   {
@@ -22,20 +22,27 @@ export const COD_MODES = [
   },
   {
     key: "team",
-    label: "Match team",
+    label: "Division",
     icon: LuShield,
     href: "/cod/equipes",
     links: [
-      { href: "/cod/equipes", label: "Équipes" },
+      { href: "/cod/equipes", label: "Classement" },
       { href: "/cod/equipe", label: "Mon équipe" },
-      { href: "/cod/equipes/tournoi", label: "Tournoi" },
     ],
+  },
+  {
+    key: "tournoi",
+    label: "Tournoi",
+    icon: LuTrophy,
+    href: "/cod/tournoi",
+    links: [{ href: "/cod/tournoi", label: "Tableau" }],
   },
 ];
 
-/** Mode d'une page COD (« classe », « team »), ou null (hub, pages hors COD). */
+/** Section d'une page COD (« classe », « team », « tournoi »), ou null (hub, pages hors COD). */
 export function codModeOf(pathname) {
   if (!MATCH_TEAM_ENABLED) return null;
+  if (pathname.startsWith("/cod/tournoi")) return "tournoi";
   if (pathname === "/cod/equipe" || pathname.startsWith("/cod/equipes")) return "team";
   if (pathname.startsWith("/cod/ranked") || pathname.startsWith("/cod/leaderboard") || pathname.startsWith("/cod/profile") || pathname.startsWith("/cod/match") || pathname.startsWith("/cod/groupe")) {
     return "classe";
@@ -43,7 +50,7 @@ export function codModeOf(pathname) {
   return null;
 }
 
-/** Sélecteur « Classé | Match team » et pages du mode en cours, sous l'en-tête des pages COD. */
+/** Sélecteur « Classé | Division | Tournoi » et pages de la section en cours, sous l'en-tête des pages COD. */
 export function CodModeNav({ className = "" }) {
   const { pathname } = useRouter();
   const mode = codModeOf(pathname);
@@ -51,7 +58,7 @@ export function CodModeNav({ className = "" }) {
   const current = COD_MODES.find((item) => item.key === mode);
 
   return (
-    <nav aria-label="Modes de jeu Call of Duty" className={cn("flex flex-col gap-4 sm:flex-row sm:items-center sm:gap-6", className)}>
+    <nav aria-label="Sections Call of Duty" className={cn("flex flex-col gap-4 sm:flex-row sm:items-center sm:gap-6", className)}>
       <div className="inline-flex w-fit gap-1 bg-white/[0.04] p-1 clip-slant [--slant:12px]">
         {COD_MODES.map((item) => {
           const active = item.key === mode;

@@ -25,7 +25,7 @@ const SECTIONS = [
 
 const winRate = (wins, losses) => (wins + losses > 0 ? Math.round((wins / (wins + losses)) * 100) : null);
 
-/** Hub COD sans le mode Match team (mode en pause) : résumé du joueur, accès aux trois sections du classé, top 10. Public. */
+/** Hub COD sans le Division (mode en pause) : résumé du joueur, accès aux trois sections du classé, top 10. Public. */
 export function ClassicHub() {
   const { session } = useSession();
   const user = useUser();

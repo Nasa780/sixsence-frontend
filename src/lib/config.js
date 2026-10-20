@@ -21,7 +21,7 @@ export const DISCORD_INVITE_URL = process.env.NEXT_PUBLIC_DISCORD_INVITE_URL || 
 export const SITE_URL = (process.env.NEXT_PUBLIC_SITE_URL || "https://www.sixsence.fr").replace(/\/$/, "");
 
 /**
- * Mode « Match team » (équipes, matchs d'équipe, tournoi) : en pause tant que NEXT_PUBLIC_MATCH_TEAM
+ * Division (équipes, matchs d'équipe, tournoi) : en pause tant que NEXT_PUBLIC_MATCH_TEAM
  * ne vaut pas « on » (Vercel). En pause, le site est celui d'avant le mode : aucune page, lien ou tag
  * d'équipe. Côté backend, TEAM_MODE=on sur Render. Le code et les données restent en place.
  */

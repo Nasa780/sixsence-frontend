@@ -63,7 +63,7 @@ export default function CreateTeamPage() {
       </Head>
       <PageHeader
         image="/images/mw4.webp"
-        eyebrow="Match team"
+        eyebrow="Division"
         title={
           <>
             Créer une <span className="text-gold-gradient">équipe</span>

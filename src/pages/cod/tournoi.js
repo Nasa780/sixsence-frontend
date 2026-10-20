@@ -2,18 +2,18 @@ import Head from "next/head";
 import Link from "next/link";
 import { useCallback, useEffect, useState } from "react";
 import { LuCheck, LuCrown, LuLoaderCircle, LuTrophy } from "react-icons/lu";
-import { TeamCrest } from "../../../components/teams/TeamParts";
-import { Avatar } from "../../../components/ui/Avatar";
-import { Button, ButtonLink } from "../../../components/ui/Button";
-import { Container } from "../../../components/ui/Container";
-import { Chip, EmptyState, Loading, Notice, StatTile } from "../../../components/ui/Feedback";
-import { TacticalCard } from "../../../components/ui/TacticalCard";
-import { Eyebrow, PageHeader } from "../../../components/ui/Typography";
-import useSession from "../../../hooks/useSession";
-import { api } from "../../../lib/api";
-import { supabase } from "../../../lib/supabase";
-import { cn } from "../../../lib/cn";
-import { TEAM_LIMITS } from "../../../lib/teams";
+import { TeamCrest } from "../../components/teams/TeamParts";
+import { Avatar } from "../../components/ui/Avatar";
+import { Button, ButtonLink } from "../../components/ui/Button";
+import { Container } from "../../components/ui/Container";
+import { Chip, EmptyState, Loading, Notice, StatTile } from "../../components/ui/Feedback";
+import { TacticalCard } from "../../components/ui/TacticalCard";
+import { Eyebrow, PageHeader } from "../../components/ui/Typography";
+import useSession from "../../hooks/useSession";
+import { api } from "../../lib/api";
+import { supabase } from "../../lib/supabase";
+import { cn } from "../../lib/cn";
+import { TEAM_LIMITS } from "../../lib/teams";
 
 const dateFr = (iso) => new Date(iso).toLocaleString("fr-FR", { weekday: "long", day: "numeric", month: "long", hour: "2-digit", minute: "2-digit" });
 
@@ -26,7 +26,7 @@ function countdown(target, now) {
   return d > 0 ? `${d} j ${h} h ${String(m).padStart(2, "0")}` : `${h}:${String(m).padStart(2, "0")}:${String(s).padStart(2, "0")}`;
 }
 
-/** Tournoi de fin de saison du mode « Match team » : check-in, tableau en direct, vainqueur. Public. */
+/** Tournoi de fin de saison (section à part, équipes de la Division) : check-in, tableau en direct, vainqueur. Public. */
 export default function TournamentPage() {
   const { userId } = useSession();
   const [tournament, setTournament] = useState(undefined);
@@ -74,11 +74,11 @@ export default function TournamentPage() {
     <>
       <Head>
         <title>{tournament ? `${tournament.name} — SixSence` : "Tournoi — SixSence"}</title>
-        <meta name="description" content="Tournoi de fin de saison du mode Match team de SixSence : les meilleures équipes s'affrontent en BO3, finale en BO5." />
+        <meta name="description" content="Tournoi de fin de saison de SixSence : les meilleures équipes s'affrontent en BO3, finale en BO5." />
       </Head>
       <PageHeader
         image="/images/mw4.webp"
-        eyebrow="Match team · Fin de saison"
+        eyebrow="Tournoi · Fin de saison"
         title={
           tournament ? (
             tournament.name
@@ -95,7 +95,7 @@ export default function TournamentPage() {
         }
         actions={
           <ButtonLink href="/cod/equipes" variant="outline">
-            Classement des équipes
+            Classement de la Division
           </ButtonLink>
         }
       />

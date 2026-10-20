@@ -93,7 +93,7 @@ export default function TeamPage() {
     <>
       <Head>
         <title>{`[${team.tag}] ${team.name} — SixSence`}</title>
-        <meta name="description" content={team.description || `Équipe ${team.name} du mode Match team de SixSence.`} />
+        <meta name="description" content={team.description || `Équipe ${team.name} du Division de SixSence.`} />
       </Head>
 
       <header className="relative isolate overflow-hidden border-b border-white/10 pb-10 pt-28 sm:pb-14 sm:pt-36">
@@ -110,7 +110,7 @@ export default function TeamPage() {
             <TeamCrest team={team} size={104} />
             <div className="min-w-0">
               <Eyebrow>
-                Match team · <span style={{ color: team.color }}>[{team.tag}]</span>
+                Division · <span style={{ color: team.color }}>[{team.tag}]</span>
               </Eyebrow>
               <h1 className="mt-3 break-words font-display text-5xl font-black uppercase leading-[0.9] sm:text-7xl">{team.name}</h1>
               <p className="mt-3 text-sm text-white/55">

@@ -17,7 +17,7 @@ const elapsed = (since, now) => {
 };
 
 /**
- * Bloc « Match team » de Mon équipe : le Leader choisit ses titulaires et lance la recherche
+ * Bloc « Division » de Mon équipe : le Leader choisit ses titulaires et lance la recherche
  * (pas de « Prêt ? ») ; dès qu'une autre équipe est trouvée, la feuille de match s'ouvre.
  */
 export function PlayPanel({ team, isLeader }) {
@@ -77,7 +77,7 @@ export function PlayPanel({ team, isLeader }) {
       <TacticalCard highlight cut={24} innerClassName="holo overflow-hidden p-6 sm:p-8">
         <div className="relative flex flex-col gap-5 sm:flex-row sm:items-center sm:justify-between">
           <div>
-            <Eyebrow>Match team en cours</Eyebrow>
+            <Eyebrow>Match de Division en cours</Eyebrow>
             <p className="mt-2 font-display text-3xl font-black uppercase leading-none sm:text-4xl">Ton équipe joue un BO3</p>
             <p className="mt-2 text-sm text-white/55">Déclare les scores et choisis la map 3 depuis la feuille de match.</p>
           </div>
@@ -120,7 +120,7 @@ export function PlayPanel({ team, isLeader }) {
     <TacticalCard highlight cut={24} innerClassName="p-6 sm:p-8">
       <div className="flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
         <div>
-          <Eyebrow>Match team · BO3 {size}v{size}</Eyebrow>
+          <Eyebrow>Division · BO3 {size}v{size}</Eyebrow>
           <p className="mt-2 font-display text-3xl font-black uppercase leading-none sm:text-4xl">Lancer un match</p>
         </div>
         <p className="text-sm text-white/55">

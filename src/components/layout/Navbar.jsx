@@ -22,10 +22,11 @@ const LINKS = [
   {
     href: "/cod",
     label: "MW4",
-    // Les deux modes de jeu COD, chacun avec ses pages (seulement si le mode Match team est actif).
+    // Les trois sections COD (seulement si la Division est active).
     children: MATCH_TEAM_ENABLED && [
       { href: "/cod/ranked", label: "Classé", hint: "Joueurs · 2v2 à 5v5" },
-      { href: "/cod/equipes", label: "Match team", hint: "Équipes · BO3 4v4 · tournoi" },
+      { href: "/cod/equipes", label: "Division", hint: "Équipes · BO3 4v4" },
+      { href: "/cod/tournoi", label: "Tournoi", hint: "Fin de saison · finale en BO5" },
     ],
   },
   { href: "/gta6", label: "GTA 6", univers: "gta" },
@@ -101,7 +102,7 @@ export function Navbar() {
                     <div className="clip-tactical w-64 bg-gold/40 p-px [--cut:12px]">
                       <div className="clip-tactical bg-ink-800 p-2 [--cut:12px]">
                         {link.children.map((child) => {
-                          const current = (child.href === "/cod/ranked" && mode === "classe") || (child.href === "/cod/equipes" && mode === "team");
+                          const current = (child.href === "/cod/ranked" && mode === "classe") || (child.href === "/cod/equipes" && mode === "team") || (child.href === "/cod/tournoi" && mode === "tournoi");
                           return (
                             <Link
                               key={child.href}
@@ -183,7 +184,7 @@ export function Navbar() {
                         element,
                         ...LINKS[index].children.map((child) => {
                           const mode = codModeOf(pathname);
-                          const current = (child.href === "/cod/ranked" && mode === "classe") || (child.href === "/cod/equipes" && mode === "team");
+                          const current = (child.href === "/cod/ranked" && mode === "classe") || (child.href === "/cod/equipes" && mode === "team") || (child.href === "/cod/tournoi" && mode === "tournoi");
                           return (
                             <Link
                               key={child.href}
