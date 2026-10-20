@@ -99,7 +99,7 @@ export function Navbar() {
                 <div key={link.href} className="group relative">
                   {item}
                   <div className="invisible absolute left-0 top-full z-10 pt-2 opacity-0 transition duration-150 group-focus-within:visible group-focus-within:opacity-100 group-hover:visible group-hover:opacity-100">
-                    <div className="clip-tactical w-80 bg-white/15 p-px [--cut:14px]">
+                    <div data-univers="or" className="clip-tactical w-80 bg-gold/40 p-px [--cut:14px]">
                       <div className="clip-tactical space-y-1 bg-ink-800/95 p-2 backdrop-blur-md [--cut:14px]">
                         {link.children.map((child) => {
                           const current = (child.href === "/cod/ranked" && mode === "classe") || (child.href === "/cod/division" && mode === "team") || (child.href === "/cod/tournoi" && mode === "tournoi");
@@ -108,7 +108,6 @@ export function Navbar() {
                             <Link
                               key={child.href}
                               href={child.href}
-                              data-univers={child.univers}
                               className={cn(
                                 "group/mode relative flex items-center gap-3 overflow-hidden border-l-2 px-3 py-2.5 transition-colors",
                                 current ? "border-gold bg-gold/10" : "border-gold/40 hover:border-gold hover:bg-gold/[0.07]",
@@ -199,10 +198,10 @@ export function Navbar() {
                             <Link
                               key={child.href}
                               href={child.href}
-                              data-univers={child.univers}
+                              data-univers="or"
                               className={cn(
                                 "ml-4 border-l-2 px-4 py-2.5 font-display text-base font-bold uppercase tracking-[0.14em] transition-colors",
-                                current ? "border-gold bg-gold/10 text-gold" : "border-gold/50 text-gold/80 hover:text-gold",
+                                current ? "border-gold bg-gold/10 text-gold" : "border-white/10 text-white/70 hover:border-gold/60 hover:text-gold",
                               )}
                             >
                               {child.label}
