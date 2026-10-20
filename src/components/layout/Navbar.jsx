@@ -24,9 +24,9 @@ const LINKS = [
     label: "MW4",
     // Les trois sections COD (seulement si la Division est active).
     children: MATCH_TEAM_ENABLED && [
-      { href: "/cod/ranked", label: "Classé", hint: "En solo 2vs2 à 5vs5", univers: "classe", icon: LuCrosshair, image: "/images/modes/classe.webp" },
-      { href: "/cod/division", label: "Division", hint: "En équipe 4vs4", univers: "division", icon: LuShield, image: "/images/modes/division.jpg" },
-      { href: "/cod/tournoi", label: "Tournoi", hint: "Fin de saison", univers: "tournoi", icon: LuTrophy, image: "/images/modes/tournoi.webp" },
+      { href: "/cod/ranked", label: "Classé", hint: "En solo 2vs2 à 5vs5", univers: "classe", icon: LuCrosshair },
+      { href: "/cod/division", label: "Division", hint: "En équipe 4vs4", univers: "division", icon: LuShield },
+      { href: "/cod/tournoi", label: "Tournoi", hint: "Fin de saison", univers: "tournoi", icon: LuTrophy },
     ],
   },
   { href: "/gta6", label: "GTA 6", univers: "gta" },
@@ -110,15 +110,10 @@ export function Navbar() {
                               href={child.href}
                               data-univers={child.univers}
                               className={cn(
-                                "group/mode relative flex items-center gap-3 overflow-hidden border-l-2 p-2 pr-3 transition-colors",
+                                "group/mode relative flex items-center gap-3 overflow-hidden border-l-2 px-3 py-2.5 transition-colors",
                                 current ? "border-gold bg-gold/10" : "border-gold/40 hover:border-gold hover:bg-gold/[0.07]",
                               )}
                             >
-                              <span className="relative h-12 w-16 shrink-0 overflow-hidden clip-slant">
-                                {/* eslint-disable-next-line @next/next/no-img-element */}
-                                <img src={child.image} alt="" aria-hidden className="h-full w-full object-cover object-[50%_25%] opacity-70 transition duration-300 group-hover/mode:scale-110 group-hover/mode:opacity-100" />
-                                <span aria-hidden className="absolute inset-0 bg-gold/25 mix-blend-color" />
-                              </span>
                               <span className="min-w-0 flex-1">
                                 <span className="flex items-center gap-1.5 font-display text-base font-bold uppercase tracking-[0.14em] text-gold">
                                   <Icon aria-hidden className="h-4 w-4" />
