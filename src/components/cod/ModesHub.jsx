@@ -114,18 +114,14 @@ export function ModesHub() {
         }
         actions={
           <>
-            <span data-univers="classe">
-              <ButtonLink href="/cod/ranked" size="lg">
-                <LuCrosshair aria-hidden className="h-5 w-5" />
-                Classé
-              </ButtonLink>
-            </span>
-            <span data-univers="division">
-              <ButtonLink href="/cod/division" size="lg" variant="outline">
-                <LuShield aria-hidden className="h-5 w-5" />
-                Division
-              </ButtonLink>
-            </span>
+            <ButtonLink href="/cod/ranked" size="lg">
+              <LuCrosshair aria-hidden className="h-5 w-5" />
+              Classé
+            </ButtonLink>
+            <ButtonLink href="/cod/division" size="lg" variant="outline">
+              <LuShield aria-hidden className="h-5 w-5" />
+              Division
+            </ButtonLink>
           </>
         }
       />
