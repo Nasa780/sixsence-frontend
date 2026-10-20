@@ -31,9 +31,13 @@ export function SectionHeading({ eyebrow, title, description = null, center = fa
  * En-tête des pages intérieures : grille tactique, faisceau doré, grand titre.
  * image : visuel de fond facultatif (ex. une image du jeu), assombri pour garder le texte lisible.
  */
+/** Image de fond des en-têtes COD : un visuel par mode (Classé, Division, Tournoi). */
+const MODE_IMAGES = { classe: "/images/modes/classe.webp", team: "/images/modes/division.jpg", tournoi: "/images/modes/tournoi.webp" };
+
 export function PageHeader({ eyebrow, title, description = null, actions = null, image = null }) {
   // Pages COD : sélecteur « Classé | Division | Tournoi » sous le titre.
   const codMode = codModeOf(useRouter().pathname);
+  const modeImage = image && MODE_IMAGES[codMode];
   return (
     <header
       className={cn(
@@ -43,7 +47,14 @@ export function PageHeader({ eyebrow, title, description = null, actions = null,
     >
       {image ? (
         <>
-          <Image src={image} alt="" fill priority sizes="100vw" className="-z-20 object-cover object-center opacity-55" />
+          {modeImage ? (
+            // Visuel du mode, calé à droite (le personnage reste visible à côté du titre) et fondu vers la gauche.
+            <div aria-hidden className="absolute inset-y-0 right-0 -z-20 w-full [mask-image:linear-gradient(to_right,transparent,black_35%)] lg:w-[72%]">
+              <Image src={modeImage} alt="" fill priority sizes="(min-width: 1024px) 72vw, 100vw" className="object-cover object-[50%_25%] opacity-70" />
+            </div>
+          ) : (
+            <Image src={image} alt="" fill priority sizes="100vw" className="-z-20 object-cover object-center opacity-55" />
+          )}
           {/* Voiles : sombre à gauche (texte), fondu vers la page en bas, lueur de la couleur d'accent. */}
           <div aria-hidden className="absolute inset-0 -z-10 bg-linear-to-r from-ink via-ink/75 to-ink/10" />
           <div aria-hidden className="absolute inset-0 -z-10 bg-linear-to-t from-ink via-transparent to-ink/40" />
