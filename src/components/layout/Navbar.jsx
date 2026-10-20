@@ -24,9 +24,9 @@ const LINKS = [
     label: "MW4",
     // Les trois sections COD (seulement si la Division est active).
     children: MATCH_TEAM_ENABLED && [
-      { href: "/cod/ranked", label: "Classé", hint: "Joueurs · 2v2 à 5v5" },
-      { href: "/cod/equipes", label: "Division", hint: "Équipes · BO3 4v4" },
-      { href: "/cod/tournoi", label: "Tournoi", hint: "Fin de saison · finale en BO5" },
+      { href: "/cod/ranked", label: "Classé", hint: "En solo 2vs2 à 5vs5" },
+      { href: "/cod/equipes", label: "Division", hint: "En équipe 4vs4" },
+      { href: "/cod/tournoi", label: "Tournoi", hint: "Fin de saison" },
     ],
   },
   { href: "/gta6", label: "GTA 6", univers: "gta" },
