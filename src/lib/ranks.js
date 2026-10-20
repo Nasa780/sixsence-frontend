@@ -49,7 +49,7 @@ export function nextRank(points = 0) {
  *              toute l'équipe ;
  *   défaite  : Bronze -15, Argent -20, Or -25, Platine -30, Diamant -35, -50 dès Maître
  *              (champ loss de chaque rang), ajustée de -30 % (équipe adverse plus forte) à +30 %
- *              (plus faible), réduite de 25 % pour un joueur seul ;
+ *              (plus faible) ;
  *   placement : pendant les 10 premiers matchs de la saison, victoires doublées (+80 à +120).
  * Les points en jeu de chaque joueur sont affichés avant le match (PointsAtStake).
  */
@@ -63,8 +63,6 @@ export const WIN_XP = 500;
 export const LOSS_XP = 150;
 export const PLACEMENT_MATCHES = 10;
 
-/** Réduction de la défaite pour un joueur seul (sans groupe), en %. */
-export const SOLO_LOSS_REDUCTION = 25;
 
 /** « Solo », « Duo », « Trio », « Groupe de 4 », « Équipe de 5 ». */
 export function groupLabel(size = 1) {

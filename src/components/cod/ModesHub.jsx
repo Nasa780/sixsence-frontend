@@ -27,7 +27,7 @@ const MODES = [
     icon: LuCrosshair,
     eyebrow: "Mode joueur",
     title: "Classé",
-    text: "Seul ou en groupe, du 2v2 au 5v5. Tes points, ton rang et ta place au classement des joueurs.",
+    text: "En solo, du 2v2 au 5v5. Tes points, ton rang et ta place au classement des joueurs.",
     facts: ["2v2 → 5v5", "Points individuels", "Rangs Bronze → Légende"],
     primary: { href: "/cod/ranked", label: "Jouer en classé" },
     links: [

@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { LegalPage } from "../components/ui/LegalPage";
 import { LEGAL } from "../lib/legal";
-import { LOSS_ADJUST, LOSS_XP, PLACEMENT_MATCHES, RANKS, SOLO_LOSS_REDUCTION, WIN_POINTS, WIN_POINTS_MAX, WIN_POINTS_MIN, WIN_XP } from "../lib/ranks";
+import { LOSS_ADJUST, LOSS_XP, PLACEMENT_MATCHES, RANKS, WIN_POINTS, WIN_POINTS_MAX, WIN_POINTS_MIN, WIN_XP } from "../lib/ranks";
 
 const SECTIONS = [
   {
@@ -24,13 +24,11 @@ const SECTIONS = [
     content: (
       <>
         <p>
-          Quatre files sont ouvertes : <strong>2v2</strong>, <strong>3v3</strong>, <strong>4v4</strong> et <strong>5v5</strong>. On y joue seul ou
-          en groupe, jusqu&apos;à la taille d&apos;une équipe (2 en 2v2, 3 en 3v3…). Un groupe
-          est toujours placé dans la même équipe ; seul son chef lance la recherche, et si un membre quitte la file ou le site, la recherche
-          du groupe est annulée.
+          Quatre files sont ouvertes : <strong>2v2</strong>, <strong>3v3</strong>, <strong>4v4</strong> et <strong>5v5</strong>. Le classé se joue
+          <strong>en solo</strong> : chacun rejoint la file seul.
         </p>
         <p>
-          Quand assez de joueurs sont en file, les premiers arrivés sont retenus, puis les équipes et la carte sont tirées au sort (un groupe reste toujours ensemble). Chaque joueur dispose alors de{" "}
+          Quand assez de joueurs sont en file, les premiers arrivés sont retenus, puis les équipes et la carte sont tirées au sort. Chaque joueur dispose alors de{" "}
           <strong>1 minute</strong> pour cliquer sur « Accepter le match ». Un son et une notification te préviennent.
         </p>
         <p>
@@ -41,8 +39,7 @@ const SECTIONS = [
         <p>
           Une recherche dure <strong>30 minutes</strong> au plus. 5 minutes avant la fin, le message « Toujours là ? » s&apos;affiche
           (et arrive en notification) : clique sur « Rester en file » pour repartir pour 30 minutes <strong>sans perdre ta place</strong>.
-          Sans réponse, la recherche s&apos;arrête et tu peux la relancer quand tu veux. Dans un groupe, n&apos;importe quel membre peut
-          répondre pour tout le groupe.
+          Sans réponse, la recherche s&apos;arrête et tu peux la relancer quand tu veux.
         </p>
         <p>
           Si un joueur n&apos;accepte pas à temps, le match est annulé. Ceux qui avaient accepté repartent{" "}
@@ -144,8 +141,7 @@ const SECTIONS = [
         <p>
           <strong>Défaite</strong> : plus tu montes, plus elle coûte cher (détail par rang ci-dessous), puis la perte est ajustée selon l&apos;équipe
           adverse : jusqu&apos;à {LOSS_ADJUST} % de moins contre une équipe plus forte, jusqu&apos;à {LOSS_ADJUST} % de plus contre une équipe plus faible.{" "}
-          <strong>Seul</strong>, tu perds{" "}
-          {SOLO_LOSS_REDUCTION} % de points en moins. Tu ne descends jamais en dessous de 0. Tu gagnes quand même +{LOSS_XP} XP.
+          Tu ne descends jamais en dessous de 0. Tu gagnes quand même +{LOSS_XP} XP.
         </p>
         <p>
           <strong>Placement</strong> : pendant tes {PLACEMENT_MATCHES} premiers matchs de la saison, chaque victoire compte double (

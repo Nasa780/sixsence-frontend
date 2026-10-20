@@ -18,7 +18,7 @@ import useUser from "../../hooks/useUser";
 import { supabase } from "../../lib/supabase";
 
 const SECTIONS = [
-  { href: "/cod/ranked", icon: LuCrosshair, title: "File classée", text: "Lance une recherche en 2v2, 3v3, 4v4 ou 5v5, seul ou avec ton groupe. Le match démarre dès que les équipes sont complètes." },
+  { href: "/cod/ranked", icon: LuCrosshair, title: "File classée", text: "Lance une recherche en 2v2, 3v3, 4v4 ou 5v5, en solo. Le match démarre dès que les équipes sont complètes." },
   { href: "/cod/leaderboard", icon: LuTrophy, title: "Classement", text: "Les meilleurs joueurs de la saison, mis à jour en direct après chaque match." },
   { href: "/cod/profile", icon: LuUser, title: "Mon profil", text: "Tes statistiques, ton rang, tes distinctions et ton historique de matchs." },
 ];
