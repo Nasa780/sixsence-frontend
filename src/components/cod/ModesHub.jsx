@@ -42,8 +42,9 @@ const MODES = [
     title: "Division",
     text: "Ton équipe jusqu'à 8 joueurs en BO3 4v4, le Leader choisit les 4 de chaque match. Les points de l'équipe et son classement en direct.",
     facts: ["BO3 4v4", "Points d'équipe", "Classement des équipes"],
-    primary: { href: "/cod/equipe", label: "Mon équipe" },
+    primary: { href: "/cod/division", label: "File Division" },
     links: [
+      { href: "/cod/equipe", label: "Mon équipe" },
       { href: "/cod/equipes", label: "Classement des équipes" },
     ],
   },
@@ -108,7 +109,7 @@ export function ModesHub() {
               <LuCrosshair aria-hidden className="h-5 w-5" />
               Classé
             </ButtonLink>
-            <ButtonLink href="/cod/equipes" size="lg" variant="outline">
+            <ButtonLink href="/cod/division" size="lg" variant="outline">
               <LuShield aria-hidden className="h-5 w-5" />
               Division
             </ButtonLink>
