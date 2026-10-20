@@ -171,6 +171,12 @@ export function PlayPanel({ team, isLeader }) {
 
   return (
     <TacticalCard highlight cut={24} innerClassName="p-6 sm:p-8">
+      {play.blockedUntil ? (
+        <Notice tone="error" className="mb-5">
+          Trop de forfaits ces derniers jours : l&apos;équipe ne peut pas lancer de recherche avant le{" "}
+          {new Date(play.blockedUntil).toLocaleString("fr-FR", { weekday: "long", hour: "2-digit", minute: "2-digit" })}.
+        </Notice>
+      ) : null}
       {play.expiredAt ? (
         <Notice tone="error" className="mb-5">
           Recherche arrêtée : personne n&apos;a répondu à « Toujours là ? ». Relance-la quand l&apos;équipe est prête.
@@ -220,7 +226,7 @@ export function PlayPanel({ team, isLeader }) {
             <p className="text-xs text-white/45">Maps 1 et 2 tirées au sort, map 3 choisie à 1-1 · 6 manches gagnantes par map · pas deux fois la même équipe en 2 h.</p>
             <Button
               size="lg"
-              disabled={pending || chosen.length !== size}
+              disabled={pending || chosen.length !== size || Boolean(play.blockedUntil)}
               onClick={() => {
                 unlockAudio();
                 askNotificationPermission();

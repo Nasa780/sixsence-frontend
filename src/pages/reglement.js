@@ -1,7 +1,143 @@
 import Link from "next/link";
 import { LegalPage } from "../components/ui/LegalPage";
+import { MATCH_TEAM_ENABLED } from "../lib/config";
 import { LEGAL } from "../lib/legal";
 import { LOSS_ADJUST, LOSS_XP, PLACEMENT_MATCHES, RANKS, WIN_POINTS, WIN_POINTS_MAX, WIN_POINTS_MIN, WIN_XP } from "../lib/ranks";
+
+/** Règles de la Division (matchs d'équipe) et du tournoi : affichées quand le mode est ouvert. */
+function DIVISION_SECTIONS() {
+  return [
+    {
+      id: "division-equipes",
+      title: "Division : équipes",
+      content: (
+        <ul>
+          <li>
+            Une équipe compte jusqu&apos;à <strong>8 joueurs</strong>. Pour créer ou rejoindre une équipe, il faut un compte Discord lié, un
+            identifiant Activision renseigné et aucune exclusion en cours. On ne fait partie que d&apos;une équipe à la fois.
+          </li>
+          <li>
+            Le créateur porte la <strong>couronne</strong> : il nomme les Leaders, renomme l&apos;équipe, la transmet ou la dissout. Les
+            Leaders invitent, acceptent les candidatures, lancent les matchs et peuvent exclure des joueurs.
+          </li>
+          <li>Après avoir quitté une équipe, il faut attendre 24 heures avant d&apos;en rejoindre une autre.</li>
+          <li>
+            <strong>Transferts verrouillés</strong> pendant la dernière semaine de la saison et pendant le tournoi : aucune arrivée, aucun
+            départ, aucune exclusion ni dissolution.
+          </li>
+          <li>Noms, tags, logos et bannières injurieux ou trompeurs sont interdits et peuvent être retirés par l&apos;équipe SixSence.</li>
+        </ul>
+      ),
+    },
+    {
+      id: "division-recherche",
+      title: "Division : recherche d'un match",
+      content: (
+        <ul>
+          <li>
+            Seul un <strong>Leader</strong> lance la recherche. Il choisit dans l&apos;effectif les <strong>4 joueurs du match</strong> (il
+            n&apos;y a ni titulaires ni remplaçants) ; chacun doit avoir son identifiant Activision et ne pas être dans la file ou un match
+            classé.
+          </li>
+          <li>L&apos;adversaire reste anonyme jusqu&apos;au match : impossible de choisir contre qui l&apos;on joue.</li>
+          <li>Deux équipes ne peuvent pas se rencontrer à nouveau moins de <strong>2 heures</strong> après leur dernier match.</li>
+          <li>
+            Une recherche dure <strong>30 minutes</strong> au plus. 5 minutes avant la fin, « Toujours là ? » s&apos;affiche : un Leader
+            clique sur « Continuer » pour repartir pour 30 minutes, sinon la recherche s&apos;arrête. Un son et une notification
+            préviennent quand le match est trouvé ou la recherche arrêtée.
+          </li>
+          <li>Changer l&apos;effectif pendant une recherche retire l&apos;équipe de la file.</li>
+        </ul>
+      ),
+    },
+    {
+      id: "division-match",
+      title: "Division : déroulement d'un match",
+      content: (
+        <ul>
+          <li>
+            Le match se joue en <strong>BO3</strong> (Recherche &amp; Destruction Hardcore), 6 manches gagnantes par map. Les maps 1 et 2 sont
+            tirées au sort ; à 1-1, la map 3 est choisie par l&apos;équipe qui a gagné le plus de manches (tirage au sort en cas
+            d&apos;égalité).
+          </li>
+          <li>
+            Une <strong>équipe hôte</strong> est tirée au sort. Elle crée la partie privée et donne son code dans le chat du match dans les{" "}
+            <strong>10 minutes</strong>.
+          </li>
+          <li>
+            Les deux équipes cliquent sur « Présents en jeu » dans les <strong>15 minutes</strong> suivant la création du match.
+          </li>
+          <li>Le chat du match est réservé aux joueurs du match, aux Leaders des deux équipes et aux arbitres.</li>
+        </ul>
+      ),
+    },
+    {
+      id: "division-forfait",
+      title: "Division : forfait",
+      content: (
+        <ul>
+          <li>
+            Si l&apos;équipe hôte n&apos;a rien écrit dans le chat au bout de 10 minutes, ou si une équipe n&apos;est pas « présente en jeu » au
+            bout de 15 minutes, l&apos;autre équipe peut <strong>déclarer forfait</strong>.
+          </li>
+          <li>
+            L&apos;équipe visée a <strong>15 minutes</strong> pour valider (défaite par forfait) ou contester. Sans réponse, ou en cas de
+            contestation, un arbitre SixSence tranche.
+          </li>
+          <li>Une victoire par forfait compte comme une victoire normale (points d&apos;équipe et XP).</li>
+          <li>
+            Une équipe qui perd <strong>plus de 3 matchs par forfait en 7 jours</strong> ne peut plus lancer de recherche pendant{" "}
+            <strong>24 heures</strong>. Il n&apos;y a pas d&apos;autre sanction.
+          </li>
+        </ul>
+      ),
+    },
+    {
+      id: "division-resultat",
+      title: "Division : scores, points et contestation",
+      content: (
+        <ul>
+          <li>
+            Les scores sont déclarés par un <strong>joueur du match</strong> ou un Leader : maps 1 et 2 ensemble, puis la map 3 si besoin.
+            L&apos;équipe adverse confirme ou conteste ; sans réponse sous 15 minutes, les scores sont validés automatiquement.
+          </li>
+          <li>
+            En cas de contestation, ajoute une capture du tableau des scores sur la feuille de match (5 par joueur du match) : un arbitre
+            tranche. Un match sans résultat au bout de 3 heures est annulé.
+          </li>
+          <li>
+            <strong>Points d&apos;équipe</strong> : +20 à +30 en victoire, -20 à -30 en défaite selon le niveau de l&apos;adversaire (+25 / -25 à
+            niveau égal). Ce que gagne une équipe, l&apos;autre le perd. Chaque équipe démarre la saison à 1 000 points.
+          </li>
+          <li>
+            <strong>XP</strong> : comme en classé, +{WIN_XP} XP par victoire et +{LOSS_XP} XP par défaite, pour les joueurs du match
+            seulement. Les points du classé ne changent pas.
+          </li>
+        </ul>
+      ),
+    },
+    {
+      id: "tournoi",
+      title: "Tournoi de fin de saison",
+      content: (
+        <ul>
+          <li>
+            Les meilleures équipes du classement de la Division sont qualifiées ; leur effectif est figé jusqu&apos;à la fin du tournoi.
+          </li>
+          <li>
+            Un Leader fait le <strong>check-in</strong> dans les 30 minutes avant le début et choisit les joueurs parmi l&apos;effectif
+            inscrit ; sans check-in, l&apos;équipe est déclarée forfait.
+          </li>
+          <li>
+            Les matchs suivent le même déroulé que la Division (hôte, chat, présence, forfait) : BO3, finale en BO5, sans points
+            d&apos;équipe en jeu.
+          </li>
+          <li>Le vainqueur reçoit un trophée sur sa fiche d&apos;équipe et un rôle Discord.</li>
+        </ul>
+      ),
+    },
+  ];
+}
 
 const SECTIONS = [
   {
@@ -81,7 +217,7 @@ const SECTIONS = [
           Hardcore sur la carte tirée au sort, puis invite les autres joueurs grâce à leurs identifiants Activision affichés dans le salon
           de match.
         </li>
-        <li>Les équipes tirées au sort doivent être respectées ; aucun remplaçant n&apos;est autorisé.</li>
+        <li>Les équipes tirées au sort doivent être respectées : personne ne peut prendre la place d&apos;un joueur du match.</li>
         <li>Le chat du salon et, s&apos;il est actif, le salon vocal Discord servent à s&apos;organiser.</li>
       </ul>
     ),
@@ -174,6 +310,7 @@ const SECTIONS = [
       </p>
     ),
   },
+  ...(MATCH_TEAM_ENABLED ? DIVISION_SECTIONS() : []),
   {
     id: "evenements",
     title: "Événements GTA 6",
@@ -192,7 +329,7 @@ export default function RulesPage() {
     <LegalPage
       eyebrow="Fair-play"
       title="Règlement"
-      description="Les règles du classé SixSence : file d'attente, sanctions, déroulement des matchs, points et saisons."
+      description={MATCH_TEAM_ENABLED ? "Les règles de SixSence : classé, Division, tournoi, sanctions, points et saisons." : "Les règles du classé SixSence : file d'attente, sanctions, déroulement des matchs, points et saisons."}
       updated={LEGAL.updated}
       sections={SECTIONS}
     />

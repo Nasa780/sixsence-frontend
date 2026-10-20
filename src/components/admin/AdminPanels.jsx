@@ -366,16 +366,26 @@ export function PlayersPanel({ currentUserId }) {
 
 // --- Saison ----------------------------------------------------------------------
 
+/** Date ISO → valeur d'un champ datetime-local (heure locale). */
+const toLocalInput = (iso) => {
+  if (!iso) return "";
+  const date = new Date(iso);
+  return new Date(date.getTime() - date.getTimezoneOffset() * 60000).toISOString().slice(0, 16);
+};
+
 export function SeasonPanel() {
   const [overview, setOverview] = useState(null);
   const [nextName, setNextName] = useState("");
   const [result, setResult] = useState(null);
+  const [endsAt, setEndsAt] = useState("");
+  const [endSaved, setEndSaved] = useState(false);
   const { pending, error, run } = useAction();
 
   useEffect(() => {
     api("/admin/overview")
       .then((data) => {
         setOverview(data);
+        setEndsAt(toLocalInput(data.season?.ends_at));
         const number = Number(/(\d+)$/.exec(data.season?.name ?? "")?.[1]);
         setNextName(Number.isFinite(number) && number > 0 ? `Saison ${number + 1}` : "");
       })
@@ -389,9 +399,52 @@ export function SeasonPanel() {
     if (data) setResult(data.archived);
   }
 
+  async function saveEnd(value) {
+    setEndSaved(false);
+    const data = await run("end", () => api("/admin/season/end-date", { method: "POST", body: { endsAt: value ? new Date(value).toISOString() : null } }));
+    if (data) {
+      setOverview((current) => ({ ...current, season: data.season }));
+      setEndsAt(toLocalInput(data.season?.ends_at));
+      setEndSaved(true);
+    }
+  }
+
   if (!overview) return <Loading />;
   return (
     <div className="max-w-2xl space-y-5">
+      <form
+        onSubmit={(event) => {
+          event.preventDefault();
+          saveEnd(endsAt);
+        }}
+        className="space-y-3 border-b border-white/10 pb-6"
+      >
+        <label htmlFor="fin-saison" className="block font-tech text-[10px] uppercase tracking-[0.24em] text-white/50">
+          Fin prévue de la saison
+        </label>
+        <div className="flex flex-col gap-3 sm:flex-row">
+          <input
+            id="fin-saison"
+            type="datetime-local"
+            value={endsAt}
+            onChange={(event) => setEndsAt(event.target.value)}
+            className="flex-1 border border-white/12 bg-ink px-3 py-2.5 text-sm text-white focus:border-gold focus:outline-none"
+          />
+          <Button type="submit" variant="outline" disabled={pending !== null || !endsAt}>
+            {pending === "end" ? <LuLoaderCircle aria-hidden className="h-5 w-5 animate-spin" /> : null}
+            Enregistrer
+          </Button>
+          {overview.season?.ends_at ? (
+            <Button type="button" variant="ghost" disabled={pending !== null} onClick={() => saveEnd(null)}>
+              Effacer
+            </Button>
+          ) : null}
+        </div>
+        <p className="text-xs text-white/45">
+          Purement indicatif pour la clôture (elle reste manuelle).{MATCH_TEAM_ENABLED ? " Les transferts d'équipe sont verrouillés pendant les 7 derniers jours." : null}
+        </p>
+        {endSaved ? <Notice tone="success">Date de fin enregistrée.</Notice> : null}
+      </form>
       <p className="text-sm leading-relaxed text-white/60">
         Clôturer la saison <strong className="text-white">{overview.season?.name ?? "en cours"}</strong> : le classement final est archivé
         (consultable sur la page Classement), le premier reçoit le badge Champion et les dix premiers le badge Top 10, puis les points,
