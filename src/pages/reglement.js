@@ -56,9 +56,8 @@ function DIVISION_SECTIONS() {
       content: (
         <ul>
           <li>
-            Le match se joue en <strong>BO3</strong> (Recherche &amp; Destruction Hardcore), 6 manches gagnantes par map. Les maps 1 et 2 sont
-            tirées au sort ; à 1-1, la map 3 est choisie par l&apos;équipe qui a gagné le plus de manches (tirage au sort en cas
-            d&apos;égalité).
+            Le match se joue en <strong>BO3</strong> (Recherche &amp; Destruction Hardcore), 6 manches gagnantes par map. Les 3 maps sont
+            tirées au sort à la création du match et affichées tout de suite ; la map 3 n&apos;est jouée qu&apos;à 1-1.
           </li>
           <li>
             Une <strong>équipe hôte</strong> est tirée au sort. Elle crée la partie privée et donne son code dans le champ « Code de la partie » de la feuille de match (modifiable en cas d&apos;erreur) dans les{" "}
@@ -98,8 +97,8 @@ function DIVISION_SECTIONS() {
       content: (
         <ul>
           <li>
-            Les scores sont déclarés par un <strong>joueur du match</strong> ou un Leader : maps 1 et 2 ensemble, puis la map 3 si besoin.
-            L&apos;équipe adverse confirme ou conteste ; sans réponse sous 15 minutes, les scores sont validés automatiquement.
+            À la fin de la série, un <strong>joueur du match</strong> ou un Leader déclare <strong>en une seule fois</strong> le score de chaque
+            map jouée. L&apos;équipe adverse confirme ou conteste une seule fois ; sans réponse sous 15 minutes, les scores sont validés automatiquement.
           </li>
           <li>
             En cas de contestation, ajoute une capture du tableau des scores sur la feuille de match (5 par joueur du match) : un arbitre

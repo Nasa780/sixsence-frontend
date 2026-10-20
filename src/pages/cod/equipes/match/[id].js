@@ -109,7 +109,7 @@ export default function TeamMatchPage() {
         </div>
 
         {match.status === "in_progress" && match.scores.length === match.bestOf - 1 && match.map3Picker ? <Map3Block match={match} name={name} onDone={load} /> : null}
-        {match.viewer?.canReport ? <ReportForm key={match.scores.length} match={match} onDone={load} /> : null}
+        {match.viewer?.canReport ? <ReportForm key={`${match.scores.length}-${match.reportedAt ?? ""}`} match={match} onDone={load} /> : null}
         {match.viewer?.canConfirm ? <ConfirmBlock match={match} name={name} onDone={load} /> : null}
         {match.viewer?.canResolve ? <ResolveForm match={match} onDone={load} /> : null}
         {match.viewer?.canCorrect ? <CorrectionForm key={match.correctedAt ?? "initial"} match={match} onDone={load} /> : null}
@@ -247,7 +247,7 @@ function MapCard({ index, match, name }) {
             <span className={score[1] > score[0] ? "text-white" : "text-white/45"}>{score[1]}</span>
           </div>
         ) : (
-          <p className="mt-6 text-sm text-white/40">{map ? "Score pas encore déclaré" : decider ? (match.scores.length === match.bestOf - 1 && !decided ? "Choix de la map en cours" : `Jouée seulement à ${match.bestOf === 5 ? "2 – 2" : "1 – 1"}`) : ""}</p>
+          <p className="mt-6 text-sm text-white/40">{map && decider && !decided ? `Jouée seulement à ${match.bestOf === 5 ? "2 – 2" : "1 – 1"}` : map ? "Score pas encore déclaré" : decider ? (match.scores.length === match.bestOf - 1 && !decided ? "Choix de la map en cours" : `Jouée seulement à ${match.bestOf === 5 ? "2 – 2" : "1 – 1"}`) : ""}</p>
         )}
       </div>
     </TacticalCard>
@@ -367,19 +367,35 @@ function MapScoreInput({ label, teamA, teamB, value, onChange }) {
   );
 }
 
+/**
+ * Déclaration unique, à la fin : toute la série d'un coup (BO3 : 2 maps, ou 3 à 1-1). Les maps suivantes
+ * n'apparaissent que si la série n'est pas encore gagnée. L'équipe adverse confirme une seule fois.
+ */
 function ReportForm({ match, onDone }) {
-  const first = match.scores.length === 0;
+  const start = match.scores.length;
   const need = Math.ceil(match.bestOf / 2);
-  const [scores, setScores] = useState(Array.from({ length: first ? need : 1 }, () => null));
+  const [scores, setScores] = useState(() => Array.from({ length: match.bestOf - start }, () => null));
   const [confirming, setConfirming] = useState(false);
   const [pending, setPending] = useState(false);
   const [error, setError] = useState(null);
+
+  // Maps à saisir : on s'arrête dès qu'une équipe a gagné la série.
+  const visible = [];
+  for (let i = 0; i < scores.length; i += 1) {
+    visible.push(i);
+    const all = [...match.scores, ...scores.slice(0, i + 1)];
+    if (scores[i] === null) break;
+    if (mapsWon(all, "A") >= need || mapsWon(all, "B") >= need) break;
+  }
+  const declared = scores.slice(0, visible.length);
+  const all = [...match.scores, ...declared];
+  const complete = declared.every(Boolean) && (mapsWon(all, "A") >= need || mapsWon(all, "B") >= need);
 
   async function submit() {
     setPending(true);
     setError(null);
     try {
-      await api(`/teams/matches/${match.id}/report`, { method: "POST", body: { scores } });
+      await api(`/teams/matches/${match.id}/report`, { method: "POST", body: { scores: declared } });
       setConfirming(false);
       await onDone();
     } catch (caught) {
@@ -392,30 +408,31 @@ function ReportForm({ match, onDone }) {
 
   return (
     <TacticalCard highlight innerClassName="space-y-4 p-6">
-      <Eyebrow>{first ? `Déclarer les maps 1 à ${need}` : match.scores.length === match.bestOf - 1 ? "Déclarer la map décisive" : `Déclarer la map ${match.scores.length + 1}`}</Eyebrow>
-      <div className={cn("grid gap-3", first && "md:grid-cols-2", first && need === 3 && "lg:grid-cols-3")}>
-        {scores.map((value, i) => (
+      <Eyebrow>Déclarer le résultat</Eyebrow>
+      <p className="text-sm text-white/55">À la fin de la série, saisis le score de chaque map jouée ; la map décisive n&apos;apparaît qu&apos;à égalité.</p>
+      <div className={cn("grid gap-3 md:grid-cols-2", match.bestOf === 3 && "lg:grid-cols-3")}>
+        {visible.map((i) => (
           <MapScoreInput
             key={i}
-            label={match.maps[match.scores.length + i]?.map ?? `Map ${match.scores.length + i + 1}`}
+            label={`Map ${start + i + 1} · ${match.maps[start + i]?.map ?? "?"}`}
             teamA={match.teamA}
             teamB={match.teamB}
-            value={value}
-            onChange={(next) => setScores((current) => current.map((v, j) => (j === i ? next : v)))}
+            value={scores[i]}
+            onChange={(next) => setScores((current) => current.map((v, j) => (j === i ? next : j > i ? null : v)))}
           />
         ))}
       </div>
       {error ? <Notice tone="error">{error}</Notice> : null}
       <div className="flex flex-wrap items-center justify-between gap-3">
-        <p className="text-xs text-white/45">L'équipe adverse devra confirmer. Ajoute une capture du tableau des scores plus bas en cas de doute.</p>
-        <Button disabled={scores.some((v) => !v) || pending} onClick={() => setConfirming(true)}>
-          Déclarer
+        <p className="text-xs text-white/45">L&apos;équipe adverse devra confirmer. Ajoute une capture du tableau des scores plus bas en cas de doute.</p>
+        <Button disabled={!complete || pending} onClick={() => setConfirming(true)}>
+          Déclarer le résultat
         </Button>
       </div>
-      <ConfirmDialog open={confirming} onClose={() => setConfirming(false)} title="Déclarer ces scores ?" confirmLabel="Déclarer" pending={pending} onConfirm={submit}>
-        {scores.filter(Boolean).map((v, i) => (
+      <ConfirmDialog open={confirming} onClose={() => setConfirming(false)} title="Déclarer ce résultat ?" confirmLabel="Déclarer" pending={pending} onConfirm={submit}>
+        {declared.filter(Boolean).map((v, i) => (
           <p key={i}>
-            {match.maps[match.scores.length + i]?.map} : [{match.teamA?.tag}] {v[0]} – {v[1]} [{match.teamB?.tag}]
+            {match.maps[start + i]?.map} : [{match.teamA?.tag}] {v[0]} – {v[1]} [{match.teamB?.tag}]
           </p>
         ))}
       </ConfirmDialog>
