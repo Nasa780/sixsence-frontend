@@ -184,20 +184,24 @@ export function ProfileView({ userId, editable = false, ownUser = null }) {
           <div className="flex items-center gap-5">
             <Avatar src={player.avatar_url} name={player.username} size={96} className="[--cut:18px]" ring={rankGradient(rankFor(profile.points), 160)} />
             <div className="min-w-0">
-              <h2 className="truncate font-display text-5xl font-black uppercase leading-[0.9] sm:text-6xl">{player.username}</h2>
+              <div className="flex min-w-0 items-baseline gap-3">
+                <h2 className="truncate font-display text-5xl font-black uppercase leading-[0.9] sm:text-6xl">{player.username}</h2>
+                {/* Équipe : seulement son tag, à côté du pseudo, dans la couleur de l'équipe (lien vers sa fiche). */}
+                {team ? (
+                  <Link
+                    href={`/cod/equipes/${team.id}`}
+                    title={team.name}
+                    className="shrink-0 font-tech text-xl font-bold normal-case tracking-[0.12em] transition-opacity hover:opacity-80 sm:text-2xl"
+                    style={{ color: team.color, textShadow: `0 0 12px ${team.color}66` }}
+                  >
+                    [{team.tag}]
+                  </Link>
+                ) : null}
+              </div>
               <p className="mt-2 text-sm text-white/55">
                 {profile.activision_id ?? "Identifiant Activision non renseigné"}
                 {profile.platform ? ` · ${PLATFORM_LABEL[profile.platform] ?? profile.platform}` : ""}
               </p>
-              {team ? (
-                <Link href={`/cod/equipes/${team.id}`} className="mt-3 flex w-fit items-center gap-2 text-sm font-semibold text-white/80 transition-colors hover:text-gold">
-                  <TeamCrest team={team} size={24} />
-                  <span className="font-tech text-xs tracking-[0.16em]" style={{ color: team.color }}>
-                    <span className="normal-case">[{team.tag}]</span>
-                  </span>
-                  {team.name}
-                </Link>
-              ) : null}
               <RankBadge points={profile.points} showProgress className="mt-4" />
               <div className="mt-4 flex flex-wrap items-center gap-x-5 gap-y-2">
                 <button
