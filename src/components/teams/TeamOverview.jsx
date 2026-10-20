@@ -169,7 +169,7 @@ function HeroStat({ label, value, gold = false }) {
 }
 
 /** Objectifs : équipe à dépasser, qualification au tournoi, effectif complet. */
-export function TeamGoals({ team, insights }) {
+export function TeamGoals({ team, insights, compact = false }) {
   const { ahead } = insights;
   const goals = [];
   if (team.position === 1) {
@@ -205,7 +205,7 @@ export function TeamGoals({ team, insights }) {
       <h2 id="titre-objectifs" className="mt-3 font-display text-4xl font-black uppercase leading-none">
         Prochaines étapes
       </h2>
-      <ul className="mt-6 grid gap-3 md:grid-cols-3">
+      <ul className={cn("mt-6 grid gap-3", !compact && "md:grid-cols-3")}>
         {goals.map((goal) => {
           const Icon = goal.icon;
           return (
@@ -508,4 +508,110 @@ export function memberBadges(team, insights, member) {
   if (!member.crown && (days >= 30 || stats.played >= 20)) badges.push("Vétéran");
   if (!member.crown && days < 7) badges.push("Recrue");
   return badges;
+}
+
+/**
+ * Frise des matchs de l'équipe (du plus ancien au plus récent, 30 derniers) : un losange par match,
+ * vert pour une victoire, rouge pour une défaite, d'autant plus gros que l'écart de points est grand ;
+ * les séries de victoires sont reliées. Survol : adversaire, score, points ; clic : feuille de match.
+ */
+export function TeamMatchTimeline({ insights }) {
+  const [hover, setHover] = useState(null);
+  const matches = (insights.history ?? []).filter((match) => match.status === "completed").slice(0, 30).reverse();
+  if (matches.length === 0) return null;
+  const width = 1000;
+  const height = 120;
+  const mid = 60;
+  const pad = 30;
+  const step = matches.length > 1 ? (width - pad * 2) / (matches.length - 1) : 0;
+  const x = (index) => (matches.length > 1 ? pad + index * step : width / 2);
+  const size = (match) => 12 + Math.min(18, Math.abs(match.points ?? 25) * 0.45);
+  const wins = matches.filter((match) => match.won).length;
+  const total = matches.reduce((sum, match) => sum + (typeof match.points === "number" ? match.points : 0), 0);
+  const active = hover === null ? null : matches[hover];
+
+  return (
+    <section aria-labelledby="titre-frise">
+      <div className="flex flex-wrap items-end justify-between gap-4">
+        <div>
+          <Eyebrow>Saison</Eyebrow>
+          <h2 id="titre-frise" className="mt-3 font-display text-4xl font-black uppercase leading-none">
+            Fil des matchs
+          </h2>
+        </div>
+        <p className="flex flex-wrap items-center gap-x-5 gap-y-1 text-xs text-white/60">
+          <span className="inline-flex items-center gap-1.5">
+            <span aria-hidden className="h-2.5 w-2.5 rotate-45 bg-win" />
+            Victoire
+          </span>
+          <span className="inline-flex items-center gap-1.5">
+            <span aria-hidden className="h-2.5 w-2.5 rotate-45 bg-loss" />
+            Défaite
+          </span>
+          <span className="inline-flex items-center gap-1.5">
+            <span aria-hidden className="h-[3px] w-4 bg-win" />
+            Série
+          </span>
+          <span className="font-tech tabular-nums text-white/80">
+            {wins} V · {matches.length - wins} D · {total > 0 ? "+" : ""}
+            {total} pts
+          </span>
+        </p>
+      </div>
+
+      <TacticalCard className="mt-6" innerClassName="relative px-3 pb-3 pt-4 sm:px-5">
+        <svg viewBox={`0 0 ${width} ${height}`} className="h-32 w-full overflow-visible" role="img" aria-label={`${matches.length} derniers matchs : ${wins} victoires, ${matches.length - wins} défaites`}>
+          <line x1={pad / 2} y1={mid} x2={width - pad / 2} y2={mid} stroke="rgb(255 255 255 / 0.12)" strokeWidth="2" />
+          {matches.map((match, index) =>
+            index > 0 && match.won && matches[index - 1].won ? (
+              <line key={`serie-${match.id}`} x1={x(index - 1)} y1={mid} x2={x(index)} y2={mid} stroke="var(--color-win)" strokeWidth="4" strokeLinecap="round" />
+            ) : null,
+          )}
+          {matches.map((match, index) => {
+            const s = size(match);
+            return (
+              <a key={match.id} href={`/cod/equipes/match/${match.id}`} onMouseEnter={() => setHover(index)} onMouseLeave={() => setHover(null)} onFocus={() => setHover(index)} onBlur={() => setHover(null)}>
+                <circle cx={x(index)} cy={mid} r={Math.max(16, s)} fill="transparent" />
+                <rect
+                  x={x(index) - s / 2}
+                  y={mid - s / 2}
+                  width={s}
+                  height={s}
+                  rx="2"
+                  transform={`rotate(45 ${x(index)} ${mid})`}
+                  fill={match.won ? "var(--color-win)" : "var(--color-loss)"}
+                  stroke="var(--color-ink-800)"
+                  strokeWidth="2"
+                  opacity={hover === null || hover === index ? 1 : 0.35}
+                  className="transition-opacity"
+                >
+                  <title>{`${match.won ? "Victoire" : "Défaite"} contre ${match.opponent?.name ?? "?"}`}</title>
+                </rect>
+              </a>
+            );
+          })}
+        </svg>
+        <div className="mt-1 flex justify-between font-tech text-[10px] uppercase tracking-[0.2em] text-white/35">
+          <span>{new Date(matches[0].date).toLocaleDateString("fr-FR", { day: "numeric", month: "short" })}</span>
+          <span>Aujourd&apos;hui</span>
+        </div>
+        {active ? (
+          <div
+            className="pointer-events-none absolute top-1 z-10 -translate-x-1/2 border border-white/15 bg-ink/95 px-3 py-2 text-xs shadow-lg"
+            style={{ left: `${(x(hover) / width) * 100}%` }}
+          >
+            <p className="font-display text-sm font-bold uppercase leading-none">
+              <span className={active.won ? "text-win" : "text-loss"}>{active.won ? "Victoire" : "Défaite"}</span> vs {active.opponent?.name ?? "?"}
+            </p>
+            <p className="mt-1 font-tech tabular-nums text-white/60">
+              {active.forfeit ? "par forfait" : `${active.mapsFor}-${active.mapsAgainst}`}
+              {typeof active.points === "number" ? ` · ${active.points > 0 ? "+" : ""}${active.points} pts` : ""}
+              {" · "}
+              {new Date(active.date).toLocaleDateString("fr-FR", { day: "numeric", month: "short" })}
+            </p>
+          </div>
+        ) : null}
+      </TacticalCard>
+    </section>
+  );
 }

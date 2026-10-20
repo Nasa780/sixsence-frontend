@@ -3,7 +3,7 @@ import Link from "next/link";
 import { useRouter } from "next/router";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { LuCheck, LuCrown, LuExternalLink, LuImagePlus, LuLoaderCircle, LuPlus, LuSearch, LuUserPlus, LuX } from "react-icons/lu";
-import { TeamActivity, TeamGoals, TeamHero, TeamRecent, TeamRecords, TeamRival, TeamStandouts, TeamWeekly, memberBadges, memberLine, useTeamInsights } from "../../components/teams/TeamOverview";
+import { TeamActivity, TeamGoals, TeamHero, TeamMatchTimeline, TeamRecent, TeamRecords, TeamRival, TeamStandouts, TeamWeekly, memberBadges, memberLine, useTeamInsights } from "../../components/teams/TeamOverview";
 import { TeamStats } from "../../components/teams/TeamStats";
 import { MemberRow, RosterHeading, SlantTab, TeamCrest, fieldClass, labelClass } from "../../components/teams/TeamParts";
 import { Avatar } from "../../components/ui/Avatar";
@@ -291,45 +291,46 @@ function ManageTeam({ state, userId, reload, created, onLeft }) {
       ) : null}
 
       {tab === "equipe" ? (
-        <div className="space-y-14">
-          <TeamGoals team={team} insights={insights} />
+        <div className="space-y-16">
+          {/* 1. Statistiques, puis la frise des matchs : l'état de l'équipe d'un coup d'œil. */}
+          <TeamStats teamId={team.id} />
+          <TeamMatchTimeline insights={insights} />
+
+          {/* 2. Derniers matchs ; à droite, la semaine, le rival et les records. */}
           <div className="grid gap-10 lg:grid-cols-[minmax(0,1fr)_22rem]">
-            <div className="space-y-14">
-              <TeamRecent insights={insights} />
-              <TeamActivity team={team} insights={insights} />
-            </div>
+            <TeamRecent insights={insights} />
             <aside className="space-y-4">
               <TeamWeekly insights={insights} />
               <TeamRival insights={insights} />
               <TeamRecords insights={insights} />
             </aside>
           </div>
-          <TeamStandouts team={team} insights={insights} />
-          <TeamStats teamId={team.id} />
-        </div>
-      ) : null}
-      {tab === "equipe" ? (
-        <div className="grid gap-10 lg:grid-cols-[2fr_1fr]">
-          <section aria-label="Effectif">
-            <RosterHeading title="Effectif" count={team.members.length} max={TEAM_LIMITS.maxMembers} gold />
-            <ul className="mt-3 space-y-2">
-              {team.members.map((member) => (
-                <MemberRow key={member.id} member={member} isMe={member.id === userId}>
-                  <span className="flex w-full flex-wrap items-center gap-1.5 sm:w-auto sm:justify-end">
-                    {memberBadges(team, insights, member).map((badge) => (
-                      <span key={badge} className="clip-slant bg-gold/15 px-2 py-0.5 font-display text-[11px] font-bold uppercase tracking-wide text-gold">
-                        {badge}
-                      </span>
-                    ))}
-                    <span className="font-tech text-[10px] uppercase tracking-[0.18em] text-white/40">{memberLine(insights, member.id)}</span>
-                  </span>
-                  {controls(member)}
-                </MemberRow>
-              ))}
-            </ul>
-            <p className="mt-4 text-xs text-white/45">Pas de titulaires : à chaque match, le Leader qui lance la recherche choisit les joueurs parmi l&apos;effectif.</p>
-          </section>
-          <aside className="space-y-6">
+
+          {/* 3. Effectif et joueurs clés regroupés : qui joue, qui brille, les rôles. */}
+          <div className="grid gap-10 lg:grid-cols-[2fr_1fr]">
+            <section aria-label="Effectif" className="space-y-10">
+              <div>
+              <RosterHeading title="Effectif" count={team.members.length} max={TEAM_LIMITS.maxMembers} gold />
+              <ul className="mt-3 space-y-2">
+                {team.members.map((member) => (
+                  <MemberRow key={member.id} member={member} isMe={member.id === userId}>
+                    <span className="flex w-full flex-wrap items-center gap-1.5 sm:w-auto sm:justify-end">
+                      {memberBadges(team, insights, member).map((badge) => (
+                        <span key={badge} className="clip-slant bg-gold/15 px-2 py-0.5 font-display text-[11px] font-bold uppercase tracking-wide text-gold">
+                          {badge}
+                        </span>
+                      ))}
+                      <span className="font-tech text-[10px] uppercase tracking-[0.18em] text-white/40">{memberLine(insights, member.id)}</span>
+                    </span>
+                    {controls(member)}
+                  </MemberRow>
+                ))}
+              </ul>
+              <p className="mt-4 text-xs text-white/45">Pas de titulaires : à chaque match, le Leader qui lance la recherche choisit les joueurs parmi l&apos;effectif.</p>
+              </div>
+              <TeamStandouts team={team} insights={insights} />
+            </section>
+            <aside className="space-y-6">
             <TacticalCard innerClassName="space-y-3 p-6">
               <Eyebrow>Mon rôle</Eyebrow>
               <p className="flex items-center gap-2 font-display text-2xl font-black uppercase leading-none">
@@ -344,6 +345,17 @@ function ManageTeam({ state, userId, reload, created, onLeft }) {
                     : "Les Leaders gèrent l'effectif et les invitations."}
               </p>
             </TacticalCard>
+            </aside>
+          </div>
+
+          {/* 4. Objectifs et journal d'activité. */}
+          <div className="grid gap-10 lg:grid-cols-2">
+            <TeamGoals team={team} insights={insights} compact />
+            <TeamActivity team={team} insights={insights} />
+          </div>
+
+          {/* 5. Zone sensible, tout en bas. */}
+          <div className="max-w-md">
             <TacticalCard innerClassName="space-y-3 p-6">
               <Eyebrow>Zone sensible</Eyebrow>
               {me.crown && others.length > 0 ? (
@@ -364,7 +376,7 @@ function ManageTeam({ state, userId, reload, created, onLeft }) {
               ) : null}
               <p className="text-xs text-white/45">Après un départ, il faut attendre {24} h avant de rejoindre une autre équipe.</p>
             </TacticalCard>
-          </aside>
+          </div>
         </div>
       ) : null}
 
