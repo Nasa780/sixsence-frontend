@@ -49,7 +49,7 @@ export function RoleChip({ member }) {
   }
   return (
     <Chip tone="neutral" className="shrink-0">
-      {member.starter ? "Joueur" : "Remplaçant"}
+      Joueur
     </Chip>
   );
 }
@@ -80,7 +80,7 @@ export function MemberRow({ member, children = null, isMe = false }) {
   );
 }
 
-/** En-tête d'un bloc d'effectif (« Titulaires 4 / 4 »). */
+/** En-tête d'un bloc d'effectif (« Effectif 6 / 8 »). */
 export function RosterHeading({ title, count, max, gold = false, className = "" }) {
   return (
     <header className={cn("flex items-end justify-between border-b-2 pb-3", gold ? "border-gold" : "border-white/70", className)}>

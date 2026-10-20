@@ -208,7 +208,7 @@ function CheckInPanel({ tournament, open, onDone }) {
       ) : viewer.isLeader ? (
         <>
           <p className="text-sm text-white/55">
-            Choisis tes {viewer.rosterSize} titulaires parmi l&apos;effectif inscrit au tournoi ({roster.length} / {viewer.rosterSize}). Tu peux les changer jusqu&apos;au début.
+            Choisis tes {viewer.rosterSize} joueurs parmi l&apos;effectif inscrit au tournoi ({roster.length} / {viewer.rosterSize}). Tu peux les changer jusqu&apos;au début.
           </p>
           <ul className="grid gap-2 sm:grid-cols-2">
             {viewer.frozenRoster.map((player) => {
@@ -223,7 +223,7 @@ function CheckInPanel({ tournament, open, onDone }) {
                   >
                     <Avatar src={player.avatarUrl} name={player.username} size={32} />
                     <span className="min-w-0 flex-1 truncate font-display text-lg font-bold uppercase leading-none">{player.username}</span>
-                    {selected ? <Chip>Titulaire</Chip> : null}
+                    {selected ? <Chip>Joue</Chip> : null}
                   </button>
                 </li>
               );
@@ -232,7 +232,7 @@ function CheckInPanel({ tournament, open, onDone }) {
           {error ? <Notice tone="error">{error}</Notice> : null}
           <Button disabled={pending || roster.length !== viewer.rosterSize} onClick={submit}>
             {pending ? <LuLoaderCircle aria-hidden className="h-5 w-5 animate-spin" /> : <LuCheck aria-hidden className="h-5 w-5" />}
-            {viewer.checkedIn ? "Mettre à jour les titulaires" : "Valider le check-in"}
+            {viewer.checkedIn ? "Mettre à jour les joueurs" : "Valider le check-in"}
           </Button>
         </>
       ) : (

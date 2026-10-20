@@ -76,7 +76,7 @@ export default function TeamsPage() {
             Classement <span className="text-gold-gradient">équipes</span>
           </>
         }
-        description={`Équipes de 4 titulaires et 4 remplaçants, BO3 en 4v4. Le top ${QUALIFIED_SPOTS} (${TEAM_LIMITS.qualifyMatches} matchs minimum) dispute le tournoi de fin de saison.`}
+        description={`Équipes jusqu'à 8 joueurs, BO3 en 4v4. Le top ${QUALIFIED_SPOTS} (${TEAM_LIMITS.qualifyMatches} matchs minimum) dispute le tournoi de fin de saison.`}
         actions={
           <>
             <ButtonLink href="/cod/tournoi" variant="outline" size="lg">
