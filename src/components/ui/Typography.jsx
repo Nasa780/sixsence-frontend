@@ -1,6 +1,6 @@
 import Image from "next/image";
 import { useRouter } from "next/router";
-import { COD_MODES, CodModeNav, codModeOf } from "../cod/CodModeNav";
+import { CodModeNav, codModeOf } from "../cod/CodModeNav";
 import { cn } from "../../lib/cn";
 import { Container } from "./Container";
 
@@ -34,8 +34,6 @@ export function SectionHeading({ eyebrow, title, description = null, center = fa
 export function PageHeader({ eyebrow, title, description = null, actions = null, image = null }) {
   // Pages COD : sélecteur « Classé | Division | Tournoi » sous le titre.
   const codMode = codModeOf(useRouter().pathname);
-  const mode = COD_MODES.find((item) => item.key === codMode) ?? null;
-  const ModeIcon = mode?.icon ?? null;
   return (
     <header
       className={cn(
@@ -58,26 +56,9 @@ export function PageHeader({ eyebrow, title, description = null, actions = null,
         className="absolute -top-10 right-[8%] -z-10 h-[140%] w-40 -skew-x-[24deg] bg-linear-to-b from-gold/20 via-gold/5 to-transparent sm:w-64"
       />
       <div aria-hidden className="absolute -top-10 right-[2%] -z-10 h-[140%] w-px -skew-x-[24deg] bg-gold/30" />
-      {/* Pages COD : emblème du mode en filigrane (viseur, bouclier, trophée) et motif propre à chaque mode. */}
-      {ModeIcon ? (
-        <>
-          <ModeIcon aria-hidden strokeWidth={0.6} className="pointer-events-none absolute right-[4%] top-1/2 -z-10 hidden h-[22rem] w-[22rem] -translate-y-[40%] text-gold/[0.13] lg:block" />
-          {codMode === "team" ? (
-            <div aria-hidden className="absolute inset-0 -z-10 bg-[repeating-linear-gradient(135deg,color-mix(in_srgb,var(--color-gold)_7%,transparent)_0_1px,transparent_1px_22px)] mask-fade" />
-          ) : codMode === "tournoi" ? (
-            <div aria-hidden className="absolute inset-0 -z-10 bg-[repeating-linear-gradient(0deg,color-mix(in_srgb,var(--color-gold)_7%,transparent)_0_1px,transparent_1px_34px)] mask-fade" />
-          ) : null}
-        </>
-      ) : null}
 
       <Container className="flex flex-col gap-8 lg:flex-row lg:items-end lg:justify-between">
         <div className="max-w-3xl">
-          {mode ? (
-            <p className="mb-4 inline-flex items-center gap-2 border border-gold/40 bg-gold/10 px-3 py-1.5 font-display text-sm font-bold uppercase tracking-[0.18em] text-gold clip-slant">
-              <ModeIcon aria-hidden className="h-4 w-4" />
-              {mode.label}
-            </p>
-          ) : null}
           <Eyebrow>{eyebrow}</Eyebrow>
           <h1 className="mt-3 font-display text-5xl font-black uppercase leading-[0.9] sm:text-7xl">{title}</h1>
           {description ? <p className="mt-5 max-w-2xl text-base leading-relaxed text-white/60 sm:text-lg">{description}</p> : null}
