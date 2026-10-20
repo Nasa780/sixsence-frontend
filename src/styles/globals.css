@@ -68,6 +68,27 @@
   --color-gold-dark: #d6246e;
 }
 
+/* Modes COD : un code couleur par mode (Classé vert émeraude, Division cyan néon, Tournoi rouge impérial) ;
+   l'or reste la couleur du site hors des modes. Jamais d'orange ni de rose (GTA 6). Même mécanisme que GTA. */
+[data-univers="classe"] {
+  --color-gold: #34d399;
+  --color-gold-light: #6ee7b7;
+  --color-gold-pale: #d1fae5;
+  --color-gold-dark: #047857;
+}
+[data-univers="division"] {
+  --color-gold: #22d3ee;
+  --color-gold-light: #67e8f9;
+  --color-gold-pale: #cffafe;
+  --color-gold-dark: #0e7490;
+}
+[data-univers="tournoi"] {
+  --color-gold: #e5484d;
+  --color-gold-light: #f87171;
+  --color-gold-pale: #fecaca;
+  --color-gold-dark: #991b1b;
+}
+
 @layer base {
   html {
     color-scheme: dark;

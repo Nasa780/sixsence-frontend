@@ -10,6 +10,7 @@ import NotFound from "./404";
 import { installErrorReporting } from "../lib/monitoring";
 import { registerServiceWorker } from "../lib/push";
 import "../styles/globals.css";
+import { codModeOf } from "../components/cod/CodModeNav";
 
 /**
  * Polices, auto-hébergées par next/font (aucune requête vers Google côté visiteur).
@@ -32,7 +33,9 @@ export default function App({ Component, pageProps }) {
   const teamPaused =
     (!MATCH_TEAM_ENABLED && (pathname === "/cod/equipe" || pathname === "/cod/division" || pathname.startsWith("/cod/equipes") || pathname.startsWith("/cod/tournoi"))) || (!GROUPS_ENABLED && pathname.startsWith("/cod/groupe"));
   // Pages GTA 6 : palette coucher de soleil (voir globals.css).
-  const univers = pathname.startsWith("/gta6") ? "gta" : undefined;
+  // Couleur d'accent : coucher de soleil sur GTA 6, vert pour le Classé, cyan pour la Division, rouge pour le Tournoi.
+  const codMode = codModeOf(pathname);
+  const univers = pathname.startsWith("/gta6") ? "gta" : codMode === "classe" ? "classe" : codMode === "team" ? "division" : codMode === "tournoi" ? "tournoi" : undefined;
 
   // Service worker (appli installable, notifications push) et signalement des erreurs à l'équipe.
   useEffect(() => {

@@ -22,7 +22,7 @@ npm run build   # à lancer avant chaque PR (pas de tests ni de linter)
 
 ## Identité visuelle
 
-Noir (`ink`), or métallique (`gold`), formes tactiques. Polices via `next/font` dans `_app.js` : Saira Condensed (`font-display`, titres), Orbitron (`font-tech`, chiffres HUD), Inter (`font-sans`).
+Noir (`ink`), or métallique (`gold`), formes tactiques. Code couleur par mode COD (`data-univers` posé par `_app.js` d'après `codModeOf`, variables `--color-gold*` redéfinies dans `globals.css`) : Classé vert émeraude, Division cyan néon, Tournoi rouge impérial ; GTA 6 coucher de soleil ; or partout ailleurs. Polices via `next/font` dans `_app.js` : Saira Condensed (`font-display`, titres), Orbitron (`font-tech`, chiffres HUD), Inter (`font-sans`).
 Utilitaires maison dans `globals.css` : `clip-tactical`, `clip-slant`, `clip-corner`, `bg-gold-sheen`, `text-gold-gradient`, `text-outline`, `bg-grid`, `mask-fade`, `holo`, `glow-gold`.
 
 ## Structure
