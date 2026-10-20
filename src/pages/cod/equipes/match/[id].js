@@ -2,7 +2,7 @@ import Head from "next/head";
 import Link from "next/link";
 import { useRouter } from "next/router";
 import { useCallback, useEffect, useRef, useState } from "react";
-import { LuCheck, LuCrown, LuFlag, LuGamepad2, LuImagePlus, LuLoaderCircle, LuSend, LuX } from "react-icons/lu";
+import { LuCheck, LuCopy, LuCrown, LuFlag, LuGamepad2, LuHouse, LuImagePlus, LuLoaderCircle, LuPencil, LuSend, LuX } from "react-icons/lu";
 import { RankEmblem } from "../../../../components/cod/RankEmblem";
 import { TeamCrest, fieldClass, labelClass } from "../../../../components/teams/TeamParts";
 import { Avatar } from "../../../../components/ui/Avatar";
@@ -84,7 +84,7 @@ export default function TeamMatchPage() {
 
         <TacticalCard highlight cut={24} innerClassName="p-5 sm:p-8">
           <div className="grid grid-cols-[1fr_auto_1fr] items-center gap-3 sm:gap-4">
-            <TeamSide team={match.teamA} side="A" winner={match.winner} change={match.pointsChanges?.A} />
+            <TeamSide team={match.teamA} side="A" winner={match.winner} change={match.pointsChanges?.A} host={match.hostSide === "A"} />
             <div className="text-center">
               <p className="font-display text-5xl font-black leading-none tabular-nums sm:text-6xl">
                 <span className={cn(match.winner === "A" && "text-gold")}>{scoreA}</span> <span className="text-white/30">–</span>{" "}
@@ -92,7 +92,7 @@ export default function TeamMatchPage() {
               </p>
               <StatusChip match={match} />
             </div>
-            <TeamSide team={match.teamB} side="B" winner={match.winner} change={match.pointsChanges?.B} right />
+            <TeamSide team={match.teamB} side="B" winner={match.winner} change={match.pointsChanges?.B} host={match.hostSide === "B"} right />
           </div>
         </TacticalCard>
 
@@ -151,7 +151,7 @@ export default function TeamMatchPage() {
   );
 }
 
-function TeamSide({ team, side, winner, change, right = false }) {
+function TeamSide({ team, side, winner, change, host = false, right = false }) {
   return (
     <div className={cn("flex min-w-0 items-center gap-4", right && "flex-row-reverse text-right")}>
       <span className="hidden sm:inline-flex">
@@ -165,6 +165,7 @@ function TeamSide({ team, side, winner, change, right = false }) {
           [{team?.tag}]
           {winner === side ? <LuCrown aria-label="Vainqueur" className="ml-2 inline h-3.5 w-3.5 text-gold" /> : null}
         </p>
+        {host ? <HostChip className="mt-2" /> : null}
         {typeof change === "number" ? <p className={cn("mt-1 font-tech text-sm font-bold", change >= 0 ? "text-win" : "text-loss")}>{change >= 0 ? `+${change}` : change} pts</p> : null}
       </div>
     </div>
@@ -549,7 +550,10 @@ function Roster({ match, side, userId }) {
   return (
     <section aria-label={team?.name} className={cn("transition-opacity", lost && "opacity-60")}>
       <header className={cn("flex items-end justify-between border-b-2 pb-3", side === "A" ? "border-gold" : "border-white/70")}>
-        <h2 className={cn("font-display text-3xl font-black uppercase leading-none sm:text-4xl", side === "A" && "text-gold")}>{team?.name}</h2>
+        <h2 className={cn("flex flex-wrap items-center gap-3 font-display text-3xl font-black uppercase leading-none sm:text-4xl", side === "A" && "text-gold")}>
+          {team?.name}
+          {match.hostSide === side ? <HostChip /> : null}
+        </h2>
         {match.winner === side ? <Chip tone="win">Victoire</Chip> : <span className="font-tech text-xs uppercase tracking-[0.2em] text-white/45">{match.pointsBefore[side]} pts</span>}
       </header>
       <ul className="mt-3 space-y-2">
@@ -726,77 +730,203 @@ function CorrectionForm({ match, onDone }) {
 }
 
 const FORFEIT_REASONS = {
-  host_silent: "(équipe hôte) n'a pas donné le code de la partie dans le chat à temps",
+  host_silent: "(équipe hôte) n'a pas donné le code de la partie à temps",
   absent: "n'était pas présente en jeu à temps",
 };
 
 const mmss = (seconds) => `${Math.floor(seconds / 60)}:${String(Math.floor(seconds % 60)).padStart(2, "0")}`;
 
+function HostChip({ className = "" }) {
+  return (
+    <Chip className={cn("shrink-0", className)}>
+      <LuHouse aria-hidden className="h-3 w-3" />
+      Hôte
+    </Chip>
+  );
+}
+
 /**
- * Lancement du match : l'équipe hôte (tirée au sort) donne le code de la partie privée dans le chat
- * sous 10 min ; les deux équipes cliquent « Présents en jeu » sous 15 min. Sinon, l'autre équipe peut
- * déclarer forfait (l'équipe visée valide ou conteste ; sans réponse en 15 min, un arbitre tranche).
+ * Lancement du match : l'équipe hôte (tirée au sort) crée la partie privée et donne son code sous 10 min
+ * (champ dédié, modifiable en cas d'erreur) ; les deux équipes cliquent « Présents en jeu » sous 15 min.
+ * Sinon, l'autre équipe peut déclarer forfait (l'équipe visée valide ou conteste ; sans réponse en 15 min,
+ * un arbitre tranche).
  */
 function KickoffBlock({ match, name, onDone }) {
-  const [pending, setPending] = useState(false);
+  const [pending, setPending] = useState(null);
   const [error, setError] = useState(null);
   const [ask, setAsk] = useState(null);
+  const [code, setCode] = useState("");
+  const [editing, setEditing] = useState(false);
+  const [copied, setCopied] = useState(false);
   const hostLeft = useCountdown(match.hostDeadline);
   const presenceLeft = useCountdown(match.presenceDeadline);
   const viewer = match.viewer;
-  const hostSpoke = (match.messages ?? []).some((message) => message.side === match.hostSide);
+  const isHost = viewer?.side && viewer.side === match.hostSide;
+  const given = Boolean(match.gameCodeAt);
 
-  async function run(path, body) {
-    setPending(true);
+  async function run(key, path, body) {
+    setPending(key);
     setError(null);
     try {
       await api(`/teams/matches/${match.id}/${path}`, { method: "POST", body });
       setAsk(null);
       await onDone();
+      return true;
     } catch (caught) {
       setError(caught.message);
       setAsk(null);
+      return false;
     } finally {
-      setPending(false);
+      setPending(null);
     }
   }
 
+  async function saveCode(event) {
+    event.preventDefault();
+    if (await run("code", "code", { code: code.trim() })) {
+      setEditing(false);
+      setCode("");
+    }
+  }
+
+  async function copy() {
+    try {
+      await navigator.clipboard.writeText(match.gameCode);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 1500);
+    } catch {
+      // Presse-papiers indisponible : le code reste affiché.
+    }
+  }
+
+  const codeForm = (
+    <form onSubmit={saveCode} className="flex flex-col gap-2 sm:flex-row">
+      <input
+        className={fieldClass}
+        maxLength={40}
+        autoFocus={editing}
+        placeholder="Code de la partie privée"
+        aria-label="Code de la partie privée"
+        value={code}
+        onChange={(event) => setCode(event.target.value)}
+      />
+      <Button type="submit" disabled={pending !== null || !code.trim()} className="shrink-0">
+        {pending === "code" ? <LuLoaderCircle aria-hidden className="h-5 w-5 animate-spin" /> : <LuCheck aria-hidden className="h-5 w-5" />}
+        {given ? "Modifier" : "Valider le code"}
+      </Button>
+      {editing ? (
+        <Button type="button" variant="ghost" onClick={() => setEditing(false)} className="shrink-0">
+          Annuler
+        </Button>
+      ) : null}
+    </form>
+  );
+
   return (
     <TacticalCard highlight innerClassName="space-y-5 p-6">
-      <div className="flex flex-wrap items-start justify-between gap-4">
-        <div>
-          <Eyebrow>Lancement du match</Eyebrow>
-          <p className="mt-2 font-display text-2xl font-black uppercase leading-none">
-            Hôte : <span className="text-gold">{name(match.hostSide)}</span>
-          </p>
-          <p className="mt-2 max-w-2xl text-sm text-white/55">
-            {viewer?.side === match.hostSide
-              ? "Ton équipe est hôte : crée la partie privée et donne son code dans le chat ci-dessous."
-              : "L'équipe hôte crée la partie privée et donne son code dans le chat."}{" "}
-            Les deux équipes confirment ensuite leur présence en jeu.
-          </p>
+      <div>
+        <Eyebrow>Lancement du match</Eyebrow>
+        <div
+          className={cn(
+            "mt-3 flex flex-wrap items-center gap-3 border-l-2 px-4 py-3",
+            isHost ? "border-gold bg-gold/10" : "border-white/30 bg-white/[0.04]",
+          )}
+        >
+          <LuHouse aria-hidden className={cn("h-6 w-6 shrink-0", isHost ? "text-gold" : "text-white/60")} />
+          <div className="min-w-0 flex-1">
+            <p className="font-display text-2xl font-black uppercase leading-none">
+              {isHost ? (
+                <span className="text-gold">Ton équipe est l&apos;hôte</span>
+              ) : (
+                <>
+                  Hôte : <span className="text-gold">{name(match.hostSide)}</span>
+                </>
+              )}
+            </p>
+            <p className="mt-1.5 text-sm text-white/60">
+              {isHost
+                ? "Crée la partie privée (Recherche & Destruction Hardcore), puis donne son code ci-dessous."
+                : viewer?.side
+                  ? "L'équipe hôte crée la partie privée et donne son code ici : rejoins-la dès qu'il apparaît."
+                  : "L'équipe hôte crée la partie privée et donne son code aux deux équipes."}
+            </p>
+          </div>
         </div>
-        {viewer?.canMarkPresent ? (
-          <Button disabled={pending} onClick={() => run("present")}>
-            {pending ? <LuLoaderCircle aria-hidden className="h-5 w-5 animate-spin" /> : <LuGamepad2 aria-hidden className="h-5 w-5" />}
-            Présents en jeu
-          </Button>
-        ) : null}
       </div>
 
-      <div className="grid gap-3 sm:grid-cols-3">
-        <StatTile
-          label="Code de la partie (hôte)"
-          value={hostSpoke ? "Donné" : hostLeft > 0 ? mmss(hostLeft) : "En retard"}
-          hint={hostSpoke ? "L'hôte a écrit dans le chat" : "10 min pour écrire dans le chat"}
-        />
+      {/* Code de la partie : délai tant qu'il n'est pas donné, puis le code (modifiable par l'hôte). */}
+      <div className="border border-white/10 bg-white/[0.03] p-5">
+        <div className="flex flex-wrap items-start justify-between gap-4">
+          <div className="min-w-0">
+            <p className="font-tech text-[10px] uppercase tracking-[0.24em] text-white/45">Code de la partie privée</p>
+            {given ? (
+              match.gameCode ? (
+                <p className="mt-2 break-all font-tech text-3xl font-bold tracking-[0.12em] text-gold sm:text-4xl">{match.gameCode}</p>
+              ) : (
+                <p className="mt-2 font-display text-3xl font-black uppercase leading-none text-win">Donné</p>
+              )
+            ) : (
+              <p className={cn("mt-2 font-display text-4xl font-black leading-none tabular-nums", hostLeft > 0 ? "text-white" : "text-loss")}>
+                {hostLeft > 0 ? mmss(hostLeft) : "En retard"}
+              </p>
+            )}
+            <p className="mt-2 text-xs text-white/45">
+              {given
+                ? `Donné à ${new Date(match.gameCodeAt).toLocaleTimeString("fr-FR", { hour: "2-digit", minute: "2-digit" })}${
+                    match.gameCodeUpdatedAt && match.gameCodeUpdatedAt !== match.gameCodeAt
+                      ? ` · modifié à ${new Date(match.gameCodeUpdatedAt).toLocaleTimeString("fr-FR", { hour: "2-digit", minute: "2-digit" })}`
+                      : ""
+                  }`
+                : `${name(match.hostSide)} a 10 min pour le donner.`}
+            </p>
+          </div>
+          {given && match.gameCode ? (
+            <div className="flex flex-wrap gap-2">
+              <Button variant="outline" size="sm" onClick={copy}>
+                {copied ? <LuCheck aria-hidden className="h-4 w-4" /> : <LuCopy aria-hidden className="h-4 w-4" />}
+                {copied ? "Copié" : "Copier"}
+              </Button>
+              {viewer?.canSetCode && !editing ? (
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => {
+                    setCode(match.gameCode);
+                    setEditing(true);
+                  }}
+                >
+                  <LuPencil aria-hidden className="h-4 w-4" />
+                  Modifier
+                </Button>
+              ) : null}
+            </div>
+          ) : null}
+        </div>
+        {viewer?.canSetCode && (!given || editing) ? <div className="mt-4">{codeForm}</div> : null}
+      </div>
+
+      <div className="grid gap-3 sm:grid-cols-2">
         {["A", "B"].map((side) => (
-          <StatTile
-            key={side}
-            label={`Présence · ${name(side)}`}
-            value={match.present[side] ? "En jeu" : presenceLeft > 0 ? mmss(presenceLeft) : "Absente"}
-            hint={match.present[side] ? `depuis ${new Date(match.present[side]).toLocaleTimeString("fr-FR", { hour: "2-digit", minute: "2-digit" })}` : "15 min pour être en jeu"}
-          />
+          <div key={side} className={cn("flex items-center justify-between gap-3 border-l-2 bg-white/[0.03] px-4 py-3", match.present[side] ? "border-win" : "border-white/15")}>
+            <div className="min-w-0">
+              <p className="truncate font-tech text-[10px] uppercase tracking-[0.24em] text-white/45">
+                Présence · {name(side)}
+                {match.hostSide === side ? " (hôte)" : ""}
+              </p>
+              <p className={cn("mt-1 font-display text-2xl font-black leading-none", match.present[side] ? "text-win" : presenceLeft > 0 ? "tabular-nums" : "text-loss")}>
+                {match.present[side] ? "En jeu" : presenceLeft > 0 ? mmss(presenceLeft) : "Absente"}
+              </p>
+              <p className="mt-1 text-xs text-white/45">
+                {match.present[side] ? `depuis ${new Date(match.present[side]).toLocaleTimeString("fr-FR", { hour: "2-digit", minute: "2-digit" })}` : "15 min pour être en jeu"}
+              </p>
+            </div>
+            {viewer?.canMarkPresent && viewer.side === side ? (
+              <Button size="sm" disabled={pending !== null} onClick={() => run("present", "present")} className="shrink-0">
+                {pending === "present" ? <LuLoaderCircle aria-hidden className="h-4 w-4 animate-spin" /> : <LuGamepad2 aria-hidden className="h-4 w-4" />}
+                Présents en jeu
+              </Button>
+            ) : null}
+          </div>
         ))}
       </div>
 
@@ -804,13 +934,13 @@ function KickoffBlock({ match, name, onDone }) {
         <div className="flex flex-wrap items-center gap-3 border-t border-white/10 pt-4">
           <p className="text-sm text-white/60">Délai dépassé côté adverse :</p>
           {viewer.canClaimForfeit.host_silent ? (
-            <Button variant="danger" size="sm" disabled={pending} onClick={() => setAsk("host_silent")}>
+            <Button variant="danger" size="sm" disabled={pending !== null} onClick={() => setAsk("host_silent")}>
               <LuFlag aria-hidden className="h-4 w-4" />
               Forfait : pas de code
             </Button>
           ) : null}
           {viewer.canClaimForfeit.absent ? (
-            <Button variant="danger" size="sm" disabled={pending} onClick={() => setAsk("absent")}>
+            <Button variant="danger" size="sm" disabled={pending !== null} onClick={() => setAsk("absent")}>
               <LuFlag aria-hidden className="h-4 w-4" />
               Forfait : absents
             </Button>
@@ -824,8 +954,8 @@ function KickoffBlock({ match, name, onDone }) {
         title="Déclarer forfait ?"
         confirmLabel="Déclarer forfait"
         tone="danger"
-        pending={pending}
-        onConfirm={() => run("forfeit", { reason: ask })}
+        pending={pending === "forfeit"}
+        onConfirm={() => run("forfeit", "forfeit", { reason: ask })}
       >
         L&apos;équipe adverse a 15 min pour valider (victoire pour toi) ou contester ; sans réponse, un arbitre SixSence tranche.
       </ConfirmDialog>
@@ -929,7 +1059,7 @@ function MatchChat({ match, name, userId, onDone }) {
         <p className="text-xs text-white/40">Joueurs du match, Leaders et arbitres seulement</p>
       </div>
       <ul ref={listRef} className="max-h-80 space-y-2 overflow-y-auto pr-1">
-        {count === 0 ? <li className="text-sm text-white/45">Aucun message. L&apos;équipe hôte donne ici le code de la partie privée.</li> : null}
+        {count === 0 ? <li className="text-sm text-white/45">Aucun message pour l&apos;instant.</li> : null}
         {match.messages.map((message) => (
           <li key={message.id} className={cn("border-l-2 bg-white/[0.03] px-3 py-2", message.side === "A" ? "border-gold" : message.side === "B" ? "border-white/70" : "border-loss")}>
             <p className="font-tech text-[10px] uppercase tracking-[0.2em] text-white/45">
@@ -946,7 +1076,7 @@ function MatchChat({ match, name, userId, onDone }) {
       </ul>
       {match.viewer?.canChat && !["cancelled"].includes(match.status) ? (
         <form onSubmit={send} className="flex gap-2">
-          <input className={fieldClass} maxLength={300} placeholder="Code de la partie, infos…" value={text} onChange={(event) => setText(event.target.value)} aria-label="Message" />
+          <input className={fieldClass} maxLength={300} placeholder="Message aux deux équipes…" value={text} onChange={(event) => setText(event.target.value)} aria-label="Message" />
           <Button type="submit" disabled={pending || !text.trim()} className="shrink-0">
             {pending ? <LuLoaderCircle aria-hidden className="h-4 w-4 animate-spin" /> : <LuSend aria-hidden className="h-4 w-4" />}
             Envoyer
