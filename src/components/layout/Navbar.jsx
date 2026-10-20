@@ -59,7 +59,9 @@ export function Navbar() {
   }, [pathname]);
 
   return (
-    <header className="fixed inset-x-0 top-0 z-50">
+    // Menus toujours dans l'or SixSence, quelle que soit la couleur de la page (Classé, Division, Tournoi) ;
+    // le lien GTA 6 garde son coucher de soleil (son propre data-univers).
+    <header data-univers="or" className="fixed inset-x-0 top-0 z-50">
       <div
         className={cn(
           "border-b transition-colors duration-300",
