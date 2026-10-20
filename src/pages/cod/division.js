@@ -1,9 +1,8 @@
 import Head from "next/head";
 import { useCallback, useEffect, useState } from "react";
-import { LuPlus, LuShield, LuUsers } from "react-icons/lu";
+import { LuPlus, LuShield } from "react-icons/lu";
 import { GoldParticles } from "../../components/effects/GoldParticles";
 import { PlayPanel } from "../../components/teams/PlayPanel";
-import { TeamCrest } from "../../components/teams/TeamParts";
 import { ButtonLink } from "../../components/ui/Button";
 import { Container } from "../../components/ui/Container";
 import { Loading, Notice, StatTile } from "../../components/ui/Feedback";
@@ -99,10 +98,7 @@ export default function DivisionQueuePage() {
             ) : !state ? (
               <Loading label="Chargement de ton équipe…" />
             ) : team ? (
-              <>
-                <TeamBanner team={team} isLeader={isLeader} />
-                <PlayPanel team={team} isLeader={isLeader} />
-              </>
+              <PlayPanel team={team} isLeader={isLeader} />
             ) : (
               <NoTeamCard />
             )}
@@ -130,26 +126,6 @@ export default function DivisionQueuePage() {
         </Container>
       </div>
     </>
-  );
-}
-
-/** Rappel de l'équipe du joueur au-dessus du panneau de recherche. */
-function TeamBanner({ team, isLeader }) {
-  return (
-    <div className="flex flex-wrap items-center gap-4 border-l-2 bg-white/[0.03] px-4 py-3" style={{ borderColor: team.color }}>
-      <TeamCrest team={team} size={44} />
-      <div className="min-w-0 flex-1">
-        <p className="font-tech text-[10px] uppercase tracking-[0.24em] text-white/45">{isLeader ? "Tu lances les matchs de" : "Tu joues pour"}</p>
-        <p className="truncate font-display text-2xl font-black uppercase leading-none">
-          <span style={{ color: team.color }}>[{team.tag}]</span> {team.name}
-        </p>
-      </div>
-      <p className="font-tech text-sm font-bold tabular-nums text-gold">{team.points} pts</p>
-      <ButtonLink href="/cod/equipe" variant="ghost" size="sm">
-        <LuUsers aria-hidden className="h-4 w-4" />
-        Mon équipe
-      </ButtonLink>
-    </div>
   );
 }
 

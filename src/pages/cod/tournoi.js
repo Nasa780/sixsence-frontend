@@ -6,7 +6,7 @@ import { TeamCrest } from "../../components/teams/TeamParts";
 import { Avatar } from "../../components/ui/Avatar";
 import { Button, ButtonLink } from "../../components/ui/Button";
 import { Container } from "../../components/ui/Container";
-import { Chip, EmptyState, Loading, Notice, StatTile } from "../../components/ui/Feedback";
+import { Chip, Loading, Notice, StatTile } from "../../components/ui/Feedback";
 import { TacticalCard } from "../../components/ui/TacticalCard";
 import { Eyebrow, PageHeader } from "../../components/ui/Typography";
 import useSession from "../../hooks/useSession";
@@ -103,7 +103,7 @@ export default function TournamentPage() {
         {error ? <Notice tone="error">{error}</Notice> : null}
         {tournament === undefined && !error ? <Loading /> : null}
         {tournament === null ? (
-          <EmptyState title="Aucun tournoi prévu" />
+          <TournamentTeaser />
         ) : null}
 
         {tournament ? (
@@ -298,5 +298,41 @@ function BracketEntry({ entry, myTeamId, final }) {
     </Link>
   ) : (
     body
+  );
+}
+
+/** Aucun tournoi prévu : tableau en filigrane (8 → 4 → 2 → 1) et accès à la Division pour se préparer. */
+function TournamentTeaser() {
+  const rounds = [8, 4, 2, 1];
+  return (
+    <TacticalCard highlight cut={28} innerClassName="relative overflow-hidden p-6 sm:p-10">
+      <div aria-hidden className="pointer-events-none absolute inset-y-6 right-6 hidden w-[40%] grid-cols-4 gap-4 opacity-40 lg:grid">
+        {rounds.map((count, round) => (
+          <div key={count} className="flex flex-col justify-around">
+            {Array.from({ length: count }, (_, index) => (
+              <span key={index} className={cn("block h-6 border", round === rounds.length - 1 ? "border-gold bg-gold/15" : "border-white/15 bg-white/[0.03]")} />
+            ))}
+          </div>
+        ))}
+      </div>
+      <div className="relative max-w-lg">
+        <LuTrophy aria-hidden className="h-10 w-10 text-gold" />
+        <p className="mt-5 font-display text-4xl font-black uppercase leading-none sm:text-5xl">
+          Aucun tournoi <span className="text-gold-gradient">prévu</span>
+        </p>
+        <p className="mt-4 text-sm leading-relaxed text-white/60">
+          Le tournoi de fin de saison sera annoncé ici : tableau en direct, check-in des équipes et finale en BO5. En attendant, fais grimper ton équipe en
+          Division.
+        </p>
+        <div className="mt-7 flex flex-wrap gap-3">
+          <ButtonLink href="/cod/division" size="lg">
+            File Division
+          </ButtonLink>
+          <ButtonLink href="/cod/equipes" size="lg" variant="outline">
+            Classement des équipes
+          </ButtonLink>
+        </div>
+      </div>
+    </TacticalCard>
   );
 }
