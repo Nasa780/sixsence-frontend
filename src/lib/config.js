@@ -25,7 +25,8 @@ export const SITE_URL = (process.env.NEXT_PUBLIC_SITE_URL || "https://www.sixsen
  * ne vaut pas « on » (Vercel). En pause, le site est celui d'avant le mode : aucune page, lien ou tag
  * d'équipe. Côté backend, TEAM_MODE=on sur Render. Le code et les données restent en place.
  */
-export const MATCH_TEAM_ENABLED = process.env.NEXT_PUBLIC_MATCH_TEAM === "on";
+// BRANCHE DE TEST (jamais fusionnée) : mode Match team activé pour l'aperçu Vercel.
+export const MATCH_TEAM_ENABLED = true;
 
 /**
  * Groupes du classé (jouer à plusieurs dans la même équipe) : coupés, le classé se joue en solo.
