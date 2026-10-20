@@ -111,8 +111,8 @@ export function Navbar() {
                               key={child.href}
                               href={child.href}
                               className={cn(
-                                "group/mode relative flex items-center gap-3 overflow-hidden border-l-2 px-3 py-2.5 transition-colors",
-                                current ? "border-gold bg-gold/10" : "border-gold/40 hover:border-gold hover:bg-gold/[0.07]",
+                                "group/mode relative flex items-center gap-3 overflow-hidden px-3 py-2.5 transition-colors",
+                                current ? "bg-gold/10" : "hover:bg-gold/[0.07]",
                               )}
                             >
                               <span className="min-w-0 flex-1">
@@ -202,8 +202,8 @@ export function Navbar() {
                               href={child.href}
                               data-univers="or"
                               className={cn(
-                                "ml-4 border-l-2 px-4 py-2.5 font-display text-base font-bold uppercase tracking-[0.14em] transition-colors",
-                                current ? "border-gold bg-gold/10 text-gold" : "border-gold/40 text-white/70 hover:border-gold hover:text-gold",
+                                "ml-4 px-4 py-2.5 font-display text-base font-bold uppercase tracking-[0.14em] transition-colors",
+                                current ? "bg-gold/10 text-gold" : "text-white/70 hover:text-gold",
                               )}
                             >
                               {child.label}
