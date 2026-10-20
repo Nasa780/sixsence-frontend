@@ -24,8 +24,9 @@ export const COD_MODES = [
     key: "team",
     label: "Division",
     icon: LuShield,
-    href: "/cod/equipes",
+    href: "/cod/division",
     links: [
+      { href: "/cod/division", label: "File Division" },
       { href: "/cod/equipes", label: "Classement" },
       { href: "/cod/equipe", label: "Mon équipe" },
     ],
@@ -43,7 +44,7 @@ export const COD_MODES = [
 export function codModeOf(pathname) {
   if (!MATCH_TEAM_ENABLED) return null;
   if (pathname.startsWith("/cod/tournoi")) return "tournoi";
-  if (pathname === "/cod/equipe" || pathname.startsWith("/cod/equipes")) return "team";
+  if (pathname === "/cod/equipe" || pathname === "/cod/division" || pathname.startsWith("/cod/equipes")) return "team";
   if (pathname.startsWith("/cod/ranked") || pathname.startsWith("/cod/leaderboard") || pathname.startsWith("/cod/profile") || pathname.startsWith("/cod/match") || pathname.startsWith("/cod/groupe")) {
     return "classe";
   }

@@ -30,7 +30,7 @@ export default function App({ Component, pageProps }) {
   const bare = BARE_PAGES.includes(pathname);
   // Division en pause : ses pages (et celle du tournoi) sont introuvables.
   const teamPaused =
-    (!MATCH_TEAM_ENABLED && (pathname === "/cod/equipe" || pathname.startsWith("/cod/equipes") || pathname.startsWith("/cod/tournoi"))) || (!GROUPS_ENABLED && pathname.startsWith("/cod/groupe"));
+    (!MATCH_TEAM_ENABLED && (pathname === "/cod/equipe" || pathname === "/cod/division" || pathname.startsWith("/cod/equipes") || pathname.startsWith("/cod/tournoi"))) || (!GROUPS_ENABLED && pathname.startsWith("/cod/groupe"));
   // Pages GTA 6 : palette coucher de soleil (voir globals.css).
   const univers = pathname.startsWith("/gta6") ? "gta" : undefined;
 

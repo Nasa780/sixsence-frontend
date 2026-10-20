@@ -25,7 +25,7 @@ const LINKS = [
     // Les trois sections COD (seulement si la Division est active).
     children: MATCH_TEAM_ENABLED && [
       { href: "/cod/ranked", label: "Classé", hint: "En solo 2vs2 à 5vs5" },
-      { href: "/cod/equipes", label: "Division", hint: "En équipe 4vs4" },
+      { href: "/cod/division", label: "Division", hint: "En équipe 4vs4" },
       { href: "/cod/tournoi", label: "Tournoi", hint: "Fin de saison" },
     ],
   },
@@ -102,7 +102,7 @@ export function Navbar() {
                     <div className="clip-tactical w-64 bg-gold/40 p-px [--cut:12px]">
                       <div className="clip-tactical bg-ink-800 p-2 [--cut:12px]">
                         {link.children.map((child) => {
-                          const current = (child.href === "/cod/ranked" && mode === "classe") || (child.href === "/cod/equipes" && mode === "team") || (child.href === "/cod/tournoi" && mode === "tournoi");
+                          const current = (child.href === "/cod/ranked" && mode === "classe") || (child.href === "/cod/division" && mode === "team") || (child.href === "/cod/tournoi" && mode === "tournoi");
                           return (
                             <Link
                               key={child.href}
@@ -184,7 +184,7 @@ export function Navbar() {
                         element,
                         ...LINKS[index].children.map((child) => {
                           const mode = codModeOf(pathname);
-                          const current = (child.href === "/cod/ranked" && mode === "classe") || (child.href === "/cod/equipes" && mode === "team") || (child.href === "/cod/tournoi" && mode === "tournoi");
+                          const current = (child.href === "/cod/ranked" && mode === "classe") || (child.href === "/cod/division" && mode === "team") || (child.href === "/cod/tournoi" && mode === "tournoi");
                           return (
                             <Link
                               key={child.href}
