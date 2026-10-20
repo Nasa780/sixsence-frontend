@@ -512,7 +512,7 @@ function Recruitment({ team, state, reload }) {
           <p className="text-xs text-white/45">Aucun joueur sans équipe ne correspond.</p>
         ) : null}
         <p className="text-xs text-white/45">
-          Le joueur doit avoir joué {TEAM_LIMITS.minRankedMatches} matchs classés et ne pas avoir quitté une équipe ces dernières 24 h.
+          Le joueur doit avoir lié son identifiant Activision et ne pas avoir quitté une équipe ces dernières 24 h.
         </p>
 
         {(state.sentInvites ?? []).length > 0 ? (
