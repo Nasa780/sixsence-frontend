@@ -25,7 +25,7 @@ const LINKS = [
     // Les trois sections COD (seulement si la Division est active).
     children: MATCH_TEAM_ENABLED && [
       { href: "/cod/ranked", label: "Classé", hint: "En solo 2vs2 à 5vs5" },
-      { href: "/cod/equipes", label: "Division", hint: "En équipes 4vs4" },
+      { href: "/cod/equipes", label: "Division", hint: "En équipe 4vs4" },
       { href: "/cod/tournoi", label: "Tournoi", hint: "Fin de saison" },
     ],
   },
