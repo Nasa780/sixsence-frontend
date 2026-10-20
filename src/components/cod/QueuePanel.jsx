@@ -319,9 +319,9 @@ export function QueuePanel({ profileComplete, userId }) {
           </div>
 
           <p className="mt-4 text-xs text-white/45">
-            Une victoire rapporte <span className="text-white/70">50 pts</span> et tes 10 premiers matchs de placement doublent tes gains, tandis
-            qu&apos;une défaite te fait perdre <span className="text-white/70">entre 15 et 50 pts</span> selon ton rang, avec une réduction de 25 % si tu
-            joues seul.
+            Une victoire rapporte <span className="text-white/70">de 40 à 60 pts</span> selon le niveau des deux équipes (le double pendant tes 10
+            matchs de placement). Une défaite coûte <span className="text-white/70">de 15 à 50 pts</span> selon ton rang, un peu moins contre une
+            équipe plus forte, un peu plus contre une plus faible.
           </p>
 
           {/* Ce qui empêche de jouer, du plus bloquant au moins bloquant. */}
