@@ -293,10 +293,8 @@ function TopTeams({ label }) {
         ) : (
           <>
             {/* Même structure que le Top 10 joueurs (ligne d'état, en-têtes, lignes de même hauteur) : les deux listes s'alignent. */}
-            <p className="mb-6 inline-flex items-center gap-2 text-xs text-white/40">
-              <span aria-hidden className="h-1.5 w-1.5 bg-gold/60" />
-              {teams.length} équipe{teams.length > 1 ? "s" : ""} au classement
-            </p>
+            {/* Espace vide de la hauteur de « Mis à jour en direct » (Top 10 joueurs) : garde les deux listes alignées. */}
+            <p aria-hidden className="invisible mb-6 text-xs">&nbsp;</p>
             <div className="mt-1.5 grid grid-cols-[4rem_minmax(0,1fr)_auto_auto] gap-x-4 py-2 font-tech text-[10px] uppercase tracking-[0.24em] text-white/40">
               <span className="px-4">Rang</span>
               <span>Équipe</span>
