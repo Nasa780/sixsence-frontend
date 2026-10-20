@@ -3,7 +3,7 @@ import Link from "next/link";
 import { useRouter } from "next/router";
 import { useEffect, useRef, useState } from "react";
 import { FaDiscord } from "react-icons/fa6";
-import { LuCrosshair, LuLogOut, LuMenu, LuShieldCheck, LuUser, LuX } from "react-icons/lu";
+import { LuArrowRight, LuCrosshair, LuLogOut, LuMenu, LuShield, LuShieldCheck, LuTrophy, LuUser, LuX } from "react-icons/lu";
 import useSession from "../../hooks/useSession";
 import useUser from "../../hooks/useUser";
 import { signInWithDiscord, signOut } from "../../lib/auth";
@@ -24,9 +24,9 @@ const LINKS = [
     label: "MW4",
     // Les trois sections COD (seulement si la Division est active).
     children: MATCH_TEAM_ENABLED && [
-      { href: "/cod/ranked", label: "Classé", hint: "En solo 2vs2 à 5vs5" },
-      { href: "/cod/division", label: "Division", hint: "En équipe 4vs4" },
-      { href: "/cod/tournoi", label: "Tournoi", hint: "Fin de saison" },
+      { href: "/cod/ranked", label: "Classé", hint: "En solo 2vs2 à 5vs5", univers: "classe", icon: LuCrosshair },
+      { href: "/cod/division", label: "Division", hint: "En équipe 4vs4", univers: "division", icon: LuShield },
+      { href: "/cod/tournoi", label: "Tournoi", hint: "Fin de saison", univers: "tournoi", icon: LuTrophy },
     ],
   },
   { href: "/gta6", label: "GTA 6", univers: "gta" },
@@ -99,18 +99,29 @@ export function Navbar() {
                 <div key={link.href} className="group relative">
                   {item}
                   <div className="invisible absolute left-0 top-full z-10 pt-2 opacity-0 transition duration-150 group-focus-within:visible group-focus-within:opacity-100 group-hover:visible group-hover:opacity-100">
-                    <div className="clip-tactical w-64 bg-gold/40 p-px [--cut:12px]">
-                      <div className="clip-tactical bg-ink-800 p-2 [--cut:12px]">
+                    <div className="clip-tactical w-80 bg-white/15 p-px [--cut:14px]">
+                      <div className="clip-tactical space-y-1 bg-ink-800/95 p-2 backdrop-blur-md [--cut:14px]">
                         {link.children.map((child) => {
                           const current = (child.href === "/cod/ranked" && mode === "classe") || (child.href === "/cod/division" && mode === "team") || (child.href === "/cod/tournoi" && mode === "tournoi");
+                          const Icon = child.icon;
                           return (
                             <Link
                               key={child.href}
                               href={child.href}
-                              className={cn("block border-l-2 px-3 py-2.5 transition-colors", current ? "border-gold bg-gold/10" : "border-transparent hover:bg-white/[0.06]")}
+                              data-univers={child.univers}
+                              className={cn(
+                                "group/mode relative flex items-center gap-3 overflow-hidden border-l-2 px-3 py-2.5 transition-colors",
+                                current ? "border-gold bg-gold/10" : "border-gold/40 hover:border-gold hover:bg-gold/[0.07]",
+                              )}
                             >
-                              <span className={cn("block font-display text-base font-bold uppercase tracking-[0.14em]", current ? "text-gold" : "text-white")}>{child.label}</span>
-                              <span className="mt-0.5 block text-xs text-white/50">{child.hint}</span>
+                              <span className="min-w-0 flex-1">
+                                <span className="flex items-center gap-1.5 font-display text-base font-bold uppercase tracking-[0.14em] text-gold">
+                                  <Icon aria-hidden className="h-4 w-4" />
+                                  {child.label}
+                                </span>
+                                <span className="mt-0.5 block text-xs text-white/55">{child.hint}</span>
+                              </span>
+                              <LuArrowRight aria-hidden className="h-4 w-4 -translate-x-1 text-gold opacity-0 transition group-hover/mode:translate-x-0 group-hover/mode:opacity-100" />
                             </Link>
                           );
                         })}
@@ -189,9 +200,10 @@ export function Navbar() {
                             <Link
                               key={child.href}
                               href={child.href}
+                              data-univers={child.univers}
                               className={cn(
                                 "ml-4 border-l-2 px-4 py-2.5 font-display text-base font-bold uppercase tracking-[0.14em] transition-colors",
-                                current ? "border-gold text-gold" : "border-white/10 text-white/60 hover:text-white",
+                                current ? "border-gold bg-gold/10 text-gold" : "border-gold/50 text-gold/80 hover:text-gold",
                               )}
                             >
                               {child.label}
