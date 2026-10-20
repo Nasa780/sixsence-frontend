@@ -103,9 +103,7 @@ export default function TournamentPage() {
         {error ? <Notice tone="error">{error}</Notice> : null}
         {tournament === undefined && !error ? <Loading /> : null}
         {tournament === null ? (
-          <EmptyState title="Aucun tournoi prévu">
-            Le tournoi de fin de saison réunit le top du classement des équipes ({TEAM_LIMITS.qualifyMatches} matchs minimum). Joue des matchs d&apos;équipe pour te qualifier.
-          </EmptyState>
+          <EmptyState title="Aucun tournoi prévu" />
         ) : null}
 
         {tournament ? (

@@ -22,7 +22,7 @@ const clock = (seconds) => {
 /**
  * Bloc « Division » de Mon équipe : le Leader choisit les joueurs du match parmi l'effectif et lance
  * la recherche (pas de « Prêt ? »). Comme le classé : 30 min de recherche au plus, « Toujours là ? »
- * 5 min avant l'arrêt (n'importe quel membre peut répondre), alerte quand le match est trouvé ou la
+ * 5 min avant l'arrêt (un Leader répond), alerte quand le match est trouvé ou la
  * recherche arrêtée. L'adversaire reste anonyme jusqu'au match.
  */
 export function PlayPanel({ team, isLeader }) {
@@ -143,21 +143,23 @@ export function PlayPanel({ team, isLeader }) {
               <div>
                 <p className="font-display text-2xl font-black uppercase leading-none text-gold">Toujours là ?</p>
                 <p className="mt-1.5 text-sm text-white/70">
-                  Aucun adversaire pour l&apos;instant. Il reste <span className="font-tech font-bold tabular-nums text-white">{clock(stopLeft)}</span> à un membre de
-                  l&apos;équipe pour cliquer sur « Continuer », sinon la recherche s&apos;arrêtera.
+                  Aucun adversaire pour l&apos;instant. Il reste <span className="font-tech font-bold tabular-nums text-white">{clock(stopLeft)}</span> à un Leader pour
+                  cliquer sur « Continuer », sinon la recherche s&apos;arrêtera.
                 </p>
               </div>
             </div>
-            <Button onClick={() => act(() => api("/teams/me/queue/stay", { method: "POST" }))} disabled={pending} className="shrink-0">
-              {pending ? <LuLoaderCircle aria-hidden className="h-4 w-4 animate-spin" /> : <LuCheck aria-hidden className="h-4 w-4" />}
-              Continuer
-            </Button>
+            {isLeader ? (
+              <Button onClick={() => act(() => api("/teams/me/queue/stay", { method: "POST" }))} disabled={pending} className="shrink-0">
+                {pending ? <LuLoaderCircle aria-hidden className="h-4 w-4 animate-spin" /> : <LuCheck aria-hidden className="h-4 w-4" />}
+                Continuer
+              </Button>
+            ) : null}
           </div>
         ) : (
           <p className="mt-4 flex items-start gap-2 text-xs text-white/50">
             <LuClock aria-hidden className="mt-0.5 h-3.5 w-3.5 shrink-0 text-gold/80" />
             <span>
-              Sans adversaire après <span className="font-tech font-bold tabular-nums text-white/80">{clock(warnIn)}</span>, on demandera à l&apos;équipe si elle est toujours là
+              Sans adversaire après <span className="font-tech font-bold tabular-nums text-white/80">{clock(warnIn)}</span>, on demandera aux Leaders si l&apos;équipe est toujours là
               (5 minutes pour répondre, sinon la recherche s&apos;arrête).
             </span>
           </p>

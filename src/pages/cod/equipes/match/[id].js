@@ -214,7 +214,7 @@ function MatchNotices({ match, name }) {
   if (match.status === "awaiting_confirmation" && !match.viewer?.canConfirm) {
     return (
       <Notice>
-        Scores déclarés par {name(match.reportedTeam)} : en attente de la confirmation d&apos;un Leader adverse (validés d&apos;office après {match.confirmMinutes} min).
+        Scores déclarés par {name(match.reportedTeam)} : en attente de la confirmation de l&apos;équipe adverse (validés d&apos;office après {match.confirmMinutes} min).
       </Notice>
     );
   }
@@ -406,7 +406,7 @@ function ReportForm({ match, onDone }) {
       </div>
       {error ? <Notice tone="error">{error}</Notice> : null}
       <div className="flex flex-wrap items-center justify-between gap-3">
-        <p className="text-xs text-white/45">Un Leader adverse devra confirmer. Ajoute une capture du tableau des scores plus bas en cas de doute.</p>
+        <p className="text-xs text-white/45">L'équipe adverse devra confirmer. Ajoute une capture du tableau des scores plus bas en cas de doute.</p>
         <Button disabled={scores.some((v) => !v) || pending} onClick={() => setConfirming(true)}>
           Déclarer
         </Button>
