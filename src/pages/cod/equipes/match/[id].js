@@ -2,7 +2,7 @@ import Head from "next/head";
 import Link from "next/link";
 import { useRouter } from "next/router";
 import { useCallback, useEffect, useRef, useState } from "react";
-import { LuCheck, LuCrown, LuImagePlus, LuLoaderCircle, LuX } from "react-icons/lu";
+import { LuCheck, LuCrown, LuFlag, LuGamepad2, LuImagePlus, LuLoaderCircle, LuSend, LuX } from "react-icons/lu";
 import { RankEmblem } from "../../../../components/cod/RankEmblem";
 import { TeamCrest, fieldClass, labelClass } from "../../../../components/teams/TeamParts";
 import { Avatar } from "../../../../components/ui/Avatar";
@@ -12,6 +12,7 @@ import { Container } from "../../../../components/ui/Container";
 import { Chip, EmptyState, Loading, Notice, StatTile } from "../../../../components/ui/Feedback";
 import { TacticalCard } from "../../../../components/ui/TacticalCard";
 import { Eyebrow } from "../../../../components/ui/Typography";
+import useCountdown from "../../../../hooks/useCountdown";
 import useSession from "../../../../hooks/useSession";
 import { api } from "../../../../lib/api";
 import { cn } from "../../../../lib/cn";
@@ -64,19 +65,19 @@ export default function TeamMatchPage() {
   if (!match) return <Loading />;
 
   const name = (side) => (side === "A" ? match.teamA : match.teamB)?.name ?? `Équipe ${side === "A" ? 1 : 2}`;
-  const open = ["in_progress", "awaiting_confirmation", "disputed"].includes(match.status);
+  const open = ["in_progress", "awaiting_confirmation", "forfeit_claimed", "disputed"].includes(match.status);
   const scoreA = mapsWon(match.scores, "A");
   const scoreB = mapsWon(match.scores, "B");
 
   return (
     <>
       <Head>
-        <title>{`[${match.teamA?.tag}] vs [${match.teamB?.tag}] — Match team — SixSence`}</title>
+        <title>{`[${match.teamA?.tag}] vs [${match.teamB?.tag}] — Division — SixSence`}</title>
       </Head>
       <Container className="space-y-8 pb-16 pt-28 sm:pt-32">
         <div>
           <Eyebrow>
-            {match.tournament ? `${match.tournament.name} · ${match.tournament.round}` : "Match team"} · BO{match.bestOf} · {match.mode}
+            {match.tournament ? `${match.tournament.name} · ${match.tournament.round}` : "Division"} · BO{match.bestOf} · {match.mode}
           </Eyebrow>
           <h1 className="mt-3 font-display text-5xl font-black uppercase leading-[0.9] sm:text-6xl">Feuille de match</h1>
         </div>
@@ -96,6 +97,10 @@ export default function TeamMatchPage() {
         </TacticalCard>
 
         <MatchNotices match={match} name={name} />
+
+        {match.status === "in_progress" && match.scores.length === 0 && !match.pendingScores ? <KickoffBlock match={match} name={name} onDone={load} /> : null}
+        {match.status === "forfeit_claimed" ? <ForfeitBlock match={match} name={name} onDone={load} /> : null}
+        {match.messages ? <MatchChat match={match} name={name} userId={userId} onDone={load} /> : null}
 
         <div className={cn("grid gap-4 md:grid-cols-3", match.bestOf === 5 && "lg:grid-cols-5")}>
           {Array.from({ length: match.bestOf }, (_, index) => index).map((index) => (
@@ -171,6 +176,7 @@ function StatusChip({ match }) {
   if (match.status === "cancelled") return <Chip tone="neutral" className="mt-2">Annulé</Chip>;
   if (match.status === "disputed") return <Chip tone="loss" className="mt-2">Contesté</Chip>;
   if (match.status === "awaiting_confirmation") return <Chip className="mt-2">Confirmation</Chip>;
+  if (match.status === "forfeit_claimed") return <Chip tone="loss" className="mt-2">Forfait demandé</Chip>;
   return <Chip className="mt-2">{match.scores.length === match.bestOf - 1 ? "Map décisive" : "En cours"}</Chip>;
 }
 
@@ -189,8 +195,10 @@ function MatchNotices({ match, name }) {
         <LuCrown aria-hidden className="h-7 w-7 text-gold" />
         <p className="font-display text-3xl font-black uppercase leading-none tracking-wide sm:text-4xl">
           Victoire de <span className="text-gold-gradient">{name(match.winner)}</span>
+          {match.forfeit ? <span className="text-white/55"> par forfait</span> : null}
         </p>
       </div>
+      {match.forfeit ? <Notice>{name(match.winner === "A" ? "B" : "A")} {FORFEIT_REASONS[match.forfeitReason] ?? "a déclaré forfait"} : victoire par forfait, points et XP comme une victoire normale.</Notice> : null}
       {corrected}
       </>
     );
@@ -199,11 +207,14 @@ function MatchNotices({ match, name }) {
     if (corrected) return corrected;
     return <Notice>{match.cancelReason === "abandoned" ? "Match annulé : aucun résultat déclaré à temps. Aucun point n'a bougé." : "Match annulé par un arbitre : aucun point n'a bougé."}</Notice>;
   }
+  if (match.status === "disputed" && match.forfeitBy && match.scores.length === 0 && !match.pendingScores) {
+    return <Notice tone="error">Forfait demandé par {name(match.forfeitBy)} et non validé : un arbitre SixSence va trancher. Aucun point ne bouge d&apos;ici là.</Notice>;
+  }
   if (match.status === "disputed") return <Notice tone="error">Les scores ont été contestés : un arbitre SixSence va trancher. Aucun point ne bouge d&apos;ici là.</Notice>;
   if (match.status === "awaiting_confirmation" && !match.viewer?.canConfirm) {
     return (
       <Notice>
-        Scores déclarés par {name(match.reportedTeam)} : en attente de la confirmation d&apos;un Leader adverse (validés d&apos;office après {match.confirmMinutes} min).
+        Scores déclarés par {name(match.reportedTeam)} : en attente de la confirmation de l&apos;équipe adverse (validés d&apos;office après {match.confirmMinutes} min).
       </Notice>
     );
   }
@@ -395,7 +406,7 @@ function ReportForm({ match, onDone }) {
       </div>
       {error ? <Notice tone="error">{error}</Notice> : null}
       <div className="flex flex-wrap items-center justify-between gap-3">
-        <p className="text-xs text-white/45">Un Leader adverse devra confirmer. Ajoute une capture du tableau des scores plus bas en cas de doute.</p>
+        <p className="text-xs text-white/45">L'équipe adverse devra confirmer. Ajoute une capture du tableau des scores plus bas en cas de doute.</p>
         <Button disabled={scores.some((v) => !v) || pending} onClick={() => setConfirming(true)}>
           Déclarer
         </Button>
@@ -515,6 +526,17 @@ function ResolveForm({ match, onDone }) {
           Annuler le match
         </Button>
       </div>
+      {match.scores.length === 0 ? (
+        <div className="flex flex-wrap items-center gap-3 border-t border-white/10 pt-4">
+          <p className="text-sm text-white/55">Match pas joué (hôte muet, équipe absente) :</p>
+          {["A", "B"].map((side) => (
+            <Button key={side} variant="outline" size="sm" disabled={pending} onClick={() => resolve({ forfeitWinner: side })}>
+              <LuFlag aria-hidden className="h-4 w-4" />
+              Victoire par forfait [{(side === "A" ? match.teamA : match.teamB)?.tag}]
+            </Button>
+          ))}
+        </div>
+      ) : null}
     </TacticalCard>
   );
 }
@@ -557,7 +579,7 @@ function Roster({ match, side, userId }) {
 
 const PROOF_TYPES = { "image/png": "png", "image/jpeg": "jpg", "image/webp": "webp" };
 
-/** Captures du tableau des scores : envoyées par les titulaires, visibles des joueurs du match et des arbitres. */
+/** Captures du tableau des scores : envoyées par les joueurs du match, visibles des joueurs du match et des arbitres. */
 function Proofs({ match, userId, onDone }) {
   const [uploading, setUploading] = useState(false);
   const [error, setError] = useState(null);
@@ -699,6 +721,239 @@ function CorrectionForm({ match, onDone }) {
       >
         {ask === "cancel" ? "Les points des deux équipes leur sont rendus." : filled.map(([a, b], i) => `${match.maps[i]?.map ?? `Map ${i + 1}`} ${a}-${b}`).join(" · ")}
       </ConfirmDialog>
+    </TacticalCard>
+  );
+}
+
+const FORFEIT_REASONS = {
+  host_silent: "(équipe hôte) n'a pas donné le code de la partie dans le chat à temps",
+  absent: "n'était pas présente en jeu à temps",
+};
+
+const mmss = (seconds) => `${Math.floor(seconds / 60)}:${String(Math.floor(seconds % 60)).padStart(2, "0")}`;
+
+/**
+ * Lancement du match : l'équipe hôte (tirée au sort) donne le code de la partie privée dans le chat
+ * sous 10 min ; les deux équipes cliquent « Présents en jeu » sous 15 min. Sinon, l'autre équipe peut
+ * déclarer forfait (l'équipe visée valide ou conteste ; sans réponse en 15 min, un arbitre tranche).
+ */
+function KickoffBlock({ match, name, onDone }) {
+  const [pending, setPending] = useState(false);
+  const [error, setError] = useState(null);
+  const [ask, setAsk] = useState(null);
+  const hostLeft = useCountdown(match.hostDeadline);
+  const presenceLeft = useCountdown(match.presenceDeadline);
+  const viewer = match.viewer;
+  const hostSpoke = (match.messages ?? []).some((message) => message.side === match.hostSide);
+
+  async function run(path, body) {
+    setPending(true);
+    setError(null);
+    try {
+      await api(`/teams/matches/${match.id}/${path}`, { method: "POST", body });
+      setAsk(null);
+      await onDone();
+    } catch (caught) {
+      setError(caught.message);
+      setAsk(null);
+    } finally {
+      setPending(false);
+    }
+  }
+
+  return (
+    <TacticalCard highlight innerClassName="space-y-5 p-6">
+      <div className="flex flex-wrap items-start justify-between gap-4">
+        <div>
+          <Eyebrow>Lancement du match</Eyebrow>
+          <p className="mt-2 font-display text-2xl font-black uppercase leading-none">
+            Hôte : <span className="text-gold">{name(match.hostSide)}</span>
+          </p>
+          <p className="mt-2 max-w-2xl text-sm text-white/55">
+            {viewer?.side === match.hostSide
+              ? "Ton équipe est hôte : crée la partie privée et donne son code dans le chat ci-dessous."
+              : "L'équipe hôte crée la partie privée et donne son code dans le chat."}{" "}
+            Les deux équipes confirment ensuite leur présence en jeu.
+          </p>
+        </div>
+        {viewer?.canMarkPresent ? (
+          <Button disabled={pending} onClick={() => run("present")}>
+            {pending ? <LuLoaderCircle aria-hidden className="h-5 w-5 animate-spin" /> : <LuGamepad2 aria-hidden className="h-5 w-5" />}
+            Présents en jeu
+          </Button>
+        ) : null}
+      </div>
+
+      <div className="grid gap-3 sm:grid-cols-3">
+        <StatTile
+          label="Code de la partie (hôte)"
+          value={hostSpoke ? "Donné" : hostLeft > 0 ? mmss(hostLeft) : "En retard"}
+          hint={hostSpoke ? "L'hôte a écrit dans le chat" : "10 min pour écrire dans le chat"}
+        />
+        {["A", "B"].map((side) => (
+          <StatTile
+            key={side}
+            label={`Présence · ${name(side)}`}
+            value={match.present[side] ? "En jeu" : presenceLeft > 0 ? mmss(presenceLeft) : "Absente"}
+            hint={match.present[side] ? `depuis ${new Date(match.present[side]).toLocaleTimeString("fr-FR", { hour: "2-digit", minute: "2-digit" })}` : "15 min pour être en jeu"}
+          />
+        ))}
+      </div>
+
+      {viewer?.canClaimForfeit?.host_silent || viewer?.canClaimForfeit?.absent ? (
+        <div className="flex flex-wrap items-center gap-3 border-t border-white/10 pt-4">
+          <p className="text-sm text-white/60">Délai dépassé côté adverse :</p>
+          {viewer.canClaimForfeit.host_silent ? (
+            <Button variant="danger" size="sm" disabled={pending} onClick={() => setAsk("host_silent")}>
+              <LuFlag aria-hidden className="h-4 w-4" />
+              Forfait : pas de code
+            </Button>
+          ) : null}
+          {viewer.canClaimForfeit.absent ? (
+            <Button variant="danger" size="sm" disabled={pending} onClick={() => setAsk("absent")}>
+              <LuFlag aria-hidden className="h-4 w-4" />
+              Forfait : absents
+            </Button>
+          ) : null}
+        </div>
+      ) : null}
+      {error ? <Notice tone="error">{error}</Notice> : null}
+      <ConfirmDialog
+        open={Boolean(ask)}
+        onClose={() => setAsk(null)}
+        title="Déclarer forfait ?"
+        confirmLabel="Déclarer forfait"
+        tone="danger"
+        pending={pending}
+        onConfirm={() => run("forfeit", { reason: ask })}
+      >
+        L&apos;équipe adverse a 15 min pour valider (victoire pour toi) ou contester ; sans réponse, un arbitre SixSence tranche.
+      </ConfirmDialog>
+    </TacticalCard>
+  );
+}
+
+/** Forfait déclaré : l'équipe visée valide ou conteste ; sans réponse en 15 min, un arbitre tranche. */
+function ForfeitBlock({ match, name, onDone }) {
+  const [pending, setPending] = useState(false);
+  const [error, setError] = useState(null);
+  const [ask, setAsk] = useState(null);
+  const left = useCountdown(match.forfeitAnswerDeadline);
+  const accused = match.forfeitBy === "A" ? "B" : "A";
+
+  async function answer(accept) {
+    setPending(true);
+    setError(null);
+    try {
+      await api(`/teams/matches/${match.id}/forfeit/answer`, { method: "POST", body: { accept } });
+      setAsk(null);
+      await onDone();
+    } catch (caught) {
+      setError(caught.message);
+      setAsk(null);
+    } finally {
+      setPending(false);
+    }
+  }
+
+  return (
+    <TacticalCard highlight innerClassName="space-y-4 p-6">
+      <Eyebrow>Forfait demandé</Eyebrow>
+      <p className="font-display text-2xl font-black uppercase leading-tight">
+        {name(match.forfeitBy)} <span className="text-white/60">demande la victoire par forfait :</span> {name(accused)} {FORFEIT_REASONS[match.forfeitReason]}.
+      </p>
+      <p className="text-sm text-white/55">
+        {match.viewer?.canAnswerForfeit ? "Valide si c'est vrai, conteste sinon." : `En attente de la réponse de ${name(accused)}.`} Sans réponse dans{" "}
+        <span className="font-tech font-bold tabular-nums text-white">{mmss(left)}</span>, un arbitre SixSence tranchera.
+      </p>
+      {match.viewer?.canAnswerForfeit ? (
+        <div className="flex flex-wrap gap-3">
+          <Button variant="outline" disabled={pending} onClick={() => setAsk("accept")}>
+            <LuCheck aria-hidden className="h-5 w-5" />
+            Valider le forfait
+          </Button>
+          <Button variant="danger" disabled={pending} onClick={() => setAsk("refuse")}>
+            <LuX aria-hidden className="h-5 w-5" />
+            Contester
+          </Button>
+        </div>
+      ) : null}
+      {error ? <Notice tone="error">{error}</Notice> : null}
+      <ConfirmDialog
+        open={Boolean(ask)}
+        onClose={() => setAsk(null)}
+        title={ask === "accept" ? "Valider le forfait ?" : "Contester le forfait ?"}
+        confirmLabel={ask === "accept" ? "Valider" : "Contester"}
+        tone={ask === "accept" ? "gold" : "danger"}
+        pending={pending}
+        onConfirm={() => answer(ask === "accept")}
+      >
+        {ask === "accept" ? "Ton équipe perd le match (points et XP d'une défaite)." : "Un arbitre SixSence tranchera : explique la situation dans le chat."}
+      </ConfirmDialog>
+    </TacticalCard>
+  );
+}
+
+/** Chat du match : joueurs du match, Leaders des deux équipes et arbitres (le code de la partie y est donné). */
+function MatchChat({ match, name, userId, onDone }) {
+  const [text, setText] = useState("");
+  const [pending, setPending] = useState(false);
+  const [error, setError] = useState(null);
+  const listRef = useRef(null);
+  const count = match.messages.length;
+
+  useEffect(() => {
+    if (listRef.current) listRef.current.scrollTop = listRef.current.scrollHeight;
+  }, [count]);
+
+  async function send(event) {
+    event.preventDefault();
+    if (!text.trim()) return;
+    setPending(true);
+    setError(null);
+    try {
+      await api(`/teams/matches/${match.id}/messages`, { method: "POST", body: { body: text.trim() } });
+      setText("");
+      await onDone();
+    } catch (caught) {
+      setError(caught.message);
+    } finally {
+      setPending(false);
+    }
+  }
+
+  return (
+    <TacticalCard innerClassName="space-y-4 p-6">
+      <div className="flex flex-wrap items-end justify-between gap-2">
+        <Eyebrow>Chat du match</Eyebrow>
+        <p className="text-xs text-white/40">Joueurs du match, Leaders et arbitres seulement</p>
+      </div>
+      <ul ref={listRef} className="max-h-80 space-y-2 overflow-y-auto pr-1">
+        {count === 0 ? <li className="text-sm text-white/45">Aucun message. L&apos;équipe hôte donne ici le code de la partie privée.</li> : null}
+        {match.messages.map((message) => (
+          <li key={message.id} className={cn("border-l-2 bg-white/[0.03] px-3 py-2", message.side === "A" ? "border-gold" : message.side === "B" ? "border-white/70" : "border-loss")}>
+            <p className="font-tech text-[10px] uppercase tracking-[0.2em] text-white/45">
+              <span className={cn(message.userId === userId ? "text-gold" : "text-white/70")}>{message.username}</span>
+              {" · "}
+              {message.side ? name(message.side) : "Arbitre"}
+              {message.side && message.side === match.hostSide ? " (hôte)" : ""}
+              {" · "}
+              {new Date(message.createdAt).toLocaleTimeString("fr-FR", { hour: "2-digit", minute: "2-digit" })}
+            </p>
+            <p className="mt-1 whitespace-pre-wrap break-words text-sm text-white/85">{message.body}</p>
+          </li>
+        ))}
+      </ul>
+      {match.viewer?.canChat && !["cancelled"].includes(match.status) ? (
+        <form onSubmit={send} className="flex gap-2">
+          <input className={fieldClass} maxLength={300} placeholder="Code de la partie, infos…" value={text} onChange={(event) => setText(event.target.value)} aria-label="Message" />
+          <Button type="submit" disabled={pending || !text.trim()} className="shrink-0">
+            {pending ? <LuLoaderCircle aria-hidden className="h-4 w-4 animate-spin" /> : <LuSend aria-hidden className="h-4 w-4" />}
+            Envoyer
+          </Button>
+        </form>
+      ) : null}
+      {error ? <Notice tone="error">{error}</Notice> : null}
     </TacticalCard>
   );
 }

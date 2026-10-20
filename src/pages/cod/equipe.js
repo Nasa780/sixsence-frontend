@@ -48,7 +48,7 @@ export default function MyTeamPage() {
       </Head>
       <PageHeader
         image="/images/mw4.webp"
-        eyebrow="Match team"
+        eyebrow="Division"
         title={
           <>
             Mon <span className="text-gold-gradient">équipe</span>
@@ -220,8 +220,6 @@ function ManageTeam({ state, userId, reload, created, onLeft }) {
     }
   }
 
-  const starters = team.members.filter((member) => member.starter);
-  const subs = team.members.filter((member) => !member.starter);
   const others = team.members.filter((member) => member.id !== userId);
   const requests = state.joinRequests ?? [];
 
@@ -230,16 +228,6 @@ function ManageTeam({ state, userId, reload, created, onLeft }) {
     const canKick = !member.crown && (member.role !== "leader" || me.crown);
     return (
       <div className="flex flex-wrap items-center gap-2">
-        <select
-          aria-label={`Place de ${member.username}`}
-          className="border border-white/15 bg-ink-700 px-2.5 py-2 text-xs text-white"
-          value={member.starter ? "starter" : "sub"}
-          disabled={pending}
-          onChange={(event) => run(() => api(`/teams/${team.id}/members/${member.id}`, { method: "PATCH", body: { starter: event.target.value === "starter" } }))}
-        >
-          <option value="starter">Titulaire</option>
-          <option value="sub">Remplaçant</option>
-        </select>
         {me.crown && !member.crown ? (
           <select
             aria-label={`Rôle de ${member.username}`}
@@ -294,39 +282,28 @@ function ManageTeam({ state, userId, reload, created, onLeft }) {
       {tab === "effectif" ? (
         <div className="grid gap-10 lg:grid-cols-[2fr_1fr]">
           <section aria-label="Effectif">
-            <RosterHeading title="Titulaires" count={starters.length} max={TEAM_LIMITS.maxStarters} gold />
+            <RosterHeading title="Effectif" count={team.members.length} max={TEAM_LIMITS.maxMembers} gold />
             <ul className="mt-3 space-y-2">
-              {starters.map((member) => (
+              {team.members.map((member) => (
                 <MemberRow key={member.id} member={member} isMe={member.id === userId}>
                   {controls(member)}
                 </MemberRow>
               ))}
             </ul>
-            <RosterHeading title="Remplaçants" count={subs.length} max={TEAM_LIMITS.maxMembers - TEAM_LIMITS.maxStarters} className="mt-10" />
-            {subs.length > 0 ? (
-              <ul className="mt-3 space-y-2">
-                {subs.map((member) => (
-                  <MemberRow key={member.id} member={member} isMe={member.id === userId}>
-                    {controls(member)}
-                  </MemberRow>
-                ))}
-              </ul>
-            ) : (
-              <p className="mt-4 text-sm text-white/45">Aucun remplaçant.</p>
-            )}
+            <p className="mt-4 text-xs text-white/45">Pas de titulaires : à chaque match, le Leader qui lance la recherche choisit les joueurs parmi l&apos;effectif.</p>
           </section>
           <aside className="space-y-6">
             <TacticalCard innerClassName="space-y-3 p-6">
               <Eyebrow>Mon rôle</Eyebrow>
               <p className="flex items-center gap-2 font-display text-2xl font-black uppercase leading-none">
                 {me.crown ? <LuCrown aria-label="Couronne" className="h-6 w-6 text-gold" /> : null}
-                {isLeader ? "Leader" : me.starter ? "Joueur" : "Remplaçant"}
+                {isLeader ? "Leader" : "Joueur"}
               </p>
               <p className="text-sm leading-relaxed text-white/55">
                 {me.crown
                   ? "Tu portes la couronne : tu nommes les Leaders, renommes l'équipe et peux la dissoudre."
                   : isLeader
-                    ? "Tu peux inviter, accepter les candidatures, gérer les titulaires et exclure les joueurs."
+                    ? "Tu peux inviter, accepter les candidatures, lancer les matchs en choisissant les joueurs et exclure des membres."
                     : "Les Leaders gèrent l'effectif et les invitations."}
               </p>
             </TacticalCard>
@@ -512,7 +489,7 @@ function Recruitment({ team, state, reload }) {
           <p className="text-xs text-white/45">Aucun joueur sans équipe ne correspond.</p>
         ) : null}
         <p className="text-xs text-white/45">
-          Le joueur doit avoir joué {TEAM_LIMITS.minRankedMatches} matchs classés et ne pas avoir quitté une équipe ces dernières 24 h.
+          Le joueur doit avoir lié son identifiant Activision et ne pas avoir quitté une équipe ces dernières 24 h.
         </p>
 
         {(state.sentInvites ?? []).length > 0 ? (

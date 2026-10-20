@@ -2,18 +2,18 @@ import Head from "next/head";
 import Link from "next/link";
 import { useCallback, useEffect, useState } from "react";
 import { LuCheck, LuCrown, LuLoaderCircle, LuTrophy } from "react-icons/lu";
-import { TeamCrest } from "../../../components/teams/TeamParts";
-import { Avatar } from "../../../components/ui/Avatar";
-import { Button, ButtonLink } from "../../../components/ui/Button";
-import { Container } from "../../../components/ui/Container";
-import { Chip, EmptyState, Loading, Notice, StatTile } from "../../../components/ui/Feedback";
-import { TacticalCard } from "../../../components/ui/TacticalCard";
-import { Eyebrow, PageHeader } from "../../../components/ui/Typography";
-import useSession from "../../../hooks/useSession";
-import { api } from "../../../lib/api";
-import { supabase } from "../../../lib/supabase";
-import { cn } from "../../../lib/cn";
-import { TEAM_LIMITS } from "../../../lib/teams";
+import { TeamCrest } from "../../components/teams/TeamParts";
+import { Avatar } from "../../components/ui/Avatar";
+import { Button, ButtonLink } from "../../components/ui/Button";
+import { Container } from "../../components/ui/Container";
+import { Chip, EmptyState, Loading, Notice, StatTile } from "../../components/ui/Feedback";
+import { TacticalCard } from "../../components/ui/TacticalCard";
+import { Eyebrow, PageHeader } from "../../components/ui/Typography";
+import useSession from "../../hooks/useSession";
+import { api } from "../../lib/api";
+import { supabase } from "../../lib/supabase";
+import { cn } from "../../lib/cn";
+import { TEAM_LIMITS } from "../../lib/teams";
 
 const dateFr = (iso) => new Date(iso).toLocaleString("fr-FR", { weekday: "long", day: "numeric", month: "long", hour: "2-digit", minute: "2-digit" });
 
@@ -26,7 +26,7 @@ function countdown(target, now) {
   return d > 0 ? `${d} j ${h} h ${String(m).padStart(2, "0")}` : `${h}:${String(m).padStart(2, "0")}:${String(s).padStart(2, "0")}`;
 }
 
-/** Tournoi de fin de saison du mode « Match team » : check-in, tableau en direct, vainqueur. Public. */
+/** Tournoi de fin de saison (section à part, équipes de la Division) : check-in, tableau en direct, vainqueur. Public. */
 export default function TournamentPage() {
   const { userId } = useSession();
   const [tournament, setTournament] = useState(undefined);
@@ -74,11 +74,11 @@ export default function TournamentPage() {
     <>
       <Head>
         <title>{tournament ? `${tournament.name} — SixSence` : "Tournoi — SixSence"}</title>
-        <meta name="description" content="Tournoi de fin de saison du mode Match team de SixSence : les meilleures équipes s'affrontent en BO3, finale en BO5." />
+        <meta name="description" content="Tournoi de fin de saison de SixSence : les meilleures équipes s'affrontent en BO3, finale en BO5." />
       </Head>
       <PageHeader
         image="/images/mw4.webp"
-        eyebrow="Match team · Fin de saison"
+        eyebrow="Tournoi · Fin de saison"
         title={
           tournament ? (
             tournament.name
@@ -95,7 +95,7 @@ export default function TournamentPage() {
         }
         actions={
           <ButtonLink href="/cod/equipes" variant="outline">
-            Classement des équipes
+            Classement de la Division
           </ButtonLink>
         }
       />
@@ -103,9 +103,7 @@ export default function TournamentPage() {
         {error ? <Notice tone="error">{error}</Notice> : null}
         {tournament === undefined && !error ? <Loading /> : null}
         {tournament === null ? (
-          <EmptyState title="Aucun tournoi prévu">
-            Le tournoi de fin de saison réunit le top du classement des équipes ({TEAM_LIMITS.qualifyMatches} matchs minimum). Joue des matchs d&apos;équipe pour te qualifier.
-          </EmptyState>
+          <EmptyState title="Aucun tournoi prévu" />
         ) : null}
 
         {tournament ? (
@@ -208,7 +206,7 @@ function CheckInPanel({ tournament, open, onDone }) {
       ) : viewer.isLeader ? (
         <>
           <p className="text-sm text-white/55">
-            Choisis tes {viewer.rosterSize} titulaires parmi l&apos;effectif inscrit au tournoi ({roster.length} / {viewer.rosterSize}). Tu peux les changer jusqu&apos;au début.
+            Choisis tes {viewer.rosterSize} joueurs parmi l&apos;effectif inscrit au tournoi ({roster.length} / {viewer.rosterSize}). Tu peux les changer jusqu&apos;au début.
           </p>
           <ul className="grid gap-2 sm:grid-cols-2">
             {viewer.frozenRoster.map((player) => {
@@ -223,7 +221,7 @@ function CheckInPanel({ tournament, open, onDone }) {
                   >
                     <Avatar src={player.avatarUrl} name={player.username} size={32} />
                     <span className="min-w-0 flex-1 truncate font-display text-lg font-bold uppercase leading-none">{player.username}</span>
-                    {selected ? <Chip>Titulaire</Chip> : null}
+                    {selected ? <Chip>Joue</Chip> : null}
                   </button>
                 </li>
               );
@@ -232,7 +230,7 @@ function CheckInPanel({ tournament, open, onDone }) {
           {error ? <Notice tone="error">{error}</Notice> : null}
           <Button disabled={pending || roster.length !== viewer.rosterSize} onClick={submit}>
             {pending ? <LuLoaderCircle aria-hidden className="h-5 w-5 animate-spin" /> : <LuCheck aria-hidden className="h-5 w-5" />}
-            {viewer.checkedIn ? "Mettre à jour les titulaires" : "Valider le check-in"}
+            {viewer.checkedIn ? "Mettre à jour les joueurs" : "Valider le check-in"}
           </Button>
         </>
       ) : (

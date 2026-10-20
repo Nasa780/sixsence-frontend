@@ -6,7 +6,7 @@ import { supabase } from "../lib/supabase";
 const cache = new Map();
 
 /**
- * Équipe (Match team) de plusieurs joueurs, pour afficher leur tag à côté du pseudo.
+ * Équipe (Division) de plusieurs joueurs, pour afficher leur tag à côté du pseudo.
  * Renvoie une Map userId → { id, name, tag, color, logoUrl } (absent = sans équipe).
  */
 export default function useTeamTags(userIds) {

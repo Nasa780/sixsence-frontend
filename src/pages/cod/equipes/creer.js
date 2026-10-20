@@ -12,7 +12,7 @@ import { Eyebrow, PageHeader } from "../../../components/ui/Typography";
 import useSession from "../../../hooks/useSession";
 import { api } from "../../../lib/api";
 import { cn } from "../../../lib/cn";
-import { TEAM_COLORS, TEAM_LIMITS } from "../../../lib/teams";
+import { TEAM_COLORS } from "../../../lib/teams";
 
 /** Création d'une équipe : nom, tag, description, couleur (logo et bannière ensuite dans « Mon équipe »). */
 export default function CreateTeamPage() {
@@ -48,7 +48,6 @@ export default function CreateTeamPage() {
   const missing = state?.requirements?.missing ?? [];
   const checks = state
     ? [
-        { ok: state.requirements.rankedMatches >= TEAM_LIMITS.minRankedMatches, label: `${TEAM_LIMITS.minRankedMatches} matchs classés joués (${state.requirements.rankedMatches})` },
         { ok: !missing.some((text) => text.includes("Activision")), label: "Identifiant Activision renseigné" },
         { ok: !missing.some((text) => text.includes("Discord")), label: "Compte Discord connecté" },
         { ok: !missing.some((text) => text.includes("exclusion")), label: "Aucune exclusion en cours" },
@@ -63,7 +62,7 @@ export default function CreateTeamPage() {
       </Head>
       <PageHeader
         image="/images/mw4.webp"
-        eyebrow="Match team"
+        eyebrow="Division"
         title={
           <>
             Créer une <span className="text-gold-gradient">équipe</span>

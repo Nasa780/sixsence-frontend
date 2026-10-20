@@ -1,7 +1,7 @@
 import Head from "next/head";
 import Link from "next/link";
 import { useEffect, useState } from "react";
-import { LuArrowRight, LuCrosshair, LuShield } from "react-icons/lu";
+import { LuArrowRight, LuCrosshair, LuShield, LuTrophy } from "react-icons/lu";
 import { LeaderboardView } from "./LeaderboardView";
 import { OnboardingPanel } from "./OnboardingPanel";
 import { RankBadge } from "./RankBadge";
@@ -39,20 +39,29 @@ const MODES = [
     key: "team",
     icon: LuShield,
     eyebrow: "Mode équipe",
-    title: "Match team",
-    text: "Ton équipe de 4 titulaires et 4 remplaçants en BO3 4v4. Les points de l'équipe, son classement et le tournoi de fin de saison.",
-    facts: ["BO3 4v4", "Points d'équipe", "Tournoi de fin de saison"],
+    title: "Division",
+    text: "Ton équipe jusqu'à 8 joueurs en BO3 4v4, le Leader choisit les 4 de chaque match. Les points de l'équipe et son classement en direct.",
+    facts: ["BO3 4v4", "Points d'équipe", "Classement des équipes"],
     primary: { href: "/cod/equipe", label: "Mon équipe" },
     links: [
       { href: "/cod/equipes", label: "Classement des équipes" },
-      { href: "/cod/equipes/tournoi", label: "Tournoi" },
     ],
+  },
+  {
+    key: "tournoi",
+    icon: LuTrophy,
+    eyebrow: "Fin de saison",
+    title: "Tournoi",
+    text: "Les meilleures équipes de la Division s'affrontent à la fin de la saison : élimination directe en BO3, finale en BO5.",
+    facts: ["Top du classement", "BO3, finale BO5", "Trophée et rôle Discord"],
+    primary: { href: "/cod/tournoi", label: "Voir le tournoi" },
+    links: [],
   },
 ];
 
 const winRate = (wins, losses) => (wins + losses > 0 ? Math.round((wins / (wins + losses)) * 100) : null);
 
-/** Hub COD : résumé du joueur connecté, les deux modes (Classé, Match team) séparés, top joueurs et top équipes. Public. */
+/** Hub COD : résumé du joueur connecté, les trois sections (Classé, Division, Tournoi) séparées, top joueurs et top équipes. Public. */
 export function ModesHub() {
   const { session } = useSession();
   const user = useUser();
@@ -91,7 +100,7 @@ export function ModesHub() {
           </>
         }
         description={
-          user ? `Content de te revoir, ${user.username}. Deux modes t'attendent : le classé et les match team.` : "Recherche & Destruction Hardcore : le classé pour les joueurs (2v2 à 5v5), les match team pour les équipes (BO3 4v4)."
+          user ? `Content de te revoir, ${user.username}. Classé, Division et Tournoi t'attendent.` : "Recherche & Destruction Hardcore : le classé en solo (2v2 à 5v5), la Division pour les équipes (BO3 4v4) et le tournoi de fin de saison."
         }
         actions={
           <>
@@ -101,7 +110,7 @@ export function ModesHub() {
             </ButtonLink>
             <ButtonLink href="/cod/equipes" size="lg" variant="outline">
               <LuShield aria-hidden className="h-5 w-5" />
-              Match team
+              Division
             </ButtonLink>
           </>
         }
@@ -140,12 +149,12 @@ export function ModesHub() {
           </section>
         ) : null}
 
-        <div className="grid grid-cols-1 gap-6 lg:grid-cols-2">
+        <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
           {MODES.map((mode, index) => (
             <Reveal key={mode.key} delay={index * 0.08} className="h-full">
               <TacticalCard highlight={mode.key === "classe"} cut={28} className="h-full" innerClassName={cn("flex h-full flex-col overflow-hidden p-7 sm:p-9", mode.key === "classe" && "holo")}>
                 <div aria-hidden className="absolute -right-6 -top-8 select-none font-display text-[9rem] font-black uppercase leading-none text-outline opacity-40">
-                  {mode.key === "classe" ? "#1" : "4v4"}
+                  {mode.key === "classe" ? "#1" : mode.key === "team" ? "4v4" : "BO5"}
                 </div>
                 <div className="relative flex h-full flex-col">
                   <mode.icon aria-hidden className="h-10 w-10 text-gold" />
@@ -191,7 +200,7 @@ export function ModesHub() {
   );
 }
 
-/** Top 5 des équipes (mode Match team). */
+/** Top 5 des équipes (Division). */
 function TopTeams({ label }) {
   const [teams, setTeams] = useState(null);
   useEffect(() => {
@@ -202,7 +211,7 @@ function TopTeams({ label }) {
 
   return (
     <section aria-labelledby="titre-top-equipes">
-      <SectionHeading eyebrow={`${label} · Match team`} title={<span id="titre-top-equipes">Top équipes</span>} />
+      <SectionHeading eyebrow={`${label} · Division`} title={<span id="titre-top-equipes">Top équipes</span>} />
       <div className="mt-8">
         {teams === null ? null : teams.length === 0 ? (
           <p className="text-sm text-white/50">

@@ -307,3 +307,23 @@ export function alertMatchFound({ map, mode, deadline }) {
     }
   }
 }
+
+/**
+ * Division : alerte sans « Prêt ? » (match trouvé, « Toujours là ? », recherche arrêtée) :
+ * son court, titre clignotant et notification du navigateur si l'onglet est caché.
+ */
+export function alertTeamEvent({ title, body, flash, tag = "sixsence-division" }) {
+  playStartSound();
+  flashTitle(flash);
+  if (typeof window !== "undefined" && "Notification" in window && Notification.permission === "granted" && document.hidden) {
+    try {
+      const notification = new Notification(title, { body, icon: "/favicon.svg", tag });
+      notification.onclick = () => {
+        window.focus();
+        notification.close();
+      };
+    } catch {
+      // Certains navigateurs mobiles refusent les notifications hors service worker.
+    }
+  }
+}

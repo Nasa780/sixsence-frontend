@@ -12,7 +12,8 @@ import { levelFor, rankFor, rankGradient } from "../../lib/ranks";
 import { isPermanentBan } from "../../lib/roles";
 import { supabase } from "../../lib/supabase";
 import useTeamTags from "../../hooks/useTeamTags";
-import { TeamCrest } from "../teams/TeamParts";
+import { MATCH_TEAM_ENABLED } from "../../lib/config";
+import { SlantTab, TeamCrest } from "../teams/TeamParts";
 import { Avatar } from "../ui/Avatar";
 import { Chip, EmptyState, Loading, Notice, StatTile } from "../ui/Feedback";
 import { TacticalCard } from "../ui/TacticalCard";
@@ -65,6 +66,7 @@ function badgesFor(profile, seasons) {
  * Public ; seul le propriétaire voit le formulaire de ses identifiants.
  */
 export function ProfileView({ userId, editable = false, ownUser = null }) {
+  const [historyTab, setHistoryTab] = useState("classe");
   const team = useTeamTags([userId]).get(userId);
   const [data, setData] = useState(null);
   const [notFound, setNotFound] = useState(false);
@@ -301,6 +303,19 @@ export function ProfileView({ userId, editable = false, ownUser = null }) {
           <h2 id="titre-historique" className="mt-3 font-display text-4xl font-black uppercase leading-none">
             Derniers matchs
           </h2>
+          {MATCH_TEAM_ENABLED ? (
+            <div role="tablist" aria-label="Type de matchs" className="mt-5 flex gap-2">
+              <SlantTab active={historyTab === "classe"} onClick={() => setHistoryTab("classe")}>
+                Classé
+              </SlantTab>
+              <SlantTab active={historyTab === "division"} onClick={() => setHistoryTab("division")}>
+                Division
+              </SlantTab>
+            </div>
+          ) : null}
+          {historyTab === "division" ? (
+            <DivisionHistory playerId={player.id} />
+          ) : (
           <div className="mt-6">
             {history.length === 0 ? (
               <EmptyState title="Aucun match pour l'instant">
@@ -323,6 +338,7 @@ export function ProfileView({ userId, editable = false, ownUser = null }) {
               </ul>
             )}
           </div>
+          )}
         </section>
 
         <div className="space-y-12">
@@ -370,6 +386,73 @@ export function ProfileView({ userId, editable = false, ownUser = null }) {
         </div>
       </div>
     </div>
+  );
+}
+
+/** Matchs de Division joués par le joueur (joueur du match) : équipe, adversaire, maps, points de l'équipe, XP. */
+function DivisionHistory({ playerId }) {
+  const [matches, setMatches] = useState(null);
+  useEffect(() => {
+    let alive = true;
+    setMatches(null);
+    api(`/teams/players/${playerId}/matches`)
+      .then((data) => alive && setMatches(data.matches))
+      .catch(() => alive && setMatches([]));
+    return () => {
+      alive = false;
+    };
+  }, [playerId]);
+
+  if (matches === null) return <p className="mt-6 text-sm text-white/45">Chargement…</p>;
+  if (matches.length === 0) return (
+      <div className="mt-6">
+        <EmptyState title="Aucun match de Division">Les matchs joués avec une équipe apparaîtront ici.</EmptyState>
+      </div>
+    );
+  return (
+    <ul className="mt-6 space-y-2">
+      {matches.map((match) => {
+        const done = match.status === "completed";
+        const tone = done ? (match.won ? "win" : "loss") : "gold";
+        return (
+          <li key={match.id}>
+            <Link
+              href={`/cod/equipes/match/${match.id}`}
+              className={cn(
+                "flex items-center gap-4 border-l-2 bg-white/[0.03] px-4 py-3.5 transition-colors hover:bg-white/[0.07]",
+                tone === "win" ? "border-win" : tone === "loss" ? "border-loss" : "border-gold",
+              )}
+            >
+              <Chip tone={tone} className="w-28 shrink-0 justify-center">
+                {done ? (match.won ? "Victoire" : "Défaite") : "En cours"}
+              </Chip>
+              <TeamCrest team={match.opponent} size={30} />
+              <div className="min-w-0 flex-1">
+                <p className="truncate font-display text-xl font-bold uppercase leading-none tracking-wide">
+                  <span className="text-white/45">vs</span> {match.opponent?.name ?? "Équipe"}
+                </p>
+                <p className="mt-1 truncate text-xs text-white/45">
+                  Avec [{match.team?.tag}] · {done ? `${match.mapsFor} – ${match.mapsAgainst}` : "BO3"}
+                  {match.forfeit ? " · par forfait" : ""}
+                  {match.tournament ? " · tournoi" : ""} · {new Date(match.date).toLocaleDateString("fr-FR", { day: "numeric", month: "short" })}
+                </p>
+              </div>
+              {done ? (
+                <p className="shrink-0 text-right font-tech text-xs font-bold tabular-nums">
+                  {typeof match.teamPoints === "number" ? (
+                    <span className={cn("block text-base", match.teamPoints > 0 ? "text-win" : "text-loss")}>
+                      {signed(match.teamPoints)}
+                      <span className="sr-only"> points d&apos;équipe</span>
+                    </span>
+                  ) : null}
+                  <span className="text-white/45">+{match.xp} XP</span>
+                </p>
+              ) : null}
+            </Link>
+          </li>
+        );
+      })}
+    </ul>
   );
 }
 

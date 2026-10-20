@@ -19,7 +19,7 @@ import { TEAM_LIMITS } from "../../../lib/teams";
 /** Places qualificatives pour le tournoi de fin de saison (réglable plus tard selon l'activité). */
 const QUALIFIED_SPOTS = 16;
 
-/** Classement des équipes du mode « Match team ». Public. */
+/** Classement des équipes du Division. Public. */
 export default function TeamsPage() {
   const { userId } = useSession();
   const { seasons, label } = useSeasons();
@@ -66,20 +66,20 @@ export default function TeamsPage() {
     <>
       <Head>
         <title>Équipes — SixSence</title>
-        <meta name="description" content="Classement des équipes du mode Match team de SixSence : BO3 en 4v4, points en direct, tournoi de fin de saison." />
+        <meta name="description" content="Classement des équipes du Division de SixSence : BO3 en 4v4, points en direct, tournoi de fin de saison." />
       </Head>
       <PageHeader
         image="/images/mw4.webp"
-        eyebrow={`${label} · Match team`}
+        eyebrow={`${label} · Division`}
         title={
           <>
             Classement <span className="text-gold-gradient">équipes</span>
           </>
         }
-        description={`Équipes de 4 titulaires et 4 remplaçants, BO3 en 4v4. Le top ${QUALIFIED_SPOTS} (${TEAM_LIMITS.qualifyMatches} matchs minimum) dispute le tournoi de fin de saison.`}
+        description={`Équipes jusqu'à 8 joueurs, BO3 en 4v4. Le top ${QUALIFIED_SPOTS} (${TEAM_LIMITS.qualifyMatches} matchs minimum) dispute le tournoi de fin de saison.`}
         actions={
           <>
-            <ButtonLink href="/cod/equipes/tournoi" variant="outline" size="lg">
+            <ButtonLink href="/cod/tournoi" variant="outline" size="lg">
               <LuTrophy aria-hidden className="h-5 w-5" />
               Tournoi
             </ButtonLink>

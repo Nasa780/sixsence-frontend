@@ -1,11 +1,11 @@
 import { supabase } from "./supabase";
 
 /**
- * Équipes du mode « Match team » : constantes partagées par les pages (mêmes règles que
+ * Équipes du Division : constantes partagées par les pages (mêmes règles que
  * services/teamPolicy.ts du backend) et envoi des logos et bannières.
  */
 
-export const TEAM_LIMITS = { maxMembers: 8, maxStarters: 4, minRankedMatches: 5, qualifyMatches: 25 };
+export const TEAM_LIMITS = { maxMembers: 8, qualifyMatches: 25 };
 
 /** Couleurs proposées (identiques à TEAM_COLORS du backend). */
 export const TEAM_COLORS = ["#d4af37", "#5cc8ff", "#f87171", "#a78bfa", "#4ade80", "#facc15", "#fb923c", "#f0abfc", "#e5e7eb"];

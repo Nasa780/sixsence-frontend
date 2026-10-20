@@ -83,8 +83,6 @@ export default function TeamPage() {
   }
   if (!team) return <Loading />;
 
-  const starters = team.members.filter((member) => member.starter);
-  const subs = team.members.filter((member) => !member.starter);
   const isMember = team.members.some((member) => member.id === userId);
   const requested = mine?.requests?.some((request) => request.team.id === team.id);
   const socials = SOCIALS.filter((social) => team.socials?.[social.key]);
@@ -93,7 +91,7 @@ export default function TeamPage() {
     <>
       <Head>
         <title>{`[${team.tag}] ${team.name} — SixSence`}</title>
-        <meta name="description" content={team.description || `Équipe ${team.name} du mode Match team de SixSence.`} />
+        <meta name="description" content={team.description || `Équipe ${team.name} du Division de SixSence.`} />
       </Head>
 
       <header className="relative isolate overflow-hidden border-b border-white/10 pb-10 pt-28 sm:pb-14 sm:pt-36">
@@ -110,7 +108,7 @@ export default function TeamPage() {
             <TeamCrest team={team} size={104} />
             <div className="min-w-0">
               <Eyebrow>
-                Match team · <span style={{ color: team.color }}>[{team.tag}]</span>
+                Division · <span style={{ color: team.color }}>[{team.tag}]</span>
               </Eyebrow>
               <h1 className="mt-3 break-words font-display text-5xl font-black uppercase leading-[0.9] sm:text-7xl">{team.name}</h1>
               <p className="mt-3 text-sm text-white/55">
@@ -167,26 +165,12 @@ export default function TeamPage() {
 
         <div className="grid gap-10 lg:grid-cols-[2fr_1fr]">
           <section aria-label="Effectif">
-            <RosterHeading title="Titulaires" count={starters.length} max={TEAM_LIMITS.maxStarters} gold />
-            {starters.length > 0 ? (
-              <ul className="mt-3 space-y-2">
-                {starters.map((member) => (
-                  <MemberRow key={member.id} member={member} isMe={member.id === userId} />
-                ))}
-              </ul>
-            ) : (
-              <p className="mt-4 text-sm text-white/45">Aucun titulaire.</p>
-            )}
-            <RosterHeading title="Remplaçants" count={subs.length} max={TEAM_LIMITS.maxMembers - TEAM_LIMITS.maxStarters} className="mt-10" />
-            {subs.length > 0 ? (
-              <ul className="mt-3 space-y-2">
-                {subs.map((member) => (
-                  <MemberRow key={member.id} member={member} isMe={member.id === userId} />
-                ))}
-              </ul>
-            ) : (
-              <p className="mt-4 text-sm text-white/45">Aucun remplaçant pour l&apos;instant.</p>
-            )}
+            <RosterHeading title="Effectif" count={team.members.length} max={TEAM_LIMITS.maxMembers} gold />
+            <ul className="mt-3 space-y-2">
+              {team.members.map((member) => (
+                <MemberRow key={member.id} member={member} isMe={member.id === userId} />
+              ))}
+            </ul>
           </section>
 
           <aside className="space-y-6">
@@ -261,6 +245,7 @@ function MatchHistory({ history }) {
             {match.status === "completed" ? (
               <span className={match.won ? "font-tech text-sm font-bold text-win" : "font-tech text-sm font-bold text-loss"}>
                 {match.mapsFor} – {match.mapsAgainst}
+                {match.forfeit ? <span className="ml-2 text-white/45">FF</span> : null}
                 {typeof match.points === "number" ? <span className="ml-2">{match.points >= 0 ? `+${match.points}` : match.points}</span> : null}
               </span>
             ) : (
