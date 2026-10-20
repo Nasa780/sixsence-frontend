@@ -42,8 +42,8 @@ function DIVISION_SECTIONS() {
           <li>L&apos;adversaire reste anonyme jusqu&apos;au match : impossible de choisir contre qui l&apos;on joue.</li>
           <li>Deux équipes ne peuvent pas se rencontrer à nouveau moins de <strong>2 heures</strong> après leur dernier match.</li>
           <li>
-            Une recherche dure <strong>30 minutes</strong> au plus. 5 minutes avant la fin, « Toujours là ? » s&apos;affiche : un Leader
-            clique sur « Continuer » pour repartir pour 30 minutes, sinon la recherche s&apos;arrête. Un son et une notification
+            Une recherche dure <strong>30 minutes</strong> au plus. 5 minutes avant la fin, « Toujours là ? » s&apos;affiche : un Leader ou un
+            joueur inscrit clique sur « Continuer » pour repartir pour 30 minutes, sinon la recherche s&apos;arrête. Un son et une notification
             préviennent quand le match est trouvé ou la recherche arrêtée.
           </li>
           <li>Changer l&apos;effectif pendant une recherche retire l&apos;équipe de la file.</li>
