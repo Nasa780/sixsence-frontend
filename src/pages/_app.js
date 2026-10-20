@@ -5,7 +5,7 @@ import { Inter, Orbitron, Saira_Condensed } from "next/font/google";
 import { Footer } from "../components/layout/Footer";
 import { Navbar } from "../components/layout/Navbar";
 import { ErrorBoundary } from "../components/ui/ErrorBoundary";
-import { MATCH_TEAM_ENABLED, SITE_URL } from "../lib/config";
+import { GROUPS_ENABLED, MATCH_TEAM_ENABLED, SITE_URL } from "../lib/config";
 import NotFound from "./404";
 import { installErrorReporting } from "../lib/monitoring";
 import { registerServiceWorker } from "../lib/push";
@@ -29,7 +29,8 @@ export default function App({ Component, pageProps }) {
   const { pathname, asPath } = useRouter();
   const bare = BARE_PAGES.includes(pathname);
   // Mode Match team en pause : ses pages sont introuvables.
-  const teamPaused = !MATCH_TEAM_ENABLED && (pathname === "/cod/equipe" || pathname.startsWith("/cod/equipes"));
+  const teamPaused =
+    (!MATCH_TEAM_ENABLED && (pathname === "/cod/equipe" || pathname.startsWith("/cod/equipes"))) || (!GROUPS_ENABLED && pathname.startsWith("/cod/groupe"));
   // Pages GTA 6 : palette coucher de soleil (voir globals.css).
   const univers = pathname.startsWith("/gta6") ? "gta" : undefined;
 

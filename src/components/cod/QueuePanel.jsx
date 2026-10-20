@@ -28,14 +28,15 @@ import { TacticalCard } from "../ui/TacticalCard";
 import { AppPanel } from "./AppPanel";
 import { PointsAtStake } from "./PointsAtStake";
 import { PartyPanel } from "./PartyPanel";
+import { GROUPS_ENABLED } from "../../lib/config";
 
 const FORMAT_KEY = "sixsence:format";
 
 /**
  * Panneau de la file d'attente classée.
  *  - Une file par format (2v2, 3v3, 4v4, 5v5) : le joueur choisit la sienne.
- *  - On joue seul ou en groupe : le chef du groupe lance la recherche pour tous,
- *    le groupe n'est jamais séparé.
+ *  - Classé en solo (groupes coupés, GROUPS_ENABLED) ; avec les groupes, le chef lance la recherche
+ *    pour tous et le groupe n'est jamais séparé.
  *  - L'état (files, ma place, mon groupe) arrive en direct par WebSocket ;
  *    les actions passent par l'API REST du backend.
  *  - Match trouvé : musique + notification, puis vérification « Prêt ? » d'une minute.
@@ -399,13 +400,15 @@ export function QueuePanel({ profileComplete, userId }) {
         </div>
       </TacticalCard>
 
-      <PartyPanel
-        party={party}
-        userId={userId}
-        format={selected}
-        locked={queue.inQueue || hasActiveMatch}
-        onChange={(updated) => queue.patch({ party: updated })}
-      />
+      {GROUPS_ENABLED ? (
+        <PartyPanel
+          party={party}
+          userId={userId}
+          format={selected}
+          locked={queue.inQueue || hasActiveMatch}
+          onChange={(updated) => queue.patch({ party: updated })}
+        />
+      ) : null}
 
       <AppPanel />
 
