@@ -289,7 +289,7 @@ function TeamColumn({ team, label, players, size, editable, onRemove }) {
         <div className="min-w-0">
           <p className="truncate font-display text-2xl font-black uppercase leading-none sm:text-3xl">{team.name}</p>
           <p className="mt-1 font-tech text-xs uppercase tracking-[0.2em] text-gold">
-            [{team.tag}]{label ? ` · ${label}` : ""}
+            <span className="normal-case">[{team.tag}]</span>{label ? ` · ${label}` : ""}
           </p>
         </div>
       </div>
@@ -354,9 +354,9 @@ function OpponentColumn({ opponent, phase, size }) {
       Recherche de contact…
     </span>
   ) : reveal && known ? (
-    <span className="lobby-flash text-gold">Contact établi · [{opponent.tag}]</span>
+    <span className="lobby-flash text-gold">Contact établi · <span className="normal-case">[{opponent.tag}]</span></span>
   ) : known ? (
-    `[${opponent.tag}]`
+    <span className="normal-case">[{opponent.tag}]</span>
   ) : (
     "Anonyme jusqu'au match"
   );

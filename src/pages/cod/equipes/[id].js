@@ -109,7 +109,7 @@ export default function TeamPage() {
             <TeamCrest team={team} size={104} />
             <div className="min-w-0">
               <Eyebrow>
-                Division · <span style={{ color: team.color }}>[{team.tag}]</span>
+                Division · <span style={{ color: team.color }}><span className="normal-case">[{team.tag}]</span></span>
               </Eyebrow>
               <h1 className="mt-3 break-words font-display text-5xl font-black uppercase leading-[0.9] sm:text-7xl">{team.name}</h1>
               <p className="mt-3 text-sm text-white/55">

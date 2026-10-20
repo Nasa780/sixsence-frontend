@@ -127,7 +127,7 @@ function NoTeam({ state, reload }) {
                 <Link href={`/cod/equipes/${invite.team.id}`} className="min-w-0 flex-1 hover:text-gold">
                   <span className="block truncate font-display text-xl font-bold uppercase leading-none">{invite.team.name}</span>
                   <span className="mt-1 block text-xs text-white/50">
-                    [{invite.team.tag}] · {invite.team.points} pts
+                    <span className="normal-case">[{invite.team.tag}]</span> · {invite.team.points} pts
                   </span>
                 </Link>
                 <Button size="sm" onClick={() => act(`accept-${invite.id}`, `/teams/invites/${invite.id}/answer`, { method: "POST", body: { accept: true } })} disabled={pending !== null || missing.length > 0}>
@@ -662,10 +662,10 @@ function Appearance({ team, userId, canRename, reload }) {
             </label>
             <input
               id="edit-tag"
-              className={cn(fieldClass, "font-tech uppercase tracking-[0.2em]")}
+              className={cn(fieldClass, "font-tech tracking-[0.2em]")}
               value={form.tag}
               disabled={!canRename}
-              onChange={(event) => setForm({ ...form, tag: event.target.value.toUpperCase().replace(/[^A-Z0-9]/g, "").slice(0, 4) })}
+              onChange={(event) => setForm({ ...form, tag: event.target.value.replace(/[^A-Za-z0-9]/g, "").slice(0, 4) })}
             />
           </div>
         </div>
@@ -733,7 +733,7 @@ function Appearance({ team, userId, canRename, reload }) {
             <TeamCrest team={{ tag: form.tag, color: form.color, logoUrl: form.logoUrl }} size={72} />
             <div className="min-w-0">
               <p className="font-tech text-[11px] uppercase tracking-[0.3em]" style={{ color: form.color }}>
-                [{form.tag}]
+                <span className="normal-case">[{form.tag}]</span>
               </p>
               <p className="truncate font-display text-3xl font-black uppercase leading-none">{form.name}</p>
             </div>
@@ -751,8 +751,8 @@ function ImageField({ label, kind, url, uploading, onFile, onClear }) {
       <div className="flex items-center gap-3">
         <label className="flex flex-1 cursor-pointer items-center justify-center gap-2 border border-dashed border-white/15 px-4 py-5 text-sm text-white/55 transition hover:border-gold hover:text-gold">
           {uploading ? <LuLoaderCircle aria-hidden className="h-4 w-4 animate-spin" /> : <LuImagePlus aria-hidden className="h-4 w-4" />}
-          {url ? "Remplacer" : "Ajouter"} (2 Mo max)
-          <input type="file" accept="image/png,image/jpeg,image/webp" className="sr-only" onChange={(event) => onFile(event.target.files?.[0])} data-kind={kind} />
+          {url ? "Remplacer" : "Ajouter"} (PNG, JPEG, WebP · GIF animé 5 Mo)
+          <input type="file" accept="image/png,image/jpeg,image/webp,image/gif" className="sr-only" onChange={(event) => onFile(event.target.files?.[0])} data-kind={kind} />
         </label>
         {url ? (
           <button type="button" onClick={onClear} className="text-xs text-white/45 underline hover:text-loss">

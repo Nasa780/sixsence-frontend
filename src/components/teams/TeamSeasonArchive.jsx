@@ -55,7 +55,7 @@ export function TeamSeasonArchive({ season, myTeamId = null }) {
                   <td className="px-4 py-3">
                     <Link href={`/cod/equipes/${row.team_id}`} className="group">
                       <span className="font-display text-lg font-bold uppercase leading-none tracking-wide group-hover:text-gold">{row.name}</span>
-                      <span className="ml-2 font-tech text-xs tracking-[0.16em] text-white/45">[{row.tag}]</span>
+                      <span className="ml-2 font-tech text-xs tracking-[0.16em] text-white/45"><span className="normal-case">[{row.tag}]</span></span>
                       {mine ? <span className="ml-2 text-xs text-gold">· Ton équipe</span> : null}
                     </Link>
                   </td>

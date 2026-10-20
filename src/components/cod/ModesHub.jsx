@@ -317,7 +317,7 @@ function TopTeams({ label }) {
                       <span className="min-w-0 flex-1">
                         <span className="block truncate font-display text-lg font-bold uppercase leading-none tracking-wide">{team.name}</span>
                         <span className="mt-1 block font-tech text-[10px] tracking-[0.2em]" style={{ color: team.color }}>
-                          [{team.tag}]
+                          <span className="normal-case">[{team.tag}]</span>
                         </span>
                       </span>
                     </span>

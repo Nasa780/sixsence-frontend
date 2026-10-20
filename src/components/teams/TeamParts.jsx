@@ -19,7 +19,7 @@ export function TeamCrest({ team, size = 56, className = "" }) {
       ) : (
         <span
           aria-hidden
-          className="clip-corner flex h-full w-full items-center justify-center bg-ink-800 font-display font-black uppercase"
+          className="clip-corner flex h-full w-full items-center justify-center bg-ink-800 font-display font-black"
           style={{ color, fontSize: Math.round(size * (team?.tag?.length > 3 ? 0.26 : 0.32)) }}
         >
           {team?.tag ?? "?"}
@@ -119,7 +119,7 @@ export const labelClass = "mb-2 block font-tech text-[10px] uppercase tracking-[
  */
 export function TeamTag({ team, link = true, className = "" }) {
   if (!team) return null;
-  const classes = cn("shrink-0 font-tech text-[11px] font-bold uppercase tracking-[0.16em]", link && "hover:underline", className);
+  const classes = cn("shrink-0 font-tech text-[11px] font-bold normal-case tracking-[0.16em]", link && "hover:underline", className);
   const label = `[${team.tag}]`;
   return link ? (
     <Link href={`/cod/equipes/${team.id}`} title={team.name} className={classes} style={{ color: team.color }}>
