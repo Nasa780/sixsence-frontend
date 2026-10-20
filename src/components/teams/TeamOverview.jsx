@@ -295,3 +295,215 @@ export function memberLine(insights, memberId) {
   if (!stats || stats.played === 0) return "Pas encore de match avec l'équipe";
   return `${stats.played} match${stats.played > 1 ? "s" : ""} · ${winRate(stats.wins, stats.played)} % de victoires`;
 }
+
+const DAY = 24 * 3600_000;
+const WEEKLY_TARGET = 5;
+
+/** Début de la semaine (lundi 0 h, heure locale). */
+function weekStart(now = new Date()) {
+  const date = new Date(now);
+  date.setHours(0, 0, 0, 0);
+  date.setDate(date.getDate() - ((date.getDay() + 6) % 7));
+  return date.getTime();
+}
+
+/** Objectif de la semaine : 5 matchs joués, avec le bilan de la semaine. */
+export function TeamWeekly({ insights }) {
+  const start = weekStart();
+  const week = (insights.history ?? []).filter((match) => match.status === "completed" && new Date(match.date).getTime() >= start);
+  const wins = week.filter((match) => match.won).length;
+  const points = week.reduce((sum, match) => sum + (typeof match.points === "number" ? match.points : 0), 0);
+  const done = week.length >= WEEKLY_TARGET;
+  return (
+    <TacticalCard highlight={done} innerClassName="p-5">
+      <p className="font-tech text-[10px] uppercase tracking-[0.24em] text-gold">Objectif de la semaine</p>
+      <p className="mt-2 font-display text-2xl font-black uppercase leading-none">{done ? "Objectif atteint" : `Jouer ${WEEKLY_TARGET} matchs`}</p>
+      <div className="mt-4 flex gap-1.5">
+        {Array.from({ length: WEEKLY_TARGET }, (_, index) => (
+          <span key={index} className={cn("h-2.5 flex-1 -skew-x-[20deg]", index < week.length ? "bg-gold shadow-[0_0_10px_var(--color-gold)]" : "bg-white/10")} />
+        ))}
+      </div>
+      <dl className="mt-4 grid grid-cols-3 gap-2 text-center">
+        <MiniStat label="Joués" value={week.length} />
+        <MiniStat label="Gagnés" value={wins} />
+        <MiniStat label="Points" value={points > 0 ? `+${points}` : points} tone={points > 0 ? "win" : points < 0 ? "loss" : null} />
+      </dl>
+      <p className="mt-3 text-xs text-white/40">Remis à zéro chaque lundi.</p>
+    </TacticalCard>
+  );
+}
+
+function MiniStat({ label, value, tone = null }) {
+  return (
+    <div className="bg-white/[0.04] px-2 py-2">
+      <dt className="font-tech text-[9px] uppercase tracking-[0.2em] text-white/45">{label}</dt>
+      <dd className={cn("mt-1 font-display text-xl font-black tabular-nums leading-none", tone === "win" && "text-win", tone === "loss" && "text-loss")}>{value}</dd>
+    </div>
+  );
+}
+
+/** Rivalité : l'adversaire le plus affronté (2 matchs au moins) et le face-à-face. */
+export function TeamRival({ insights }) {
+  const byOpponent = new Map();
+  for (const match of insights.history ?? []) {
+    if (match.status !== "completed" || !match.opponent) continue;
+    const row = byOpponent.get(match.opponent.id) ?? { team: match.opponent, wins: 0, losses: 0 };
+    if (match.won) row.wins += 1;
+    else row.losses += 1;
+    byOpponent.set(match.opponent.id, row);
+  }
+  const rival = [...byOpponent.values()].filter((row) => row.wins + row.losses >= 2).sort((a, b) => b.wins + b.losses - (a.wins + a.losses))[0];
+  if (!rival) return null;
+  const lead = rival.wins > rival.losses ? "Tu mènes la rivalité" : rival.wins < rival.losses ? "Ils mènent la rivalité" : "Rivalité à égalité";
+  return (
+    <TacticalCard innerClassName="p-5">
+      <p className="font-tech text-[10px] uppercase tracking-[0.24em] text-gold">Rival</p>
+      <Link href={`/cod/equipes/${rival.team.id}`} className="mt-3 flex items-center gap-3 hover:opacity-90">
+        <TeamCrest team={rival.team} size={44} />
+        <div className="min-w-0">
+          <p className="truncate font-display text-2xl font-black uppercase leading-none">{rival.team.name}</p>
+          <p className="mt-1 font-tech text-xs uppercase tracking-[0.2em] text-white/45">[{rival.team.tag}]</p>
+        </div>
+      </Link>
+      <p className="mt-4 font-display text-4xl font-black tabular-nums leading-none">
+        <span className="text-win">{rival.wins}</span> <span className="text-white/30">–</span> <span className="text-loss">{rival.losses}</span>
+      </p>
+      <p className="mt-1 text-xs text-white/50">
+        {lead} · {rival.wins + rival.losses} matchs
+      </p>
+    </TacticalCard>
+  );
+}
+
+/** Records de l'équipe : plus longue série, victoires 2-0, plus gros gain de points. */
+export function TeamRecords({ insights }) {
+  const done = [...(insights.history ?? [])].filter((match) => match.status === "completed").reverse();
+  if (done.length === 0) return null;
+  let best = 0;
+  let run = 0;
+  for (const match of done) {
+    run = match.won ? run + 1 : 0;
+    best = Math.max(best, run);
+  }
+  const sweeps = done.filter((match) => match.won && !match.forfeit && match.mapsAgainst === 0).length;
+  const biggest = done.reduce((max, match) => (typeof match.points === "number" && match.points > (max?.points ?? 0) ? match : max), null);
+  const records = [
+    { label: "Plus longue série", value: `${best} victoire${best > 1 ? "s" : ""}` },
+    { label: "Victoires 2-0", value: sweeps },
+    biggest ? { label: "Plus gros gain", value: `+${biggest.points} pts`, hint: `vs ${biggest.opponent?.name ?? "?"}` } : null,
+  ].filter(Boolean);
+  return (
+    <TacticalCard innerClassName="p-5">
+      <p className="font-tech text-[10px] uppercase tracking-[0.24em] text-gold">Records</p>
+      <ul className="mt-3 divide-y divide-white/10">
+        {records.map((record) => (
+          <li key={record.label} className="flex items-baseline justify-between gap-3 py-2.5">
+            <span className="text-sm text-white/60">{record.label}</span>
+            <span className="text-right font-display text-xl font-black uppercase leading-none">
+              {record.value}
+              {record.hint ? <span className="mt-0.5 block font-sans text-[11px] font-normal normal-case text-white/40">{record.hint}</span> : null}
+            </span>
+          </li>
+        ))}
+      </ul>
+    </TacticalCard>
+  );
+}
+
+/** Fil d'activité de l'équipe : création, arrivées, matchs, trophées (les 10 derniers événements). */
+export function TeamActivity({ team, insights }) {
+  const events = [];
+  if (team.createdAt) events.push({ date: team.createdAt, icon: LuFlame, text: <>L&apos;équipe <strong className="text-white">{team.name}</strong> est créée.</> });
+  for (const member of team.members) {
+    if (member.joinedAt && !member.crown) {
+      events.push({ date: member.joinedAt, icon: LuUsers, text: <><strong className="text-white">{member.username}</strong> rejoint l&apos;équipe.</> });
+    }
+  }
+  for (const match of insights.history ?? []) {
+    if (match.status !== "completed") continue;
+    events.push({
+      date: match.date,
+      icon: LuSwords,
+      tone: match.won ? "win" : "loss",
+      href: `/cod/equipes/match/${match.id}`,
+      text: (
+        <>
+          {match.won ? "Victoire" : "Défaite"} contre{" "}
+          <strong className="text-white">
+            [{match.opponent?.tag}] {match.opponent?.name}
+          </strong>{" "}
+          {match.forfeit ? "par forfait" : `${match.mapsFor}-${match.mapsAgainst}`}
+          {typeof match.points === "number" ? ` (${match.points > 0 ? "+" : ""}${match.points} pts)` : ""}.
+        </>
+      ),
+    });
+  }
+  for (const trophy of team.trophies ?? []) {
+    events.push({ date: trophy.date, icon: LuTrophy, text: <>{trophy.place === "winner" ? "Vainqueur" : "Finaliste"} du <strong className="text-white">{trophy.name}</strong>.</> });
+  }
+  const recent = events
+    .filter((event) => event.date)
+    .sort((a, b) => new Date(b.date) - new Date(a.date))
+    .slice(0, 10);
+  if (recent.length === 0) return null;
+  const when = (iso) => {
+    const days = Math.floor((Date.now() - new Date(iso).getTime()) / DAY);
+    if (days <= 0) return "Aujourd’hui";
+    if (days === 1) return "Hier";
+    if (days < 7) return `Il y a ${days} j`;
+    return new Date(iso).toLocaleDateString("fr-FR", { day: "numeric", month: "short" });
+  };
+
+  return (
+    <section aria-labelledby="titre-activite">
+      <Eyebrow>Journal</Eyebrow>
+      <h2 id="titre-activite" className="mt-3 font-display text-4xl font-black uppercase leading-none">
+        Activité de l&apos;équipe
+      </h2>
+      <ol className="relative mt-6 space-y-4 border-l border-white/10 pl-6">
+        {recent.map((event, index) => {
+          const Icon = event.icon;
+          const body = (
+            <>
+              <span
+                aria-hidden
+                className={cn(
+                  "absolute -left-9 top-0 grid h-6 w-6 place-items-center border bg-ink",
+                  event.tone === "win" ? "border-win text-win" : event.tone === "loss" ? "border-loss text-loss" : "border-gold text-gold",
+                )}
+              >
+                <Icon className="h-3.5 w-3.5" />
+              </span>
+              <p className="text-sm text-white/65">{event.text}</p>
+              <p className="mt-0.5 font-tech text-[10px] uppercase tracking-[0.2em] text-white/35">{when(event.date)}</p>
+            </>
+          );
+          return (
+            <li key={index} className="relative">
+              {event.href ? (
+                <Link href={event.href} className="block hover:opacity-90">
+                  {body}
+                </Link>
+              ) : (
+                body
+              )}
+            </li>
+          );
+        })}
+      </ol>
+    </section>
+  );
+}
+
+/** Badges d'un membre : Fondateur, Pilier (le plus de matchs), Vétéran (30 j ou 20 matchs), Recrue (moins de 7 j). */
+export function memberBadges(team, insights, member) {
+  const badges = [];
+  const stats = insights.playerStats.get(member.id) ?? { played: 0, wins: 0 };
+  const top = Math.max(0, ...team.members.map((other) => insights.playerStats.get(other.id)?.played ?? 0));
+  const days = member.joinedAt ? (Date.now() - new Date(member.joinedAt).getTime()) / DAY : 0;
+  if (member.crown) badges.push("Fondateur");
+  if (top > 0 && stats.played === top) badges.push("Pilier");
+  if (!member.crown && (days >= 30 || stats.played >= 20)) badges.push("Vétéran");
+  if (!member.crown && days < 7) badges.push("Recrue");
+  return badges;
+}

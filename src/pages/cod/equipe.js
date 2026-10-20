@@ -4,7 +4,7 @@ import { useRouter } from "next/router";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { LuCheck, LuCrown, LuExternalLink, LuImagePlus, LuLoaderCircle, LuPlus, LuSearch, LuUserPlus, LuX } from "react-icons/lu";
 import { TeamMatchHistory } from "../../components/teams/TeamMatchHistory";
-import { TeamGoals, TeamHero, TeamRecent, TeamStandouts, memberLine, useTeamInsights } from "../../components/teams/TeamOverview";
+import { TeamActivity, TeamGoals, TeamHero, TeamRecent, TeamRecords, TeamRival, TeamStandouts, TeamWeekly, memberBadges, memberLine, useTeamInsights } from "../../components/teams/TeamOverview";
 import { TeamStats } from "../../components/teams/TeamStats";
 import { MemberRow, RosterHeading, SlantTab, TeamCrest, fieldClass, labelClass } from "../../components/teams/TeamParts";
 import { Avatar } from "../../components/ui/Avatar";
@@ -325,7 +325,14 @@ function ManageTeam({ state, userId, reload, created, onLeft }) {
             <ul className="mt-3 space-y-2">
               {team.members.map((member) => (
                 <MemberRow key={member.id} member={member} isMe={member.id === userId}>
-                  <span className="w-full font-tech text-[10px] uppercase tracking-[0.18em] text-white/40 sm:w-auto sm:text-right">{memberLine(insights, member.id)}</span>
+                  <span className="flex w-full flex-wrap items-center gap-1.5 sm:w-auto sm:justify-end">
+                    {memberBadges(team, insights, member).map((badge) => (
+                      <span key={badge} className="clip-slant bg-gold/15 px-2 py-0.5 font-display text-[11px] font-bold uppercase tracking-wide text-gold">
+                        {badge}
+                      </span>
+                    ))}
+                    <span className="font-tech text-[10px] uppercase tracking-[0.18em] text-white/40">{memberLine(insights, member.id)}</span>
+                  </span>
                   {controls(member)}
                 </MemberRow>
               ))}
@@ -374,7 +381,17 @@ function ManageTeam({ state, userId, reload, created, onLeft }) {
       {tab === "apercu" ? (
         <div className="space-y-14">
           <TeamGoals team={team} insights={insights} />
-          <TeamRecent insights={insights} onSeeAll={() => setTab("matchs")} />
+          <div className="grid gap-10 lg:grid-cols-[minmax(0,1fr)_22rem]">
+            <div className="space-y-14">
+              <TeamRecent insights={insights} onSeeAll={() => setTab("matchs")} />
+              <TeamActivity team={team} insights={insights} />
+            </div>
+            <aside className="space-y-4">
+              <TeamWeekly insights={insights} />
+              <TeamRival insights={insights} />
+              <TeamRecords insights={insights} />
+            </aside>
+          </div>
           <TeamStandouts team={team} insights={insights} />
         </div>
       ) : null}
