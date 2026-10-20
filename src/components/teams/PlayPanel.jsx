@@ -223,7 +223,7 @@ export function PlayPanel({ team, isLeader }) {
           </ul>
           {error ? <Notice tone="error" className="mt-4">{error}</Notice> : null}
           <div className="mt-6 flex flex-wrap items-center justify-between gap-3">
-            <p className="text-xs text-white/45">Maps 1 et 2 tirées au sort, map 3 choisie à 1-1 · 6 manches gagnantes par map · pas deux fois la même équipe en 2 h.</p>
+            <p className="text-xs text-white/45">3 maps tirées au sort (la 3e seulement à 1-1) · 6 manches gagnantes par map · pas deux fois la même équipe en 2 h.</p>
             <Button
               size="lg"
               disabled={pending || chosen.length !== size || Boolean(play.blockedUntil)}
