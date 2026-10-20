@@ -2,8 +2,9 @@ import Head from "next/head";
 import Link from "next/link";
 import { useRouter } from "next/router";
 import { useCallback, useEffect, useRef, useState } from "react";
-import { LuCheck, LuCrown, LuExternalLink, LuImagePlus, LuLoaderCircle, LuPlus, LuSearch, LuSwords, LuUserPlus, LuX } from "react-icons/lu";
+import { LuCheck, LuCrown, LuExternalLink, LuImagePlus, LuLoaderCircle, LuPlus, LuSearch, LuUserPlus, LuX } from "react-icons/lu";
 import { TeamMatchHistory } from "../../components/teams/TeamMatchHistory";
+import { TeamGoals, TeamHero, TeamRecent, TeamStandouts, memberLine, useTeamInsights } from "../../components/teams/TeamOverview";
 import { TeamStats } from "../../components/teams/TeamStats";
 import { MemberRow, RosterHeading, SlantTab, TeamCrest, fieldClass, labelClass } from "../../components/teams/TeamParts";
 import { Avatar } from "../../components/ui/Avatar";
@@ -21,54 +22,6 @@ import { rankFor, rankGradient } from "../../lib/ranks";
 import { SOCIALS, TEAM_COLORS, TEAM_LIMITS, uploadTeamImage } from "../../lib/teams";
 
 const hoursLeft = (end) => Math.max(1, Math.ceil((end - Date.now()) / 3600_000));
-
-/** Raccourci vers la file Division (la recherche se lance là-bas, comme la file classée) ; match en cours mis en avant. */
-function DivisionCta({ team, isLeader }) {
-  const [activeMatchId, setActiveMatchId] = useState(null);
-  const [searching, setSearching] = useState(false);
-  useEffect(() => {
-    let alive = true;
-    api("/teams/me/play")
-      .then((play) => {
-        if (!alive) return;
-        setActiveMatchId(play.activeMatchId);
-        setSearching(Boolean(play.queued));
-      })
-      .catch(() => {});
-    return () => {
-      alive = false;
-    };
-  }, [team.id]);
-
-  return (
-    <TacticalCard highlight cut={22} innerClassName="flex flex-col gap-4 p-5 sm:flex-row sm:items-center sm:justify-between sm:p-6">
-      <div>
-        <Eyebrow>{activeMatchId ? "Match en cours" : searching ? "Recherche en cours" : "Division"}</Eyebrow>
-        <p className="mt-2 font-display text-2xl font-black uppercase leading-none sm:text-3xl">
-          {activeMatchId ? "Ton équipe joue un BO3" : searching ? "Ton équipe cherche un adversaire" : isLeader ? "Prêts à jouer ?" : "Prochain match"}
-        </p>
-        <p className="mt-1.5 text-sm text-white/55">
-          {activeMatchId
-            ? "Code de la partie, présence et résultat : tout se passe sur la feuille de match."
-            : isLeader
-              ? "Choisis les joueurs du match et lance la recherche depuis la file Division."
-              : "Un Leader lance la recherche depuis la file Division."}
-        </p>
-      </div>
-      {activeMatchId ? (
-        <ButtonLink href={`/cod/equipes/match/${activeMatchId}`} size="lg">
-          <LuSwords aria-hidden className="h-5 w-5" />
-          Feuille de match
-        </ButtonLink>
-      ) : (
-        <ButtonLink href="/cod/division" size="lg" variant={searching ? "outline" : "primary"}>
-          <LuSwords aria-hidden className="h-5 w-5" />
-          {searching ? "Voir la recherche" : "File Division"}
-        </ButtonLink>
-      )}
-    </TacticalCard>
-  );
-}
 
 /** Onglet « Matchs » de Mon équipe : statistiques et historique complet. */
 function TeamMatches({ team }) {
@@ -278,7 +231,8 @@ function NoTeam({ state, reload }) {
 function ManageTeam({ state, userId, reload, created, onLeft }) {
   const { team, me } = state;
   const isLeader = me.crown || me.role === "leader";
-  const [tab, setTab] = useState("effectif");
+  const [tab, setTab] = useState("apercu");
+  const insights = useTeamInsights(team);
   const [confirm, setConfirm] = useState(null);
   const [pending, setPending] = useState(false);
   const [error, setError] = useState(null);
@@ -340,11 +294,14 @@ function ManageTeam({ state, userId, reload, created, onLeft }) {
       ) : null}
       {error ? <Notice tone="error">{error}</Notice> : null}
 
-      <DivisionCta team={team} isLeader={isLeader} />
+      <TeamHero team={team} insights={insights} isLeader={isLeader} />
 
       <div role="tablist" aria-label="Gestion de l'équipe" className="flex gap-2 overflow-x-auto pb-1">
+        <SlantTab active={tab === "apercu"} onClick={() => setTab("apercu")}>
+          Vue d&apos;ensemble
+        </SlantTab>
         <SlantTab active={tab === "effectif"} onClick={() => setTab("effectif")}>
-          Effectif
+          Effectif · {team.members.length}
         </SlantTab>
         <SlantTab active={tab === "matchs"} onClick={() => setTab("matchs")}>
           Matchs
@@ -368,6 +325,7 @@ function ManageTeam({ state, userId, reload, created, onLeft }) {
             <ul className="mt-3 space-y-2">
               {team.members.map((member) => (
                 <MemberRow key={member.id} member={member} isMe={member.id === userId}>
+                  <span className="w-full font-tech text-[10px] uppercase tracking-[0.18em] text-white/40 sm:w-auto sm:text-right">{memberLine(insights, member.id)}</span>
                   {controls(member)}
                 </MemberRow>
               ))}
@@ -413,6 +371,13 @@ function ManageTeam({ state, userId, reload, created, onLeft }) {
         </div>
       ) : null}
 
+      {tab === "apercu" ? (
+        <div className="space-y-14">
+          <TeamGoals team={team} insights={insights} />
+          <TeamRecent insights={insights} onSeeAll={() => setTab("matchs")} />
+          <TeamStandouts team={team} insights={insights} />
+        </div>
+      ) : null}
       {tab === "matchs" ? <TeamMatches team={team} /> : null}
       {tab === "recrutement" && isLeader ? <Recruitment team={team} state={state} reload={reload} /> : null}
       {tab === "apparence" && isLeader ? <Appearance team={team} userId={userId} canRename={me.crown} reload={reload} /> : null}
