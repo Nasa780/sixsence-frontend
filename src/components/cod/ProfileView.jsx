@@ -25,6 +25,7 @@ import { CardPicker } from "./CardPicker";
 import { PerformancePanel } from "./PerformancePanel";
 import { RankBadge } from "./RankBadge";
 import { RankCard } from "./RankCard";
+import { SeasonRecap } from "./SeasonRecap";
 
 const PLATFORM_LABEL = { pc: "PC", playstation: "PlayStation", xbox: "Xbox" };
 const signed = (value) => (value > 0 ? `+${value}` : value === 0 ? "±0" : `${value}`);
@@ -295,6 +296,8 @@ export function ProfileView({ userId, editable = false, ownUser = null }) {
       <section aria-label="Performance">
         <PerformancePanel history={history} userId={player.id} points={profile.points} seasonId={activeSeason?.id ?? null} seasonLabel={seasonLabel} />
       </section>
+
+      <SeasonRecap playerId={player.id} seasons={seasons} badges={profile.badges} />
 
       <div className="grid grid-cols-1 gap-12 lg:grid-cols-[1fr_22rem]">
         {/* --- Historique -------------------------------------------------- */}

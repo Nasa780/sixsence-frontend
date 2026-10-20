@@ -72,9 +72,15 @@ export default function MyTeamPage() {
         ) : !state ? (
           <Loading />
         ) : state.team ? (
+          <>
+          {state.transferLock ? <Notice className="mb-8">{state.transferLock}</Notice> : null}
           <ManageTeam state={state} userId={userId} reload={load} created={router.query.nouvelle === "1"} onLeft={() => router.push("/cod/equipes")} />
+          </>
         ) : (
+          <>
+          {state.transferLock ? <Notice className="mb-8">{state.transferLock}</Notice> : null}
           <NoTeam state={state} reload={load} />
+          </>
         )}
       </Container>
     </>
