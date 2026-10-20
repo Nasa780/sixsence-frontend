@@ -3,7 +3,6 @@ import Link from "next/link";
 import { useRouter } from "next/router";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { LuCheck, LuCrown, LuExternalLink, LuImagePlus, LuLoaderCircle, LuPlus, LuSearch, LuUserPlus, LuX } from "react-icons/lu";
-import { TeamMatchHistory } from "../../components/teams/TeamMatchHistory";
 import { TeamActivity, TeamGoals, TeamHero, TeamRecent, TeamRecords, TeamRival, TeamStandouts, TeamWeekly, memberBadges, memberLine, useTeamInsights } from "../../components/teams/TeamOverview";
 import { TeamStats } from "../../components/teams/TeamStats";
 import { MemberRow, RosterHeading, SlantTab, TeamCrest, fieldClass, labelClass } from "../../components/teams/TeamParts";
@@ -22,30 +21,6 @@ import { rankFor, rankGradient } from "../../lib/ranks";
 import { SOCIALS, TEAM_COLORS, TEAM_LIMITS, uploadTeamImage } from "../../lib/teams";
 
 const hoursLeft = (end) => Math.max(1, Math.ceil((end - Date.now()) / 3600_000));
-
-/** Onglet « Matchs » de Mon équipe : statistiques et historique complet. */
-function TeamMatches({ team }) {
-  const [history, setHistory] = useState(null);
-  useEffect(() => {
-    let alive = true;
-    api(`/teams/${team.id}/matches`)
-      .then((data) => alive && setHistory(data.matches))
-      .catch(() => alive && setHistory([]));
-    return () => {
-      alive = false;
-    };
-  }, [team.id]);
-
-  return (
-    <div className="space-y-10">
-      <TeamStats teamId={team.id} />
-      <section aria-labelledby="titre-matchs-equipe">
-        <RosterHeading title={<span id="titre-matchs-equipe">Historique</span>} count={history?.length ?? 0} max={history?.length ?? 0} gold />
-        <TeamMatchHistory history={history} />
-      </section>
-    </div>
-  );
-}
 
 /** « Mon équipe » : invitations et candidatures, ou gestion de son équipe (effectif, recrutement, apparence). */
 export default function MyTeamPage() {
@@ -231,7 +206,7 @@ function NoTeam({ state, reload }) {
 function ManageTeam({ state, userId, reload, created, onLeft }) {
   const { team, me } = state;
   const isLeader = me.crown || me.role === "leader";
-  const [tab, setTab] = useState("apercu");
+  const [tab, setTab] = useState("equipe");
   const insights = useTeamInsights(team);
   const [confirm, setConfirm] = useState(null);
   const [pending, setPending] = useState(false);
@@ -296,15 +271,11 @@ function ManageTeam({ state, userId, reload, created, onLeft }) {
 
       <TeamHero team={team} insights={insights} isLeader={isLeader} />
 
+      {/* Onglets seulement pour les Leaders (Recrutement, Apparence) ; les joueurs ont tout sur une page. */}
+      {isLeader ? (
       <div role="tablist" aria-label="Gestion de l'équipe" className="flex gap-2 overflow-x-auto pb-1">
-        <SlantTab active={tab === "apercu"} onClick={() => setTab("apercu")}>
-          Vue d&apos;ensemble
-        </SlantTab>
-        <SlantTab active={tab === "effectif"} onClick={() => setTab("effectif")}>
-          Effectif · {team.members.length}
-        </SlantTab>
-        <SlantTab active={tab === "matchs"} onClick={() => setTab("matchs")}>
-          Matchs
+        <SlantTab active={tab === "equipe"} onClick={() => setTab("equipe")}>
+          Équipe
         </SlantTab>
         {isLeader ? (
           <SlantTab active={tab === "recrutement"} onClick={() => setTab("recrutement")}>
@@ -317,8 +288,27 @@ function ManageTeam({ state, userId, reload, created, onLeft }) {
           </SlantTab>
         ) : null}
       </div>
+      ) : null}
 
-      {tab === "effectif" ? (
+      {tab === "equipe" ? (
+        <div className="space-y-14">
+          <TeamGoals team={team} insights={insights} />
+          <div className="grid gap-10 lg:grid-cols-[minmax(0,1fr)_22rem]">
+            <div className="space-y-14">
+              <TeamRecent insights={insights} />
+              <TeamActivity team={team} insights={insights} />
+            </div>
+            <aside className="space-y-4">
+              <TeamWeekly insights={insights} />
+              <TeamRival insights={insights} />
+              <TeamRecords insights={insights} />
+            </aside>
+          </div>
+          <TeamStandouts team={team} insights={insights} />
+          <TeamStats teamId={team.id} />
+        </div>
+      ) : null}
+      {tab === "equipe" ? (
         <div className="grid gap-10 lg:grid-cols-[2fr_1fr]">
           <section aria-label="Effectif">
             <RosterHeading title="Effectif" count={team.members.length} max={TEAM_LIMITS.maxMembers} gold />
@@ -378,24 +368,6 @@ function ManageTeam({ state, userId, reload, created, onLeft }) {
         </div>
       ) : null}
 
-      {tab === "apercu" ? (
-        <div className="space-y-14">
-          <TeamGoals team={team} insights={insights} />
-          <div className="grid gap-10 lg:grid-cols-[minmax(0,1fr)_22rem]">
-            <div className="space-y-14">
-              <TeamRecent insights={insights} onSeeAll={() => setTab("matchs")} />
-              <TeamActivity team={team} insights={insights} />
-            </div>
-            <aside className="space-y-4">
-              <TeamWeekly insights={insights} />
-              <TeamRival insights={insights} />
-              <TeamRecords insights={insights} />
-            </aside>
-          </div>
-          <TeamStandouts team={team} insights={insights} />
-        </div>
-      ) : null}
-      {tab === "matchs" ? <TeamMatches team={team} /> : null}
       {tab === "recrutement" && isLeader ? <Recruitment team={team} state={state} reload={reload} /> : null}
       {tab === "apparence" && isLeader ? <Appearance team={team} userId={userId} canRename={me.crown} reload={reload} /> : null}
 
