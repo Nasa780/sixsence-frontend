@@ -102,7 +102,7 @@ export function TeamsPanel() {
                       <p className="mt-2 text-sm text-white/60">
                         {report.team ? (
                           <Link href={`/cod/equipes/${report.team.id}`} className="font-semibold text-white hover:text-gold">
-                            [{report.team.tag}] {report.team.name}
+                            <span className="normal-case">[{report.team.tag}]</span> {report.team.name}
                           </Link>
                         ) : (
                           "Équipe inconnue"
@@ -182,7 +182,7 @@ export function TeamsPanel() {
                   <p className="flex flex-wrap items-center gap-2">
                     <span className="truncate font-display text-xl font-bold uppercase leading-none">{team.name}</span>
                     <span className="font-tech text-xs tracking-[0.2em]" style={{ color: team.color }}>
-                      [{team.tag}]
+                      <span className="normal-case">[{team.tag}]</span>
                     </span>
                     {team.openReports > 0 ? (
                       <Chip tone="loss">
@@ -285,7 +285,7 @@ export function TeamDisputes() {
             <TeamCrest team={match.teamA} size={44} />
             <div className="min-w-0">
               <p className="font-display text-2xl font-black uppercase leading-none">
-                [{match.teamA?.tag}] vs [{match.teamB?.tag}] <span className="text-white/40">· BO3</span>
+                <span className="normal-case">[{match.teamA?.tag}]</span> vs <span className="normal-case">[{match.teamB?.tag}]</span> <span className="text-white/40">· BO3</span>
               </p>
               <p className="mt-2 text-sm text-white/55">
                 Scores déclarés par {match.reportedTeam === "A" ? match.teamA?.name : match.teamB?.name} :{" "}

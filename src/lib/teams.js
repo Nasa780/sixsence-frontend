@@ -27,15 +27,18 @@ export const REPORT_REASONS = {
 };
 
 const MAX_IMAGE = 2 * 1024 * 1024;
-const TYPES = { "image/png": "png", "image/jpeg": "jpg", "image/webp": "webp" };
+/** Les GIF animés peuvent peser plus lourd : 5 Mo (limite du bucket team-media, migration 0035). */
+const MAX_GIF = 5 * 1024 * 1024;
+const TYPES = { "image/png": "png", "image/jpeg": "jpg", "image/webp": "webp", "image/gif": "gif" };
 
 /**
  * Envoie un logo ou une bannière dans le bucket public team-media (dossier du joueur) et
  * renvoie son adresse publique, à enregistrer ensuite par PATCH /teams/:id.
  */
 export async function uploadTeamImage(file, userId, kind) {
-  if (!TYPES[file.type]) throw new Error("Image PNG, JPEG ou WebP uniquement.");
-  if (file.size > MAX_IMAGE) throw new Error("Image trop lourde (2 Mo au plus).");
+  if (!TYPES[file.type]) throw new Error("Image PNG, JPEG, WebP ou GIF uniquement.");
+  const gif = file.type === "image/gif";
+  if (file.size > (gif ? MAX_GIF : MAX_IMAGE)) throw new Error(gif ? "GIF trop lourd (5 Mo au plus)." : "Image trop lourde (2 Mo au plus).");
   const path = `${userId}/${kind}-${Date.now()}.${TYPES[file.type]}`;
   const { error } = await supabase.storage.from("team-media").upload(path, file, { contentType: file.type });
   if (error) throw new Error("Envoi de l'image impossible. Réessaie dans un instant.");

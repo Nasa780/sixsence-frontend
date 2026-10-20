@@ -30,7 +30,7 @@ export default function CreateTeamPage() {
       .catch((caught) => setError(caught.message));
   }, [userId, router]);
 
-  const set = (key) => (event) => setForm((current) => ({ ...current, [key]: key === "tag" ? event.target.value.toUpperCase().replace(/[^A-Z0-9]/g, "").slice(0, 4) : event.target.value }));
+  const set = (key) => (event) => setForm((current) => ({ ...current, [key]: key === "tag" ? event.target.value.replace(/[^A-Za-z0-9]/g, "").slice(0, 4) : event.target.value }));
 
   async function submit(event) {
     event.preventDefault();
@@ -90,7 +90,7 @@ export default function CreateTeamPage() {
                     <label htmlFor="team-tag" className={labelClass}>
                       Tag (2 à 4)
                     </label>
-                    <input id="team-tag" className={cn(fieldClass, "font-tech uppercase tracking-[0.2em]")} value={form.tag} onChange={set("tag")} placeholder="NXS" required />
+                    <input id="team-tag" className={cn(fieldClass, "font-tech tracking-[0.2em]")} value={form.tag} onChange={set("tag")} placeholder="NXS" required />
                   </div>
                 </div>
                 <div>

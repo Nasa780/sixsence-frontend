@@ -193,7 +193,7 @@ export function ProfileView({ userId, editable = false, ownUser = null }) {
                 <Link href={`/cod/equipes/${team.id}`} className="mt-3 flex w-fit items-center gap-2 text-sm font-semibold text-white/80 transition-colors hover:text-gold">
                   <TeamCrest team={team} size={24} />
                   <span className="font-tech text-xs tracking-[0.16em]" style={{ color: team.color }}>
-                    [{team.tag}]
+                    <span className="normal-case">[{team.tag}]</span>
                   </span>
                   {team.name}
                 </Link>
@@ -435,7 +435,7 @@ function DivisionHistory({ playerId }) {
                   <span className="text-white/45">vs</span> {match.opponent?.name ?? "Équipe"}
                 </p>
                 <p className="mt-1 truncate text-xs text-white/45">
-                  Avec [{match.team?.tag}] · {done ? `${match.mapsFor} – ${match.mapsAgainst}` : "BO3"}
+                  Avec <span className="normal-case">[{match.team?.tag}]</span> · {done ? `${match.mapsFor} – ${match.mapsAgainst}` : "BO3"}
                   {match.forfeit ? " · par forfait" : ""}
                   {match.tournament ? " · tournoi" : ""} · {new Date(match.date).toLocaleDateString("fr-FR", { day: "numeric", month: "short" })}
                 </p>

@@ -142,7 +142,7 @@ export default function TeamsPage() {
                             <div className="min-w-0">
                               <p className="truncate font-display text-3xl font-black uppercase leading-none">{team.name}</p>
                               <p className="mt-1.5 font-display text-sm font-bold uppercase tracking-[0.16em]" style={{ color: team.color }}>
-                                [{team.tag}]
+                                <span className="normal-case">[{team.tag}]</span>
                               </p>
                             </div>
                           </div>
@@ -207,7 +207,7 @@ export default function TeamsPage() {
                                   {isMine ? <span className="ml-2 text-xs text-gold">· Ton équipe</span> : null}
                                 </span>
                                 <span className="mt-1 block text-xs text-white/45">
-                                  [{team.tag}]
+                                  <span className="normal-case">[{team.tag}]</span>
                                   {team.played < TEAM_LIMITS.qualifyMatches
                                     ? ` · ${TEAM_LIMITS.qualifyMatches - team.played} matchs avant d'être qualifiable`
                                     : ""}

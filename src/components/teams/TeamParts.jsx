@@ -6,21 +6,32 @@ import { RankEmblem } from "../cod/RankEmblem";
 import { Avatar } from "../ui/Avatar";
 import { Chip } from "../ui/Feedback";
 
-/** Blason d'équipe : logo envoyé par l'équipe, sinon son tag sur sa couleur (coin coupé). */
+/**
+ * Blason d'équipe : logo envoyé par l'équipe (GIF animé possible), sinon son tag, dans un cadre néon
+ * à la couleur de l'équipe (liseré lumineux, halo proportionnel à la taille).
+ */
 export function TeamCrest({ team, size = 56, className = "" }) {
   const color = team?.color ?? "#d4af37";
+  const glow = Math.max(4, Math.round(size * 0.18));
+  const radius = Math.max(4, Math.round(size * 0.12));
   return (
     <span
-      className={cn("clip-corner inline-flex shrink-0 p-[2px]", className)}
-      style={{ width: size, height: size, background: `linear-gradient(135deg, ${color}, var(--color-gold))` }}
+      className={cn("inline-flex shrink-0 overflow-hidden", className)}
+      style={{
+        width: size,
+        height: size,
+        borderRadius: radius,
+        border: `${size >= 48 ? 2 : 1.5}px solid ${color}`,
+        boxShadow: `0 0 ${glow}px ${color}99, 0 0 ${glow * 2}px ${color}33, inset 0 0 ${Math.round(glow * 0.7)}px ${color}55`,
+      }}
     >
       {team?.logoUrl ? (
-        <img src={team.logoUrl} alt="" width={size - 4} height={size - 4} loading="lazy" className="clip-corner h-full w-full bg-ink-800 object-cover" />
+        <img src={team.logoUrl} alt="" width={size - 4} height={size - 4} loading="lazy" className="h-full w-full bg-ink-800 object-cover" />
       ) : (
         <span
           aria-hidden
-          className="clip-corner flex h-full w-full items-center justify-center bg-ink-800 font-display font-black uppercase"
-          style={{ color, fontSize: Math.round(size * (team?.tag?.length > 3 ? 0.26 : 0.32)) }}
+          className="flex h-full w-full items-center justify-center bg-ink-800 font-display font-black"
+          style={{ color, fontSize: Math.round(size * (team?.tag?.length > 3 ? 0.26 : 0.32)), textShadow: `0 0 ${Math.round(glow * 0.6)}px ${color}aa` }}
         >
           {team?.tag ?? "?"}
         </span>
@@ -119,7 +130,7 @@ export const labelClass = "mb-2 block font-tech text-[10px] uppercase tracking-[
  */
 export function TeamTag({ team, link = true, className = "" }) {
   if (!team) return null;
-  const classes = cn("shrink-0 font-tech text-[11px] font-bold uppercase tracking-[0.16em]", link && "hover:underline", className);
+  const classes = cn("shrink-0 font-tech text-[11px] font-bold normal-case tracking-[0.16em]", link && "hover:underline", className);
   const label = `[${team.tag}]`;
   return link ? (
     <Link href={`/cod/equipes/${team.id}`} title={team.name} className={classes} style={{ color: team.color }}>

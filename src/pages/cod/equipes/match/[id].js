@@ -162,7 +162,7 @@ function TeamSide({ team, side, winner, change, host = false, right = false }) {
           {team?.name}
         </Link>
         <p className="mt-1 font-tech text-xs uppercase tracking-[0.2em] text-white/45">
-          [{team?.tag}]
+          <span className="normal-case">[{team?.tag}]</span>
           {winner === side ? <LuCrown aria-label="Vainqueur" className="ml-2 inline h-3.5 w-3.5 text-gold" /> : null}
         </p>
         {host ? <HostChip className="mt-2" /> : null}
@@ -343,7 +343,7 @@ function MapScoreInput({ label, teamA, teamB, value, onChange }) {
               winner === side ? "bg-gold text-ink" : "bg-white/[0.06] text-white/70 hover:bg-white/10",
             )}
           >
-            [{team?.tag}] gagne
+            <span className="normal-case">[{team?.tag}]</span> gagne
           </button>
         ))}
         <label className="ml-auto flex items-center gap-2 text-sm text-white/60">
@@ -360,7 +360,7 @@ function MapScoreInput({ label, teamA, teamB, value, onChange }) {
       </div>
       {value ? (
         <p className="mt-2 font-tech text-xs tracking-[0.2em] text-white/45">
-          [{teamA?.tag}] {value[0]} – {value[1]} [{teamB?.tag}]
+          <span className="normal-case">[{teamA?.tag}]</span> {value[0]} – {value[1]} <span className="normal-case">[{teamB?.tag}]</span>
         </p>
       ) : null}
     </div>
@@ -432,7 +432,7 @@ function ReportForm({ match, onDone }) {
       <ConfirmDialog open={confirming} onClose={() => setConfirming(false)} title="Déclarer ce résultat ?" confirmLabel="Déclarer" pending={pending} onConfirm={submit}>
         {declared.filter(Boolean).map((v, i) => (
           <p key={i}>
-            {match.maps[start + i]?.map} : [{match.teamA?.tag}] {v[0]} – {v[1]} [{match.teamB?.tag}]
+            {match.maps[start + i]?.map} : <span className="normal-case">[{match.teamA?.tag}]</span> {v[0]} – {v[1]} <span className="normal-case">[{match.teamB?.tag}]</span>
           </p>
         ))}
       </ConfirmDialog>
@@ -466,7 +466,7 @@ function ConfirmBlock({ match, name, onDone }) {
       <ul className="space-y-1 font-display text-2xl font-black uppercase">
         {match.pendingScores.map((v, i) => (
           <li key={i}>
-            <span className="text-white/55">{match.maps[match.scores.length + i]?.map} :</span> [{match.teamA?.tag}] {v[0]} – {v[1]} [{match.teamB?.tag}]
+            <span className="text-white/55">{match.maps[match.scores.length + i]?.map} :</span> <span className="normal-case">[{match.teamA?.tag}]</span> {v[0]} – {v[1]} <span className="normal-case">[{match.teamB?.tag}]</span>
           </li>
         ))}
       </ul>
@@ -550,7 +550,7 @@ function ResolveForm({ match, onDone }) {
           {["A", "B"].map((side) => (
             <Button key={side} variant="outline" size="sm" disabled={pending} onClick={() => resolve({ forfeitWinner: side })}>
               <LuFlag aria-hidden className="h-4 w-4" />
-              Victoire par forfait [{(side === "A" ? match.teamA : match.teamB)?.tag}]
+              Victoire par forfait <span className="normal-case">[{(side === "A" ? match.teamA : match.teamB)?.tag}]</span>
             </Button>
           ))}
         </div>

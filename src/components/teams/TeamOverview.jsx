@@ -95,7 +95,7 @@ export function TeamHero({ team, insights, isLeader }) {
           </span>
           <div className="min-w-0">
             <p className="font-tech text-xs uppercase tracking-[0.3em]" style={{ color: team.color }}>
-              [{team.tag}]
+              <span className="normal-case">[{team.tag}]</span>
             </p>
             <h2 className="mt-1 break-words font-display text-5xl font-black uppercase leading-[0.9] sm:text-6xl">{team.name}</h2>
             <div className="mt-3 flex flex-wrap items-center gap-2">
@@ -178,7 +178,12 @@ export function TeamGoals({ team, insights, compact = false }) {
     const gap = Math.max(1, ahead.points - team.points + 1);
     goals.push({
       icon: LuTarget,
-      title: `Dépasser [${ahead.tag}] ${ahead.name}`,
+      title: (
+        <>
+          Dépasser <span className="normal-case">[{ahead.tag}]</span> {ahead.name}
+        </>
+      ),
+      key: "ahead",
       text: `${gap} point${gap > 1 ? "s" : ""} pour prendre la ${ahead.position}e place (environ ${Math.ceil(gap / 25)} victoire${Math.ceil(gap / 25) > 1 ? "s" : ""}).`,
       progress: Math.min(1, team.points / Math.max(1, ahead.points + 1)),
     });
@@ -209,7 +214,7 @@ export function TeamGoals({ team, insights, compact = false }) {
         {goals.map((goal) => {
           const Icon = goal.icon;
           return (
-            <li key={goal.title} className="border-l-2 border-gold bg-white/[0.03] p-4">
+            <li key={goal.key ?? goal.title} className="border-l-2 border-gold bg-white/[0.03] p-4">
               <Icon aria-hidden className="h-6 w-6 text-gold" />
               <p className="mt-3 font-display text-xl font-bold uppercase leading-none tracking-wide">{goal.title}</p>
               <p className="mt-2 text-sm leading-relaxed text-white/55">{goal.text}</p>
@@ -364,7 +369,7 @@ export function TeamRival({ insights }) {
         <TeamCrest team={rival.team} size={44} />
         <div className="min-w-0">
           <p className="truncate font-display text-2xl font-black uppercase leading-none">{rival.team.name}</p>
-          <p className="mt-1 font-tech text-xs uppercase tracking-[0.2em] text-white/45">[{rival.team.tag}]</p>
+          <p className="mt-1 font-tech text-xs uppercase tracking-[0.2em] text-white/45"><span className="normal-case">[{rival.team.tag}]</span></p>
         </div>
       </Link>
       <p className="mt-4 font-display text-4xl font-black tabular-nums leading-none">
@@ -432,7 +437,7 @@ export function TeamActivity({ team, insights }) {
         <>
           {match.won ? "Victoire" : "Défaite"} contre{" "}
           <strong className="text-white">
-            [{match.opponent?.tag}] {match.opponent?.name}
+            <span className="normal-case">[{match.opponent?.tag}]</span> {match.opponent?.name}
           </strong>{" "}
           {match.forfeit ? "par forfait" : `${match.mapsFor}-${match.mapsAgainst}`}
           {typeof match.points === "number" ? ` (${match.points > 0 ? "+" : ""}${match.points} pts)` : ""}.

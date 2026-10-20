@@ -93,7 +93,7 @@ export function TournamentPanel() {
                   <span className="min-w-0 flex-1 text-sm">
                     <span className="font-tech text-[10px] uppercase tracking-[0.2em] text-white/45">{entry.roundName}</span>{" "}
                     <span className="font-display text-lg font-bold uppercase">
-                      [{entry.teamA.tag}] vs [{entry.teamB.tag}]
+                      <span className="normal-case">[{entry.teamA.tag}]</span> vs <span className="normal-case">[{entry.teamB.tag}]</span>
                     </span>
                     {entry.status === "blocked" ? <span className="ml-2 text-xs text-loss">match annulé : à trancher</span> : null}
                   </span>
@@ -112,7 +112,7 @@ export function TournamentPanel() {
                         run(`${entry.id}-${side}`, () => api(`/admin/tournaments/${current.id}/entries/${entry.id}/winner`, { method: "POST", body: { side } }), "Vainqueur désigné, le tableau avance.")
                       }
                     >
-                      [{(side === "A" ? entry.teamA : entry.teamB).tag}] gagne
+                      <span className="normal-case">[{(side === "A" ? entry.teamA : entry.teamB).tag}]</span> gagne
                     </Button>
                   ))}
                 </div>
