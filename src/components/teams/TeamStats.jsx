@@ -6,7 +6,7 @@ import { StatTile } from "../ui/Feedback";
 
 /**
  * Statistiques d'une équipe, calculées depuis ses matchs d'équipe terminés (lecture publique) :
- * victoires, maps et manches gagnées, série en cours.
+ * victoires et série en cours.
  */
 export function TeamStats({ teamId }) {
   const [stats, setStats] = useState(null);
@@ -32,10 +32,8 @@ export function TeamStats({ teamId }) {
       <h2 id="titre-stats-equipe" className="font-display text-3xl font-black uppercase leading-none sm:text-4xl">
         Statistiques
       </h2>
-      <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
+      <div className="grid grid-cols-2 gap-3">
         <StatTile label="Victoires" value={`${stats.winRate} %`} hint={`${stats.wins} sur ${stats.matches} match${stats.matches > 1 ? "s" : ""}`} accent />
-        <StatTile label="Maps gagnées" value={`${stats.mapsWon} / ${stats.mapsPlayed}`} hint={`${stats.mapRate} %`} />
-        <StatTile label="Manches gagnées" value={`${stats.roundRate} %`} hint={`${stats.roundsWon} sur ${stats.roundsPlayed}`} />
         <StatTile
           label="Série en cours"
           value={
