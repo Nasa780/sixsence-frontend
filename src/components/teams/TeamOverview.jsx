@@ -267,7 +267,9 @@ export function TeamStandouts({ team, insights }) {
 }
 
 /** Derniers matchs (5) avec lien vers l'onglet complet. */
-export function TeamRecent({ insights, onSeeAll }) {
+export function TeamRecent({ insights }) {
+  const [all, setAll] = useState(false);
+  const count = insights.history?.length ?? 0;
   return (
     <section aria-labelledby="titre-derniers-matchs">
       <div className="flex flex-wrap items-end justify-between gap-3">
@@ -277,14 +279,14 @@ export function TeamRecent({ insights, onSeeAll }) {
             Derniers matchs
           </h2>
         </div>
-        {insights.history?.length > 5 ? (
-          <button type="button" onClick={onSeeAll} className="inline-flex items-center gap-1 font-display text-sm font-bold uppercase tracking-[0.14em] text-gold hover:text-gold-light">
-            Tout l&apos;historique
-            <LuArrowUpRight aria-hidden className="h-4 w-4" />
+        {count > 5 ? (
+          <button type="button" onClick={() => setAll((value) => !value)} className="inline-flex items-center gap-1 font-display text-sm font-bold uppercase tracking-[0.14em] text-gold hover:text-gold-light">
+            {all ? "Réduire" : `Tout l'historique · ${count}`}
+            <LuArrowUpRight aria-hidden className={cn("h-4 w-4 transition", all && "rotate-180")} />
           </button>
         ) : null}
       </div>
-      <TeamMatchHistory history={insights.history} limit={5} />
+      <TeamMatchHistory history={insights.history} limit={all ? null : 5} />
     </section>
   );
 }
