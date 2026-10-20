@@ -70,6 +70,13 @@
 
 /* Modes COD : un code couleur par mode (Classé vert émeraude, Division cyan néon, Tournoi rouge impérial) ;
    l'or reste la couleur du site hors des modes. Jamais d'orange ni de rose (GTA 6). Même mécanisme que GTA. */
+/* Or SixSence forcé (ex. menu MW4), quelle que soit la couleur de la page. */
+[data-univers="or"] {
+  --color-gold: #d4af37;
+  --color-gold-light: #f1d77a;
+  --color-gold-pale: #f8ecc0;
+  --color-gold-dark: #9c7c1c;
+}
 [data-univers="classe"] {
   --color-gold: #34d399;
   --color-gold-light: #6ee7b7;
