@@ -274,7 +274,7 @@ function TopTeams({ label }) {
   const [teams, setTeams] = useState(null);
   useEffect(() => {
     api("/teams")
-      .then((data) => setTeams(data.teams.slice(0, 5)))
+      .then((data) => setTeams(data.teams.slice(0, 10)))
       .catch(() => setTeams([]));
   }, []);
 
@@ -291,23 +291,42 @@ function TopTeams({ label }) {
             .
           </p>
         ) : (
-          <ol className="space-y-1.5">
-            {teams.map((team) => (
-              <li key={team.id}>
-                <Link href={`/cod/equipes/${team.id}`} className="flex items-center gap-3 border-l-2 border-transparent bg-white/[0.03] px-4 py-3 transition-colors hover:border-gold hover:bg-white/[0.06]">
-                  <span className="w-6 font-tech text-sm font-bold tabular-nums text-white/50">{team.position}</span>
-                  <TeamCrest team={team} size={34} />
-                  <span className="min-w-0 flex-1">
-                    <span className="block truncate font-display text-lg font-bold uppercase leading-none tracking-wide">{team.name}</span>
-                    <span className="mt-1 block font-tech text-[10px] tracking-[0.2em]" style={{ color: team.color }}>
-                      [{team.tag}]
+          <>
+            {/* Même structure que le Top 10 joueurs (ligne d'état, en-têtes, lignes de même hauteur) : les deux listes s'alignent. */}
+            {/* Espace vide de la hauteur de « Mis à jour en direct » (Top 10 joueurs) : garde les deux listes alignées. */}
+            <p aria-hidden className="invisible mb-6 text-xs">&nbsp;</p>
+            <div className="mt-1.5 grid grid-cols-[4rem_minmax(0,1fr)_auto_auto] gap-x-4 py-2 font-tech text-[10px] uppercase tracking-[0.24em] text-white/40">
+              <span className="px-4">Rang</span>
+              <span>Équipe</span>
+              <span className="text-right">V / D</span>
+              <span className="pr-4 text-right">Points</span>
+            </div>
+            <ol className="mt-3 space-y-1.5">
+              {teams.map((team) => (
+                <li key={team.id}>
+                  <Link
+                    href={`/cod/equipes/${team.id}`}
+                    className="grid grid-cols-[4rem_minmax(0,1fr)_auto_auto] min-h-[3.875rem] items-center gap-x-4 border-l-2 border-transparent bg-white/[0.03] py-3 transition-colors hover:border-gold hover:bg-white/[0.06]"
+                  >
+                    <span className="px-4 font-tech text-sm font-bold tabular-nums text-white/50">{team.position}</span>
+                    <span className="flex min-w-0 items-center gap-3">
+                      <TeamCrest team={team} size={34} />
+                      <span className="min-w-0 flex-1">
+                        <span className="block truncate font-display text-lg font-bold uppercase leading-none tracking-wide">{team.name}</span>
+                        <span className="mt-1 block font-tech text-[10px] tracking-[0.2em]" style={{ color: team.color }}>
+                          [{team.tag}]
+                        </span>
+                      </span>
                     </span>
-                  </span>
-                  <span className="font-tech text-base font-bold tabular-nums text-gold">{team.points}</span>
-                </Link>
-              </li>
-            ))}
-          </ol>
+                    <span className="whitespace-nowrap text-right text-sm tabular-nums text-white/70">
+                      {team.wins} / {team.losses}
+                    </span>
+                    <span className="pr-4 text-right font-tech text-base font-bold tabular-nums text-gold">{team.points}</span>
+                  </Link>
+                </li>
+              ))}
+            </ol>
+          </>
         )}
         <Link href="/cod/equipes" className="mt-5 inline-flex items-center gap-1.5 font-display text-sm font-bold uppercase tracking-[0.14em] text-gold hover:text-gold-light">
           Classement des équipes

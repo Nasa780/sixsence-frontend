@@ -24,9 +24,9 @@ const LINKS = [
     label: "MW4",
     // Les trois sections COD (seulement si la Division est active).
     children: MATCH_TEAM_ENABLED && [
-      { href: "/cod/ranked", label: "Classé", hint: "En solo 2vs2 à 5vs5", univers: "classe", icon: LuCrosshair },
-      { href: "/cod/division", label: "Division", hint: "En équipe 4vs4", univers: "division", icon: LuShield },
-      { href: "/cod/tournoi", label: "Tournoi", hint: "Fin de saison", univers: "tournoi", icon: LuTrophy },
+      { href: "/cod/ranked", label: "Classé", univers: "classe", icon: LuCrosshair },
+      { href: "/cod/division", label: "Division 4v4", univers: "division", icon: LuShield },
+      { href: "/cod/tournoi", label: "Tournoi", univers: "tournoi", icon: LuTrophy },
     ],
   },
   { href: "/gta6", label: "GTA 6", univers: "gta" },
@@ -119,7 +119,6 @@ export function Navbar() {
                                   <Icon aria-hidden className="h-4 w-4" />
                                   {child.label}
                                 </span>
-                                <span className="mt-0.5 block text-xs text-white/55">{child.hint}</span>
                               </span>
                               <LuArrowRight aria-hidden className="h-4 w-4 -translate-x-1 text-gold opacity-0 transition group-hover/mode:translate-x-0 group-hover/mode:opacity-100" />
                             </Link>
@@ -207,7 +206,6 @@ export function Navbar() {
                               )}
                             >
                               {child.label}
-                              <span className="ml-2 font-sans text-xs font-normal normal-case tracking-normal text-white/40">{child.hint}</span>
                             </Link>
                           );
                         }),
