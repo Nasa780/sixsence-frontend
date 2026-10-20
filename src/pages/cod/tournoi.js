@@ -219,7 +219,7 @@ function CheckInPanel({ tournament, open, onDone }) {
                     onClick={() => toggle(player.id)}
                     className={cn("flex w-full items-center gap-3 border-l-2 px-3 py-2.5 text-left transition", selected ? "border-gold bg-gold/10" : "border-white/10 bg-white/[0.03] hover:bg-white/[0.06]")}
                   >
-                    <Avatar src={player.avatarUrl} name={player.username} size={32} />
+                    <Avatar full src={player.avatarUrl} name={player.username} size={32} />
                     <span className="min-w-0 flex-1 truncate font-display text-lg font-bold uppercase leading-none">{player.username}</span>
                     {selected ? <Chip>Joue</Chip> : null}
                   </button>

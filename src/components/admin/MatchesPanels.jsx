@@ -11,6 +11,7 @@ const STATUS = {
   ready_check: ["Vérification", "gold"],
   in_progress: ["En cours", "gold"],
   awaiting_confirmation: ["À confirmer", "gold"],
+  forfeit_claimed: ["Forfait demandé", "loss"],
   disputed: ["Contesté", "loss"],
   completed: ["Terminé", "win"],
   cancelled: ["Annulé", "neutral"],
@@ -32,7 +33,14 @@ export function MatchesPanel() {
     let alive = true;
     const timer = setTimeout(() => {
       api(`/admin/matches?q=${encodeURIComponent(query)}`)
-        .then((data) => alive && (setMatches(data.matches), setError(null)))
+        .then((data) => {
+          if (!alive) return;
+          // Classé et Division mélangés, du plus récent au plus ancien.
+          const all = [...(data.matches ?? []).map((match) => ({ ...match, kind: "classe" })), ...(data.teamMatches ?? [])];
+          all.sort((a, b) => new Date(b.created_at) - new Date(a.created_at));
+          setMatches(all);
+          setError(null);
+        })
         .catch((caught) => alive && (setError(caught.message), setMatches([])));
     }, 250);
     return () => {
@@ -43,7 +51,7 @@ export function MatchesPanel() {
 
   return (
     <div className="space-y-4">
-      <SearchInput value={query} onChange={setQuery} placeholder="Rechercher les matchs d'un joueur (pseudo)…" label="Rechercher un joueur" />
+      <SearchInput value={query} onChange={setQuery} placeholder="Rechercher un joueur (pseudo), une équipe (nom ou tag)…" label="Rechercher un joueur" />
       {error ? <Notice tone="error">{error}</Notice> : null}
       {matches === null ? (
         <Loading />
@@ -52,10 +60,12 @@ export function MatchesPanel() {
       ) : (
         matches.map((match) => {
           const [label, tone] = STATUS[match.status] ?? [match.status, "neutral"];
+          if (match.kind === "division") return <DivisionMatchRow key={`d-${match.id}`} match={match} label={label} tone={tone} />;
           return (
             <TacticalCard key={match.id} cut={18} innerClassName="flex flex-col gap-3 p-5 lg:flex-row lg:items-center lg:justify-between">
               <div className="min-w-0 space-y-1.5">
                 <div className="flex flex-wrap items-center gap-2">
+                  <ModeChip kind="classe" />
                   <Chip tone={tone}>{label}</Chip>
                   {match.correction_action ? <Chip tone="gold">Corrigé</Chip> : null}
                   {match.openRequests > 0 ? (
@@ -83,6 +93,49 @@ export function MatchesPanel() {
         })
       )}
     </div>
+  );
+}
+
+/** Étiquette du mode, dans sa couleur : Classé (vert) ou Division (cyan). */
+function ModeChip({ kind }) {
+  return (
+    <span data-univers={kind === "division" ? "division" : "classe"}>
+      <Chip>{kind === "division" ? "Division" : "Classé"}</Chip>
+    </span>
+  );
+}
+
+/** Ligne d'un match de Division : équipes (tag), score en maps, forfait, tournoi. */
+function DivisionMatchRow({ match, label, tone }) {
+  return (
+    <TacticalCard cut={18} innerClassName="flex flex-col gap-3 p-5 lg:flex-row lg:items-center lg:justify-between">
+      <div className="min-w-0 space-y-1.5">
+        <div className="flex flex-wrap items-center gap-2">
+          <ModeChip kind="division" />
+          <Chip tone={tone}>{label}</Chip>
+          {match.forfeit ? <Chip tone="neutral">Forfait</Chip> : null}
+          {match.tournament_id ? <Chip tone="gold">Tournoi</Chip> : null}
+          {match.corrected_at ? <Chip tone="gold">Corrigé</Chip> : null}
+          <p className="font-display text-xl font-black uppercase leading-none">
+            BO{match.best_of ?? 3} <span className="text-white/40">· {match.mapsA} – {match.mapsB}</span>
+          </p>
+        </div>
+        <p className="text-sm text-white/60">
+          <span className={cn(match.winner === "A" && "font-semibold text-win")}>
+            <span className="normal-case">[{match.teamA?.tag}]</span> {match.teamA?.name ?? "Équipe"}
+          </span>
+          <span className="text-white/30"> vs </span>
+          <span className={cn(match.winner === "B" && "font-semibold text-win")}>
+            <span className="normal-case">[{match.teamB?.tag}]</span> {match.teamB?.name ?? "Équipe"}
+          </span>
+        </p>
+        <p className="text-xs text-white/40">{when(match.completed_at ?? match.created_at)}</p>
+      </div>
+      <Link href={`/cod/equipes/match/${match.id}`} className="inline-flex shrink-0 items-center gap-1.5 text-sm text-gold underline underline-offset-4">
+        {match.status === "completed" ? "Ouvrir (correction possible)" : "Ouvrir la feuille de match"}
+        <LuExternalLink aria-hidden className="h-3.5 w-3.5" />
+      </Link>
+    </TacticalCard>
   );
 }
 

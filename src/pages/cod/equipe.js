@@ -508,6 +508,7 @@ function Recruitment({ team, state, reload }) {
         {full ? <Notice>L&apos;équipe est complète (8 joueurs).</Notice> : null}
         {error ? <Notice tone="error">{error}</Notice> : null}
         {sent ? <Notice tone="success">{sent}</Notice> : null}
+        {!full ? <InviteLinkCard team={team} /> : null}
         <div className="relative">
           <LuSearch aria-hidden className="pointer-events-none absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-white/35" />
           <input
@@ -593,11 +594,67 @@ function Recruitment({ team, state, reload }) {
   );
 }
 
+/** Lien d'invitation (Leader) : à partager à ses mates, qui rejoignent l'équipe en un clic ; « Nouveau lien » coupe l'ancien. */
+function InviteLinkCard({ team }) {
+  const [code, setCode] = useState(null);
+  const [copied, setCopied] = useState(false);
+  const [pending, setPending] = useState(false);
+  const [error, setError] = useState(null);
+
+  useEffect(() => {
+    api(`/teams/${team.id}/invite-link`)
+      .then((data) => setCode(data.code))
+      .catch((caught) => setError(caught.message));
+  }, [team.id]);
+
+  const url = code && typeof window !== "undefined" ? `${window.location.origin}/cod/equipes/rejoindre/${code}` : "";
+
+  async function copy() {
+    try {
+      await navigator.clipboard.writeText(url);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 1800);
+    } catch {
+      // Presse-papiers indisponible : le lien reste sélectionnable.
+    }
+  }
+
+  async function reset() {
+    if (!window.confirm("Créer un nouveau lien ? L'ancien ne fonctionnera plus.")) return;
+    setPending(true);
+    try {
+      setCode((await api(`/teams/${team.id}/invite-link/reset`, { method: "POST" })).code);
+    } catch (caught) {
+      setError(caught.message);
+    } finally {
+      setPending(false);
+    }
+  }
+
+  return (
+    <div className="space-y-2 border border-gold/30 bg-gold/[0.05] p-4">
+      <p className="font-tech text-[10px] uppercase tracking-[0.24em] text-gold">Lien d&apos;invitation</p>
+      <p className="text-sm text-white/60">Envoie ce lien à tes mates : ils rejoignent l&apos;équipe en un clic, sans attendre de validation.</p>
+      {error ? <Notice tone="error">{error}</Notice> : null}
+      <div className="flex flex-col gap-2 sm:flex-row">
+        <input readOnly value={url || "Chargement…"} onFocus={(event) => event.target.select()} className={cn(fieldClass, "font-tech text-xs")} aria-label="Lien d'invitation" />
+        <Button size="sm" onClick={copy} disabled={!url} className="shrink-0">
+          {copied ? <LuCheck aria-hidden className="h-4 w-4" /> : null}
+          {copied ? "Copié" : "Copier"}
+        </Button>
+        <Button size="sm" variant="ghost" onClick={reset} disabled={!url || pending} className="shrink-0">
+          Nouveau lien
+        </Button>
+      </div>
+    </div>
+  );
+}
+
 function PlayerLine({ player, extra = null, children }) {
   const rank = rankFor(player.points ?? 0);
   return (
     <li className="flex items-center gap-3 border-l-2 border-white/10 bg-white/[0.03] px-3 py-2.5">
-      <Avatar src={player.avatarUrl} name={player.username} size={36} ring={rankGradient(rank, 160)} />
+      <Avatar full src={player.avatarUrl} name={player.username} size={36} ring={rankGradient(rank, 160)} />
       <div className="min-w-0 flex-1">
         <Link href={`/cod/profile/${player.id}`} className="block truncate font-display text-lg font-bold uppercase leading-none hover:!text-gold" style={{ color: rank.text }}>
           {player.username}

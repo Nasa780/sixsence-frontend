@@ -254,7 +254,7 @@ export function TeamStandouts({ team, insights }) {
           return (
             <li key={label}>
               <Link href={`/cod/profile/${row.member.id}`} className="group flex items-center gap-4 border border-white/10 bg-white/[0.03] p-4 transition hover:border-gold/60">
-                <Avatar src={row.member.avatarUrl} name={row.member.username} size={52} ring={rankGradient(rank, 160)} />
+                <Avatar full src={row.member.avatarUrl} name={row.member.username} size={52} ring={rankGradient(rank, 160)} />
                 <div className="min-w-0">
                   <p className="font-tech text-[10px] uppercase tracking-[0.24em] text-gold">{label}</p>
                   <p className="mt-1 truncate font-display text-xl font-black uppercase leading-none" style={{ color: rank.text }}>
