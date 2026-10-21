@@ -24,6 +24,7 @@ import { CardBackdrop } from "./CallingCard";
 import { CardPicker } from "./CardPicker";
 import { PerformancePanel } from "./PerformancePanel";
 import { PlayerMedals } from "./PlayerMedals";
+import { TwitchForm, TwitchPanel } from "./TwitchPanel";
 import { RankBadge } from "./RankBadge";
 import { RankCard } from "./RankCard";
 import { SeasonRecap } from "./SeasonRecap";
@@ -306,6 +307,8 @@ export function ProfileView({ userId, editable = false, ownUser = null }) {
 
       <PlayerMedals playerId={player.id} />
 
+      <TwitchPanel channel={profile.twitch} />
+
       <div className="grid grid-cols-1 gap-12 lg:grid-cols-[1fr_22rem]">
         {/* --- Historique -------------------------------------------------- */}
         <section aria-labelledby="titre-historique">
@@ -393,6 +396,9 @@ export function ProfileView({ userId, editable = false, ownUser = null }) {
               </h2>
               <div className="mt-6">
                 <ActivisionForm user={ownUser} onSaved={load} />
+              </div>
+              <div className="mt-8 border-t border-white/10 pt-6">
+                <TwitchForm user={{ ...ownUser, profile: { ...ownUser.profile, twitch: profile.twitch } }} onSaved={load} />
               </div>
             </section>
           ) : null}
