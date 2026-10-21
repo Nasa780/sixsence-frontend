@@ -30,7 +30,8 @@ const MODES = [
     icon: LuCrosshair,
     eyebrow: "Mode joueur",
     title: "Classé",
-    text: "En solo, du 2v2 au 5v5. Tes points, ton rang et ta place au classement des joueurs.",
+    lead: "Prouvez votre niveau.",
+    text: "Affrontez la communauté du 2v2 au 5v5, gagnez des points et grimpez jusqu'au rang Légende.",
     facts: ["2v2 → 5v5", "Points individuels", "Rangs Bronze → Légende"],
     primary: { href: "/cod/ranked", label: "Jouer en classé" },
     links: [
@@ -46,7 +47,8 @@ const MODES = [
     icon: LuShield,
     eyebrow: "Mode équipe",
     title: "Division",
-    text: "Ton équipe jusqu'à 8 joueurs en BO3 4v4, le Leader choisit les 4 de chaque match. Les points de l'équipe et son classement en direct.",
+    lead: "Bâtissez votre escouade.",
+    text: "Formez un groupe jusqu'à 8 joueurs, alignez votre meilleur 4v4 en BO3 et dominez le classement général.",
     facts: ["BO3 4v4", "Points d'équipe", "Classement des équipes"],
     primary: { href: "/cod/division", label: "Jouer en Division" },
     links: [
@@ -62,10 +64,14 @@ const MODES = [
     icon: LuTrophy,
     eyebrow: "Fin de saison",
     title: "Tournoi",
-    text: "Les meilleures équipes de la Division s'affrontent à la fin de la saison : élimination directe en BO3, finale en BO5.",
+    lead: "Décrochez le titre.",
+    text: "Les meilleures équipes de la Division s'affrontent en arbre final (BO3 et finale BO5) pour la gloire et les récompenses.",
     facts: ["Top du classement", "BO3, finale BO5", "Trophée et rôle Discord"],
     primary: { href: "/cod/tournoi", label: "Voir le tournoi" },
-    links: [],
+    links: [
+      { href: "/cod/equipes", label: "Équipes qualifiables" },
+      { href: "/reglement#tournoi", label: "Règlement du tournoi" },
+    ],
   },
 ];
 
@@ -176,33 +182,28 @@ export function ModesHub() {
                   {mode.watermark}
                 </div>
                 <div className="relative flex h-full flex-col">
-                  <div className="flex items-center justify-between gap-3">
-                    <span className="grid h-14 w-14 place-items-center border border-gold/50 bg-ink/70 clip-corner backdrop-blur-sm">
-                      <mode.icon aria-hidden className="h-7 w-7 text-gold" />
-                    </span>
+                  <div className="flex h-14 items-center justify-between gap-3">
+                    <mode.icon aria-hidden className="h-10 w-10 shrink-0 text-gold drop-shadow-[0_0_14px_color-mix(in_srgb,var(--color-gold)_55%,transparent)]" />
                     <LiveBadge mode={mode.key} />
                   </div>
                   <Eyebrow className="mt-16">{mode.eyebrow}</Eyebrow>
                   <h2 className="mt-2 font-display text-5xl font-black uppercase leading-none sm:text-6xl">{mode.title}</h2>
-                  <p className="mt-4 max-w-md text-sm leading-relaxed text-white/60">{mode.text}</p>
-                  <ul className="mt-5 flex flex-wrap gap-2">
+                  <p className="mt-4 min-h-[5.75rem] max-w-md text-sm leading-relaxed text-white/60">
+                    <span className="font-semibold text-white">{mode.lead}</span> {mode.text}
+                  </p>
+                  <ul className="mt-5 flex min-h-[4rem] flex-wrap content-start gap-2">
                     {mode.facts.map((fact) => (
                       <li key={fact}>
                         <Chip tone="neutral">{fact}</Chip>
                       </li>
                     ))}
                   </ul>
-                  <div className="mt-auto flex flex-wrap items-center gap-x-6 gap-y-3 pt-8">
+                  <div className="mt-auto pt-8">
                     <ButtonLink href={mode.primary.href}>
                       <mode.icon aria-hidden className="h-5 w-5" />
                       {mode.primary.label}
                     </ButtonLink>
-                    {mode.links.map((link) => (
-                      <Link key={link.href} href={link.href} className="inline-flex items-center gap-1.5 font-display text-sm font-bold uppercase tracking-[0.14em] text-gold hover:text-gold-light">
-                        {link.label}
-                        <LuArrowRight aria-hidden className="h-4 w-4" />
-                      </Link>
-                    ))}
+                    <ModeLinks links={mode.links} />
                   </div>
                 </div>
               </TacticalCard>
@@ -222,6 +223,24 @@ export function ModesHub() {
         </div>
       </Container>
     </>
+  );
+}
+
+/** Liens secondaires d'une carte : une ligne par lien, trait qui s'allonge au survol. */
+function ModeLinks({ links }) {
+  return (
+    <div className="mt-5 border-t border-white/10">
+      {links.map((link) => (
+        <Link
+          key={link.href}
+          href={link.href}
+          className="group/l flex items-center justify-between gap-4 border-b border-white/10 py-3 font-display text-sm font-bold uppercase tracking-[0.14em] text-white/70 transition-colors hover:text-gold"
+        >
+          {link.label}
+          <span aria-hidden className="h-px w-5 bg-gold/50 transition-all duration-300 group-hover/l:w-10 group-hover/l:bg-gold" />
+        </Link>
+      ))}
+    </div>
   );
 }
 
