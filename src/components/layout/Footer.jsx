@@ -10,6 +10,7 @@ const COLUMNS = [
     links: [
       { href: "/cod", label: "MW4" },
       { href: "/gta6", label: "GTA 6", univers: "gta" },
+      { href: "/gta6/events", label: "Événements GTA 6", univers: "gta" },
     ],
   },
   {
