@@ -27,7 +27,7 @@ export function InviteLanding({ meta, hero, invalid, ready, card, error, actions
         <meta key="og:title" property="og:title" content={meta.title} />
         <meta key="og:description" property="og:description" content={meta.description} />
         <meta key="description" name="description" content={meta.description} />
-        <meta key="og:image" property="og:image" content={`${SITE_URL}/api/og?v=5`} />
+        <meta key="og:image" property="og:image" content={`${SITE_URL}/api/og?v=6`} />
       </Head>
       <PageHeader image="/images/mw4.webp" eyebrow={hero.eyebrow} title={hero.title} description={hero.description} />
       <Container className="max-w-3xl py-12">
