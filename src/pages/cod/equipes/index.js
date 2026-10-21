@@ -14,7 +14,7 @@ import { api } from "../../../lib/api";
 import { supabase } from "../../../lib/supabase";
 import { TEAM_LIMITS } from "../../../lib/teams";
 
-/** Places qualificatives pour le tournoi de fin de saison (réglable plus tard selon l'activité). */
+/** Places qualificatives par défaut, tant qu'aucun tournoi n'est prévu (sinon, celles du tournoi). */
 const QUALIFIED_SPOTS = 16;
 
 /** Classement des équipes de la Division. Public. */
@@ -49,6 +49,15 @@ export default function TeamsPage() {
     };
   }, []);
 
+  // Tournoi prévu ou en cours : son nombre de places et sa date remplacent le top 16 par défaut.
+  const [tournament, setTournament] = useState(null);
+  useEffect(() => {
+    api("/teams/tournament")
+      .then(({ tournament: next }) => setTournament(next && (next.status === "scheduled" || next.status === "running") ? next : null))
+      .catch(() => setTournament(null));
+  }, []);
+  const spots = tournament?.size ?? QUALIFIED_SPOTS;
+
   useEffect(() => {
     if (!userId) return setMine(null);
     api("/teams/me")
@@ -56,7 +65,7 @@ export default function TeamsPage() {
       .catch(() => setMine(null));
   }, [userId]);
 
-  const qualified = (team) => team.position <= QUALIFIED_SPOTS && team.played >= TEAM_LIMITS.qualifyMatches;
+  const qualified = (team) => team.position <= spots && team.played >= TEAM_LIMITS.qualifyMatches;
 
   return (
     <>
@@ -72,7 +81,11 @@ export default function TeamsPage() {
             Classement <span className="text-gold-gradient">équipes</span>
           </>
         }
-        description={`Équipes jusqu'à 8 joueurs, BO3 en 4v4. Le top ${QUALIFIED_SPOTS} (${TEAM_LIMITS.qualifyMatches} matchs minimum) dispute le tournoi de fin de saison.`}
+        description={
+          tournament
+            ? `Équipes jusqu'à 8 joueurs, BO3 en 4v4. Le top ${spots} (${TEAM_LIMITS.qualifyMatches} matchs minimum) dispute le tournoi du ${new Date(tournament.startsAt).toLocaleDateString("fr-FR", { day: "numeric", month: "long" })}.`
+            : `Équipes jusqu'à 8 joueurs, BO3 en 4v4. Les meilleures équipes (${TEAM_LIMITS.qualifyMatches} matchs minimum) disputeront le tournoi de fin de saison.`
+        }
         actions={
           <>
             <ButtonLink href="/cod/tournoi" variant="outline" size="lg">
@@ -122,13 +135,13 @@ export default function TeamsPage() {
                   <span aria-hidden className="h-1.5 w-1.5 animate-pulse-gold bg-gold" />
                   Classement en direct
                 </p>
-                <TeamStandings teams={teams} mineId={mine?.id ?? null} qualified={qualified} qualifiedSpots={QUALIFIED_SPOTS} seasonStart={active?.starts_at ?? null} />
+                <TeamStandings teams={teams} mineId={mine?.id ?? null} qualified={qualified} qualifiedSpots={spots} seasonStart={active?.starts_at ?? null} />
               </>
             ) : null}
 
             {teams && teams.length > 0 ? (
               <Notice className="mt-8">
-                Liseré : Équipe qualifiée pour le tournoi de fin de saison (Top {QUALIFIED_SPOTS}, {TEAM_LIMITS.qualifyMatches} matchs min.). Toutes les équipes
+                Liseré : Équipe qualifiée pour le tournoi de fin de saison (Top {spots}, {TEAM_LIMITS.qualifyMatches} matchs min.). Toutes les équipes
                 débutent à 1 000 points.
               </Notice>
             ) : null}
