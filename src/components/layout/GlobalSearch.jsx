@@ -11,6 +11,7 @@ import { Avatar } from "../ui/Avatar";
 
 /** Pages proposées (et retrouvées par leur nom). */
 const PAGES = [
+  { href: "/admin", label: "Administration", keywords: "admin contestations signalements sanctions" },
   { href: "/cod/ranked", label: "File classée", keywords: "classe jouer file recherche" },
   { href: "/cod/leaderboard", label: "Classement", keywords: "classement joueurs top" },
   { href: "/cod/matchs", label: "Mes matchs", keywords: "historique matchs" },
@@ -47,8 +48,9 @@ function saveRecent(item) {
 }
 
 /**
- * Recherche globale : loupe dans la barre du haut, Ctrl+K (ou Cmd+K). Joueurs (pseudo, même stylisé),
- * équipes (nom ou tag) et pages, pendant la frappe ; flèches, Entrée, Échap ; dernières recherches.
+ * Recherche rapide de l'équipe SixSence (admin, staff, arbitres ; affichée par la Navbar) : loupe et Ctrl+K
+ * (ou Cmd+K). Joueurs (pseudo, même stylisé, ou identifiant Activision), équipes (nom ou tag) et pages,
+ * pendant la frappe ; flèches, Entrée, Échap ; dernières recherches.
  */
 export function GlobalSearch() {
   const router = useRouter();
@@ -198,7 +200,7 @@ function SearchDialog({ onClose }) {
             value={query}
             onChange={(event) => setQuery(event.target.value)}
             onKeyDown={onKeyDown}
-            placeholder="Joueur, équipe, page…"
+            placeholder="Pseudo, ID Activision, équipe, page…"
             aria-label="Rechercher un joueur, une équipe ou une page"
             maxLength={40}
             className="h-16 min-w-0 flex-1 bg-transparent text-lg text-white placeholder:text-white/30 focus:outline-none"
@@ -231,6 +233,7 @@ function SearchDialog({ onClose }) {
                   </p>
                   <p className="text-xs text-white/45">
                     {rankFor(player.points).name} · {player.points.toLocaleString("fr-FR")} pts{player.position ? ` · #${player.position}` : ""}
+                    {player.activisionId ? <span className="ml-1 text-white/35">· {player.activisionId}</span> : null}
                   </p>
                 </div>
               </>
