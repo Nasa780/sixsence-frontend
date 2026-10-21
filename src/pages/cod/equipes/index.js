@@ -120,7 +120,7 @@ export default function TeamsPage() {
               <>
                 <p className="mb-5 inline-flex items-center gap-2 text-xs text-gold">
                   <span aria-hidden className="h-1.5 w-1.5 animate-pulse-gold bg-gold" />
-                  Classement en direct · {teams.length} équipe{teams.length > 1 ? "s" : ""}
+                  Classement en direct
                 </p>
                 <TeamStandings teams={teams} mineId={mine?.id ?? null} qualified={qualified} qualifiedSpots={QUALIFIED_SPOTS} seasonStart={active?.starts_at ?? null} />
               </>
