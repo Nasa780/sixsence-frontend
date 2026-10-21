@@ -230,7 +230,7 @@ const NAME_IDEAS = ["Coupe Horus du dimanche", "Coupe Horus · Œil d'or", "Coup
 function CupPanel() {
   const [state, setState] = useState(null);
   const [current, setCurrent] = useState(undefined);
-  const [form, setForm] = useState({ name: NAME_IDEAS[0], mode: "recurrent", weekday: 0, time: "20:00", startsAt: "", size: 8, bestOf: 3, finalBestOf: 3 });
+  const [form, setForm] = useState({ name: NAME_IDEAS[0], mode: "recurrent", weekday: 0, time: "20:00", startsAt: "", size: 8, bestOf: 3, finalBestOf: 3, bracket: "single" });
   const [pending, setPending] = useState(null);
   const [error, setError] = useState(null);
   const [message, setMessage] = useState(null);
@@ -262,7 +262,7 @@ function CupPanel() {
     }
   }
 
-  const body = { name: form.name, size: form.size, bestOf: form.bestOf, finalBestOf: form.finalBestOf };
+  const body = { name: form.name, size: form.size, bestOf: form.bestOf, finalBestOf: form.finalBestOf, bracket: form.bracket };
   const submit = () =>
     form.mode === "recurrent"
       ? run("create", () => api("/admin/cups/schedules", { method: "POST", body: { ...body, weekday: form.weekday, time: form.time } }), "Rendez-vous créé.")
@@ -299,7 +299,7 @@ function CupPanel() {
             <div key={schedule.id} className={cn("space-y-2 border-l-2 bg-white/[0.03] px-3 py-3", schedule.active ? "border-gold" : "border-white/10 opacity-60")}>
               <p className="font-display text-lg font-bold uppercase leading-none">{schedule.name}</p>
               <p className="text-xs text-white/55">
-                {WEEKDAYS[schedule.weekday]} {schedule.time} · {schedule.size} équipes · BO{schedule.bestOf}, finale BO{schedule.finalBestOf}
+                {WEEKDAYS[schedule.weekday]} {schedule.time} · {schedule.size} équipes · {schedule.bracket === "double" ? "double élimination" : "élimination directe"} · BO{schedule.bestOf}, finale BO{schedule.finalBestOf}
                 {schedule.active && state.auto ? ` · prochaine : ${dateFr(schedule.next)}` : ""}
               </p>
               <div className="flex flex-wrap gap-2">
@@ -397,7 +397,19 @@ function CupPanel() {
               </select>
             </div>
           </div>
-          <p className="text-xs text-white/45">Élimination directe avec petite finale (bronze), tableau tiré au sort. Moins de 4 équipes présentes au check-in : coupe annulée.</p>
+          <div className="flex flex-wrap gap-2">
+            {[["single", "Élimination directe"], ["double", "Double élimination"]].map(([bracket, label]) => (
+              <Button key={bracket} size="sm" variant={form.bracket === bracket ? "primary" : "outline"} onClick={() => setForm({ ...form, bracket })}>
+                {label}
+              </Button>
+            ))}
+          </div>
+          <p className="text-xs text-white/45">
+            {form.bracket === "double"
+              ? "Double élimination : une 2e défaite élimine ; grande finale en un seul match, bronze au perdant de la finale des perdants."
+              : "Élimination directe avec petite finale (bronze)."}{" "}
+            Tableau tiré au sort. Moins de 4 équipes présentes au check-in : coupe annulée.
+          </p>
           <Button disabled={pending !== null || form.name.trim().length < 3 || (form.mode === "once" && !form.startsAt)} onClick={submit}>
             {pending === "create" ? <LuLoaderCircle aria-hidden className="h-5 w-5 animate-spin" /> : null}
             {form.mode === "recurrent" ? "Créer le rendez-vous" : "Créer la coupe"}
