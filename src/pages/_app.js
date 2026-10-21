@@ -52,13 +52,13 @@ export default function App({ Component, pageProps }) {
       className={`${saira.variable} ${orbitron.variable} ${inter.variable} flex min-h-dvh flex-col overflow-x-hidden font-sans`}
     >
       <Head>
-        <title>SixSence — Plateforme gaming : classé MW4 &amp; événements GTA 6</title>
+        <title>SixSence — Compétition COD &amp; Événements GTA</title>
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <meta name="theme-color" content="#0a0a0a" />
         <meta
           key="description"
           name="description"
-          content="La plateforme gaming de la communauté : matchs classés Call of Duty MW4 avec matchmaking automatique, classement en direct et saisons, événements GTA 6 avec inscriptions. Gratuit, connexion avec Discord."
+          content="La plateforme gaming de la communauté : classé Call of Duty MW4 en solo, Division en équipe 4v4 et tournoi de fin de saison, événements GTA 6. Gratuit, connexion avec Discord."
         />
         <link rel="icon" href="/favicon.png" type="image/png" sizes="48x48" />
         <link rel="apple-touch-icon" href="/apple-touch-icon-v2.png" />
@@ -76,10 +76,10 @@ export default function App({ Component, pageProps }) {
         <meta
           key="og:description"
           property="og:description"
-          content="La plateforme gaming de la communauté : matchs classés MW4, classement en direct, récompenses de saison et événements GTA 6. Accès gratuit avec Discord."
+          content="La plateforme gaming de la communauté : classé Call of Duty MW4 en solo, Division en équipe 4v4 et tournoi de fin de saison, événements GTA 6. Gratuit, connexion avec Discord."
         />
         <meta property="og:url" content={`${SITE_URL}${asPath.split(/[?#]/)[0]}`} />
-        <meta key="og:image" property="og:image" content={`${SITE_URL}/api/og?v=5`} />
+        <meta key="og:image" property="og:image" content={`${SITE_URL}/api/og?v=6`} />
         <meta property="og:image:width" content="1200" />
         <meta property="og:image:height" content="630" />
         <meta key="og:image:alt" property="og:image:alt" content="SixSence, plateforme gaming : « Entre dans l'arène ». Matchs classés MW4 et événements GTA 6." />
