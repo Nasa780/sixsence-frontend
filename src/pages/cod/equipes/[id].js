@@ -2,14 +2,15 @@ import Head from "next/head";
 import Link from "next/link";
 import { useRouter } from "next/router";
 import { useCallback, useEffect, useState } from "react";
-import { LuFlag, LuSettings, LuTrophy, LuUserPlus } from "react-icons/lu";
-import { MemberRow, RosterHeading, TeamCrest } from "../../../components/teams/TeamParts";
+import { LuFlag, LuSettings, LuUserPlus } from "react-icons/lu";
+import { TeamHero, useTeamInsights } from "../../../components/teams/TeamOverview";
+import { MemberRow, RosterHeading } from "../../../components/teams/TeamParts";
 import { TeamMatchHistory } from "../../../components/teams/TeamMatchHistory";
 import { TeamStats } from "../../../components/teams/TeamStats";
 import { CodModeNav } from "../../../components/cod/CodModeNav";
 import { Button, ButtonLink } from "../../../components/ui/Button";
 import { Container } from "../../../components/ui/Container";
-import { Chip, EmptyState, Loading, Notice, StatTile } from "../../../components/ui/Feedback";
+import { EmptyState, Loading, Notice } from "../../../components/ui/Feedback";
 import { ReasonDialog } from "../../../components/ui/ReasonDialog";
 import { TacticalCard } from "../../../components/ui/TacticalCard";
 import { Eyebrow } from "../../../components/ui/Typography";
@@ -95,74 +96,33 @@ export default function TeamPage() {
         <meta name="description" content={team.description || `Équipe ${team.name} de la Division de SixSence.`} />
       </Head>
 
-      <header className="relative isolate overflow-hidden border-b border-white/10 pb-10 pt-28 sm:pb-14 sm:pt-36">
-        {team.bannerUrl ? (
-          <img src={team.bannerUrl} alt="" className="absolute inset-0 -z-20 h-full w-full object-cover opacity-60" />
-        ) : (
-          <div aria-hidden className="absolute inset-0 -z-20" style={{ background: `radial-gradient(ellipse at 80% 20%, ${team.color}55, transparent 60%)` }} />
-        )}
-        <div aria-hidden className="absolute inset-0 -z-10 bg-linear-to-r from-ink via-ink/75 to-ink/10" />
-        <div aria-hidden className="absolute inset-0 -z-10 bg-linear-to-t from-ink via-transparent to-ink/40" />
-        <div aria-hidden className="absolute inset-0 -z-10 bg-grid opacity-40 mask-fade" />
-        <Container className="flex flex-col gap-8 lg:flex-row lg:items-end lg:justify-between">
-          <div className="flex items-center gap-5">
-            <TeamCrest team={team} size={104} />
-            <div className="min-w-0">
-              <Eyebrow>
-                Division · <span style={{ color: team.color }}><span className="normal-case">[{team.tag}]</span></span>
-              </Eyebrow>
-              <h1 className="mt-3 break-words font-display text-5xl font-black uppercase leading-[0.9] sm:text-7xl">{team.name}</h1>
-              <p className="mt-3 text-sm text-white/55">
-                {team.disbanded ? "Équipe dissoute" : `Fondée le ${dateFr(team.createdAt)}`} · {team.members.length} / {TEAM_LIMITS.maxMembers} joueurs
-              </p>
-              {team.trophies?.length ? (
-                <ul className="mt-4 flex flex-wrap gap-2">
-                  {team.trophies.map((trophy) => (
-                    <li key={`${trophy.tournamentId}-${trophy.place}`}>
-                      <Chip tone={trophy.place === "winner" ? "gold" : "neutral"}>
-                        <LuTrophy aria-hidden className="h-3 w-3" />
-                        {trophy.place === "winner" ? "Vainqueur" : "Finaliste"} · {trophy.name}
-                      </Chip>
-                    </li>
-                  ))}
-                </ul>
-              ) : null}
-            </div>
-          </div>
-          {!team.disbanded ? (
-            <div className="flex shrink-0 flex-wrap items-center gap-3">
-              {isMember ? (
-                <ButtonLink href="/cod/equipe" size="lg">
-                  <LuSettings aria-hidden className="h-5 w-5" />
-                  Gérer mon équipe
-                </ButtonLink>
-              ) : !mine?.team ? (
-                <Button size="lg" onClick={apply} disabled={pending || requested || team.members.length >= TEAM_LIMITS.maxMembers}>
-                  <LuUserPlus aria-hidden className="h-5 w-5" />
-                  {requested ? "Candidature envoyée" : team.members.length >= TEAM_LIMITS.maxMembers ? "Équipe complète" : "Candidater"}
-                </Button>
-              ) : null}
-            </div>
-          ) : null}
-        </Container>
-        <Container className="mt-8">
-          <CodModeNav />
-        </Container>
-      </header>
+      {/* Même bannière que Mon équipe ; à la place de « Lancer un match », Gérer mon équipe ou Candidater. */}
+      <Container className="space-y-8 pt-28 sm:pt-36">
+        <PublicHero
+          team={team}
+          as="h1"
+          subline={`${team.disbanded ? "Équipe dissoute" : `Fondée le ${dateFr(team.createdAt)}`} · ${team.members.length} / ${TEAM_LIMITS.maxMembers} joueurs · Tournoi : ${Math.min(team.played, TEAM_LIMITS.qualifyMatches)} / ${TEAM_LIMITS.qualifyMatches} matchs`}
+          actions={
+            team.disbanded ? null : isMember ? (
+              <ButtonLink href="/cod/equipe" size="lg">
+                <LuSettings aria-hidden className="h-5 w-5" />
+                Gérer mon équipe
+              </ButtonLink>
+            ) : !mine?.team ? (
+              <Button size="lg" onClick={apply} disabled={pending || requested || team.members.length >= TEAM_LIMITS.maxMembers}>
+                <LuUserPlus aria-hidden className="h-5 w-5" />
+                {requested ? "Candidature envoyée" : team.members.length >= TEAM_LIMITS.maxMembers ? "Équipe complète" : "Candidater"}
+              </Button>
+            ) : (
+              <span />
+            )
+          }
+        />
+        <CodModeNav />
+      </Container>
 
       <Container className="space-y-10 py-12">
         {message ? <Notice tone={message.tone}>{message.text}</Notice> : null}
-
-        <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
-          <StatTile label="Classement" value={team.position ? `#${team.position}` : "—"} accent />
-          <StatTile label="Points" value={team.points} />
-          <StatTile label="Victoires / Défaites" value={`${team.wins} / ${team.losses}`} />
-          <StatTile
-            label="Tournoi"
-            value={`${Math.min(team.played, TEAM_LIMITS.qualifyMatches)} / ${TEAM_LIMITS.qualifyMatches}`}
-            hint={team.played >= TEAM_LIMITS.qualifyMatches ? "Qualifiable" : "Matchs avant d'être qualifiable"}
-          />
-        </div>
 
         <div className="grid gap-10 lg:grid-cols-[2fr_1fr]">
           <section aria-label="Effectif">
@@ -228,4 +188,10 @@ export default function TeamPage() {
       />
     </>
   );
+}
+
+/** Bannière de la fiche publique : forme et série lues depuis les matchs de l'équipe (sans l'état « jouer » du visiteur). */
+function PublicHero({ team, ...props }) {
+  const insights = useTeamInsights(team, { withPlay: false });
+  return <TeamHero team={team} insights={insights} {...props} />;
 }
