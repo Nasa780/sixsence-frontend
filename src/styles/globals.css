@@ -54,6 +54,11 @@
     0%, 100% { transform: translateY(0); }
     50% { transform: translateY(-10px); }
   }
+  /* Balayage lumineux d'une ligne du classement des équipes au survol. */
+  @keyframes standings-sweep {
+    from { transform: translateX(0) skewX(-20deg); }
+    to { transform: translateX(450%) skewX(-20deg); }
+  }
 }
 
 /* -----------------------------------------------------------------------------
