@@ -238,6 +238,9 @@ export function Navbar() {
                     <Link href="/cod/matchs" className="px-4 py-3 text-sm text-white/70 hover:text-gold">
                       Mes matchs
                     </Link>
+                    <Link href="/calendrier" className="px-4 py-3 text-sm text-white/70 hover:text-gold">
+                      Calendrier
+                    </Link>
                     <Link href="/reglement" className="px-4 py-3 text-sm text-white/70 hover:text-gold">
                       Règlement
                     </Link>

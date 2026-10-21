@@ -25,6 +25,7 @@ const COLUMNS = [
     links: [
       { href: "/cod/profile", label: "Mon profil" },
       { href: "/cod/matchs", label: "Mes matchs" },
+      { href: "/calendrier", label: "Calendrier" },
       { href: "/reglement", label: "Règlement" },
       { href: "/founders", label: "Fondateurs" },
       { href: "/partners", label: "Partenaires" },
