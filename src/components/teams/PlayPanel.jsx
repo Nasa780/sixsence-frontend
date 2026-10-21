@@ -168,8 +168,23 @@ export function DivisionLobby({ team, isLeader, play, match, revealed, chosen, o
                 ? "Adversaire trouvé"
                 : "Match en cours"}
         </p>
-        <p className="font-tech text-[11px] uppercase tracking-[0.2em] text-white/45">
-          {play.teamsSearching} équipe{play.teamsSearching > 1 ? "s" : ""} en recherche
+        {/* Équipes en recherche : badge lumineux qui pulse dès qu'une équipe attend, discret (gris, immobile) sinon. */}
+        <p
+          className={cn(
+            "inline-flex items-center gap-2 font-tech text-[11px] uppercase tracking-[0.2em] transition-colors",
+            play.teamsSearching > 0
+              ? "clip-slant border border-gold/70 bg-gold/[0.12] px-3 py-1 text-gold shadow-[0_0_18px_color-mix(in_srgb,var(--color-gold)_35%,transparent)] [--slant:8px]"
+              : "text-white/45",
+          )}
+        >
+          {play.teamsSearching > 0 ? (
+            <span aria-hidden className="relative flex h-2 w-2">
+              <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-gold opacity-70" />
+              <span className="relative inline-flex h-2 w-2 rounded-full bg-gold" />
+            </span>
+          ) : null}
+          <span className={cn(play.teamsSearching > 0 && "font-bold text-white")}>{play.teamsSearching}</span>
+          équipe{play.teamsSearching > 1 ? "s" : ""} en recherche
         </p>
       </div>
 
