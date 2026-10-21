@@ -179,7 +179,7 @@ function StatusChip({ match }) {
   if (match.status === "disputed") return <Chip tone="loss" className="mt-2">Contesté</Chip>;
   if (match.status === "awaiting_confirmation") return <Chip className="mt-2">Confirmation</Chip>;
   if (match.status === "forfeit_claimed") return <Chip tone="loss" className="mt-2">Forfait demandé</Chip>;
-  return <Chip className="mt-2">{match.scores.length === match.bestOf - 1 ? "Map décisive" : "En cours"}</Chip>;
+  return <Chip className="mt-2">{match.bestOf > 1 && match.scores.length === match.bestOf - 1 ? "Map décisive" : "En cours"}</Chip>;
 }
 
 function MatchNotices({ match, name }) {
@@ -230,7 +230,7 @@ function MapCard({ index, match, name }) {
   const pending = match.pendingScores && pendingIndex >= 0 ? match.pendingScores[pendingIndex] : null;
   const score = confirmed ?? pending;
   const decided = match.status === "completed" && index >= match.scores.length;
-  const decider = index === match.bestOf - 1;
+  const decider = match.bestOf > 1 && index === match.bestOf - 1;
   const pick = map ? (map.pick === "random" ? "tirée au sort" : `choix ${name(map.pick)}`) : decider ? "décisive" : "";
 
   return (

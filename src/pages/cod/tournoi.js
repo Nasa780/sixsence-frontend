@@ -1,8 +1,9 @@
 import Head from "next/head";
 import Link from "next/link";
+import { useRouter } from "next/router";
 import { useCallback, useEffect, useState } from "react";
-import { LuCheck, LuCrown, LuLoaderCircle, LuTrophy } from "react-icons/lu";
-import { TeamCrest } from "../../components/teams/TeamParts";
+import { LuCheck, LuCrown, LuLoaderCircle, LuTrophy, LuUserMinus, LuUserPlus } from "react-icons/lu";
+import { SlantTab, TeamCrest } from "../../components/teams/TeamParts";
 import { Avatar } from "../../components/ui/Avatar";
 import { Button, ButtonLink } from "../../components/ui/Button";
 import { Container } from "../../components/ui/Container";
@@ -26,8 +27,21 @@ function countdown(target, now) {
   return d > 0 ? `${d} j ${h} h ${String(m).padStart(2, "0")}` : `${h}:${String(m).padStart(2, "0")}:${String(s).padStart(2, "0")}`;
 }
 
-/** Tournoi de fin de saison (section à part, équipes de la Division) : check-in, tableau en direct, vainqueur. Public. */
+const PODIUM = [
+  ["winner", "Or", "🥇"],
+  ["finalist", "Argent", "🥈"],
+  ["third", "Bronze", "🥉"],
+];
+
+/**
+ * Tournois de la Division : Coupe Horus (coupes d'équipe à inscription libre, ?coupe=saison pour l'autre
+ * onglet) et tournoi de fin de saison (qualification par le classement). Inscription, check-in, tableau en
+ * direct (petite finale comprise), podium. Public.
+ */
 export default function TournamentPage() {
+  const router = useRouter();
+  const kind = router.query.coupe === "saison" ? "saison" : "horus";
+  const horus = kind === "horus";
   const { userId } = useSession();
   const [tournament, setTournament] = useState(undefined);
   const [error, setError] = useState(null);
@@ -35,12 +49,15 @@ export default function TournamentPage() {
 
   const load = useCallback(async () => {
     try {
-      setTournament((await api("/teams/tournament")).tournament);
+      setTournament((await api(`/teams/tournament?kind=${kind}`)).tournament);
       setError(null);
     } catch (caught) {
       setError(caught.message);
     }
-  }, []);
+  }, [kind]);
+
+  // Changement d'onglet : on repart d'un chargement.
+  useEffect(() => setTournament(undefined), [kind]);
 
   useEffect(() => {
     load();
@@ -73,15 +90,26 @@ export default function TournamentPage() {
   return (
     <>
       <Head>
-        <title>{tournament ? `${tournament.name} — SixSence` : "Tournoi — SixSence"}</title>
-        <meta name="description" content="Tournoi de fin de saison de SixSence : les meilleures équipes s'affrontent en BO3, finale en BO5." />
+        <title>{tournament ? `${tournament.name} — SixSence` : horus ? "Coupe Horus — SixSence" : "Tournoi — SixSence"}</title>
+        <meta
+          name="description"
+          content={
+            horus
+              ? "Coupe Horus de SixSence : coupes d'équipe ouvertes à l'inscription, trophées or, argent, bronze et points de Division."
+              : "Tournoi de fin de saison de SixSence : les meilleures équipes s'affrontent en BO3, finale en BO5."
+          }
+        />
       </Head>
       <PageHeader
         image="/images/mw4.webp"
-        eyebrow="Tournoi · Fin de saison"
+        eyebrow={horus ? "Tournoi · Coupe Horus" : "Tournoi · Fin de saison"}
         title={
           tournament ? (
             tournament.name
+          ) : horus ? (
+            <>
+              Coupe <span className="text-gold-gradient">Horus</span>
+            </>
           ) : (
             <>
               Tournoi <span className="text-gold-gradient">final</span>
@@ -90,8 +118,10 @@ export default function TournamentPage() {
         }
         description={
           tournament
-            ? `${tournament.teams.length} équipes · BO3, finale en BO5 · ${tournament.status === "completed" ? "terminé" : dateFr(tournament.startsAt)}`
-            : `Les meilleures équipes du classement (${TEAM_LIMITS.qualifyMatches} matchs minimum) s'affrontent à la fin de la saison.`
+            ? `${tournament.teams.length} équipe${tournament.teams.length > 1 ? "s" : ""} · BO${tournament.bestOf}, finale en BO${tournament.finalBestOf} · ${tournament.status === "completed" ? "terminé" : dateFr(tournament.startsAt)}`
+            : horus
+              ? "Les coupes d'équipe ouvertes à tous : inscris ton équipe, gagne un trophée et des points de Division."
+              : `Les meilleures équipes du classement (${TEAM_LIMITS.qualifyMatches} matchs minimum) s'affrontent à la fin de la saison.`
         }
         actions={
           <ButtonLink href="/cod/equipes" variant="outline">
@@ -100,15 +130,43 @@ export default function TournamentPage() {
         }
       />
       <Container className="space-y-10 py-12">
+        <div role="tablist" aria-label="Tournois" className="flex gap-2 overflow-x-auto pb-1">
+          <SlantTab active={horus} onClick={() => router.replace({ pathname: router.pathname }, undefined, { shallow: true })}>
+            Coupe Horus
+          </SlantTab>
+          <SlantTab active={!horus} onClick={() => router.replace({ pathname: router.pathname, query: { coupe: "saison" } }, undefined, { shallow: true })}>
+            Fin de saison
+          </SlantTab>
+        </div>
         {error ? <Notice tone="error">{error}</Notice> : null}
         {tournament === undefined && !error ? <Loading /> : null}
-        {tournament === null ? (
-          <TournamentTeaser />
-        ) : null}
+        {tournament === null ? <TournamentTeaser horus={horus} /> : null}
 
         {tournament ? (
           <>
-            {tournament.status === "completed" && tournament.winner ? (
+            {tournament.status === "completed" && tournament.winner && tournament.kind === "horus" ? (
+              <ol className="grid gap-3 sm:grid-cols-3">
+                {PODIUM.map(([key, label, medal]) =>
+                  tournament[key] ? (
+                    <li key={key}>
+                      <TacticalCard highlight={key === "winner"} cut={20} innerClassName={cn("flex items-center gap-4 p-5", key === "winner" && "holo")}>
+                        <span aria-hidden className="text-3xl">
+                          {medal}
+                        </span>
+                        <TeamCrest team={tournament[key]} size={52} />
+                        <div className="min-w-0">
+                          <p className="font-tech text-[10px] uppercase tracking-[0.24em] text-gold">{label}</p>
+                          <Link href={`/cod/equipes/${tournament[key].id}`} className="block truncate font-display text-2xl font-black uppercase leading-none hover:text-gold">
+                            {tournament[key].name}
+                          </Link>
+                        </div>
+                      </TacticalCard>
+                    </li>
+                  ) : null,
+                )}
+              </ol>
+            ) : null}
+            {tournament.status === "completed" && tournament.winner && tournament.kind !== "horus" ? (
               <TacticalCard highlight cut={28} innerClassName="holo overflow-hidden p-6 sm:p-10">
                 <div aria-hidden className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,color-mix(in_srgb,var(--color-gold)_22%,transparent),transparent_65%)]" />
                 <div className="relative flex flex-col items-center gap-5 text-center sm:flex-row sm:text-left">
@@ -130,27 +188,29 @@ export default function TournamentPage() {
             {scheduled ? (
               <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
                 <StatTile label={checkInOpen ? "Début dans" : "Check-in dans"} value={countdown(checkInOpen ? tournament.startsAt : tournament.checkInOpensAt, now)} accent />
-                <StatTile label="Équipes" value={tournament.teams.length} />
+                <StatTile label={tournament.kind === "horus" ? "Inscrites" : "Équipes"} value={tournament.kind === "horus" ? `${tournament.teams.length} / ${tournament.size}` : tournament.teams.length} />
                 <StatTile label="Check-in" value={`${tournament.teams.filter((team) => team.checkedIn).length} / ${tournament.teams.length}`} />
-                <StatTile label="Format" value="BO3" hint="Finale en BO5" />
+                <StatTile label="Format" value={`BO${tournament.bestOf}`} hint={`Finale en BO${tournament.finalBestOf}${tournament.kind === "horus" ? " · petite finale" : ""}`} />
               </div>
             ) : null}
             {tournament.status === "running" ? <Notice>Le tournoi est en cours : le tableau se met à jour après chaque match.</Notice> : null}
-            {tournament.status === "cancelled" ? <Notice tone="error">Ce tournoi a été annulé.</Notice> : null}
+            {tournament.status === "cancelled" ? <Notice tone="error">{tournament.kind === "horus" ? "Cette coupe a été annulée (pas assez d'équipes présentes)." : "Ce tournoi a été annulé."}</Notice> : null}
 
-            {tournament.viewer ? <CheckInPanel tournament={tournament} open={checkInOpen} onDone={load} /> : null}
+            {tournament.kind === "horus" && scheduled ? <RegistrationPanel tournament={tournament} userId={userId} onDone={load} /> : null}
+            {tournament.viewer?.registered !== false && tournament.viewer ? <CheckInPanel tournament={tournament} open={checkInOpen} onDone={load} /> : null}
 
             <Bracket tournament={tournament} myTeamId={tournament.viewer?.teamId} />
 
             <section aria-labelledby="titre-qualifies">
               <h2 id="titre-qualifies" className="font-display text-3xl font-black uppercase leading-none sm:text-4xl">
-                Qualifiés
+                {tournament.kind === "horus" ? "Équipes inscrites" : "Qualifiés"}
               </h2>
+              {tournament.teams.length === 0 ? <p className="mt-4 text-sm text-white/50">Aucune équipe inscrite pour l&apos;instant.</p> : null}
               <ul className="mt-4 grid gap-2 sm:grid-cols-2 lg:grid-cols-4">
                 {tournament.teams.map((team) => (
                   <li key={team.id}>
                     <Link href={`/cod/equipes/${team.id}`} className={cn("flex items-center gap-3 border-l-2 bg-white/[0.03] px-3 py-2.5 hover:bg-white/[0.06]", team.forfeit ? "border-loss/60 opacity-60" : "border-white/10")}>
-                      <span className="w-6 font-tech text-xs text-white/45">#{team.seed}</span>
+                      {tournament.kind !== "horus" || !scheduled ? <span className="w-6 font-tech text-xs text-white/45">#{team.seed}</span> : null}
                       <TeamCrest team={team} size={32} />
                       <span className="min-w-0 flex-1 truncate font-display text-lg font-bold uppercase leading-none">{team.name}</span>
                       {team.forfeit ? <Chip tone="loss">Forfait</Chip> : scheduled ? <Chip tone={team.checkedIn ? "win" : "neutral"}>{team.checkedIn ? "Prête" : "En attente"}</Chip> : null}
@@ -163,6 +223,74 @@ export default function TournamentPage() {
         ) : null}
       </Container>
     </>
+  );
+}
+
+/** Coupe Horus : inscription ou désinscription de son équipe (un Leader), jusqu'au début. */
+function RegistrationPanel({ tournament, userId, onDone }) {
+  const viewer = tournament.viewer;
+  const [pending, setPending] = useState(false);
+  const [error, setError] = useState(null);
+  const full = tournament.teams.length >= tournament.size;
+
+  async function run(method) {
+    setPending(true);
+    setError(null);
+    try {
+      await api(`/teams/tournaments/${tournament.id}/register`, { method });
+      await onDone();
+    } catch (caught) {
+      setError(caught.message);
+    } finally {
+      setPending(false);
+    }
+  }
+
+  let content;
+  if (!userId) content = <p className="text-sm text-white/55">Connecte-toi avec Discord pour inscrire ton équipe.</p>;
+  else if (!viewer)
+    content = (
+      <p className="text-sm text-white/55">
+        Il faut une équipe pour participer.{" "}
+        <Link href="/cod/equipes/creer" className="font-semibold text-gold underline underline-offset-4">
+          Crée la tienne
+        </Link>{" "}
+        ou rejoins-en une.
+      </p>
+    );
+  else if (viewer.registered)
+    content = (
+      <div className="flex flex-wrap items-center justify-between gap-3">
+        <p className="text-sm text-white/65">Ton équipe est inscrite. Le check-in ouvre 30 min avant le début.</p>
+        {viewer.canUnregister ? (
+          <Button variant="outline" size="sm" disabled={pending} onClick={() => run("DELETE")}>
+            <LuUserMinus aria-hidden className="h-4 w-4" />
+            Désinscrire
+          </Button>
+        ) : null}
+      </div>
+    );
+  else if (viewer.canRegister)
+    content = (
+      <div className="flex flex-wrap items-center justify-between gap-3">
+        <p className="text-sm text-white/65">
+          {tournament.size - tournament.teams.length} place{tournament.size - tournament.teams.length > 1 ? "s" : ""} libre{tournament.size - tournament.teams.length > 1 ? "s" : ""}. Il faut au moins{" "}
+          {viewer.rosterSize} joueur{viewer.rosterSize > 1 ? "s" : ""} dans l&apos;équipe.
+        </p>
+        <Button disabled={pending} onClick={() => run("POST")}>
+          {pending ? <LuLoaderCircle aria-hidden className="h-5 w-5 animate-spin" /> : <LuUserPlus aria-hidden className="h-5 w-5" />}
+          Inscrire mon équipe
+        </Button>
+      </div>
+    );
+  else content = <p className="text-sm text-white/55">{full ? "La coupe est complète." : "Un Leader de ton équipe peut l'inscrire."}</p>;
+
+  return (
+    <TacticalCard cut={20} innerClassName="space-y-3 p-6">
+      <Eyebrow>Inscription</Eyebrow>
+      {content}
+      {error ? <Notice tone="error">{error}</Notice> : null}
+    </TacticalCard>
   );
 }
 
@@ -191,7 +319,7 @@ function CheckInPanel({ tournament, open, onDone }) {
     <TacticalCard highlight cut={24} innerClassName="space-y-4 p-6 sm:p-8">
       <div className="flex flex-col gap-2 sm:flex-row sm:items-end sm:justify-between">
         <div>
-          <Eyebrow>Ton équipe est qualifiée</Eyebrow>
+          <Eyebrow>{tournament.kind === "horus" ? "Ton équipe est inscrite" : "Ton équipe est qualifiée"}</Eyebrow>
           <p className="mt-2 font-display text-3xl font-black uppercase leading-none sm:text-4xl">{viewer.checkedIn ? "Check-in validé" : "Check-in"}</p>
         </div>
         {viewer.checkedIn ? (
@@ -259,6 +387,14 @@ function Bracket({ tournament, myTeamId }) {
                     <BracketEntry entry={entry} myTeamId={myTeamId} final={round.round === tournament.rounds.length} />
                   </li>
                 ))}
+                {round.round === tournament.rounds.length && tournament.thirdPlace ? (
+                  <li>
+                    <p className="mb-2 font-tech text-[10px] uppercase tracking-[0.24em] text-white/50">
+                      {tournament.thirdPlace.name} · BO{tournament.thirdPlace.bestOf}
+                    </p>
+                    <BracketEntry entry={tournament.thirdPlace.entry} myTeamId={myTeamId} />
+                  </li>
+                ) : null}
               </ul>
             </div>
           ))}
@@ -302,7 +438,7 @@ function BracketEntry({ entry, myTeamId, final }) {
 }
 
 /** Aucun tournoi prévu : tableau en filigrane (8 → 4 → 2 → 1) et accès à la Division pour se préparer. */
-function TournamentTeaser() {
+function TournamentTeaser({ horus = false }) {
   const rounds = [8, 4, 2, 1];
   return (
     <TacticalCard highlight cut={28} innerClassName="relative overflow-hidden p-6 sm:p-10">
@@ -318,11 +454,12 @@ function TournamentTeaser() {
       <div className="relative max-w-lg">
         <LuTrophy aria-hidden className="h-10 w-10 text-gold" />
         <p className="mt-5 font-display text-4xl font-black uppercase leading-none sm:text-5xl">
-          Aucun tournoi <span className="text-gold-gradient">prévu</span>
+          {horus ? "Aucune coupe" : "Aucun tournoi"} <span className="text-gold-gradient">prévu{horus ? "e" : ""}</span>
         </p>
         <p className="mt-4 text-sm leading-relaxed text-white/60">
-          Le tournoi de fin de saison sera annoncé ici : tableau en direct, check-in des équipes et finale en BO5. En attendant, fais grimper ton équipe en
-          Division.
+          {horus
+            ? "La prochaine Coupe Horus sera annoncée ici et sur Discord : inscription de ton équipe, check-in, tableau en direct et trophées or, argent, bronze. En attendant, fais grimper ton équipe en Division."
+            : "Le tournoi de fin de saison sera annoncé ici : tableau en direct, check-in des équipes et finale en BO5. En attendant, fais grimper ton équipe en Division."}
         </p>
         <div className="mt-7 flex flex-wrap gap-3">
           <ButtonLink href="/cod/division" size="lg">

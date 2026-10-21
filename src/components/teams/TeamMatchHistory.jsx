@@ -39,6 +39,7 @@ export function TeamMatchHistory({ history, limit = null }) {
                 <p className="mt-1 truncate text-xs text-white/45">
                   [{match.opponent?.tag ?? "?"}] · {dateShort(match.date)}
                   {match.forfeit ? " · par forfait" : ""}
+                  {match.tournament ? " · Tournoi" : ""}
                 </p>
               </div>
               {done ? (

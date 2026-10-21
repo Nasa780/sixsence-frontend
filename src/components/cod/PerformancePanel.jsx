@@ -181,7 +181,7 @@ export function PerformancePanel({ history, userId, points, seasonId, seasonLabe
               aria-hidden
               className={cn(
                 "absolute h-2 w-2 -translate-x-1/2 -translate-y-1/2 rotate-45 border border-ink transition-transform",
-                entry.won ? "bg-win" : "bg-loss",
+                entry.bonus ? "bg-gold" : entry.won ? "bg-win" : "bg-loss",
                 active === index + 1 && "scale-150",
                 entries.length > 40 && active !== index + 1 && "opacity-0",
               )}
@@ -215,8 +215,8 @@ export function PerformancePanel({ history, userId, points, seasonId, seasonLabe
               style={{ left: `${x(active)}%` }}
             >
               <p className="flex items-center justify-between gap-2">
-                <span className={cn("font-display text-lg font-black uppercase leading-none", activeEntry.won ? "text-win" : "text-loss")}>
-                  {activeEntry.won ? "Victoire" : "Défaite"}
+                <span className={cn("font-display text-lg font-black uppercase leading-none", activeEntry.bonus ? "text-gold" : activeEntry.won ? "text-win" : "text-loss")}>
+                  {activeEntry.bonus ? "Bonus" : activeEntry.won ? "Victoire" : "Défaite"}
                 </span>
                 <span className={cn("font-tech text-sm font-bold tabular-nums", activeEntry.delta > 0 ? "text-win" : activeEntry.delta < 0 ? "text-loss" : "text-white/40")}>
                   {signed(activeEntry.delta)}

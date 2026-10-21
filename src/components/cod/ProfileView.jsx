@@ -441,7 +441,7 @@ function DivisionHistory({ playerId }) {
                 <p className="mt-1 truncate text-xs text-white/45">
                   Avec <span className="normal-case">[{match.team?.tag}]</span> · {done ? `${match.mapsFor} – ${match.mapsAgainst}` : "BO3"}
                   {match.forfeit ? " · par forfait" : ""}
-                  {match.tournament ? " · tournoi" : ""} · {new Date(match.date).toLocaleDateString("fr-FR", { day: "numeric", month: "short" })}
+                  {match.tournament ? " · Tournoi" : ""} · {new Date(match.date).toLocaleDateString("fr-FR", { day: "numeric", month: "short" })}
                 </p>
               </div>
               {done ? (

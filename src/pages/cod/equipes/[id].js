@@ -5,6 +5,7 @@ import { useCallback, useEffect, useState } from "react";
 import { LuFlag, LuSettings, LuUserPlus } from "react-icons/lu";
 import { TeamHero, useTeamInsights } from "../../../components/teams/TeamOverview";
 import { MemberRow, RosterHeading } from "../../../components/teams/TeamParts";
+import { TeamTrophyCase } from "../../../components/teams/TeamTrophyCase";
 import { TeamMatchHistory } from "../../../components/teams/TeamMatchHistory";
 import { TeamStats } from "../../../components/teams/TeamStats";
 import { CodModeNav } from "../../../components/cod/CodModeNav";
@@ -145,6 +146,8 @@ export default function TeamPage() {
             </ul>
           ) : null}
         </TacticalCard>
+
+        <TeamTrophyCase trophies={team.trophies} />
 
         <div className="grid gap-10 lg:grid-cols-[2fr_1fr]">
           <section aria-label="Effectif">

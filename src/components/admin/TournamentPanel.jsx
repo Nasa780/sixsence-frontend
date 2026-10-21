@@ -13,8 +13,9 @@ const STATUS = { scheduled: "Prévu", running: "En cours", completed: "Terminé"
 const dateFr = (iso) => new Date(iso).toLocaleString("fr-FR", { weekday: "short", day: "numeric", month: "short", hour: "2-digit", minute: "2-digit" });
 
 /**
- * Onglet admin « Tournoi » : création du tournoi de fin de saison (aperçu des qualifiés), suivi
- * (rencontres bloquées, vainqueur désigné à la main), annulation.
+ * Onglet admin « Tournoi » : Coupe Horus (coupes automatiques, rendez-vous, coupe ponctuelle) puis tournoi
+ * de fin de saison (aperçu des qualifiés, création), suivi (rencontres bloquées, vainqueur désigné à la main),
+ * annulation.
  */
 export function TournamentPanel() {
   const [current, setCurrent] = useState(undefined);
@@ -54,73 +55,16 @@ export function TournamentPanel() {
   }
 
   const active = current && (current.status === "scheduled" || current.status === "running");
-  const toDecide = active ? current.rounds.flatMap((round) => round.entries.map((entry) => ({ ...entry, roundName: round.name }))).filter((entry) => entry.id && entry.teamA && entry.teamB && (entry.status === "blocked" || entry.status === "playing")) : [];
 
   return (
     <div className="space-y-10">
+      <CupPanel />
+      <h2 className="border-t border-white/10 pt-8 font-display text-3xl font-black uppercase leading-none">Tournoi de fin de saison</h2>
       {error ? <Notice tone="error">{error}</Notice> : null}
       {message ? <Notice tone="success">{message}</Notice> : null}
       {current === undefined ? <Loading /> : null}
 
-      {current ? (
-        <TacticalCard highlight={active} cut={20} innerClassName="space-y-4 p-6">
-          <div className="flex flex-wrap items-start justify-between gap-3">
-            <div>
-              <p className="font-display text-3xl font-black uppercase leading-none">{current.name}</p>
-              <p className="mt-2 text-sm text-white/55">
-                {current.teams.length} équipes · {current.size} places · {dateFr(current.startsAt)}
-                {current.status === "scheduled" ? ` · check-in ${current.teams.filter((team) => team.checkedIn).length} / ${current.teams.length}` : ""}
-              </p>
-            </div>
-            <Chip tone={current.status === "running" ? "win" : current.status === "cancelled" ? "loss" : current.status === "completed" ? "neutral" : "gold"}>{STATUS[current.status]}</Chip>
-          </div>
-          <div className="flex flex-wrap gap-3">
-            <Link href="/cod/tournoi" className="inline-flex items-center gap-1.5 text-sm font-semibold text-gold underline underline-offset-4">
-              Voir le tableau
-              <LuExternalLink aria-hidden className="h-3.5 w-3.5" />
-            </Link>
-            {active ? (
-              <Button size="sm" variant="danger" disabled={pending !== null} onClick={() => setCancelling(true)}>
-                Annuler le tournoi
-              </Button>
-            ) : null}
-          </div>
-          {toDecide.length > 0 ? (
-            <div className="space-y-2 border-t border-white/10 pt-4">
-              <p className={labelClass}>Rencontres en cours ou bloquées</p>
-              {toDecide.map((entry) => (
-                <div key={entry.id} className={cn("flex flex-wrap items-center gap-3 border-l-2 bg-white/[0.03] px-3 py-2.5", entry.status === "blocked" ? "border-loss" : "border-gold/60")}>
-                  <span className="min-w-0 flex-1 text-sm">
-                    <span className="font-tech text-[10px] uppercase tracking-[0.2em] text-white/45">{entry.roundName}</span>{" "}
-                    <span className="font-display text-lg font-bold uppercase">
-                      <span className="normal-case">[{entry.teamA.tag}]</span> vs <span className="normal-case">[{entry.teamB.tag}]</span>
-                    </span>
-                    {entry.status === "blocked" ? <span className="ml-2 text-xs text-loss">match annulé : à trancher</span> : null}
-                  </span>
-                  {entry.matchId ? (
-                    <Link href={`/cod/equipes/match/${entry.matchId}`} className="text-xs text-white/55 underline hover:text-gold">
-                      Feuille
-                    </Link>
-                  ) : null}
-                  {["A", "B"].map((side) => (
-                    <Button
-                      key={side}
-                      size="sm"
-                      variant={side === "A" ? "primary" : "outline"}
-                      disabled={pending !== null}
-                      onClick={() =>
-                        run(`${entry.id}-${side}`, () => api(`/admin/tournaments/${current.id}/entries/${entry.id}/winner`, { method: "POST", body: { side } }), "Vainqueur désigné, le tableau avance.")
-                      }
-                    >
-                      <span className="normal-case">[{(side === "A" ? entry.teamA : entry.teamB).tag}]</span> gagne
-                    </Button>
-                  ))}
-                </div>
-              ))}
-            </div>
-          ) : null}
-        </TacticalCard>
-      ) : null}
+      {current ? <ActiveTournamentCard current={current} pending={pending} run={run} onCancel={() => setCancelling(true)} /> : null}
 
       {!active && current !== undefined ? (
         <section aria-labelledby="titre-nouveau-tournoi" className="grid gap-8 lg:grid-cols-[1fr_1fr]">
@@ -206,5 +150,275 @@ export function TournamentPanel() {
         Les matchs de tournoi en cours sont annulés et aucun trophée n&apos;est attribué. Action définitive.
       </ConfirmDialog>
     </div>
+  );
+}
+
+/** Tournoi prévu, en cours ou terminé : statut, lien vers le tableau, rencontres à trancher, annulation. */
+function ActiveTournamentCard({ current, pending, run, onCancel }) {
+  const active = current.status === "scheduled" || current.status === "running";
+  const entries = current.rounds.flatMap((round) => round.entries.map((entry) => ({ ...entry, roundName: round.name })));
+  if (current.thirdPlace) entries.push({ ...current.thirdPlace.entry, roundName: current.thirdPlace.name });
+  const toDecide = active ? entries.filter((entry) => entry.id && entry.teamA && entry.teamB && (entry.status === "blocked" || entry.status === "playing")) : [];
+  return (
+      <TacticalCard highlight={active} cut={20} innerClassName="space-y-4 p-6">
+        <div className="flex flex-wrap items-start justify-between gap-3">
+          <div>
+            <p className="font-display text-3xl font-black uppercase leading-none">{current.name}</p>
+            <p className="mt-2 text-sm text-white/55">
+              {current.teams.length} équipes · {current.size} places · {dateFr(current.startsAt)}
+              {current.status === "scheduled" ? ` · check-in ${current.teams.filter((team) => team.checkedIn).length} / ${current.teams.length}` : ""}
+            </p>
+          </div>
+          <Chip tone={current.status === "running" ? "win" : current.status === "cancelled" ? "loss" : current.status === "completed" ? "neutral" : "gold"}>{STATUS[current.status]}</Chip>
+        </div>
+        <div className="flex flex-wrap gap-3">
+          <Link href={current.kind === "horus" ? "/cod/tournoi" : "/cod/tournoi?coupe=saison"} className="inline-flex items-center gap-1.5 text-sm font-semibold text-gold underline underline-offset-4">
+            Voir le tableau
+            <LuExternalLink aria-hidden className="h-3.5 w-3.5" />
+          </Link>
+          {active ? (
+            <Button size="sm" variant="danger" disabled={pending !== null} onClick={() => setCancelling(true)}>
+              Annuler le tournoi
+            </Button>
+          ) : null}
+        </div>
+        {toDecide.length > 0 ? (
+          <div className="space-y-2 border-t border-white/10 pt-4">
+            <p className={labelClass}>Rencontres en cours ou bloquées</p>
+            {toDecide.map((entry) => (
+              <div key={entry.id} className={cn("flex flex-wrap items-center gap-3 border-l-2 bg-white/[0.03] px-3 py-2.5", entry.status === "blocked" ? "border-loss" : "border-gold/60")}>
+                <span className="min-w-0 flex-1 text-sm">
+                  <span className="font-tech text-[10px] uppercase tracking-[0.2em] text-white/45">{entry.roundName}</span>{" "}
+                  <span className="font-display text-lg font-bold uppercase">
+                    <span className="normal-case">[{entry.teamA.tag}]</span> vs <span className="normal-case">[{entry.teamB.tag}]</span>
+                  </span>
+                  {entry.status === "blocked" ? <span className="ml-2 text-xs text-loss">match annulé : à trancher</span> : null}
+                </span>
+                {entry.matchId ? (
+                  <Link href={`/cod/equipes/match/${entry.matchId}`} className="text-xs text-white/55 underline hover:text-gold">
+                    Feuille
+                  </Link>
+                ) : null}
+                {["A", "B"].map((side) => (
+                  <Button
+                    key={side}
+                    size="sm"
+                    variant={side === "A" ? "primary" : "outline"}
+                    disabled={pending !== null}
+                    onClick={() =>
+                      run(`${entry.id}-${side}`, () => api(`/admin/tournaments/${current.id}/entries/${entry.id}/winner`, { method: "POST", body: { side } }), "Vainqueur désigné, le tableau avance.")
+                    }
+                  >
+                    <span className="normal-case">[{(side === "A" ? entry.teamA : entry.teamB).tag}]</span> gagne
+                  </Button>
+                ))}
+              </div>
+            ))}
+          </div>
+        ) : null}
+      </TacticalCard>
+  );
+}
+
+const WEEKDAYS = ["Dimanche", "Lundi", "Mardi", "Mercredi", "Jeudi", "Vendredi", "Samedi"];
+const NAME_IDEAS = ["Coupe Horus du dimanche", "Coupe Horus · Œil d'or", "Coupe Horus · Nuit des Pharaons", "Coupe Horus · Sable et Sang", "Coupe Horus · Le Faucon"];
+
+/**
+ * Coupe Horus (admin) : interrupteur des coupes automatiques, rendez-vous récurrents (jour, heure, format),
+ * coupe ponctuelle, suivi de la coupe en cours.
+ */
+function CupPanel() {
+  const [state, setState] = useState(null);
+  const [current, setCurrent] = useState(undefined);
+  const [form, setForm] = useState({ name: NAME_IDEAS[0], mode: "recurrent", weekday: 0, time: "20:00", startsAt: "", size: 8, bestOf: 3, finalBestOf: 3 });
+  const [pending, setPending] = useState(null);
+  const [error, setError] = useState(null);
+  const [message, setMessage] = useState(null);
+  const [cancelling, setCancelling] = useState(false);
+
+  const load = useCallback(async () => {
+    const [admin, cup] = await Promise.all([api("/admin/cups"), api("/teams/tournament?kind=horus")]);
+    setState(admin);
+    setCurrent(cup.tournament);
+  }, []);
+  useEffect(() => {
+    load().catch((caught) => setError(caught.message));
+  }, [load]);
+
+  async function run(key, action, done) {
+    setPending(key);
+    setError(null);
+    setMessage(null);
+    try {
+      await action();
+      if (done) setMessage(done);
+      await load();
+      return true;
+    } catch (caught) {
+      setError(caught.message);
+      return false;
+    } finally {
+      setPending(null);
+    }
+  }
+
+  const body = { name: form.name, size: form.size, bestOf: form.bestOf, finalBestOf: form.finalBestOf };
+  const submit = () =>
+    form.mode === "recurrent"
+      ? run("create", () => api("/admin/cups/schedules", { method: "POST", body: { ...body, weekday: form.weekday, time: form.time } }), "Rendez-vous créé.")
+      : run("create", () => api("/admin/cups", { method: "POST", body: { ...body, startsAt: new Date(form.startsAt).toISOString() } }), "Coupe créée : les inscriptions sont ouvertes.");
+
+  if (!state) return error ? <Notice tone="error">{error}</Notice> : <Loading />;
+  return (
+    <section aria-labelledby="titre-coupe-horus" className="space-y-6">
+      <div className="flex flex-wrap items-end justify-between gap-4">
+        <div>
+          <p className={labelClass}>Coupes d'équipe à inscription libre</p>
+          <h2 id="titre-coupe-horus" className="font-display text-3xl font-black uppercase leading-none">
+            Coupe Horus
+          </h2>
+        </div>
+        <Button variant={state.auto ? "primary" : "outline"} disabled={pending !== null} onClick={() => run("auto", () => api("/admin/cups/auto", { method: "POST", body: { on: !state.auto } }), state.auto ? "Coupes automatiques désactivées." : "Coupes automatiques activées.")}>
+          {state.auto ? "Coupes automatiques : activées" : "Coupes automatiques : désactivées"}
+        </Button>
+      </div>
+      <p className="text-sm text-white/55">
+        Quand les coupes automatiques sont activées, chaque rendez-vous actif ouvre sa prochaine coupe aux inscriptions (dès la précédente terminée). Récompenses : or +150,
+        argent +100, bronze +75, +50 aux autres équipes présentes ; rôle Discord « Vainqueur — Coupe Horus » jusqu&apos;à la coupe suivante.
+      </p>
+      {error ? <Notice tone="error">{error}</Notice> : null}
+      {message ? <Notice tone="success">{message}</Notice> : null}
+
+      {current ? <ActiveTournamentCard current={current} pending={pending} run={run} onCancel={() => setCancelling(true)} /> : null}
+
+      <div className="grid gap-6 lg:grid-cols-2">
+        <TacticalCard innerClassName="space-y-3 p-6">
+          <p className={labelClass}>Rendez-vous</p>
+          {state.schedules.length === 0 ? <p className="text-sm text-white/50">Aucun rendez-vous pour l&apos;instant.</p> : null}
+          {state.schedules.map((schedule) => (
+            <div key={schedule.id} className={cn("space-y-2 border-l-2 bg-white/[0.03] px-3 py-3", schedule.active ? "border-gold" : "border-white/10 opacity-60")}>
+              <p className="font-display text-lg font-bold uppercase leading-none">{schedule.name}</p>
+              <p className="text-xs text-white/55">
+                {WEEKDAYS[schedule.weekday]} {schedule.time} · {schedule.size} équipes · BO{schedule.bestOf}, finale BO{schedule.finalBestOf}
+                {schedule.active && state.auto ? ` · prochaine : ${dateFr(schedule.next)}` : ""}
+              </p>
+              <div className="flex flex-wrap gap-2">
+                <Button size="sm" variant="outline" disabled={pending !== null} onClick={() => run(`a-${schedule.id}`, () => api(`/admin/cups/schedules/${schedule.id}`, { method: "PATCH", body: { active: !schedule.active } }))}>
+                  {schedule.active ? "Mettre en pause" : "Réactiver"}
+                </Button>
+                <Button size="sm" variant="ghost" disabled={pending !== null} onClick={() => run(`d-${schedule.id}`, () => api(`/admin/cups/schedules/${schedule.id}`, { method: "DELETE" }), "Rendez-vous supprimé.")}>
+                  Supprimer
+                </Button>
+              </div>
+            </div>
+          ))}
+        </TacticalCard>
+
+        <TacticalCard innerClassName="space-y-4 p-6">
+          <p className={labelClass}>Nouvelle coupe</p>
+          <div className="flex gap-2">
+            {[["recurrent", "Chaque semaine"], ["once", "Une seule fois"]].map(([mode, label]) => (
+              <Button key={mode} size="sm" variant={form.mode === mode ? "primary" : "outline"} onClick={() => setForm({ ...form, mode })}>
+                {label}
+              </Button>
+            ))}
+          </div>
+          <div>
+            <label htmlFor="c-name" className={labelClass}>
+              Nom
+            </label>
+            <input id="c-name" className={fieldClass} maxLength={60} value={form.name} onChange={(event) => setForm({ ...form, name: event.target.value })} />
+            <div className="mt-2 flex flex-wrap gap-1.5">
+              {NAME_IDEAS.map((idea) => (
+                <button key={idea} type="button" onClick={() => setForm({ ...form, name: idea })} className="border border-white/10 px-2 py-1 text-xs text-white/60 hover:border-gold hover:text-gold">
+                  {idea}
+                </button>
+              ))}
+            </div>
+          </div>
+          {form.mode === "recurrent" ? (
+            <div className="grid gap-4 sm:grid-cols-2">
+              <div>
+                <label htmlFor="c-day" className={labelClass}>
+                  Jour
+                </label>
+                <select id="c-day" className={fieldClass} value={form.weekday} onChange={(event) => setForm({ ...form, weekday: Number(event.target.value) })}>
+                  {WEEKDAYS.map((day, index) => (
+                    <option key={day} value={index}>
+                      {day}
+                    </option>
+                  ))}
+                </select>
+              </div>
+              <div>
+                <label htmlFor="c-time" className={labelClass}>
+                  Heure (Paris)
+                </label>
+                <input id="c-time" type="time" className={fieldClass} value={form.time} onChange={(event) => setForm({ ...form, time: event.target.value })} />
+              </div>
+            </div>
+          ) : (
+            <div>
+              <label htmlFor="c-start" className={labelClass}>
+                Début (heure de Paris)
+              </label>
+              <input id="c-start" type="datetime-local" className={fieldClass} value={form.startsAt} onChange={(event) => setForm({ ...form, startsAt: event.target.value })} />
+            </div>
+          )}
+          <div className="grid gap-4 sm:grid-cols-3">
+            <div>
+              <label htmlFor="c-size" className={labelClass}>
+                Équipes max
+              </label>
+              <select id="c-size" className={fieldClass} value={form.size} onChange={(event) => setForm({ ...form, size: Number(event.target.value) })}>
+                {[4, 8, 16].map((size) => (
+                  <option key={size} value={size}>
+                    {size}
+                  </option>
+                ))}
+              </select>
+            </div>
+            <div>
+              <label htmlFor="c-bo" className={labelClass}>
+                Matchs
+              </label>
+              <select id="c-bo" className={fieldClass} value={form.bestOf} onChange={(event) => setForm({ ...form, bestOf: Number(event.target.value), finalBestOf: 3 })}>
+                <option value={1}>BO1</option>
+                <option value={3}>BO3</option>
+              </select>
+            </div>
+            <div>
+              <label htmlFor="c-final" className={labelClass}>
+                Finale
+              </label>
+              <select id="c-final" className={fieldClass} value={form.finalBestOf} onChange={(event) => setForm({ ...form, finalBestOf: Number(event.target.value) })}>
+                <option value={3}>BO3</option>
+                {form.bestOf === 3 ? <option value={5}>BO5</option> : null}
+              </select>
+            </div>
+          </div>
+          <p className="text-xs text-white/45">Élimination directe avec petite finale (bronze), tableau tiré au sort. Moins de 4 équipes présentes au check-in : coupe annulée.</p>
+          <Button disabled={pending !== null || form.name.trim().length < 3 || (form.mode === "once" && !form.startsAt)} onClick={submit}>
+            {pending === "create" ? <LuLoaderCircle aria-hidden className="h-5 w-5 animate-spin" /> : null}
+            {form.mode === "recurrent" ? "Créer le rendez-vous" : "Créer la coupe"}
+          </Button>
+        </TacticalCard>
+      </div>
+
+      <ConfirmDialog
+        open={cancelling}
+        onClose={() => setCancelling(false)}
+        title="Annuler la coupe ?"
+        confirmLabel="Annuler la coupe"
+        tone="danger"
+        pending={pending !== null}
+        onConfirm={async () => {
+          const ok = await run("cancel", () => api(`/admin/tournaments/${current.id}`, { method: "DELETE" }), "Coupe annulée.");
+          if (ok) setCancelling(false);
+        }}
+      >
+        Les matchs en cours sont annulés et aucune récompense n&apos;est attribuée. Action définitive.
+      </ConfirmDialog>
+    </section>
   );
 }
