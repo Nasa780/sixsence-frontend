@@ -3,7 +3,7 @@ import Link from "next/link";
 import { useRouter } from "next/router";
 import { useEffect, useRef, useState } from "react";
 import { FaDiscord } from "react-icons/fa6";
-import { LuCrosshair, LuLogOut, LuMenu, LuShield, LuShieldCheck, LuTrophy, LuUser, LuX } from "react-icons/lu";
+import { LuArrowRight, LuCrosshair, LuLogOut, LuMenu, LuShield, LuShieldCheck, LuTrophy, LuUser, LuX } from "react-icons/lu";
 import useSession from "../../hooks/useSession";
 import useUser from "../../hooks/useUser";
 import { signInWithDiscord, signOut } from "../../lib/auth";
@@ -122,6 +122,7 @@ export function Navbar() {
                                   {child.label}
                                 </span>
                               </span>
+                              <LuArrowRight aria-hidden className="h-4 w-4 -translate-x-1 text-gold opacity-0 transition group-hover/mode:translate-x-0 group-hover/mode:text-[var(--mode)] group-hover/mode:opacity-100" />
                             </Link>
                           );
                         })}

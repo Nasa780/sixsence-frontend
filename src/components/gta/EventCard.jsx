@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { LuClock, LuMapPin, LuUsers } from "react-icons/lu";
+import { LuArrowRight, LuClock, LuMapPin, LuUsers } from "react-icons/lu";
 import { cn } from "../../lib/cn";
 import { Chip } from "../ui/Feedback";
 import { TacticalCard } from "../ui/TacticalCard";
@@ -72,6 +72,7 @@ export function EventCard({ event, registered = false }) {
           ) : null}
           <p className="mt-4 inline-flex items-center gap-2 font-display text-base font-bold uppercase tracking-[0.14em] text-gold">
             Voir le détail
+            <LuArrowRight aria-hidden className="h-4 w-4 transition-transform duration-300 group-hover/card:translate-x-1.5" />
           </p>
         </div>
       </TacticalCard>

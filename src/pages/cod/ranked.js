@@ -58,7 +58,7 @@ export default function RankedPage() {
 
 
         image="/images/mw4.webp"
-        eyebrow="Classé 2v2 à 5v5 · R&D Hardcore"
+        eyebrow="Classé 2v2 → 5v5 · R&D Hardcore"
         title={
           <>
             File <span className="text-gold-gradient">d&apos;attente</span>

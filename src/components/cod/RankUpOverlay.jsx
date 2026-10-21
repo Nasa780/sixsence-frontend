@@ -1,5 +1,6 @@
 import { AnimatePresence, motion } from "framer-motion";
 import { useEffect, useState } from "react";
+import { LuArrowRight } from "react-icons/lu";
 import { rankFor, rankGradient, rankLevel } from "../../lib/ranks";
 import { RankEmblem } from "./RankEmblem";
 
@@ -92,6 +93,7 @@ export function RankUpOverlay({ matchId, points, delta, completedAt }) {
             <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.95 }}>
               <p className="mt-4 inline-flex items-center gap-2 font-display text-lg font-bold uppercase tracking-[0.14em] text-white/55">
                 <span style={{ color: before.text }}>{before.name}</span>
+                <LuArrowRight aria-hidden className="h-4 w-4" />
                 <span style={{ color: after.text }}>{after.name}</span>
               </p>
               <p className="mt-2 font-tech text-sm tabular-nums text-white/60">

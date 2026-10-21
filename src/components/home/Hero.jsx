@@ -1,5 +1,6 @@
 import { motion, useReducedMotion } from "framer-motion";
 import { FaDiscord } from "react-icons/fa6";
+import { LuArrowRight, LuChevronRight } from "react-icons/lu";
 import useSession from "../../hooks/useSession";
 import { signInWithDiscord } from "../../lib/auth";
 import { GoldParticles } from "../effects/GoldParticles";
@@ -86,6 +87,7 @@ export function Hero() {
             {!loading && session ? (
               <ButtonLink href="/cod" size="lg">
                 Entrer dans l&apos;arène
+                <LuArrowRight aria-hidden className="h-5 w-5" />
               </ButtonLink>
             ) : (
               <Button size="lg" onClick={() => signInWithDiscord("/cod")}>
@@ -95,6 +97,7 @@ export function Hero() {
             )}
             <ButtonLink href="#univers" variant="outline" size="lg">
               Découvrir
+              <LuChevronRight aria-hidden className="h-5 w-5" />
             </ButtonLink>
           </motion.div>
 

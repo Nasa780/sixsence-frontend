@@ -1,7 +1,7 @@
 import Head from "next/head";
 import Link from "next/link";
 import { useEffect, useState } from "react";
-import { LuCrosshair, LuTrophy, LuUser } from "react-icons/lu";
+import { LuArrowRight, LuCrosshair, LuTrophy, LuUser } from "react-icons/lu";
 import { LeaderboardView } from "./LeaderboardView";
 import { OnboardingPanel } from "./OnboardingPanel";
 import { RankBadge } from "./RankBadge";
@@ -117,6 +117,7 @@ export function ClassicHub() {
                   <p className="mt-3 text-sm leading-relaxed text-white/60">{section.text}</p>
                   <p className="mt-auto inline-flex items-center gap-2 pt-8 font-display text-base font-bold uppercase tracking-[0.14em] text-gold">
                     Ouvrir
+                    <LuArrowRight aria-hidden className="h-4 w-4 transition-transform duration-300 group-hover/card:translate-x-1.5" />
                   </p>
                 </TacticalCard>
               </Link>
