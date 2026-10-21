@@ -392,8 +392,12 @@ export function MatchView({ matchId }) {
         ) : null}
 
         {match.status === "disputed" ? (
+          <Notice tone="error">Le résultat a été contesté. Un arbitre SixSence va trancher : aucun point ne bouge d&apos;ici là.</Notice>
+        ) : null}
+
+        {/* Arbitrage (admin, staff, arbitre) : tant que le match est ouvert, pas seulement en cas de contestation. */}
+        {["ready_check", "in_progress", "awaiting_confirmation", "disputed"].includes(match.status) ? (
           <>
-            <Notice tone="error">Le résultat a été contesté. Un arbitre SixSence va trancher : aucun point ne bouge d&apos;ici là.</Notice>
             {canResolve ? (
               <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
                 <p className="font-display text-xl font-bold uppercase tracking-[0.12em] text-white/80 sm:mr-2">Arbitrage</p>

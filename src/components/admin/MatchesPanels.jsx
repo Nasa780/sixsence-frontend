@@ -1,8 +1,10 @@
 import Link from "next/link";
-import { useEffect, useState } from "react";
-import { LuExternalLink, LuShieldAlert } from "react-icons/lu";
+import { useCallback, useEffect, useState } from "react";
+import { LuBan, LuExternalLink, LuShieldAlert } from "react-icons/lu";
 import { api } from "../../lib/api";
 import { cn } from "../../lib/cn";
+import { Button } from "../ui/Button";
+import { ConfirmDialog } from "../ui/ConfirmDialog";
 import { Chip, EmptyState, Loading, Notice } from "../ui/Feedback";
 import { TacticalCard } from "../ui/TacticalCard";
 import { SearchInput } from "./Fields";
@@ -18,16 +20,21 @@ const STATUS = {
 };
 const when = (iso) => (iso ? new Date(iso).toLocaleString("fr-FR", { day: "numeric", month: "short", hour: "2-digit", minute: "2-digit" }) : "");
 const team = (ids, names) => ids.map((id) => names[id] ?? "?").join(", ");
+/** Matchs encore ouverts, que l'équipe peut annuler depuis la liste. */
+const OPEN = ["ready_check", "in_progress", "awaiting_confirmation", "forfeit_claimed", "disputed"];
 const signed = (value) => (value > 0 ? `+${value}` : `${value}`);
 
 /**
  * « Matchs » : les derniers matchs, ou ceux d'un joueur (recherche par pseudo), pour retrouver
- * un match à corriger. Lien vers la page du match (bloc « Corriger le résultat »).
+ * un match à corriger. Lien vers la page du match (bloc « Corriger le résultat »). Les matchs encore
+ * ouverts (tous les modes) s'annulent directement depuis la liste, avec confirmation.
  */
 export function MatchesPanel() {
   const [query, setQuery] = useState("");
   const [matches, setMatches] = useState(null);
   const [error, setError] = useState(null);
+  const [reload, setReload] = useState(0);
+  const refresh = useCallback(() => setReload((n) => n + 1), []);
 
   useEffect(() => {
     let alive = true;
@@ -47,7 +54,7 @@ export function MatchesPanel() {
       alive = false;
       clearTimeout(timer);
     };
-  }, [query]);
+  }, [query, reload]);
 
   return (
     <div className="space-y-4">
@@ -60,7 +67,7 @@ export function MatchesPanel() {
       ) : (
         matches.map((match) => {
           const [label, tone] = STATUS[match.status] ?? [match.status, "neutral"];
-          if (match.kind === "division") return <DivisionMatchRow key={`d-${match.id}`} match={match} label={label} tone={tone} />;
+          if (match.kind === "division") return <DivisionMatchRow key={`d-${match.id}`} match={match} label={label} tone={tone} onCancelled={refresh} />;
           return (
             <TacticalCard key={match.id} cut={18} innerClassName="flex flex-col gap-3 p-5 lg:flex-row lg:items-center lg:justify-between">
               <div className="min-w-0 space-y-1.5">
@@ -84,10 +91,13 @@ export function MatchesPanel() {
                 </p>
                 <p className="text-xs text-white/40">{when(match.completed_at ?? match.created_at)}</p>
               </div>
-              <Link href={`/cod/match/${match.id}`} className="inline-flex shrink-0 items-center gap-1.5 text-sm text-gold underline underline-offset-4">
-                {match.status === "completed" ? "Ouvrir (correction possible)" : "Ouvrir le match"}
-                <LuExternalLink aria-hidden className="h-3.5 w-3.5" />
-              </Link>
+              <div className="flex shrink-0 flex-wrap items-center gap-4">
+                {OPEN.includes(match.status) ? <CancelMatch kind="classe" match={match} onDone={refresh} /> : null}
+                <Link href={`/cod/match/${match.id}`} className="inline-flex items-center gap-1.5 text-sm text-gold underline underline-offset-4">
+                  {match.status === "completed" ? "Ouvrir (correction possible)" : "Ouvrir le match"}
+                  <LuExternalLink aria-hidden className="h-3.5 w-3.5" />
+                </Link>
+              </div>
             </TacticalCard>
           );
         })
@@ -106,7 +116,7 @@ function ModeChip({ kind }) {
 }
 
 /** Ligne d'un match de Division : équipes (tag), score en maps, forfait, tournoi. */
-function DivisionMatchRow({ match, label, tone }) {
+function DivisionMatchRow({ match, label, tone, onCancelled }) {
   return (
     <TacticalCard cut={18} innerClassName="flex flex-col gap-3 p-5 lg:flex-row lg:items-center lg:justify-between">
       <div className="min-w-0 space-y-1.5">
@@ -131,11 +141,55 @@ function DivisionMatchRow({ match, label, tone }) {
         </p>
         <p className="text-xs text-white/40">{when(match.completed_at ?? match.created_at)}</p>
       </div>
-      <Link href={`/cod/equipes/match/${match.id}`} className="inline-flex shrink-0 items-center gap-1.5 text-sm text-gold underline underline-offset-4">
-        {match.status === "completed" ? "Ouvrir (correction possible)" : "Ouvrir la feuille de match"}
-        <LuExternalLink aria-hidden className="h-3.5 w-3.5" />
-      </Link>
+      <div className="flex shrink-0 flex-wrap items-center gap-4">
+        {OPEN.includes(match.status) ? <CancelMatch kind="division" match={match} onDone={onCancelled} /> : null}
+        <Link href={`/cod/equipes/match/${match.id}`} className="inline-flex items-center gap-1.5 text-sm text-gold underline underline-offset-4">
+          {match.status === "completed" ? "Ouvrir (correction possible)" : "Ouvrir la feuille de match"}
+          <LuExternalLink aria-hidden className="h-3.5 w-3.5" />
+        </Link>
+      </div>
     </TacticalCard>
+  );
+}
+
+/**
+ * Annuler un match ouvert : classé (aucun point ne bouge), Division (match annulé, sans points) ou
+ * match de coupe (la rencontre est bloquée : vainqueur à désigner dans l'onglet Tournoi).
+ */
+function CancelMatch({ kind, match, onDone }) {
+  const [open, setOpen] = useState(false);
+  const [pending, setPending] = useState(false);
+  const [error, setError] = useState(null);
+  const tournament = kind === "division" && Boolean(match.tournament_id);
+
+  async function cancel() {
+    setPending(true);
+    setError(null);
+    try {
+      if (kind === "classe") await api(`/admin/matches/${match.id}/cancel`, { method: "POST" });
+      else await api(`/teams/matches/${match.id}/resolve`, { method: "POST", body: { scores: null } });
+      setOpen(false);
+      onDone();
+    } catch (caught) {
+      setError(caught.message);
+    } finally {
+      setPending(false);
+    }
+  }
+
+  return (
+    <>
+      <Button size="sm" variant="danger" onClick={() => setOpen(true)}>
+        <LuBan aria-hidden className="h-4 w-4" />
+        Annuler
+      </Button>
+      <ConfirmDialog open={open} onClose={() => setOpen(false)} title="Annuler ce match ?" confirmLabel="Annuler le match" tone="danger" pending={pending} onConfirm={cancel}>
+        {tournament
+          ? "Match de coupe : la rencontre sera bloquée, désigne ensuite qui passe dans l'onglet Tournoi."
+          : "Le match est annulé pour tous les joueurs, aucun point ne bouge. Les joueurs sont prévenus."}
+        {error ? <span className="mt-3 block text-loss">{error}</span> : null}
+      </ConfirmDialog>
+    </>
   );
 }
 
