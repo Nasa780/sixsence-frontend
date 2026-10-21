@@ -17,7 +17,7 @@ import { TEAM_LIMITS } from "../../../lib/teams";
 /** Places qualificatives pour le tournoi de fin de saison (réglable plus tard selon l'activité). */
 const QUALIFIED_SPOTS = 16;
 
-/** Classement des équipes du Division. Public. */
+/** Classement des équipes de la Division. Public. */
 export default function TeamsPage() {
   const { userId } = useSession();
   const { seasons, active, label } = useSeasons();
@@ -62,7 +62,7 @@ export default function TeamsPage() {
     <>
       <Head>
         <title>Équipes — SixSence</title>
-        <meta name="description" content="Classement des équipes du Division de SixSence : BO3 en 4v4, points en direct, tournoi de fin de saison." />
+        <meta name="description" content="Classement des équipes de la Division de SixSence : BO3 en 4v4, points en direct, tournoi de fin de saison." />
       </Head>
       <PageHeader
         image="/images/mw4.webp"

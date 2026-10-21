@@ -92,7 +92,7 @@ export default function TeamPage() {
     <>
       <Head>
         <title>{`[${team.tag}] ${team.name} — SixSence`}</title>
-        <meta name="description" content={team.description || `Équipe ${team.name} du Division de SixSence.`} />
+        <meta name="description" content={team.description || `Équipe ${team.name} de la Division de SixSence.`} />
       </Head>
 
       <header className="relative isolate overflow-hidden border-b border-white/10 pb-10 pt-28 sm:pb-14 sm:pt-36">

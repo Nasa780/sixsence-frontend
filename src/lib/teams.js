@@ -1,7 +1,7 @@
 import { supabase } from "./supabase";
 
 /**
- * Équipes du Division : constantes partagées par les pages (mêmes règles que
+ * Équipes de la Division : constantes partagées par les pages (mêmes règles que
  * services/teamPolicy.ts du backend) et envoi des logos et bannières.
  */
 

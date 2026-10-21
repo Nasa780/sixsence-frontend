@@ -764,7 +764,7 @@ function HostChip({ className = "" }) {
 
 /**
  * Lancement du match : l'équipe hôte (tirée au sort) crée la partie privée et donne son code sous 10 min
- * (champ dédié, modifiable en cas d'erreur) ; les deux équipes cliquent « Présents en jeu » sous 15 min.
+ * (champ dédié, modifiable en cas d'erreur) ; 15 min pour lancer la partie, ensuite forfait possible.
  * Sinon, l'autre équipe peut déclarer forfait (l'équipe visée valide ou conteste ; sans réponse en 15 min,
  * un arbitre tranche).
  */
