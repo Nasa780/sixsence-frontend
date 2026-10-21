@@ -147,6 +147,57 @@ function DIVISION_SECTIONS() {
         </ul>
       ),
     },
+    {
+      id: "coupe-horus",
+      group: "Tournoi",
+      title: "Coupe Horus (équipes)",
+      content: (
+        <ul>
+          <li>
+            Un Leader <strong>inscrit son équipe</strong> dès l&apos;ouverture de la coupe et peut la désinscrire jusqu&apos;au check-in. Places
+            limitées (4, 8 ou 16 équipes).
+          </li>
+          <li>
+            Check-in d&apos;un Leader dans les <strong>30 minutes</strong> avant le début. Moins de 4 équipes présentes : coupe annulée. Le
+            tableau est tiré au sort.
+          </li>
+          <li>
+            Matchs en BO1 ou BO3, finale en BO3 ou BO5, même déroulé que la Division. Élimination directe avec petite finale, ou double
+            élimination (une 2e défaite élimine, grande finale en un seul match).
+          </li>
+          <li>
+            Récompenses : trophée or, argent ou bronze sur la fiche d&apos;équipe, <strong>+150 / +100 / +75 points</strong> de Division
+            pour le podium et +50 pour les autres équipes présentes ; rôle Discord du vainqueur gardé jusqu&apos;à la coupe suivante.
+          </li>
+        </ul>
+      ),
+    },
+    {
+      id: "coupe-anubis",
+      group: "Tournoi",
+      title: "Coupe Anubis (solo)",
+      content: (
+        <ul>
+          <li>
+            Chaque joueur <strong>s&apos;inscrit seul</strong> (identifiant Activision requis, sans exclusion en cours) et peut se
+            désinscrire jusqu&apos;au début.
+          </li>
+          <li>
+            Check-in individuel dans les <strong>30 minutes</strong> avant le début : seuls les joueurs présents sont répartis.
+          </li>
+          <li>
+            Les équipes sont <strong>tirées au sort</strong> à la taille annoncée (2, 3 ou 4 joueurs). Le joueur le mieux classé de chaque
+            équipe est capitaine ; les joueurs en trop deviennent remplaçants (un par équipe au plus), le capitaine peut les faire entrer
+            entre deux matchs. Moins de 4 équipes complètes : coupe annulée.
+          </li>
+          <li>Même format et même déroulé que la Coupe Horus ; aucun point d&apos;équipe en jeu.</li>
+          <li>
+            Récompenses : <strong>médaille</strong> or, argent ou bronze sur le profil de chaque joueur du podium (remplaçants compris) et
+            rôle Discord du vainqueur gardé jusqu&apos;à la Coupe Anubis suivante.
+          </li>
+        </ul>
+      ),
+    },
   ];
 }
 

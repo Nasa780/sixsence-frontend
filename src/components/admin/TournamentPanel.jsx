@@ -13,7 +13,7 @@ const STATUS = { scheduled: "Prévu", running: "En cours", completed: "Terminé"
 const dateFr = (iso) => new Date(iso).toLocaleString("fr-FR", { weekday: "short", day: "numeric", month: "short", hour: "2-digit", minute: "2-digit" });
 
 /**
- * Onglet admin « Tournoi » : Coupe Horus (coupes automatiques, rendez-vous, coupe ponctuelle) puis tournoi
+ * Onglet admin « Tournoi » : Coupe Horus et Coupe Anubis (coupes automatiques, rendez-vous, coupe ponctuelle) puis tournoi
  * de fin de saison (aperçu des qualifiés, création), suivi (rencontres bloquées, vainqueur désigné à la main),
  * annulation.
  */
@@ -58,7 +58,8 @@ export function TournamentPanel() {
 
   return (
     <div className="space-y-10">
-      <CupPanel />
+      <CupPanel kind="horus" />
+      <CupPanel kind="anubis" />
       <h2 className="border-t border-white/10 pt-8 font-display text-3xl font-black uppercase leading-none">Tournoi de fin de saison</h2>
       {error ? <Notice tone="error">{error}</Notice> : null}
       {message ? <Notice tone="success">{message}</Notice> : null}
@@ -165,19 +166,20 @@ function ActiveTournamentCard({ current, pending, run, onCancel }) {
           <div>
             <p className="font-display text-3xl font-black uppercase leading-none">{current.name}</p>
             <p className="mt-2 text-sm text-white/55">
-              {current.teams.length} équipes · {current.size} places · {dateFr(current.startsAt)}
-              {current.status === "scheduled" ? ` · check-in ${current.teams.filter((team) => team.checkedIn).length} / ${current.teams.length}` : ""}
+              {current.kind === "anubis"
+                ? `${current.registered} joueurs · équipes de ${current.teamSize} · ${current.size} équipes max · ${dateFr(current.startsAt)}${current.status === "scheduled" ? ` · check-in ${current.checkedInCount} / ${current.registered}` : ` · ${current.squads.length} équipes formées`}`
+                : `${current.teams.length} équipes · ${current.size} places · ${dateFr(current.startsAt)}${current.status === "scheduled" ? ` · check-in ${current.teams.filter((team) => team.checkedIn).length} / ${current.teams.length}` : ""}`}
             </p>
           </div>
           <Chip tone={current.status === "running" ? "win" : current.status === "cancelled" ? "loss" : current.status === "completed" ? "neutral" : "gold"}>{STATUS[current.status]}</Chip>
         </div>
         <div className="flex flex-wrap gap-3">
-          <Link href={current.kind === "horus" ? "/cod/tournoi" : "/cod/tournoi?coupe=saison"} className="inline-flex items-center gap-1.5 text-sm font-semibold text-gold underline underline-offset-4">
+          <Link href={current.kind === "horus" ? "/cod/tournoi" : current.kind === "anubis" ? "/cod/tournoi?coupe=anubis" : "/cod/tournoi?coupe=saison"} className="inline-flex items-center gap-1.5 text-sm font-semibold text-gold underline underline-offset-4">
             Voir le tableau
             <LuExternalLink aria-hidden className="h-3.5 w-3.5" />
           </Link>
           {active ? (
-            <Button size="sm" variant="danger" disabled={pending !== null} onClick={() => setCancelling(true)}>
+            <Button size="sm" variant="danger" disabled={pending !== null} onClick={onCancel}>
               Annuler le tournoi
             </Button>
           ) : null}
@@ -221,26 +223,43 @@ function ActiveTournamentCard({ current, pending, run, onCancel }) {
 }
 
 const WEEKDAYS = ["Dimanche", "Lundi", "Mardi", "Mercredi", "Jeudi", "Vendredi", "Samedi"];
-const NAME_IDEAS = ["Coupe Horus du dimanche", "Coupe Horus · Œil d'or", "Coupe Horus · Nuit des Pharaons", "Coupe Horus · Sable et Sang", "Coupe Horus · Le Faucon"];
+const NAME_IDEAS = {
+  horus: ["Coupe Horus du dimanche", "Coupe Horus · Œil d'or", "Coupe Horus · Nuit des Pharaons", "Coupe Horus · Sable et Sang", "Coupe Horus · Le Faucon"],
+  anubis: ["Coupe Anubis du samedi", "Coupe Anubis · Le Jugement", "Coupe Anubis · Pesée des âmes", "Coupe Anubis · Gardien des tombes", "Coupe Anubis · Le Chacal"],
+};
+const CUP_TEXT = {
+  horus: {
+    eyebrow: "Coupes d'équipe à inscription libre",
+    title: "Coupe Horus",
+    rewards: "Récompenses : or +150, argent +100, bronze +75, +50 aux autres équipes présentes ; rôle Discord « Vainqueur — Coupe Horus » jusqu'à la coupe suivante.",
+  },
+  anubis: {
+    eyebrow: "Inscription solo, équipes tirées au sort",
+    title: "Coupe Anubis",
+    rewards:
+      "Les joueurs s'inscrivent seuls ; au début, les présents sont répartis au hasard (capitaine : le mieux classé, joueurs en trop remplaçants). Médailles or, argent, bronze sur le profil, rôle Discord « Vainqueur — Coupe Anubis » jusqu'à la coupe suivante. Pas de points.",
+  },
+};
 
 /**
- * Coupe Horus (admin) : interrupteur des coupes automatiques, rendez-vous récurrents (jour, heure, format),
- * coupe ponctuelle, suivi de la coupe en cours.
+ * Coupe Horus ou Anubis (admin) : interrupteur des coupes automatiques (commun), rendez-vous récurrents (jour,
+ * heure, format, taille des équipes pour l'Anubis), coupe ponctuelle, suivi de la coupe en cours.
  */
-function CupPanel() {
+function CupPanel({ kind }) {
+  const anubis = kind === "anubis";
   const [state, setState] = useState(null);
   const [current, setCurrent] = useState(undefined);
-  const [form, setForm] = useState({ name: NAME_IDEAS[0], mode: "recurrent", weekday: 0, time: "20:00", startsAt: "", size: 8, bestOf: 3, finalBestOf: 3, bracket: "single" });
+  const [form, setForm] = useState({ name: NAME_IDEAS[kind][0], mode: "recurrent", weekday: anubis ? 6 : 0, time: "20:00", startsAt: "", size: 8, bestOf: anubis ? 1 : 3, finalBestOf: 3, bracket: "single", teamSize: 4 });
   const [pending, setPending] = useState(null);
   const [error, setError] = useState(null);
   const [message, setMessage] = useState(null);
   const [cancelling, setCancelling] = useState(false);
 
   const load = useCallback(async () => {
-    const [admin, cup] = await Promise.all([api("/admin/cups"), api("/teams/tournament?kind=horus")]);
+    const [admin, cup] = await Promise.all([api("/admin/cups"), api(`/teams/tournament?kind=${kind}`)]);
     setState(admin);
     setCurrent(cup.tournament);
-  }, []);
+  }, [kind]);
   useEffect(() => {
     load().catch((caught) => setError(caught.message));
   }, [load]);
@@ -262,7 +281,8 @@ function CupPanel() {
     }
   }
 
-  const body = { name: form.name, size: form.size, bestOf: form.bestOf, finalBestOf: form.finalBestOf, bracket: form.bracket };
+  const body = { kind, name: form.name, size: form.size, bestOf: form.bestOf, finalBestOf: form.finalBestOf, bracket: form.bracket, ...(anubis ? { teamSize: form.teamSize } : {}) };
+  const schedules = state ? state.schedules.filter((schedule) => (schedule.kind ?? "horus") === kind) : [];
   const submit = () =>
     form.mode === "recurrent"
       ? run("create", () => api("/admin/cups/schedules", { method: "POST", body: { ...body, weekday: form.weekday, time: form.time } }), "Rendez-vous créé.")
@@ -270,21 +290,23 @@ function CupPanel() {
 
   if (!state) return error ? <Notice tone="error">{error}</Notice> : <Loading />;
   return (
-    <section aria-labelledby="titre-coupe-horus" className="space-y-6">
+    <section aria-labelledby={`titre-coupe-${kind}`} className={cn("space-y-6", anubis && "border-t border-white/10 pt-8")}>
       <div className="flex flex-wrap items-end justify-between gap-4">
         <div>
-          <p className={labelClass}>Coupes d'équipe à inscription libre</p>
-          <h2 id="titre-coupe-horus" className="font-display text-3xl font-black uppercase leading-none">
-            Coupe Horus
+          <p className={labelClass}>{CUP_TEXT[kind].eyebrow}</p>
+          <h2 id={`titre-coupe-${kind}`} className="font-display text-3xl font-black uppercase leading-none">
+            {CUP_TEXT[kind].title}
           </h2>
         </div>
-        <Button variant={state.auto ? "primary" : "outline"} disabled={pending !== null} onClick={() => run("auto", () => api("/admin/cups/auto", { method: "POST", body: { on: !state.auto } }), state.auto ? "Coupes automatiques désactivées." : "Coupes automatiques activées.")}>
+        {anubis ? null : <Button variant={state.auto ? "primary" : "outline"} disabled={pending !== null} onClick={() => run("auto", () => api("/admin/cups/auto", { method: "POST", body: { on: !state.auto } }), state.auto ? "Coupes automatiques désactivées." : "Coupes automatiques activées.")}>
           {state.auto ? "Coupes automatiques : activées" : "Coupes automatiques : désactivées"}
-        </Button>
+        </Button>}
       </div>
       <p className="text-sm text-white/55">
-        Quand les coupes automatiques sont activées, chaque rendez-vous actif ouvre sa prochaine coupe aux inscriptions (dès la précédente terminée). Récompenses : or +150,
-        argent +100, bronze +75, +50 aux autres équipes présentes ; rôle Discord « Vainqueur — Coupe Horus » jusqu&apos;à la coupe suivante.
+        {anubis
+          ? "Rendez-vous ouverts automatiquement si l'interrupteur des coupes automatiques (au-dessus) est activé. "
+          : "Quand les coupes automatiques sont activées (Horus et Anubis), chaque rendez-vous actif ouvre sa prochaine coupe aux inscriptions (dès la précédente terminée). "}
+        {CUP_TEXT[kind].rewards}
       </p>
       {error ? <Notice tone="error">{error}</Notice> : null}
       {message ? <Notice tone="success">{message}</Notice> : null}
@@ -294,12 +316,12 @@ function CupPanel() {
       <div className="grid gap-6 lg:grid-cols-2">
         <TacticalCard innerClassName="space-y-3 p-6">
           <p className={labelClass}>Rendez-vous</p>
-          {state.schedules.length === 0 ? <p className="text-sm text-white/50">Aucun rendez-vous pour l&apos;instant.</p> : null}
-          {state.schedules.map((schedule) => (
+          {schedules.length === 0 ? <p className="text-sm text-white/50">Aucun rendez-vous pour l&apos;instant.</p> : null}
+          {schedules.map((schedule) => (
             <div key={schedule.id} className={cn("space-y-2 border-l-2 bg-white/[0.03] px-3 py-3", schedule.active ? "border-gold" : "border-white/10 opacity-60")}>
               <p className="font-display text-lg font-bold uppercase leading-none">{schedule.name}</p>
               <p className="text-xs text-white/55">
-                {WEEKDAYS[schedule.weekday]} {schedule.time} · {schedule.size} équipes · {schedule.bracket === "double" ? "double élimination" : "élimination directe"} · BO{schedule.bestOf}, finale BO{schedule.finalBestOf}
+                {WEEKDAYS[schedule.weekday]} {schedule.time} · {schedule.size} équipes{anubis ? ` de ${schedule.teamSize}` : ""} · {schedule.bracket === "double" ? "double élimination" : "élimination directe"} · BO{schedule.bestOf}, finale BO{schedule.finalBestOf}
                 {schedule.active && state.auto ? ` · prochaine : ${dateFr(schedule.next)}` : ""}
               </p>
               <div className="flex flex-wrap gap-2">
@@ -324,12 +346,12 @@ function CupPanel() {
             ))}
           </div>
           <div>
-            <label htmlFor="c-name" className={labelClass}>
+            <label htmlFor={`c-name-${kind}`} className={labelClass}>
               Nom
             </label>
-            <input id="c-name" className={fieldClass} maxLength={60} value={form.name} onChange={(event) => setForm({ ...form, name: event.target.value })} />
+            <input id={`c-name-${kind}`} className={fieldClass} maxLength={60} value={form.name} onChange={(event) => setForm({ ...form, name: event.target.value })} />
             <div className="mt-2 flex flex-wrap gap-1.5">
-              {NAME_IDEAS.map((idea) => (
+              {NAME_IDEAS[kind].map((idea) => (
                 <button key={idea} type="button" onClick={() => setForm({ ...form, name: idea })} className="border border-white/10 px-2 py-1 text-xs text-white/60 hover:border-gold hover:text-gold">
                   {idea}
                 </button>
@@ -339,10 +361,10 @@ function CupPanel() {
           {form.mode === "recurrent" ? (
             <div className="grid gap-4 sm:grid-cols-2">
               <div>
-                <label htmlFor="c-day" className={labelClass}>
+                <label htmlFor={`c-day-${kind}`} className={labelClass}>
                   Jour
                 </label>
-                <select id="c-day" className={fieldClass} value={form.weekday} onChange={(event) => setForm({ ...form, weekday: Number(event.target.value) })}>
+                <select id={`c-day-${kind}`} className={fieldClass} value={form.weekday} onChange={(event) => setForm({ ...form, weekday: Number(event.target.value) })}>
                   {WEEKDAYS.map((day, index) => (
                     <option key={day} value={index}>
                       {day}
@@ -351,26 +373,40 @@ function CupPanel() {
                 </select>
               </div>
               <div>
-                <label htmlFor="c-time" className={labelClass}>
+                <label htmlFor={`c-time-${kind}`} className={labelClass}>
                   Heure (Paris)
                 </label>
-                <input id="c-time" type="time" className={fieldClass} value={form.time} onChange={(event) => setForm({ ...form, time: event.target.value })} />
+                <input id={`c-time-${kind}`} type="time" className={fieldClass} value={form.time} onChange={(event) => setForm({ ...form, time: event.target.value })} />
               </div>
             </div>
           ) : (
             <div>
-              <label htmlFor="c-start" className={labelClass}>
+              <label htmlFor={`c-start-${kind}`} className={labelClass}>
                 Début (heure de Paris)
               </label>
-              <input id="c-start" type="datetime-local" className={fieldClass} value={form.startsAt} onChange={(event) => setForm({ ...form, startsAt: event.target.value })} />
+              <input id={`c-start-${kind}`} type="datetime-local" className={fieldClass} value={form.startsAt} onChange={(event) => setForm({ ...form, startsAt: event.target.value })} />
             </div>
           )}
-          <div className="grid gap-4 sm:grid-cols-3">
+          <div className={cn("grid gap-4", anubis ? "sm:grid-cols-4" : "sm:grid-cols-3")}>
+            {anubis ? (
+              <div>
+                <label htmlFor={`c-team-${kind}`} className={labelClass}>
+                  Joueurs / équipe
+                </label>
+                <select id={`c-team-${kind}`} className={fieldClass} value={form.teamSize} onChange={(event) => setForm({ ...form, teamSize: Number(event.target.value) })}>
+                  {(state.testTeamSize ? [1, 2, 3, 4] : [2, 3, 4]).map((size) => (
+                    <option key={size} value={size}>
+                      {size}v{size}
+                    </option>
+                  ))}
+                </select>
+              </div>
+            ) : null}
             <div>
-              <label htmlFor="c-size" className={labelClass}>
+              <label htmlFor={`c-size-${kind}`} className={labelClass}>
                 Équipes max
               </label>
-              <select id="c-size" className={fieldClass} value={form.size} onChange={(event) => setForm({ ...form, size: Number(event.target.value) })}>
+              <select id={`c-size-${kind}`} className={fieldClass} value={form.size} onChange={(event) => setForm({ ...form, size: Number(event.target.value) })}>
                 {[4, 8, 16].map((size) => (
                   <option key={size} value={size}>
                     {size}
@@ -379,19 +415,19 @@ function CupPanel() {
               </select>
             </div>
             <div>
-              <label htmlFor="c-bo" className={labelClass}>
+              <label htmlFor={`c-bo-${kind}`} className={labelClass}>
                 Matchs
               </label>
-              <select id="c-bo" className={fieldClass} value={form.bestOf} onChange={(event) => setForm({ ...form, bestOf: Number(event.target.value), finalBestOf: 3 })}>
+              <select id={`c-bo-${kind}`} className={fieldClass} value={form.bestOf} onChange={(event) => setForm({ ...form, bestOf: Number(event.target.value), finalBestOf: 3 })}>
                 <option value={1}>BO1</option>
                 <option value={3}>BO3</option>
               </select>
             </div>
             <div>
-              <label htmlFor="c-final" className={labelClass}>
+              <label htmlFor={`c-final-${kind}`} className={labelClass}>
                 Finale
               </label>
-              <select id="c-final" className={fieldClass} value={form.finalBestOf} onChange={(event) => setForm({ ...form, finalBestOf: Number(event.target.value) })}>
+              <select id={`c-final-${kind}`} className={fieldClass} value={form.finalBestOf} onChange={(event) => setForm({ ...form, finalBestOf: Number(event.target.value) })}>
                 <option value={3}>BO3</option>
                 {form.bestOf === 3 ? <option value={5}>BO5</option> : null}
               </select>
@@ -408,7 +444,9 @@ function CupPanel() {
             {form.bracket === "double"
               ? "Double élimination : une 2e défaite élimine ; grande finale en un seul match, bronze au perdant de la finale des perdants."
               : "Élimination directe avec petite finale (bronze)."}{" "}
-            Tableau tiré au sort. Moins de 4 équipes présentes au check-in : coupe annulée.
+            {anubis
+              ? `Jusqu'à ${form.size * (form.teamSize + 1)} inscrits (un remplaçant par équipe). Moins de 4 équipes complètes au check-in : coupe annulée.`
+              : "Tableau tiré au sort. Moins de 4 équipes présentes au check-in : coupe annulée."}
           </p>
           <Button disabled={pending !== null || form.name.trim().length < 3 || (form.mode === "once" && !form.startsAt)} onClick={submit}>
             {pending === "create" ? <LuLoaderCircle aria-hidden className="h-5 w-5 animate-spin" /> : null}

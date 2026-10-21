@@ -23,6 +23,7 @@ import { ActivisionForm } from "./ActivisionForm";
 import { CardBackdrop } from "./CallingCard";
 import { CardPicker } from "./CardPicker";
 import { PerformancePanel } from "./PerformancePanel";
+import { PlayerMedals } from "./PlayerMedals";
 import { RankBadge } from "./RankBadge";
 import { RankCard } from "./RankCard";
 import { SeasonRecap } from "./SeasonRecap";
@@ -302,6 +303,8 @@ export function ProfileView({ userId, editable = false, ownUser = null }) {
       </section>
 
       <SeasonRecap playerId={player.id} seasons={seasons} badges={profile.badges} />
+
+      <PlayerMedals playerId={player.id} />
 
       <div className="grid grid-cols-1 gap-12 lg:grid-cols-[1fr_22rem]">
         {/* --- Historique -------------------------------------------------- */}
