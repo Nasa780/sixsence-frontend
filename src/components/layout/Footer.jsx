@@ -17,7 +17,7 @@ const COLUMNS = [
           ]
         : []),
       { href: "/gta6", label: "GTA 6", univers: "gta", bold: true },
-      { href: "/gta6/events", label: "Événements GTA 6", univers: "gta" },
+      { href: "/gta6/events", label: "Événements", univers: "gta" },
     ],
   },
   {
