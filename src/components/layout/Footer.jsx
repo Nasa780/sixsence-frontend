@@ -24,6 +24,7 @@ const COLUMNS = [
     title: "SixSence",
     links: [
       { href: "/cod/profile", label: "Mon profil" },
+      { href: "/cod/matchs", label: "Mes matchs" },
       { href: "/reglement", label: "Règlement" },
       { href: "/founders", label: "Fondateurs" },
       { href: "/partners", label: "Partenaires" },
