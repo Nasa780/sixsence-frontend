@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
-import { LuArrowRight, LuGamepad2, LuShield, LuSwords, LuTimer, LuUsers } from "react-icons/lu";
+import { LuArrowRight } from "react-icons/lu";
 import { api } from "../../lib/api";
 import { MATCH_TEAM_ENABLED } from "../../lib/config";
 import useSeasons from "../../hooks/useSeasons";
@@ -48,26 +48,46 @@ export function LiveBoard() {
             }
             description="Mis à jour en continu : joueurs, matchs, files d'attente et équipes."
           />
-          {/* Joueurs en ligne mis en avant, puis les compteurs (animés à chaque mise à jour). */}
-          <div className="mt-8 flex items-center justify-between gap-4 border border-gold/30 bg-gold/[0.06] px-5 py-4">
-            <div className="flex items-center gap-3">
-              <span aria-hidden className="relative flex h-3 w-3">
-                <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-win opacity-60" />
-                <span className="relative inline-flex h-3 w-3 rounded-full bg-win" />
-              </span>
-              <span className="font-tech text-[11px] uppercase tracking-[0.24em] text-white/60">En ligne maintenant</span>
+          {/* Un seul panneau HUD : joueurs en ligne en tête, puis les compteurs séparés par de fins filets (animés à chaque mise à jour). */}
+          <div className="mt-8 border border-white/10 bg-white/[0.02] clip-corner [--cut:18px]">
+            <div className="relative flex items-center justify-between gap-4 overflow-hidden border-b border-white/10 bg-linear-to-r from-win/[0.10] via-win/[0.03] to-transparent px-6 py-5">
+              <div>
+                <p className="flex items-center gap-2.5 font-tech text-[11px] uppercase tracking-[0.24em] text-white/60">
+                  <span aria-hidden className="relative flex h-2.5 w-2.5">
+                    <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-win opacity-60" />
+                    <span className="relative inline-flex h-2.5 w-2.5 rounded-full bg-win" />
+                  </span>
+                  En ligne maintenant
+                </p>
+                <p className="mt-1.5 text-xs text-white/40">Visiteurs sur le site en ce moment</p>
+              </div>
+              <div className="flex items-end gap-4">
+                <span aria-hidden className="hidden h-8 items-end gap-[3px] sm:flex">
+                  {[0, 1, 2, 3, 4].map((bar) => (
+                    <span key={bar} className="lobby-eq w-[3px] bg-win/70" style={{ animationDuration: "0.9s", animationDelay: `${bar * 0.15}s` }} />
+                  ))}
+                </span>
+                <span className="font-display text-5xl font-black leading-none tabular-nums text-win drop-shadow-[0_0_18px_rgba(52,211,153,0.45)]">
+                  <CountUp value={stats?.playersOnline} />
+                </span>
+              </div>
             </div>
-            <span className="font-display text-4xl font-black leading-none tabular-nums text-win">
-              <CountUp value={stats?.playersOnline} />
-            </span>
+            <dl className="grid grid-cols-2 gap-px bg-white/10">
+              <Counter label="Joueurs inscrits" value={stats?.players} hint="Comptes Discord" />
+              <Counter label="Matchs joués" value={stats?.matchesPlayed} hint="En classé" accent />
+              <Counter label="En file" value={stats?.playersInQueue} hint="Joueurs en recherche" />
+              <Counter label="Matchs en cours" value={(stats?.matchesInProgress ?? 0) + (teams?.matchesInProgress ?? 0)} hint="Classé et Division" ready={Boolean(stats)} />
+              {MATCH_TEAM_ENABLED ? (
+                <Counter
+                  label="Équipes en Division"
+                  value={teams?.activeTeams}
+                  hint={teams ? `${teams.teamsSearching} en recherche de match` : null}
+                  univers="division"
+                  wide
+                />
+              ) : null}
+            </dl>
           </div>
-          <dl className="mt-3 grid grid-cols-2 gap-3">
-            <Counter icon={LuUsers} label="Joueurs inscrits" value={stats?.players} />
-            <Counter icon={LuGamepad2} label="Matchs joués" value={stats?.matchesPlayed} accent />
-            <Counter icon={LuTimer} label="En file" value={stats?.playersInQueue} hint={MATCH_TEAM_ENABLED && teams ? `+ ${teams.teamsSearching} équipe${teams.teamsSearching > 1 ? "s" : ""}` : null} />
-            <Counter icon={LuSwords} label="Matchs en cours" value={(stats?.matchesInProgress ?? 0) + (teams?.matchesInProgress ?? 0)} ready={Boolean(stats)} />
-            {MATCH_TEAM_ENABLED ? <Counter icon={LuShield} label="Équipes en Division" value={teams?.activeTeams} wide /> : null}
-          </dl>
         </Reveal>
 
         <Reveal delay={0.12}>
@@ -138,19 +158,14 @@ function CountUp({ value }) {
   return shown === null ? "—" : formatCount(shown);
 }
 
-function Counter({ icon: Icon, label, value, hint = null, accent = false, wide = false, ready = true }) {
+/** Une case du panneau : petite légende, grand chiffre, précision ; trait de couleur au survol. */
+function Counter({ label, value, hint = null, accent = false, wide = false, ready = true, univers = undefined }) {
   return (
-    <div className={`group flex items-center gap-4 border-l-2 bg-white/[0.03] px-4 py-4 transition-colors hover:bg-white/[0.06] ${accent ? "border-gold" : "border-white/10"} ${wide ? "col-span-2" : ""}`}>
-      <span className="grid h-10 w-10 shrink-0 place-items-center border border-gold/30 bg-gold/[0.07] text-gold clip-corner">
-        <Icon aria-hidden className="h-5 w-5" />
-      </span>
-      <div className="min-w-0">
-        <dt className="truncate font-tech text-[10px] uppercase tracking-[0.22em] text-white/45">{label}</dt>
-        <dd className={`mt-1 font-display text-3xl font-black leading-none tabular-nums ${accent ? "text-gold" : ""}`}>
-          {ready ? <CountUp value={value} /> : "—"}
-          {hint ? <span className="ml-2 align-middle font-tech text-[10px] font-normal tracking-[0.14em] text-white/40">{hint}</span> : null}
-        </dd>
-      </div>
+    <div data-univers={univers} className={`group relative bg-ink px-6 py-5 transition-colors hover:bg-ink-800 ${wide ? "col-span-2" : ""}`}>
+      <span aria-hidden className={`absolute inset-y-0 left-0 w-0.5 transition-colors ${accent || univers ? "bg-gold" : "bg-transparent group-hover:bg-gold/60"}`} />
+      <dt className="min-h-[2.6em] font-tech text-[10px] uppercase leading-snug tracking-[0.2em] text-white/45 sm:min-h-0">{label}</dt>
+      <dd className={`mt-2 font-display text-4xl font-black leading-none tabular-nums ${accent || univers ? "text-gold" : "text-white"}`}>{ready ? <CountUp value={value} /> : "—"}</dd>
+      {hint ? <p className="mt-1.5 text-xs text-white/40">{hint}</p> : null}
     </div>
   );
 }
