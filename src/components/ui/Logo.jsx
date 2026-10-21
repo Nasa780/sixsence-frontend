@@ -10,7 +10,7 @@ const USE_PNG_LOGO = true;
 export function LogoMark({ className = "" }) {
   if (!USE_PNG_LOGO) return <LegacyLogoMark className={className} />;
   // eslint-disable-next-line @next/next/no-img-element
-  return <img src="/images/logo.png" alt="" aria-hidden width={300} height={300} className={cn("object-contain", className)} />;
+  return <img src="/images/logo.png" alt="" aria-hidden width={512} height={512} className={cn("object-contain", className)} />;
 }
 
 /**
