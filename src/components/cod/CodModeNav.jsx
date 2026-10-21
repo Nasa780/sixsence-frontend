@@ -45,7 +45,7 @@ export function codModeOf(pathname) {
   if (!MATCH_TEAM_ENABLED) return null;
   if (pathname.startsWith("/cod/tournoi")) return "tournoi";
   if (pathname === "/cod/equipe" || pathname === "/cod/division" || pathname.startsWith("/cod/equipes") || pathname.startsWith("/invite/equipe")) return "team";
-  if (pathname.startsWith("/cod/ranked") || pathname.startsWith("/cod/leaderboard") || pathname.startsWith("/cod/profile") || pathname.startsWith("/cod/match") || pathname.startsWith("/invite/groupe")) {
+  if (pathname.startsWith("/cod/ranked") || pathname.startsWith("/cod/leaderboard") || pathname.startsWith("/cod/profile") || pathname.startsWith("/cod/match/") || pathname.startsWith("/invite/groupe")) {
     return "classe";
   }
   return null;

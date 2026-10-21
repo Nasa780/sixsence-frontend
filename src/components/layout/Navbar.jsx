@@ -3,7 +3,7 @@ import Link from "next/link";
 import { useRouter } from "next/router";
 import { useEffect, useRef, useState } from "react";
 import { FaDiscord } from "react-icons/fa6";
-import { LuCrosshair, LuLogOut, LuMenu, LuShield, LuShieldCheck, LuTrophy, LuUser, LuX } from "react-icons/lu";
+import { LuCrosshair, LuLogOut, LuMenu, LuShield, LuShieldCheck, LuSwords, LuTrophy, LuUser, LuX } from "react-icons/lu";
 import useSession from "../../hooks/useSession";
 import useUser from "../../hooks/useUser";
 import { signInWithDiscord, signOut } from "../../lib/auth";
@@ -232,6 +232,9 @@ export function Navbar() {
                     <Link href="/cod/profile" className="px-4 py-3 text-sm text-white/70 hover:text-gold">
                       Mon profil
                     </Link>
+                    <Link href="/cod/matchs" className="px-4 py-3 text-sm text-white/70 hover:text-gold">
+                      Mes matchs
+                    </Link>
                     <Link href="/reglement" className="px-4 py-3 text-sm text-white/70 hover:text-gold">
                       Règlement
                     </Link>
@@ -321,6 +324,14 @@ function UserMenu({ user }) {
             >
               <LuUser aria-hidden className="h-4 w-4" />
               Mon profil
+            </Link>
+            <Link
+              role="menuitem"
+              href="/cod/matchs"
+              className="flex items-center gap-2.5 px-4 py-2.5 text-sm text-white/75 transition-colors hover:bg-white/5 hover:text-gold"
+            >
+              <LuSwords aria-hidden className="h-4 w-4" />
+              Mes matchs
             </Link>
             <Link
               role="menuitem"
