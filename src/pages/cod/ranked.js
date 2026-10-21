@@ -67,7 +67,7 @@ export default function RankedPage() {
         description="Rejoins la file : dès que ton match est prêt, tu es prévenu par un son sur cette page ou par une notification sur ton téléphone."
         actions={
           <div className="grid grid-cols-3 gap-3">
-            <StatTile label="En ligne" value={status ? status.playersOnline : "—"} />
+            <StatTile label="En ligne" value={status ? (status.siteOnline ?? status.playersOnline) : "—"} />
             <StatTile label="En file" value={status ? status.playersInQueue : "—"} accent />
             <StatTile label="En cours" value={status ? status.matchesInProgress : "—"} />
           </div>

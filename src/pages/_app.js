@@ -11,6 +11,7 @@ import { installErrorReporting } from "../lib/monitoring";
 import { registerServiceWorker } from "../lib/push";
 import "../styles/globals.css";
 import { codModeOf } from "../components/cod/CodModeNav";
+import usePresence from "../hooks/usePresence";
 
 /**
  * Polices, auto-hébergées par next/font (aucune requête vers Google côté visiteur).
@@ -27,6 +28,8 @@ const inter = Inter({ subsets: ["latin"], variable: "--font-inter", display: "sw
 const BARE_PAGES = ["/auth/callback"];
 
 export default function App({ Component, pageProps }) {
+  // Compteur « En ligne maintenant » : chaque onglet ouvert se signale.
+  usePresence();
   const { pathname, asPath } = useRouter();
   const bare = BARE_PAGES.includes(pathname);
   // Division en pause : ses pages (et celle du tournoi) sont introuvables.

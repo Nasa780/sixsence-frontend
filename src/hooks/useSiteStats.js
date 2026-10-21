@@ -15,7 +15,7 @@ export default function useSiteStats() {
     const load = async () => {
       try {
         const [site, status] = await Promise.all([api("/stats"), api("/cod/status")]);
-        if (active) setStats({ ...site, playersInQueue: status.playersInQueue, playersOnline: status.playersOnline });
+        if (active) setStats({ ...site, playersInQueue: status.playersInQueue, playersOnline: status.siteOnline ?? status.playersOnline });
       } catch {
         // Serveur en veille ou injoignable : on garde les dernières valeurs connues.
       }
