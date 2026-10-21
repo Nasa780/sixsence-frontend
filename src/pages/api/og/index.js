@@ -46,7 +46,12 @@ function Corner({ x, y, flipX, flipY }) {
 export default async function handler(request) {
   const { searchParams, origin } = new URL(request.url);
   const custom = searchParams.get("title")?.slice(0, 32);
-  const [fonts, mw4, gta] = await Promise.all([loadFonts(origin), dataUrl(`${origin}/og/og-mw4.jpg`), dataUrl(`${origin}/og/og-gta6.jpg`)]);
+  const [fonts, mw4, gta, logo] = await Promise.all([
+    loadFonts(origin),
+    dataUrl(`${origin}/og/og-mw4.jpg`),
+    dataUrl(`${origin}/og/og-gta6.jpg`),
+    dataUrl(`${origin}/images/logo.png`, "image/png"),
+  ]);
   const display = fonts.length ? "Saira" : "sans-serif";
   const text = fonts.length ? "Inter" : "sans-serif";
 
@@ -104,7 +109,8 @@ export default async function handler(request) {
         {/* Contenu central */}
         <div style={{ position: "relative", display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center", width: "100%", height: "100%" }}>
           <div style={{ display: "flex", alignItems: "center", gap: 14 }}>
-            <Emblem size={46} />
+            {/* Logo du site (PNG) ; ancien emblème dessiné si l'image ne se charge pas. */}
+            {logo ? <img src={logo} width={46} height={46} alt="" /> : <Emblem size={46} />}
             <div style={{ display: "flex", fontFamily: display, fontSize: 34, fontWeight: 900, letterSpacing: 9 }}>
               SIX<span style={{ color: GOLD }}>SENCE</span>
             </div>
