@@ -19,7 +19,7 @@ const UNIVERSES = [
       ? {
           title: "Zone de combat",
           text: "Grimpe seul au classement, monte ton équipe en Division et vise le tournoi de fin de saison.",
-          points: ["Classé en solo, du 2vs2 au 5vs5", "Division en équipe 4vs4", "Tournoi de fin de saison"],
+          points: ["Classé en solo, du 2v2 au 5v5", "Division en équipe 4v4", "Tournoi de fin de saison"],
           cta: "Choisir mon mode",
         }
       : {

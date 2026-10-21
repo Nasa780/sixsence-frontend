@@ -17,7 +17,7 @@ const RULES = [
   { title: "Adversaire anonyme", text: "Tu ne sais pas contre qui tu joues avant le match, et deux équipes ne peuvent pas se retrouver avant 2 heures." },
   { title: "30 minutes de recherche", text: "5 minutes avant la fin, « Toujours là ? » : un Leader ou un joueur inscrit clique sur « Continuer », sinon la recherche s'arrête." },
   { title: "BO3 · 3 maps au hasard", text: "Les 3 maps sont tirées au sort dès le départ, 6 manches gagnantes par map ; la 3e n'est jouée qu'à 1-1." },
-  { title: "L'hôte donne le code", text: "L'équipe hôte, tirée au sort, crée la partie privée et donne son code sous 10 minutes. Les deux équipes confirment leur présence en jeu sous 15 minutes, sinon forfait." },
+  { title: "L'hôte donne le code", text: "L'équipe hôte, tirée au sort, crée la partie privée et donne son code sous 10 minutes. Les deux équipes ont ensuite 15 minutes pour lancer la partie, sinon forfait." },
   { title: "Un seul résultat", text: "À la fin de la série, un joueur déclare le score de chaque map ; l'équipe adverse confirme une fois. En cas de litige, un arbitre tranche." },
 ];
 

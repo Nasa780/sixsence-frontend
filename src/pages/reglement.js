@@ -64,7 +64,7 @@ function DIVISION_SECTIONS() {
             <strong>10 minutes</strong>.
           </li>
           <li>
-            Les deux équipes cliquent sur « Présents en jeu » dans les <strong>15 minutes</strong> suivant la création du match.
+            Les deux équipes ont <strong>15 minutes</strong> après la création du match pour lancer la partie.
           </li>
           <li>Le chat du match est réservé aux joueurs du match, aux Leaders des deux équipes et aux arbitres.</li>
         </ul>
@@ -76,7 +76,7 @@ function DIVISION_SECTIONS() {
       content: (
         <ul>
           <li>
-            Si l&apos;équipe hôte n&apos;a pas donné le code de la partie au bout de 10 minutes, ou si une équipe n&apos;est pas « présente en jeu » au
+            Si l&apos;équipe hôte n&apos;a pas donné le code de la partie au bout de 10 minutes, ou si une équipe ne s&apos;est pas présentée dans la partie au
             bout de 15 minutes, l&apos;autre équipe peut <strong>déclarer forfait</strong>.
           </li>
           <li>
@@ -128,7 +128,7 @@ function DIVISION_SECTIONS() {
             inscrit ; sans check-in, l&apos;équipe est déclarée forfait.
           </li>
           <li>
-            Les matchs suivent le même déroulé que la Division (hôte, chat, présence, forfait) : BO3, finale en BO5, sans points
+            Les matchs suivent le même déroulé que la Division (hôte, chat, forfait) : BO3, finale en BO5, sans points
             d&apos;équipe en jeu.
           </li>
           <li>Le vainqueur reçoit un trophée sur sa fiche d&apos;équipe et un rôle Discord.</li>

@@ -256,7 +256,7 @@ export function DivisionLobby({ team, isLeader, play, match, revealed, chosen, o
             ) : phase === "found" ? (
               <span>Ouverture de la feuille de match…</span>
             ) : phase === "live" ? (
-              <span>Code de la partie, présence et résultat : tout se passe sur la feuille de match.</span>
+              <span>Code de la partie et résultat : tout se passe sur la feuille de match.</span>
             ) : (
               <span>Garde la page ouverte : un son et une notification te préviennent.</span>
             )}
