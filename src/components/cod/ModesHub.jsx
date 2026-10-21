@@ -1,7 +1,7 @@
 import Head from "next/head";
 import Link from "next/link";
 import { useEffect, useState } from "react";
-import { LuArrowRight, LuCrosshair, LuShield, LuTrophy } from "react-icons/lu";
+import { LuCrosshair, LuShield, LuTrophy } from "react-icons/lu";
 import { LeaderboardView } from "./LeaderboardView";
 import { OnboardingPanel } from "./OnboardingPanel";
 import { RankBadge } from "./RankBadge";
@@ -346,9 +346,10 @@ function TopTeams({ label }) {
             </ol>
           </>
         )}
-        <Link href="/cod/equipes" className="mt-5 inline-flex items-center gap-1.5 font-display text-sm font-bold uppercase tracking-[0.14em] text-gold hover:text-gold-light">
+        {/* Même style que les liens des cartes des modes : trait qui s'allonge au survol, sans flèche. */}
+        <Link href="/cod/equipes" className="group/l mt-5 inline-flex items-center gap-3 font-display text-sm font-bold uppercase tracking-[0.14em] text-gold hover:text-gold-light">
           Classement des équipes
-          <LuArrowRight aria-hidden className="h-4 w-4" />
+          <span aria-hidden className="h-px w-5 bg-gold/50 transition-all duration-300 group-hover/l:w-10 group-hover/l:bg-gold" />
         </Link>
       </div>
     </section>
