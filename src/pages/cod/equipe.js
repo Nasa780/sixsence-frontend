@@ -11,11 +11,13 @@ import { Button, ButtonLink } from "../../components/ui/Button";
 import { ConfirmDialog } from "../../components/ui/ConfirmDialog";
 import { Container } from "../../components/ui/Container";
 import { EmptyState, Loading, Notice } from "../../components/ui/Feedback";
+import { InviteLinkField } from "../../components/ui/InviteLinkField";
 import { LoginPrompt } from "../../components/ui/LoginPrompt";
 import { TacticalCard } from "../../components/ui/TacticalCard";
 import { Eyebrow, PageHeader } from "../../components/ui/Typography";
 import useSession from "../../hooks/useSession";
 import { api } from "../../lib/api";
+import { inviteUrl } from "../../lib/invites";
 import { cn } from "../../lib/cn";
 import { rankFor, rankGradient } from "../../lib/ranks";
 import { SOCIALS, TEAM_COLORS, TEAM_LIMITS, uploadTeamImage } from "../../lib/teams";
@@ -508,61 +510,82 @@ function Recruitment({ team, state, reload }) {
         {full ? <Notice>L&apos;équipe est complète (8 joueurs).</Notice> : null}
         {error ? <Notice tone="error">{error}</Notice> : null}
         {sent ? <Notice tone="success">{sent}</Notice> : null}
+        <SlotsBar used={team.members.length} max={TEAM_LIMITS.maxMembers} />
         {!full ? <InviteLinkCard team={team} /> : null}
-        <div className="relative">
-          <LuSearch aria-hidden className="pointer-events-none absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-white/35" />
-          <input
-            className={cn(fieldClass, "pl-10")}
-            placeholder="Pseudo ou identifiant Activision…"
-            value={query}
-            onChange={(event) => setQuery(event.target.value)}
-            disabled={full}
-            aria-label="Rechercher un joueur"
-          />
-        </div>
-        {searching ? <p className="text-xs text-white/45">Recherche…</p> : null}
-        {results.length > 0 ? (
-          <ul className="space-y-2">
-            {results.map((player) => (
-              <PlayerLine key={player.id} player={player}>
-                <Button
-                  size="sm"
-                  disabled={pending !== null || invited.has(player.id)}
-                  onClick={() => act(`invite-${player.id}`, `/teams/${team.id}/invites`, { method: "POST", body: { userId: player.id } }, `Invitation envoyée à ${player.username}.`)}
-                >
-                  {pending === `invite-${player.id}` ? <LuLoaderCircle aria-hidden className="h-4 w-4 animate-spin" /> : <LuUserPlus aria-hidden className="h-4 w-4" />}
-                  {invited.has(player.id) ? "Invité" : "Inviter"}
-                </Button>
-              </PlayerLine>
-            ))}
-          </ul>
-        ) : query.trim().length >= 2 && !searching ? (
-          <p className="text-xs text-white/45">Aucun joueur sans équipe ne correspond.</p>
-        ) : null}
-        <p className="text-xs text-white/45">
-          Le joueur doit avoir lié son identifiant Activision et ne pas avoir quitté une équipe ces dernières 24 h.
-        </p>
 
-        {(state.sentInvites ?? []).length > 0 ? (
-          <>
-            <RosterHeading title="Invitations envoyées" count={state.sentInvites.length} max={20} className="mt-8" />
-            <ul className="space-y-2">
+        {/* Ajouter un joueur : recherche par pseudo ou identifiant Activision, puis invitation. */}
+        {!full ? (
+          <div className="space-y-3 border border-white/10 bg-white/[0.03] p-4">
+            <p className="flex items-center gap-2 font-tech text-[10px] uppercase tracking-[0.24em] text-gold">
+              <LuUserPlus aria-hidden className="h-3.5 w-3.5" />
+              Ajouter un joueur
+            </p>
+            <p className="text-sm text-white/60">Trouve un joueur par son pseudo ou son identifiant Activision et envoie-lui une invitation.</p>
+            <div className="relative">
+              <LuSearch aria-hidden className="pointer-events-none absolute left-3.5 top-1/2 h-4 w-4 -translate-y-1/2 text-white/35" />
+              <input
+                className={cn(fieldClass, "pl-10")}
+                placeholder="Pseudo ou identifiant Activision…"
+                value={query}
+                onChange={(event) => setQuery(event.target.value)}
+                aria-label="Rechercher un joueur"
+              />
+              {searching ? <LuLoaderCircle aria-hidden className="absolute right-3.5 top-1/2 h-4 w-4 -translate-y-1/2 animate-spin text-white/45" /> : null}
+            </div>
+            {results.length > 0 ? (
+              <ul className="space-y-2">
+                {results.map((player) => (
+                  <PlayerLine key={player.id} player={player}>
+                    <Button
+                      size="sm"
+                      disabled={pending !== null || invited.has(player.id)}
+                      onClick={() => act(`invite-${player.id}`, `/teams/${team.id}/invites`, { method: "POST", body: { userId: player.id } }, `Invitation envoyée à ${player.username}.`)}
+                    >
+                      {pending === `invite-${player.id}` ? <LuLoaderCircle aria-hidden className="h-4 w-4 animate-spin" /> : invited.has(player.id) ? <LuCheck aria-hidden className="h-4 w-4" /> : <LuPlus aria-hidden className="h-4 w-4" />}
+                      {invited.has(player.id) ? "Invité" : "Ajouter"}
+                    </Button>
+                  </PlayerLine>
+                ))}
+              </ul>
+            ) : query.trim().length >= 2 && !searching ? (
+              <p className="text-xs text-white/45">Aucun joueur sans équipe ne correspond.</p>
+            ) : null}
+            <p className="text-xs text-white/40">
+              Le joueur doit avoir lié son identifiant Activision et ne pas avoir quitté une équipe ces dernières 24 h.
+            </p>
+          </div>
+        ) : null}
+
+        <div className="pt-4">
+          <RosterHeading title="Invitations envoyées" count={(state.sentInvites ?? []).length} max={20} />
+          {(state.sentInvites ?? []).length === 0 ? (
+            <p className="mt-3 text-sm text-white/45">Aucune invitation en attente.</p>
+          ) : (
+            <ul className="mt-3 space-y-2">
               {state.sentInvites.map((invite) => (
-                <PlayerLine key={invite.id} player={invite.player}>
+                <PlayerLine key={invite.id} player={invite.player} extra="en attente de réponse">
                   <Button size="sm" variant="ghost" disabled={pending !== null} onClick={() => act(`cancel-${invite.id}`, `/teams/invites/${invite.id}`, { method: "DELETE" })}>
                     Annuler
                   </Button>
                 </PlayerLine>
               ))}
             </ul>
-          </>
-        ) : null}
+          )}
+        </div>
       </section>
 
       <section aria-labelledby="titre-candidatures" className="space-y-4">
         <RosterHeading title={<span id="titre-candidatures">Candidatures</span>} count={(state.joinRequests ?? []).length} max={20} />
         {(state.joinRequests ?? []).length === 0 ? (
-          <EmptyState title="Aucune candidature">Les joueurs candidatent depuis la fiche publique de l&apos;équipe.</EmptyState>
+          <EmptyState title="Aucune candidature">
+            Les joueurs candidatent depuis la fiche publique de l&apos;équipe.
+            <span className="mt-4 block">
+              <ButtonLink href={`/cod/equipes/${team.id}`} size="sm" variant="outline">
+                <LuExternalLink aria-hidden className="h-4 w-4" />
+                Voir la fiche publique
+              </ButtonLink>
+            </span>
+          </EmptyState>
         ) : (
           <ul className="space-y-2">
             {state.joinRequests.map((request) => (
@@ -597,7 +620,6 @@ function Recruitment({ team, state, reload }) {
 /** Lien d'invitation (Leader) : à partager à ses mates, qui rejoignent l'équipe en un clic ; « Nouveau lien » coupe l'ancien. */
 function InviteLinkCard({ team }) {
   const [code, setCode] = useState(null);
-  const [copied, setCopied] = useState(false);
   const [pending, setPending] = useState(false);
   const [error, setError] = useState(null);
 
@@ -606,18 +628,6 @@ function InviteLinkCard({ team }) {
       .then((data) => setCode(data.code))
       .catch((caught) => setError(caught.message));
   }, [team.id]);
-
-  const url = code && typeof window !== "undefined" ? `${window.location.origin}/cod/equipes/rejoindre/${code}` : "";
-
-  async function copy() {
-    try {
-      await navigator.clipboard.writeText(url);
-      setCopied(true);
-      setTimeout(() => setCopied(false), 1800);
-    } catch {
-      // Presse-papiers indisponible : le lien reste sélectionnable.
-    }
-  }
 
   async function reset() {
     if (!window.confirm("Créer un nouveau lien ? L'ancien ne fonctionnera plus.")) return;
@@ -632,20 +642,28 @@ function InviteLinkCard({ team }) {
   }
 
   return (
-    <div className="space-y-2 border border-gold/30 bg-gold/[0.05] p-4">
-      <p className="font-tech text-[10px] uppercase tracking-[0.24em] text-gold">Lien d&apos;invitation</p>
-      <p className="text-sm text-white/60">Envoie ce lien à tes mates : ils rejoignent l&apos;équipe en un clic, sans attendre de validation.</p>
-      {error ? <Notice tone="error">{error}</Notice> : null}
-      <div className="flex flex-col gap-2 sm:flex-row">
-        <input readOnly value={url || "Chargement…"} onFocus={(event) => event.target.select()} className={cn(fieldClass, "font-tech text-xs")} aria-label="Lien d'invitation" />
-        <Button size="sm" onClick={copy} disabled={!url} className="shrink-0">
-          {copied ? <LuCheck aria-hidden className="h-4 w-4" /> : null}
-          {copied ? "Copié" : "Copier"}
-        </Button>
-        <Button size="sm" variant="ghost" onClick={reset} disabled={!url || pending} className="shrink-0">
-          Nouveau lien
-        </Button>
+    <InviteLinkField
+      url={inviteUrl("equipe", code)}
+      text="Envoie ce lien à tes mates ; ils rejoignent l'équipe en un clic, sans attendre de validation."
+      onReset={reset}
+      resetting={pending}
+      error={error}
+    />
+  );
+}
+
+/** Places de l'effectif : une case par joueur possible, pleine quand elle est prise. */
+function SlotsBar({ used, max }) {
+  return (
+    <div className="flex items-center gap-3">
+      <div className="flex flex-1 gap-1">
+        {Array.from({ length: max }, (_, index) => (
+          <span key={index} className={cn("h-1.5 flex-1 -skew-x-[20deg]", index < used ? "bg-gold" : "bg-white/10")} />
+        ))}
       </div>
+      <span className="shrink-0 font-tech text-[10px] uppercase tracking-[0.2em] text-white/45">
+        {max - used > 0 ? `${max - used} place${max - used > 1 ? "s" : ""} libre${max - used > 1 ? "s" : ""}` : "Complet"}
+      </span>
     </div>
   );
 }

@@ -1,11 +1,12 @@
 import { useState } from "react";
-import { LuCheck, LuCopy, LuCrown, LuLoaderCircle, LuLogOut, LuUserPlus, LuUsers, LuX } from "react-icons/lu";
+import { LuCrown, LuLoaderCircle, LuLogOut, LuUserPlus, LuUsers, LuX } from "react-icons/lu";
 import { api } from "../../lib/api";
-import { SITE_URL } from "../../lib/config";
+import { inviteUrl } from "../../lib/invites";
 import { groupLabel } from "../../lib/ranks";
 import { Avatar } from "../ui/Avatar";
 import { Button } from "../ui/Button";
 import { Notice } from "../ui/Feedback";
+import { InviteLinkField } from "../ui/InviteLinkField";
 import { TacticalCard } from "../ui/TacticalCard";
 
 /**
@@ -19,7 +20,6 @@ import { TacticalCard } from "../ui/TacticalCard";
 export function PartyPanel({ party, userId, format, locked, onChange }) {
   const [pending, setPending] = useState(null);
   const [error, setError] = useState(null);
-  const [copied, setCopied] = useState(false);
 
   async function run(key, action) {
     setPending(key);
@@ -41,17 +41,6 @@ export function PartyPanel({ party, userId, format, locked, onChange }) {
     run(member.id, async () => (await api("/cod/party/kick", { method: "POST", body: { userId: member.id } })).party);
   };
 
-  const inviteUrl = party ? `${typeof window !== "undefined" ? window.location.origin : SITE_URL}/cod/groupe/${party.inviteCode}` : "";
-
-  async function copy() {
-    try {
-      await navigator.clipboard.writeText(inviteUrl);
-      setCopied(true);
-      setTimeout(() => setCopied(false), 2000);
-    } catch {
-      window.prompt("Copie ce lien et envoie-le à tes coéquipiers :", inviteUrl);
-    }
-  }
 
   const spinner = <LuLoaderCircle aria-hidden className="h-4 w-4 animate-spin" />;
 
@@ -130,25 +119,11 @@ export function PartyPanel({ party, userId, format, locked, onChange }) {
       </ul>
 
       {free > 0 ? (
-        <div className="mt-5">
-          <label htmlFor="lien-invitation" className="font-tech text-[10px] uppercase tracking-[0.24em] text-white/50">
-            Lien d&apos;invitation
-          </label>
-          <div className="mt-1.5 flex gap-2">
-            <input
-              id="lien-invitation"
-              readOnly
-              value={inviteUrl}
-              onFocus={(event) => event.target.select()}
-              className="min-w-0 flex-1 border border-white/12 bg-ink px-3 py-2.5 text-sm text-white/80 focus:border-gold focus:outline-none"
-            />
-            <Button size="sm" onClick={copy}>
-              {copied ? <LuCheck aria-hidden className="h-4 w-4" /> : <LuCopy aria-hidden className="h-4 w-4" />}
-              {copied ? "Copié" : "Copier"}
-            </Button>
-          </div>
-          <p className="mt-2 text-xs text-white/45">Envoie ce lien à tes amis (sur Discord par exemple) : il leur suffit de l&apos;ouvrir pour rejoindre le groupe.</p>
-        </div>
+        <InviteLinkField
+          className="mt-5"
+          url={inviteUrl("groupe", party.inviteCode)}
+          text="Envoie ce lien à tes mates ; ils rejoignent le groupe en un clic."
+        />
       ) : null}
 
       {locked ? <p className="mt-4 text-xs text-white/45">Le groupe ne peut pas changer pendant une recherche ou un match.</p> : null}

@@ -34,7 +34,7 @@ export default function App({ Component, pageProps }) {
   const bare = BARE_PAGES.includes(pathname);
   // Division en pause : ses pages (et celle du tournoi) sont introuvables.
   const teamPaused =
-    (!MATCH_TEAM_ENABLED && (pathname === "/cod/equipe" || pathname === "/cod/division" || pathname.startsWith("/cod/equipes") || pathname.startsWith("/cod/tournoi"))) || (!GROUPS_ENABLED && pathname.startsWith("/cod/groupe"));
+    (!MATCH_TEAM_ENABLED && (pathname === "/cod/equipe" || pathname === "/cod/division" || pathname.startsWith("/cod/equipes") || pathname.startsWith("/cod/tournoi") || pathname.startsWith("/invite/equipe"))) || (!GROUPS_ENABLED && pathname.startsWith("/invite/groupe"));
   // Pages GTA 6 : palette coucher de soleil (voir globals.css).
   // Couleur d'accent : coucher de soleil sur GTA 6, vert pour le Classé, cyan pour la Division, rouge pour le Tournoi.
   const codMode = codModeOf(pathname);
