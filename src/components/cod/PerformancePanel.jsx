@@ -18,13 +18,16 @@ const shortDate = (date) => new Date(date).toLocaleDateString("fr-FR", { day: "n
  * Panneau « Performance » façon diffusion e-sport : chiffres clés de la période,
  * courbe des points avec les paliers de rang, détail de chaque match au survol
  * (ou au toucher) et forme récente.
+ *
+ * Pour une équipe (Division) : series déjà construite, eyebrow « Saison · Division », sans paliers de rang
+ * (ranks=false), pointsHint sous les points, emptyText si aucun match.
  */
-export function PerformancePanel({ history, userId, points, seasonId, seasonLabel }) {
+export function PerformancePanel({ history, userId, points, seasonId, seasonLabel, series: given = null, eyebrow = null, ranks = true, pointsHint = null, emptyText = null }) {
   const [range, setRange] = useState(10);
   const [hover, setHover] = useState(null);
   const chartRef = useRef(null);
 
-  const series = useMemo(() => buildSeries({ history, userId, points, seasonId }), [history, userId, points, seasonId]);
+  const series = useMemo(() => given ?? buildSeries({ history, userId, points, seasonId }), [given, history, userId, points, seasonId]);
 
   // Portion affichée : les N derniers matchs, ou toute la saison.
   const view = useMemo(() => {
@@ -43,7 +46,7 @@ export function PerformancePanel({ history, userId, points, seasonId, seasonLabe
         <div className="relative text-center">
           <p className="font-tech text-[11px] uppercase tracking-[0.3em] text-gold">Performance · {seasonLabel}</p>
           <p className="mt-4 font-display text-3xl font-black uppercase leading-none">Aucun match terminé cette saison</p>
-          <p className="mt-3 text-sm text-white/50">La courbe, la forme et les chiffres clés apparaîtront après le premier match classé.</p>
+          <p className="mt-3 text-sm text-white/50">{emptyText ?? "La courbe, la forme et les chiffres clés apparaîtront après le premier match classé."}</p>
         </div>
       </TacticalCard>
     );
@@ -59,7 +62,7 @@ export function PerformancePanel({ history, userId, points, seasonId, seasonLabe
   const y = (value) => ((top - value) / span) * 100;
   const line = values.map((value, index) => `${x(index).toFixed(2)},${y(value).toFixed(2)}`).join(" ");
   const peakIndex = values.lastIndexOf(stats.peak);
-  const thresholds = RANKS.filter((rank) => rank.min > bottom && rank.min < top);
+  const thresholds = ranks ? RANKS.filter((rank) => rank.min > bottom && rank.min < top) : [];
   const lastIndex = values.length - 1;
   const current = rankFor(values[lastIndex]);
   const active = hover ?? null;
@@ -80,7 +83,7 @@ export function PerformancePanel({ history, userId, points, seasonId, seasonLabe
       {/* --- Bandeau : titre et période ----------------------------------- */}
       <div className="relative flex flex-wrap items-end justify-between gap-4 border-b border-white/10 px-6 pb-5 pt-6 sm:px-8">
         <div>
-          <p className="font-tech text-[11px] uppercase tracking-[0.3em] text-gold">{seasonLabel} · classé</p>
+          <p className="font-tech text-[11px] uppercase tracking-[0.3em] text-gold">{eyebrow ?? `${seasonLabel} · classé`}</p>
           <h3 className="mt-2 font-display text-4xl font-black uppercase leading-none sm:text-5xl">Performance</h3>
         </div>
         <div role="tablist" aria-label="Période" className="flex gap-1.5">
@@ -107,7 +110,7 @@ export function PerformancePanel({ history, userId, points, seasonId, seasonLabe
 
       {/* --- Chiffres clés ------------------------------------------------- */}
       <dl className="relative grid grid-cols-2 border-b border-white/10 sm:grid-cols-4 [&>div]:border-white/10 [&>div:nth-child(even)]:border-l [&>div:nth-child(n+3)]:border-t sm:[&>div:nth-child(n+2)]:border-l sm:[&>div:nth-child(n+3)]:border-t-0">
-        <Kpi label="Points" value={values[lastIndex]} hint={current.name} hintColor={current.color} accent />
+        <Kpi label="Points" value={values[lastIndex]} hint={pointsHint ?? current.name} hintColor={ranks ? current.color : undefined} accent />
         <Kpi
           label="Variation"
           value={signed(stats.change)}

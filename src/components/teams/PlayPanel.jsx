@@ -330,7 +330,7 @@ function PlayerSlot({ player, onRemove }) {
   const rank = rankFor(player.points ?? 0);
   return (
     <div className="flex h-11 items-center gap-3 border-l-2 border-gold bg-gold/[0.07] px-3">
-      <Avatar full src={player.avatarUrl} name={player.username} size={28} ring={rankGradient(rank, 160)} />
+      <Avatar src={player.avatarUrl} name={player.username} size={28} ring={rankGradient(rank, 160)} />
       <span className="min-w-0 flex-1 truncate font-display text-lg font-bold uppercase leading-none" style={{ color: rank.text }}>
         {player.username}
       </span>
@@ -436,7 +436,7 @@ function RosterPicker({ members, chosen, size, onToggle }) {
                   selected ? "bg-gold text-ink" : "bg-white/[0.06] text-white/80 hover:bg-white/[0.12] disabled:opacity-35",
                 )}
               >
-                <Avatar full src={member.avatarUrl} name={member.username} size={22} ring={selected ? null : rankGradient(rank, 160)} />
+                <Avatar src={member.avatarUrl} name={member.username} size={22} ring={selected ? null : rankGradient(rank, 160)} />
                 <span className="font-display text-sm font-bold uppercase tracking-wide">{member.username}</span>
                 {selected ? <LuCheck aria-hidden className="h-3.5 w-3.5" /> : null}
               </button>

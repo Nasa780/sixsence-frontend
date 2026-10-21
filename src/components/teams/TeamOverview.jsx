@@ -392,7 +392,7 @@ export function TeamRival({ insights }) {
   );
 }
 
-/** Records de l'équipe : plus longue série, victoires 2-0, plus gros gain de points. */
+/** Records de l'équipe : plus longue série, victoires écrasantes (2-0, en part des victoires), plus gros gain de points. */
 export function TeamRecords({ insights }) {
   const done = [...(insights.history ?? [])].filter((match) => match.status === "completed").reverse();
   if (done.length === 0) return null;
@@ -402,11 +402,15 @@ export function TeamRecords({ insights }) {
     run = match.won ? run + 1 : 0;
     best = Math.max(best, run);
   }
-  const sweeps = done.filter((match) => match.won && !match.forfeit && match.mapsAgainst === 0).length;
+  // Victoire écrasante : 2-0 (sans map perdue). Part des victoires jouées (hors forfait), face aux victoires en 3 maps.
+  const playedWins = done.filter((match) => match.won && !match.forfeit);
+  const sweeps = playedWins.filter((match) => match.mapsAgainst === 0).length;
   const biggest = done.reduce((max, match) => (typeof match.points === "number" && match.points > (max?.points ?? 0) ? match : max), null);
   const records = [
     { label: "Plus longue série", value: `${best} victoire${best > 1 ? "s" : ""}` },
-    { label: "Victoires 2-0", value: sweeps },
+    playedWins.length
+      ? { label: "Victoires écrasantes", value: `${Math.round((sweeps / playedWins.length) * 100)} %`, hint: `${sweeps} sur ${playedWins.length} victoire${playedWins.length > 1 ? "s" : ""}` }
+      : null,
     biggest ? { label: "Plus gros gain", value: `+${biggest.points} pts`, hint: `vs ${biggest.opponent?.name ?? "?"}` } : null,
   ].filter(Boolean);
   return (

@@ -1,7 +1,6 @@
 import Link from "next/link";
 import { LegalPage } from "../components/ui/LegalPage";
 import { MATCH_TEAM_ENABLED } from "../lib/config";
-import { LEGAL } from "../lib/legal";
 import { LOSS_ADJUST, LOSS_XP, PLACEMENT_MATCHES, RANKS, WIN_POINTS, WIN_POINTS_MAX, WIN_POINTS_MIN, WIN_XP } from "../lib/ranks";
 
 /** Règles de la Division (matchs d'équipe) et du tournoi : affichées quand le mode est ouvert. */
@@ -9,7 +8,8 @@ function DIVISION_SECTIONS() {
   return [
     {
       id: "division-equipes",
-      title: "Division : équipes",
+      group: "Division",
+      title: "Équipes",
       content: (
         <ul>
           <li>
@@ -31,7 +31,8 @@ function DIVISION_SECTIONS() {
     },
     {
       id: "division-recherche",
-      title: "Division : recherche d'un match",
+      group: "Division",
+      title: "Recherche d'un match",
       content: (
         <ul>
           <li>
@@ -52,7 +53,8 @@ function DIVISION_SECTIONS() {
     },
     {
       id: "division-match",
-      title: "Division : déroulement d'un match",
+      group: "Division",
+      title: "Déroulement d'un match",
       content: (
         <ul>
           <li>
@@ -72,7 +74,8 @@ function DIVISION_SECTIONS() {
     },
     {
       id: "division-forfait",
-      title: "Division : forfait",
+      group: "Division",
+      title: "Forfait",
       content: (
         <ul>
           <li>
@@ -93,7 +96,8 @@ function DIVISION_SECTIONS() {
     },
     {
       id: "division-resultat",
-      title: "Division : scores, points et contestation",
+      group: "Division",
+      title: "Scores, points et contestation",
       content: (
         <ul>
           <li>
@@ -117,6 +121,7 @@ function DIVISION_SECTIONS() {
     },
     {
       id: "tournoi",
+      group: "Tournoi",
       title: "Tournoi de fin de saison",
       content: (
         <ul>
@@ -141,6 +146,7 @@ function DIVISION_SECTIONS() {
 const SECTIONS = [
   {
     id: "compte",
+    group: "Général",
     title: "Compte et identité",
     content: (
       <ul>
@@ -155,6 +161,7 @@ const SECTIONS = [
   },
   {
     id: "file",
+    group: "Classé",
     title: "File d'attente et « Prêt ? »",
     content: (
       <>
@@ -167,14 +174,9 @@ const SECTIONS = [
           <strong>1 minute</strong> pour cliquer sur « Accepter le match ». Un son et une notification te préviennent.
         </p>
         <p>
-          Sur ordinateur, garde la page ouverte pendant ta recherche : si tu la fermes, tu quittes la file au bout de 30 secondes. Sur
-          téléphone, tu peux verrouiller l&apos;écran ou changer d&apos;appli : tu gardes ta place <strong>30 minutes</strong>. Active les
-          notifications pour être prévenu du match trouvé ; si ta recherche s&apos;arrête, une notification te le dit aussi.
-        </p>
-        <p>
-          Une recherche dure <strong>30 minutes</strong> au plus. 5 minutes avant la fin, le message « Toujours là ? » s&apos;affiche
-          (et arrive en notification) : clique sur « Rester en file » pour repartir pour 30 minutes <strong>sans perdre ta place</strong>.
-          Sans réponse, la recherche s&apos;arrête et tu peux la relancer quand tu veux.
+          Une recherche dure <strong>30 minutes</strong>, même si tu fermes la page ou verrouilles ton téléphone. 5 minutes avant
+          la fin, « Toujours là ? » : clique sur « Rester en file » pour repartir pour 30 minutes <strong>sans perdre ta place</strong>.
+          Active les notifications pour être prévenu du match trouvé.
         </p>
         <p>
           Si un joueur n&apos;accepte pas à temps, le match est annulé. Ceux qui avaient accepté repartent{" "}
@@ -185,6 +187,7 @@ const SECTIONS = [
   },
   {
     id: "sanctions",
+    group: "Général",
     title: "Sanctions",
     content: (
       <>
@@ -204,6 +207,7 @@ const SECTIONS = [
   },
   {
     id: "match",
+    group: "Classé",
     title: "Déroulement d'un match",
     content: (
       <ul>
@@ -223,6 +227,7 @@ const SECTIONS = [
   },
   {
     id: "resultat",
+    group: "Classé",
     title: "Résultat et contestation",
     content: (
       <>
@@ -243,6 +248,7 @@ const SECTIONS = [
   },
   {
     id: "mvp",
+    group: "Classé",
     title: "MVP",
     content: (
       <ul>
@@ -262,6 +268,7 @@ const SECTIONS = [
   },
   {
     id: "points",
+    group: "Classé",
     title: "Points et rangs",
     content: (
       <>
@@ -299,6 +306,7 @@ const SECTIONS = [
   },
   {
     id: "saisons",
+    group: "Général",
     title: "Saisons",
     content: (
       <p>
@@ -312,6 +320,7 @@ const SECTIONS = [
   ...(MATCH_TEAM_ENABLED ? DIVISION_SECTIONS() : []),
   {
     id: "evenements",
+    group: "GTA 6",
     title: "Événements GTA 6",
     content: (
       <p>
@@ -322,15 +331,18 @@ const SECTIONS = [
   },
 ];
 
-/** Règlement de la plateforme : file, sanctions, matchs, points. */
+const GROUP_ORDER = ["Général", "Classé", "Division", "Tournoi", "GTA 6"];
+const ORDERED = [...SECTIONS].sort((a, b) => GROUP_ORDER.indexOf(a.group) - GROUP_ORDER.indexOf(b.group));
+
+/** Règlement de la plateforme, par catégories : général, classé, Division, tournoi, GTA 6. */
 export default function RulesPage() {
   return (
     <LegalPage
       eyebrow="Fair-play"
       title="Règlement"
       description={MATCH_TEAM_ENABLED ? "Les règles de SixSence : classé, Division, tournoi, sanctions, points et saisons." : "Les règles du classé SixSence : file d'attente, sanctions, déroulement des matchs, points et saisons."}
-      updated={LEGAL.updated}
-      sections={SECTIONS}
+      updated="21 octobre 2026"
+      sections={ORDERED}
     />
   );
 }

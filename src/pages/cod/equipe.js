@@ -299,7 +299,7 @@ function ManageTeam({ state, userId, reload, created, onLeft }) {
       {tab === "apercu" ? (
         <div className="space-y-14">
           {/* Statistiques et objectifs ; journal d'activité avec, à droite, la semaine, le rival et les records. */}
-          <TeamStats teamId={team.id} />
+          <TeamStats teamId={team.id} points={team.points} position={team.position} />
           <TeamGoals team={team} insights={insights} />
           <div className="grid gap-10 lg:grid-cols-[minmax(0,1fr)_22rem]">
             <TeamActivity team={team} insights={insights} />

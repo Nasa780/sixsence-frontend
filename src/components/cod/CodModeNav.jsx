@@ -52,10 +52,13 @@ export function codModeOf(pathname) {
 }
 
 /** Sélecteur « Classé | Division | Tournoi » et pages de la section en cours, sous l'en-tête des pages COD. */
+/** Sélecteur masqué pour l'instant (décision du 2026-10-21) : passer à true pour le remettre sur les pages COD. */
+const SHOW_MODE_NAV = false;
+
 export function CodModeNav({ className = "" }) {
   const { pathname } = useRouter();
   const mode = codModeOf(pathname);
-  if (!mode) return null;
+  if (!SHOW_MODE_NAV || !mode) return null;
   const current = COD_MODES.find((item) => item.key === mode);
 
   return (
