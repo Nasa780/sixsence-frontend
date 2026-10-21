@@ -68,6 +68,12 @@ function DIVISION_SECTIONS() {
           <li>
             Les deux équipes ont <strong>15 minutes</strong> après la création du match pour lancer la partie.
           </li>
+          <li>
+            <strong>Déconnexion</strong> : l&apos;équipe du joueur déconnecté peut demander à arrêter la partie, <strong>une seule fois</strong> par
+            match. La demande se fait en fin de manche ou dans les premières secondes d&apos;une manche, jamais en cours de manche (après un
+            kill, une bombe posée ou toute autre action). La partie reprend au même score dans les <strong>5 minutes</strong>, même si le joueur
+          n&apos;a pas réussi à se reconnecter.
+          </li>
           <li>Le chat du match est réservé aux joueurs du match, aux Leaders des deux équipes et aux arbitres.</li>
         </ul>
       ),
@@ -88,7 +94,7 @@ function DIVISION_SECTIONS() {
           </li>
           <li>Une victoire par forfait compte comme une victoire normale (points d&apos;équipe et XP).</li>
           <li>
-            Une équipe qui perd <strong>plus de 3 matchs par forfait en 7 jours</strong> ne peut plus lancer de recherche pendant{" "}
+            Une équipe qui perd <strong>4 matchs par forfait en 7 jours</strong> ne peut plus lancer de recherche pendant{" "}
             <strong>24 heures</strong>. Il n&apos;y a pas d&apos;autre sanction.
           </li>
         </ul>
@@ -126,7 +132,8 @@ function DIVISION_SECTIONS() {
       content: (
         <ul>
           <li>
-            Les meilleures équipes du classement de la Division sont qualifiées ; leur effectif est figé jusqu&apos;à la fin du tournoi.
+            Sont qualifiées les meilleures équipes du classement de la Division ayant joué au moins <strong>25 matchs</strong>, dans la limite des
+            places du tournoi (8, 16 ou 32, annoncées à sa création). Leur effectif est figé jusqu&apos;à la fin du tournoi.
           </li>
           <li>
             Un Leader fait le <strong>check-in</strong> dans les 30 minutes avant le début et choisit les joueurs parmi l&apos;effectif
@@ -150,58 +157,99 @@ const SECTIONS = [
     title: "Compte et identité",
     content: (
       <ul>
-        <li>Un seul compte Discord par joueur. Les comptes multiples (« smurfs ») sont interdits.</li>
+        <li>Un seul compte par joueur : les comptes multiples (« smurfs ») sont interdits.</li>
         <li>
-          L&apos;identifiant Activision renseigné doit être le tien et celui avec lequel tu joues le match. Un identifiant ne peut être
-          lié qu&apos;à un seul compte SixSence.
+          L&apos;identifiant Activision renseigné doit être le tien, celui avec lequel tu joues tes matchs. Un identifiant ne peut être lié
+          qu&apos;à un seul compte SixSence.
         </li>
-        <li>Pseudos, avatars et messages injurieux, haineux ou discriminatoires sont interdits.</li>
+        <li>Pseudos, avatars, noms d&apos;équipe et messages injurieux, haineux ou discriminatoires sont interdits.</li>
       </ul>
     ),
   },
   {
-    id: "file",
-    group: "Classé",
-    title: "File d'attente et « Prêt ? »",
+    id: "comportement",
+    group: "Général",
+    title: "Comportement et triche",
     content: (
       <>
+        <p>Ces règles valent partout : classé, Division, tournoi et événements.</p>
+        <ul>
+          <li>Triche et logiciels tiers interdits.</li>
+          <li>Pas d&apos;arrangement de résultat ni de fausse déclaration de score.</li>
+          <li>Pas d&apos;abandon volontaire d&apos;un match lancé.</li>
+          <li>Respect dans les chats de match et sur le Discord : pas d&apos;insultes ni de provocations.</li>
+          <li>Le code d&apos;une partie privée est confidentiel : ne le partage pas en dehors du match.</li>
+        </ul>
         <p>
-          Quatre files sont ouvertes : <strong>2v2</strong>, <strong>3v3</strong>, <strong>4v4</strong> et <strong>5v5</strong>. Le classé se joue
-          <strong>en solo</strong> : chacun rejoint la file seul.
-        </p>
-        <p>
-          Quand assez de joueurs sont en file, les premiers arrivés sont retenus, puis les équipes et la carte sont tirées au sort. Chaque joueur dispose alors de{" "}
-          <strong>1 minute</strong> pour cliquer sur « Accepter le match ». Un son et une notification te préviennent.
-        </p>
-        <p>
-          Une recherche dure <strong>30 minutes</strong>, même si tu fermes la page ou verrouilles ton téléphone. 5 minutes avant
-          la fin, « Toujours là ? » : clique sur « Rester en file » pour repartir pour 30 minutes <strong>sans perdre ta place</strong>.
-          Active les notifications pour être prévenu du match trouvé.
-        </p>
-        <p>
-          Si un joueur n&apos;accepte pas à temps, le match est annulé. Ceux qui avaient accepté repartent{" "}
-          <strong>en tête de file</strong> ; ceux qui n&apos;ont pas répondu reçoivent un avertissement.
+          Après examen, l&apos;équipe SixSence peut donner un avertissement, une exclusion temporaire ou définitive, ou retirer des points.
+          Tu es prévenu en message privé Discord.
         </p>
       </>
     ),
   },
   {
-    id: "sanctions",
+    id: "saisons",
     group: "Général",
-    title: "Sanctions",
+    title: "Saisons",
     content: (
       <>
-        <p>Les avertissements se comptent sur 24 heures glissantes :</p>
+        <p>À la fin de chaque saison, les classements finaux sont archivés, puis tout repart à zéro :</p>
         <ul>
-          <li>1er avertissement : aucun effet, simple rappel ;</li>
-          <li>2e avertissement : 15 minutes sans accès à la file ;</li>
-          <li>3e avertissement : 1 heure sans accès à la file ;</li>
-          <li>au-delà : 24 heures sans accès à la file.</li>
+          <li>
+            <strong>Classé</strong> : le premier reçoit le badge <strong>Champion</strong>, les dix premiers le badge <strong>Top 10</strong>.
+            Points, victoires et défaites repartent de zéro ; l&apos;XP et les niveaux sont conservés.
+          </li>
+          <li>
+            <strong>Division</strong> : le classement des équipes est archivé, chaque équipe repart à <strong>1 000 points</strong> avec un
+            bilan à zéro.
+          </li>
         </ul>
         <p>
-          Triche, logiciels tiers, arrangement de résultats, fausse déclaration de score ou abandon volontaire d&apos;un match lancé
-          peuvent entraîner, après examen par l&apos;équipe, une remise à zéro des points ou une exclusion définitive.
+          Les classements des saisons passées restent consultables sur la page <Link href="/cod/leaderboard">Classement</Link>.
         </p>
+      </>
+    ),
+  },
+  {
+    id: "file",
+    group: "Classé",
+    title: "File d'attente et « Prêt ? »",
+    content: (
+      <>
+        <p>
+          Quatre files : <strong>2v2</strong>, <strong>3v3</strong>, <strong>4v4</strong> et <strong>5v5</strong>. Le classé se joue
+          <strong> en solo</strong> : chacun rejoint la file seul.
+        </p>
+        <p>
+          Quand assez de joueurs attendent, les premiers arrivés sont retenus, puis les équipes et la carte sont tirées au sort. Tu as alors{" "}
+          <strong>1 minute</strong> pour cliquer sur « Accepter le match » (un son et une notification te préviennent).
+        </p>
+        <p>
+          Une recherche dure <strong>30 minutes</strong>, même si tu fermes la page ou verrouilles ton téléphone. 5 minutes avant la fin,
+          « Toujours là ? » : clique sur « Rester en file » pour repartir pour 30 minutes <strong>sans perdre ta place</strong>.
+        </p>
+        <p>
+          Si un joueur n&apos;accepte pas à temps, le match est annulé : ceux qui avaient accepté repartent <strong>en tête de file</strong>,
+          ceux qui n&apos;ont pas répondu reçoivent un avertissement.
+        </p>
+      </>
+    ),
+  },
+  {
+    id: "avertissements",
+    group: "Classé",
+    title: "Avertissements de la file",
+    content: (
+      <>
+        <p>
+          Un match non accepté à temps donne un avertissement. Ils se comptent sur <strong>24 heures glissantes</strong> :
+        </p>
+        <ul>
+          <li>1er avertissement : simple rappel, aucun effet ;</li>
+          <li>2e : 15 minutes sans accès à la file ;</li>
+          <li>3e : 1 heure sans accès à la file ;</li>
+          <li>au-delà : 24 heures sans accès à la file.</li>
+        </ul>
       </>
     ),
   },
@@ -212,15 +260,20 @@ const SECTIONS = [
     content: (
       <ul>
         <li>
-          Le classé se joue uniquement en <strong>Recherche &amp; Destruction Hardcore</strong> (réglage Hardcore de Call of Duty), dans
-          toutes les files. Une partie jouée dans un autre mode ou sans le réglage Hardcore ne compte pas.
+          Uniquement en <strong>Recherche &amp; Destruction Hardcore</strong>. Une partie jouée dans un autre mode ou sans le réglage
+          Hardcore ne compte pas.
         </li>
         <li>
-          Le premier joueur de l&apos;équipe 1 est l&apos;<strong>hôte</strong> : il crée la partie privée en Recherche &amp; Destruction
-          Hardcore sur la carte tirée au sort, puis invite les autres joueurs grâce à leurs identifiants Activision affichés dans le salon
-          de match.
+          L&apos;<strong>hôte</strong> est tiré au sort et indiqué dans le salon de match : il crée la partie privée sur la carte tirée au
+          sort et invite les autres joueurs grâce aux identifiants Activision affichés dans le salon.
         </li>
-        <li>Les équipes tirées au sort doivent être respectées : personne ne peut prendre la place d&apos;un joueur du match.</li>
+        <li>Les équipes tirées au sort doivent être respectées : personne ne prend la place d&apos;un joueur du match.</li>
+        <li>
+          <strong>Déconnexion</strong> : l&apos;équipe du joueur déconnecté peut demander à arrêter la partie, <strong>une seule fois</strong> par
+          match. La demande se fait en fin de manche ou dans les premières secondes d&apos;une manche, jamais en cours de manche (après un
+          kill, une bombe posée ou toute autre action). La partie reprend au même score dans les <strong>5 minutes</strong>, même si le joueur
+          n&apos;a pas réussi à se reconnecter.
+        </li>
         <li>Le chat du salon et, s&apos;il est actif, le salon vocal Discord servent à s&apos;organiser.</li>
       </ul>
     ),
@@ -230,20 +283,19 @@ const SECTIONS = [
     group: "Classé",
     title: "Résultat et contestation",
     content: (
-      <>
-        <ul>
-          <li>À la fin de la partie, n&apos;importe quel joueur déclare l&apos;équipe gagnante.</li>
-          <li>
-            L&apos;équipe adverse confirme ou conteste. Sans réponse sous 15 minutes, le résultat déclaré est validé
-            automatiquement.
-          </li>
-          <li>Un match jamais déclaré est annulé au bout de 3 heures, sans changement de points.</li>
-          <li>
-            En cas de contestation, ajoute une <strong>capture du tableau des scores</strong> dans le salon de match : un
-            administrateur tranche (victoire d&apos;une équipe ou annulation). Sa décision est définitive.
-          </li>
-        </ul>
-      </>
+      <ul>
+        <li>À la fin de la partie, n&apos;importe quel joueur du match déclare l&apos;équipe gagnante.</li>
+        <li>L&apos;équipe adverse confirme ou conteste. Sans réponse sous 15 minutes, le résultat est validé automatiquement.</li>
+        <li>
+          En cas de contestation, ajoute une <strong>capture du tableau des scores</strong> dans le salon : un arbitre SixSence tranche
+          (victoire d&apos;une équipe ou annulation). Sa décision est définitive.
+        </li>
+        <li>
+          Erreur de déclaration (mauvais clic) : tu peux demander une <strong>correction</strong> depuis le salon pendant 24 heures après
+          la validation.
+        </li>
+        <li>Un match jamais déclaré est annulé au bout de 3 heures, sans changement de points.</li>
+      </ul>
     ),
   },
   {
@@ -304,29 +356,19 @@ const SECTIONS = [
       </>
     ),
   },
-  {
-    id: "saisons",
-    group: "Général",
-    title: "Saisons",
-    content: (
-      <p>
-        À la fin de chaque saison, le classement final est archivé (consultable sur la page{" "}
-        <Link href="/cod/leaderboard">Classement</Link>). Le premier reçoit le badge <strong>Champion</strong>, les dix premiers le
-        badge <strong>Top 10</strong>. Points, victoires et défaites repartent ensuite de zéro ; l&apos;XP et les niveaux sont
-        conservés.
-      </p>
-    ),
-  },
   ...(MATCH_TEAM_ENABLED ? DIVISION_SECTIONS() : []),
   {
     id: "evenements",
     group: "GTA 6",
     title: "Événements GTA 6",
     content: (
-      <p>
-        L&apos;inscription à un événement engage à y participer. En cas d&apos;empêchement, désinscris-toi depuis la page de
-        l&apos;événement pour libérer ta place.
-      </p>
+      <ul>
+        <li>L&apos;inscription à un événement engage à y participer.</li>
+        <li>
+          En cas d&apos;empêchement, désinscris-toi depuis la page de l&apos;événement pour libérer ta place. Des absences répétées sans
+          désinscription peuvent mener à un refus d&apos;inscription aux prochains événements.
+        </li>
+      </ul>
     ),
   },
 ];
@@ -340,7 +382,7 @@ export default function RulesPage() {
     <LegalPage
       eyebrow="Fair-play"
       title="Règlement"
-      description={MATCH_TEAM_ENABLED ? "Les règles de SixSence : classé, Division, tournoi, sanctions, points et saisons." : "Les règles du classé SixSence : file d'attente, sanctions, déroulement des matchs, points et saisons."}
+      description={MATCH_TEAM_ENABLED ? "Les règles de SixSence : général, classé, Division, tournoi et événements GTA 6." : "Les règles du classé SixSence : file d'attente, sanctions, déroulement des matchs, points et saisons."}
       updated="21 octobre 2026"
       sections={ORDERED}
     />
