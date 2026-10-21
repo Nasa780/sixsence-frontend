@@ -15,6 +15,7 @@ export function TeamStats({ teamId, points = null, position = null }) {
   const { active, label } = useSeasons();
   const seasonStart = active?.starts_at ?? null;
   const [matches, setMatches] = useState(null);
+  const [bonuses, setBonuses] = useState([]);
 
   useEffect(() => {
     let alive = true;
@@ -26,6 +27,10 @@ export function TeamStats({ teamId, points = null, position = null }) {
       .order("completed_at", { ascending: false })
       .limit(500);
     if (seasonStart) query = query.gte("completed_at", seasonStart);
+    // Points de coupe (Coupe Horus), hors match.
+    let bonusQuery = supabase.from("team_point_bonuses").select("id, points, reason, created_at").eq("team_id", teamId);
+    if (seasonStart) bonusQuery = bonusQuery.gte("created_at", seasonStart);
+    bonusQuery.then(({ data }) => alive && setBonuses(data || []));
     query.then(async ({ data }) => {
       const rows = data || [];
       // Tags des adversaires, pour le détail des matchs sur la courbe.
@@ -40,7 +45,7 @@ export function TeamStats({ teamId, points = null, position = null }) {
   }, [teamId, seasonStart]);
 
   const stats = useMemo(() => (matches ? compute(matches, teamId) : null), [matches, teamId]);
-  const series = useMemo(() => (matches && typeof points === "number" ? buildTeamSeries(matches, teamId, points) : null), [matches, teamId, points]);
+  const series = useMemo(() => (matches && typeof points === "number" ? buildTeamSeries(matches, teamId, points, bonuses) : null), [matches, teamId, points, bonuses]);
 
   if (!stats || stats.matches === 0) return null;
   return (
@@ -88,25 +93,28 @@ function sideOf(match, teamId) {
   return match.team_a === teamId ? "A" : "B";
 }
 
-/** Courbe des points de l'équipe sur la saison, reconstruite à rebours depuis ses points actuels. */
-function buildTeamSeries(matches, teamId, points) {
-  const done = [...matches].sort((a, b) => new Date(a.completed_at) - new Date(b.completed_at));
+/** Courbe des points de l'équipe sur la saison, reconstruite à rebours depuis ses points actuels (matchs et bonus de coupe). */
+function buildTeamSeries(matches, teamId, points, bonuses = []) {
+  const events = [
+    ...matches.map((match) => {
+      const side = sideOf(match, teamId);
+      const [mine, theirs] = mapsOf(match, side);
+      return {
+        id: match.id,
+        delta: match.points_changes?.[side] ?? 0,
+        won: match.winner === side,
+        map: `vs [${match.opponentTag}]`,
+        format: match.forfeit ? "forfait" : `${mine}-${theirs}`,
+        date: match.completed_at,
+      };
+    }),
+    ...bonuses.map((bonus) => ({ id: `bonus-${bonus.id}`, delta: bonus.points, won: true, bonus: true, map: bonus.reason, format: `+${bonus.points} pts`, date: bonus.created_at })),
+  ].sort((a, b) => new Date(a.date) - new Date(b.date));
   const entries = [];
   let after = points;
-  for (let index = done.length - 1; index >= 0; index -= 1) {
-    const match = done[index];
-    const side = sideOf(match, teamId);
-    const delta = match.points_changes?.[side] ?? 0;
-    const [mine, theirs] = mapsOf(match, side);
-    entries.unshift({
-      id: match.id,
-      points: after,
-      delta,
-      won: match.winner === side,
-      map: `vs [${match.opponentTag}]`,
-      format: match.forfeit ? "forfait" : `${mine}-${theirs}`,
-      date: match.completed_at,
-    });
+  for (let index = events.length - 1; index >= 0; index -= 1) {
+    const { delta, ...event } = events[index];
+    entries.unshift({ ...event, points: after, delta });
     after -= delta;
   }
   return { start: after, entries };

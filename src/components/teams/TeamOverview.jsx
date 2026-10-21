@@ -5,7 +5,7 @@ import { api } from "../../lib/api";
 import { cn } from "../../lib/cn";
 import { rankFor, rankGradient } from "../../lib/ranks";
 import { supabase } from "../../lib/supabase";
-import { TEAM_LIMITS } from "../../lib/teams";
+import { TEAM_LIMITS, trophyLabel } from "../../lib/teams";
 import { Avatar } from "../ui/Avatar";
 import { ButtonLink } from "../ui/Button";
 import { TacticalCard } from "../ui/TacticalCard";
@@ -116,9 +116,9 @@ export function TeamHero({ team, insights, isLeader = false, actions = null, sub
                 </span>
               ) : null}
               {team.trophies?.map((trophy) => (
-                <span key={trophy.tournamentId} title={trophy.name} className="clip-slant inline-flex items-center gap-1 border border-gold/50 px-3 py-1 font-display text-sm font-bold uppercase tracking-wide text-gold">
+                <span key={`${trophy.tournamentId}-${trophy.place}`} title={trophy.name} className="clip-slant inline-flex items-center gap-1 border border-gold/50 px-3 py-1 font-display text-sm font-bold uppercase tracking-wide text-gold">
                   <LuTrophy aria-hidden className="h-4 w-4" />
-                  {trophy.place === "winner" ? "Vainqueur" : "Finaliste"}
+                  {trophyLabel(trophy)}
                 </span>
               ))}
             </div>
@@ -460,7 +460,7 @@ export function TeamActivity({ team, insights }) {
     });
   }
   for (const trophy of team.trophies ?? []) {
-    events.push({ date: trophy.date, icon: LuTrophy, text: <>{trophy.place === "winner" ? "Vainqueur" : "Finaliste"} du <strong className="text-white">{trophy.name}</strong>.</> });
+    events.push({ date: trophy.date, icon: LuTrophy, text: <>{trophyLabel(trophy)} · <strong className="text-white">{trophy.name}</strong>.</> });
   }
   const recent = events
     .filter((event) => event.date)

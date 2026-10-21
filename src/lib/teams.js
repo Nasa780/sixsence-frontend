@@ -44,3 +44,8 @@ export async function uploadTeamImage(file, userId, kind) {
   if (error) throw new Error("Envoi de l'image impossible. Réessaie dans un instant.");
   return supabase.storage.from("team-media").getPublicUrl(path).data.publicUrl;
 }
+
+/** Libellé d'un trophée : Vainqueur / Finaliste (tournoi de saison), Or / Argent / Bronze (Coupe Horus). */
+export function trophyLabel(trophy) {
+  return { winner: "Vainqueur", finalist: "Finaliste", or: "Or", argent: "Argent", bronze: "Bronze" }[trophy?.place] ?? "Trophée";
+}

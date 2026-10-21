@@ -40,8 +40,10 @@ export function buildSeries({ history, userId, points, seasonId = null }) {
 export function summarize(start, entries) {
   if (entries.length === 0) return null;
   const values = entries.map((entry) => entry.points);
-  const wins = entries.filter((entry) => entry.won).length;
-  const losses = entries.length - wins;
+  // Bonus (points de coupe) : sur la courbe, mais ni victoire ni défaite.
+  const played = entries.filter((entry) => !entry.bonus);
+  const wins = played.filter((entry) => entry.won).length;
+  const losses = played.length - wins;
   const last = entries[entries.length - 1].points;
   const peak = Math.max(start, ...values);
   return {
@@ -51,6 +53,6 @@ export function summarize(start, entries) {
     wins,
     losses,
     ratio: losses === 0 ? null : wins / losses,
-    form: entries.slice(-10).map((entry) => entry.won),
+    form: played.slice(-10).map((entry) => entry.won),
   };
 }
