@@ -71,7 +71,8 @@ function DIVISION_SECTIONS() {
           <li>
             <strong>Déconnexion</strong> : l&apos;équipe du joueur déconnecté peut demander à arrêter la partie, <strong>une seule fois</strong> par
             match. La demande se fait en fin de manche ou dans les premières secondes d&apos;une manche, jamais en cours de manche (après un
-            kill, une bombe posée ou toute autre action).
+            kill, une bombe posée ou toute autre action). La partie reprend au même score dans les <strong>5 minutes</strong>, même si le joueur
+          n&apos;a pas réussi à se reconnecter.
           </li>
           <li>Le chat du match est réservé aux joueurs du match, aux Leaders des deux équipes et aux arbitres.</li>
         </ul>
@@ -270,7 +271,8 @@ const SECTIONS = [
         <li>
           <strong>Déconnexion</strong> : l&apos;équipe du joueur déconnecté peut demander à arrêter la partie, <strong>une seule fois</strong> par
           match. La demande se fait en fin de manche ou dans les premières secondes d&apos;une manche, jamais en cours de manche (après un
-          kill, une bombe posée ou toute autre action).
+          kill, une bombe posée ou toute autre action). La partie reprend au même score dans les <strong>5 minutes</strong>, même si le joueur
+          n&apos;a pas réussi à se reconnecter.
         </li>
         <li>Le chat du salon et, s&apos;il est actif, le salon vocal Discord servent à s&apos;organiser.</li>
       </ul>
