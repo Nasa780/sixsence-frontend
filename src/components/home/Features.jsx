@@ -10,7 +10,7 @@ const FEATURES = [
   { icon: LuShieldCheck, title: "Résultats vérifiés", text: "Un résultat ne compte qu'une fois confirmé par l'équipe adverse." },
   { icon: LuTrendingUp, title: "Classement dynamique", text: "Neuf rangs, de Bronze à Légende : +40 à +60 points par victoire selon le niveau de l'équipe adverse, et des défaites qui coûtent plus cher en montant." },
   { icon: LuMedal, title: "Profil complet", text: "Statistiques, historique des matchs, courbe de progression et trophées." },
-  { icon: LuCalendarDays, title: "Événements GTA 6", text: "Planning, places limitées et suivi des inscrits pour chaque session.", univers: "gta" },
+  { icon: LuCalendarDays, title: "Événements GTA 6", text: "Planning, places limitées et suivi des inscrits pour chaque session.", univers: "gta" },
 ];
 
 /** Grille des fonctionnalités clés. */

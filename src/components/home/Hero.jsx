@@ -11,7 +11,7 @@ import { MATCH_TEAM_ENABLED } from "../../lib/config";
 const HUD = [
   { value: "MW4", label: MATCH_TEAM_ENABLED ? "Classé · Division · Tournoi" : "Classé 2v2 à 5v5" },
   { value: "LIVE", label: "File en temps réel" },
-  { value: "GTA 6", label: "Événements", univers: "gta" },
+  { value: "GTA 6", label: "Événements", univers: "gta" },
 ];
 
 /** Écran d'accueil : particules dorées, grand titre, appel à la connexion Discord. */
@@ -78,8 +78,8 @@ export function Hero() {
 
           <motion.p variants={item} className="mt-4 max-w-xl text-base leading-relaxed text-white/60 sm:text-lg">
             {MATCH_TEAM_ENABLED
-              ? "Grimpe seul au classement de Call of Duty en partie classée, monte ton équipe en Division et vise le tournoi de fin de saison. Côté GTA 6, rejoins les événements à venir de la communauté."
-              : "Files classées Call of Duty du 2v2 au 5v5 en solo, matchmaking automatique, classement en direct et événements GTA 6. Un seul accès : ton compte Discord."}
+              ? "Grimpe seul au classement de Call of Duty en partie classée, monte ton équipe en Division et vise le tournoi de fin de saison. Côté GTA 6, rejoins les événements à venir de la communauté."
+              : "Files classées Call of Duty du 2v2 au 5v5 en solo, matchmaking automatique, classement en direct et événements GTA 6. Un seul accès : ton compte Discord."}
           </motion.p>
 
           <motion.div variants={item} className="mt-9 flex flex-col gap-4 sm:flex-row sm:items-center">

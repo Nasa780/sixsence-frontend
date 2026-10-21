@@ -135,7 +135,7 @@ export default async function handler(request) {
           </div>
 
           <div style={{ display: "flex", marginTop: 22, fontFamily: text, fontSize: 27, fontWeight: 500, color: "rgba(255,255,255,0.86)", letterSpacing: 0.5 }}>
-            Matchs classés MW4 · Événements GTA 6
+            Matchs classés MW4 · Événements GTA 6
           </div>
 
           <div style={{ display: "flex", alignItems: "center", gap: 14, marginTop: 34, fontFamily: text, fontSize: 15, fontWeight: 700, letterSpacing: 5, color: "rgba(255,255,255,0.55)" }}>

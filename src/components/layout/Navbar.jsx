@@ -32,7 +32,7 @@ const LINKS = [
       { href: "/cod/tournoi", label: "Tournoi", univers: "tournoi", icon: LuTrophy, color: "#e5484d" },
     ],
   },
-  { href: "/gta6", label: "GTA 6", univers: "gta" },
+  { href: "/gta6", label: "GTA 6", univers: "gta" },
   { href: "/founders", label: "Fondateurs" },
   { href: "/partners", label: "Partenaires" },
 ];

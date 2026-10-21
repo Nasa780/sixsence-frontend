@@ -30,7 +30,7 @@ const ALL_TABS = [
   { key: "sanctions", label: "Sanctions", roles: MODERATORS },
   ...(MATCH_TEAM_ENABLED ? [{ key: "equipes", label: "Équipes", roles: MODERATORS }] : []),
   { key: "players", label: "Joueurs" },
-  { key: "events", label: "Événements GTA 6" },
+  { key: "events", label: "Événements GTA 6" },
   { key: "founders", label: "Fondateurs" },
   { key: "partners", label: "Partenaires" },
   ...(MATCH_TEAM_ENABLED ? [{ key: "tournoi", label: "Tournoi" }] : []),

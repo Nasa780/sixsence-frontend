@@ -22,11 +22,11 @@ export default function GtaHubPage() {
   return (
     <>
       <Head>
-        <title>GTA 6 — SixSence</title>
+        <title>GTA 6 — SixSence</title>
       </Head>
       <PageHeader
         image="/images/grand-theft-auto-vi-3840x2160-22311.jpg"
-        eyebrow="GTA 6"
+        eyebrow="GTA 6"
         title={
           <>
             Les rues sont à <span className="text-gold-gradient">nous</span>
