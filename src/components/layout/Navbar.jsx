@@ -24,9 +24,9 @@ const LINKS = [
     label: "MW4",
     // Les trois sections COD (seulement si la Division est active).
     children: MATCH_TEAM_ENABLED && [
-      { href: "/cod/ranked", label: "Classé", univers: "classe", icon: LuCrosshair },
-      { href: "/cod/division", label: "Division", univers: "division", icon: LuShield },
-      { href: "/cod/tournoi", label: "Tournoi", univers: "tournoi", icon: LuTrophy },
+      { href: "/cod/ranked", label: "Classé", univers: "classe", icon: LuCrosshair, color: "#34d399" },
+      { href: "/cod/division", label: "Division", univers: "division", icon: LuShield, color: "#22d3ee" },
+      { href: "/cod/tournoi", label: "Tournoi", univers: "tournoi", icon: LuTrophy, color: "#e5484d" },
     ],
   },
   { href: "/gta6", label: "GTA 6", univers: "gta" },
@@ -110,18 +110,19 @@ export function Navbar() {
                             <Link
                               key={child.href}
                               href={child.href}
+                              style={{ "--mode": child.color }}
                               className={cn(
-                                "group/mode relative flex items-center gap-3 overflow-hidden px-3 py-2.5 transition-colors",
-                                current ? "bg-gold/10" : "hover:bg-gold/[0.07]",
+                                "group/mode relative flex items-center gap-3 overflow-hidden border-l-2 px-3 py-2.5 transition-colors duration-200 hover:border-[var(--mode)] hover:bg-white/[0.04]",
+                                current ? "border-gold bg-gold/10" : "border-gold/40",
                               )}
                             >
                               <span className="min-w-0 flex-1">
-                                <span className="flex items-center gap-1.5 font-display text-base font-bold uppercase tracking-[0.14em] text-gold">
+                                <span className="flex items-center gap-1.5 font-display text-base font-bold uppercase tracking-[0.14em] text-gold transition-colors duration-200 group-hover/mode:text-[var(--mode)]">
                                   <Icon aria-hidden className="h-4 w-4" />
                                   {child.label}
                                 </span>
                               </span>
-                              <LuArrowRight aria-hidden className="h-4 w-4 -translate-x-1 text-gold opacity-0 transition group-hover/mode:translate-x-0 group-hover/mode:opacity-100" />
+                              <LuArrowRight aria-hidden className="h-4 w-4 -translate-x-1 text-gold opacity-0 transition group-hover/mode:translate-x-0 group-hover/mode:text-[var(--mode)] group-hover/mode:opacity-100" />
                             </Link>
                           );
                         })}
@@ -201,9 +202,10 @@ export function Navbar() {
                               key={child.href}
                               href={child.href}
                               data-univers="or"
+                              style={{ "--mode": child.color }}
                               className={cn(
-                                "ml-4 px-4 py-2.5 font-display text-base font-bold uppercase tracking-[0.14em] transition-colors",
-                                current ? "bg-gold/10 text-gold" : "text-white/70 hover:text-gold",
+                                "ml-4 border-l-2 px-4 py-2.5 font-display text-base font-bold uppercase tracking-[0.14em] transition-colors duration-200 hover:border-[var(--mode)] hover:text-[var(--mode)]",
+                                current ? "border-gold bg-gold/10 text-gold" : "border-gold/40 text-white/70",
                               )}
                             >
                               {child.label}
