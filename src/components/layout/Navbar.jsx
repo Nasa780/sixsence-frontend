@@ -25,7 +25,7 @@ const LINKS = [
     // Les trois sections COD (seulement si la Division est active).
     children: MATCH_TEAM_ENABLED && [
       { href: "/cod/ranked", label: "Classé", univers: "classe", icon: LuCrosshair },
-      { href: "/cod/division", label: "Division 4v4", univers: "division", icon: LuShield },
+      { href: "/cod/division", label: "Division", univers: "division", icon: LuShield },
       { href: "/cod/tournoi", label: "Tournoi", univers: "tournoi", icon: LuTrophy },
     ],
   },

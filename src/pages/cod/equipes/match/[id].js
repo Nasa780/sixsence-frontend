@@ -164,8 +164,8 @@ function TeamSide({ team, side, winner, change, host = false, right = false }) {
         <p className="mt-1 font-tech text-xs uppercase tracking-[0.2em] text-white/45">
           <span className="normal-case">[{team?.tag}]</span>
           {winner === side ? <LuCrown aria-label="Vainqueur" className="ml-2 inline h-3.5 w-3.5 text-gold" /> : null}
+          {host ? <HostChip className={cn("align-middle", right ? "mr-2" : "ml-2")} /> : null}
         </p>
-        {host ? <HostChip className="mt-2" /> : null}
         {typeof change === "number" ? <p className={cn("mt-1 font-tech text-sm font-bold", change >= 0 ? "text-win" : "text-loss")}>{change >= 0 ? `+${change}` : change} pts</p> : null}
       </div>
     </div>
@@ -579,7 +579,7 @@ function Roster({ match, side, userId }) {
           const rank = rankFor(player?.points ?? 0);
           return (
             <li key={id} className={cn("flex items-center gap-3 border-l-2 bg-white/[0.03] px-3 py-3", id === userId ? "border-gold bg-gold/8" : "border-white/10")}>
-              <Avatar src={player?.avatarUrl} name={player?.username ?? "?"} size={42} ring={rankGradient(rank, 160)} />
+              <Avatar full src={player?.avatarUrl} name={player?.username ?? "?"} size={42} ring={rankGradient(rank, 160)} />
               <div className="min-w-0 flex-1">
                 <p className="flex items-center gap-2">
                   <RankEmblem rank={rank} size={20} animated={false} />
@@ -748,7 +748,7 @@ function CorrectionForm({ match, onDone }) {
 
 const FORFEIT_REASONS = {
   host_silent: "(équipe hôte) n'a pas donné le code de la partie à temps",
-  absent: "n'était pas présente en jeu à temps",
+  absent: "n'a pas lancé la partie à temps",
 };
 
 const mmss = (seconds) => `${Math.floor(seconds / 60)}:${String(Math.floor(seconds % 60)).padStart(2, "0")}`;
@@ -922,29 +922,13 @@ function KickoffBlock({ match, name, onDone }) {
         {viewer?.canSetCode && (!given || editing) ? <div className="mt-4">{codeForm}</div> : null}
       </div>
 
-      <div className="grid gap-3 sm:grid-cols-2">
-        {["A", "B"].map((side) => (
-          <div key={side} className={cn("flex items-center justify-between gap-3 border-l-2 bg-white/[0.03] px-4 py-3", match.present[side] ? "border-win" : "border-white/15")}>
-            <div className="min-w-0">
-              <p className="truncate font-tech text-[10px] uppercase tracking-[0.24em] text-white/45">
-                Présence · {name(side)}
-                {match.hostSide === side ? " (hôte)" : ""}
-              </p>
-              <p className={cn("mt-1 font-display text-2xl font-black leading-none", match.present[side] ? "text-win" : presenceLeft > 0 ? "tabular-nums" : "text-loss")}>
-                {match.present[side] ? "En jeu" : presenceLeft > 0 ? mmss(presenceLeft) : "Absente"}
-              </p>
-              <p className="mt-1 text-xs text-white/45">
-                {match.present[side] ? `depuis ${new Date(match.present[side]).toLocaleTimeString("fr-FR", { hour: "2-digit", minute: "2-digit" })}` : "15 min pour être en jeu"}
-              </p>
-            </div>
-            {viewer?.canMarkPresent && viewer.side === side ? (
-              <Button size="sm" disabled={pending !== null} onClick={() => run("present", "present")} className="shrink-0">
-                {pending === "present" ? <LuLoaderCircle aria-hidden className="h-4 w-4 animate-spin" /> : <LuGamepad2 aria-hidden className="h-4 w-4" />}
-                Présents en jeu
-              </Button>
-            ) : null}
-          </div>
-        ))}
+      {/* Plus de bouton de présence : 15 min pour lancer la partie, ensuite l'autre équipe peut déclarer forfait. */}
+      <div className="flex items-center justify-between gap-4 border-l-2 border-gold/60 bg-white/[0.03] px-4 py-3">
+        <div className="min-w-0">
+          <p className="font-tech text-[10px] uppercase tracking-[0.24em] text-white/45">Lancement de la partie</p>
+          <p className="mt-1 text-xs text-white/45">Les deux équipes ont 15 min pour rejoindre la partie et commencer.</p>
+        </div>
+        <p className={cn("font-display text-3xl font-black leading-none tabular-nums", presenceLeft > 0 ? "text-white" : "text-loss")}>{presenceLeft > 0 ? mmss(presenceLeft) : "Temps écoulé"}</p>
       </div>
 
       {viewer?.canClaimForfeit?.host_silent || viewer?.canClaimForfeit?.absent ? (
@@ -959,7 +943,7 @@ function KickoffBlock({ match, name, onDone }) {
           {viewer.canClaimForfeit.absent ? (
             <Button variant="danger" size="sm" disabled={pending !== null} onClick={() => setAsk("absent")}>
               <LuFlag aria-hidden className="h-4 w-4" />
-              Forfait : absents
+              Forfait : partie pas lancée
             </Button>
           ) : null}
         </div>

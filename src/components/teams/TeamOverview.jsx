@@ -230,7 +230,7 @@ export function TeamGoals({ team, insights, compact = false }) {
 }
 
 /** Joueurs clés : le plus de matchs joués et le meilleur taux de victoire avec l'équipe (3 matchs mini). */
-export function TeamStandouts({ team, insights }) {
+export function TeamStandouts({ team, insights, compact = false }) {
   const stats = team.members.map((member) => ({ member, ...(insights.playerStats.get(member.id) ?? { played: 0, wins: 0 }) }));
   const engaged = [...stats].sort((a, b) => b.played - a.played)[0];
   const sharp = [...stats].filter((row) => row.played >= 3).sort((a, b) => b.wins / b.played - a.wins / a.played || b.played - a.played)[0];
@@ -248,13 +248,13 @@ export function TeamStandouts({ team, insights }) {
       <h2 id="titre-joueurs-cles" className="mt-3 font-display text-4xl font-black uppercase leading-none">
         Joueurs clés
       </h2>
-      <ul className="mt-6 grid gap-3 sm:grid-cols-3">
+      <ul className={cn("mt-6 grid gap-3", !compact && "sm:grid-cols-3")}>
         {cards.map(({ label, row, value }) => {
           const rank = rankFor(row.member.points ?? 0);
           return (
             <li key={label}>
               <Link href={`/cod/profile/${row.member.id}`} className="group flex items-center gap-4 border border-white/10 bg-white/[0.03] p-4 transition hover:border-gold/60">
-                <Avatar src={row.member.avatarUrl} name={row.member.username} size={52} ring={rankGradient(rank, 160)} />
+                <Avatar full src={row.member.avatarUrl} name={row.member.username} size={52} ring={rankGradient(rank, 160)} />
                 <div className="min-w-0">
                   <p className="font-tech text-[10px] uppercase tracking-[0.24em] text-gold">{label}</p>
                   <p className="mt-1 truncate font-display text-xl font-black uppercase leading-none" style={{ color: rank.text }}>
@@ -418,7 +418,7 @@ export function TeamRecords({ insights }) {
 }
 
 /** Fil d'activité de l'équipe : création, arrivées, matchs, trophées (les 10 derniers événements). */
-export function TeamActivity({ team, insights }) {
+export function TeamActivity({ team, insights, limit = 10 }) {
   const events = [];
   if (team.createdAt) events.push({ date: team.createdAt, icon: LuFlame, text: <>L&apos;équipe <strong className="text-white">{team.name}</strong> est créée.</> });
   for (const member of team.members) {
@@ -451,7 +451,7 @@ export function TeamActivity({ team, insights }) {
   const recent = events
     .filter((event) => event.date)
     .sort((a, b) => new Date(b.date) - new Date(a.date))
-    .slice(0, 10);
+    .slice(0, limit);
   if (recent.length === 0) return null;
   const when = (iso) => {
     const days = Math.floor((Date.now() - new Date(iso).getTime()) / DAY);
@@ -618,5 +618,58 @@ export function TeamMatchTimeline({ insights }) {
         ) : null}
       </TacticalCard>
     </section>
+  );
+}
+
+/**
+ * Bandeau de chiffres clés sous la bannière (sans répéter points, V/D et % de victoires) : série en cours,
+ * matchs de la semaine, place suivante au classement, qualification au tournoi.
+ */
+export function TeamKpis({ team, insights }) {
+  const done = (insights.history ?? []).filter((match) => match.status === "completed");
+  let streak = 0;
+  for (const match of done) {
+    if (match.won === done[0]?.won) streak += 1;
+    else break;
+  }
+  const winning = done[0]?.won ?? true;
+  const start = weekStart();
+  const week = done.filter((match) => new Date(match.date).getTime() >= start).length;
+  const gap = insights.ahead ? Math.max(1, insights.ahead.points - team.points + 1) : null;
+  const tiles = [
+    {
+      label: "Série en cours",
+      value: done.length ? `${streak} ${winning ? "V" : "D"}` : "—",
+      tone: done.length ? (winning ? "win" : "loss") : null,
+      hint: done.length ? (winning ? "victoire(s) d'affilée" : "défaite(s) d'affilée") : "Pas encore de match",
+    },
+    { label: "Cette semaine", value: `${Math.min(week, WEEKLY_TARGET)} / ${WEEKLY_TARGET}`, hint: week >= WEEKLY_TARGET ? "Objectif atteint" : "matchs joués (objectif 5)", progress: Math.min(1, week / WEEKLY_TARGET) },
+    {
+      label: team.position === 1 ? "Classement" : "Place suivante",
+      value: team.position === 1 ? "N° 1" : gap ? `+${gap} pts` : "—",
+      hint: team.position === 1 ? "Défends ta place" : insights.ahead ? `pour dépasser [${insights.ahead.tag}]` : "",
+    },
+    {
+      label: "Tournoi",
+      value: `${Math.min(team.played, TEAM_LIMITS.qualifyMatches)} / ${TEAM_LIMITS.qualifyMatches}`,
+      hint: team.played >= TEAM_LIMITS.qualifyMatches ? "Qualifiable" : "matchs pour être qualifiable",
+      progress: Math.min(1, team.played / TEAM_LIMITS.qualifyMatches),
+    },
+  ];
+  return (
+    <dl className="grid grid-cols-2 gap-3 lg:grid-cols-4">
+      {tiles.map((tile) => (
+        <div key={tile.label} className="border-l-2 border-gold/50 bg-white/[0.03] px-4 py-4">
+          <dt className="font-tech text-[10px] uppercase tracking-[0.22em] text-white/45">{tile.label}</dt>
+          <dd className={cn("mt-1.5 font-display text-3xl font-black leading-none tabular-nums", tile.tone === "win" && "text-win", tile.tone === "loss" && "text-loss")}>{tile.value}</dd>
+          <p className="mt-1 truncate text-xs text-white/45">{tile.hint}</p>
+          {typeof tile.progress === "number" ? (
+            <div className="mt-3 h-1 -skew-x-[20deg] bg-white/10">
+              <div className="h-full bg-gold" style={{ width: `${Math.round(tile.progress * 100)}%` }} />
+            </div>
+          ) : null}
+        </div>
+      ))}
+    </dl>
   );
 }

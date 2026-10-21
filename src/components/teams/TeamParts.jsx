@@ -70,7 +70,7 @@ export function MemberRow({ member, children = null, isMe = false }) {
   const rank = rankFor(member.points ?? 0);
   return (
     <li className={cn("flex flex-wrap items-center gap-3 border-l-2 bg-white/[0.03] px-3 py-3 sm:px-4", isMe ? "border-gold bg-gold/8" : member.crown ? "border-gold/60" : "border-white/10")}>
-      <Avatar src={member.avatarUrl} name={member.username} size={42} ring={rankGradient(rank, 160)} />
+      <Avatar full src={member.avatarUrl} name={member.username} size={42} ring={rankGradient(rank, 160)} />
       <div className="min-w-0 flex-1">
         <p className="flex flex-wrap items-center gap-2">
           <RankEmblem rank={rank} size={20} animated={false} />

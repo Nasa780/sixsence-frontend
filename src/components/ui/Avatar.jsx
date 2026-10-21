@@ -3,19 +3,20 @@ import { cn } from "../../lib/cn";
 /**
  * Avatar à coin coupé. Sans image, affiche l'initiale du pseudo.
  * ring : fond CSS (dégradé du rang, par exemple) affiché en liseré de 2 px autour.
+ * full : avatar entier, coins arrondis au lieu du coin coupé (pages de la Division).
  */
-export function Avatar({ src, name = "?", size = 40, className = "", ring = null }) {
+export function Avatar({ src, name = "?", size = 40, className = "", ring = null, full = false }) {
   if (ring) {
     return (
-      <span className={cn("clip-corner inline-flex shrink-0 p-[2px]", className)} style={{ backgroundImage: ring, width: size, height: size }}>
-        <AvatarImage src={src} name={name} size={size - 4} />
+      <span className={cn("inline-flex shrink-0 p-[2px]", full ? "rounded-md" : "clip-corner", className)} style={{ backgroundImage: ring, width: size, height: size }}>
+        <AvatarImage src={src} name={name} size={size - 4} full={full} />
       </span>
     );
   }
-  return <AvatarImage src={src} name={name} size={size} className={className} />;
+  return <AvatarImage src={src} name={name} size={size} className={className} full={full} />;
 }
 
-function AvatarImage({ src, name, size, className = "" }) {
+function AvatarImage({ src, name, size, className = "", full = false }) {
   const dimensions = { width: size, height: size };
 
   if (src && src.startsWith("https://")) {
@@ -29,7 +30,7 @@ function AvatarImage({ src, name, size, className = "" }) {
         decoding="async"
         referrerPolicy="no-referrer"
         style={dimensions}
-        className={cn("clip-corner shrink-0 bg-ink-600 object-cover", className)}
+        className={cn(full ? "rounded" : "clip-corner", "shrink-0 bg-ink-600 object-cover", className)}
       />
     );
   }
@@ -39,7 +40,8 @@ function AvatarImage({ src, name, size, className = "" }) {
       aria-hidden
       style={{ ...dimensions, fontSize: Math.round(size * 0.45) }}
       className={cn(
-        "clip-corner flex shrink-0 items-center justify-center bg-ink-600 font-display font-black uppercase text-gold",
+        full ? "rounded" : "clip-corner",
+        "flex shrink-0 items-center justify-center bg-ink-600 font-display font-black uppercase text-gold",
         className,
       )}
     >
