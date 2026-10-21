@@ -235,19 +235,6 @@ export function Navbar() {
                     <Link href="/reglement" className="px-4 py-3 text-sm text-white/70 hover:text-gold">
                       Règlement
                     </Link>
-                    <Link href="/cod/ranked" className="px-4 py-3 text-sm text-white/70 hover:text-gold">
-                      Classé
-                    </Link>
-                    {MATCH_TEAM_ENABLED ? (
-                      <>
-                        <Link href="/cod/division" className="px-4 py-3 text-sm text-white/70 hover:text-gold">
-                          Division
-                        </Link>
-                        <Link href="/cod/tournoi" className="px-4 py-3 text-sm text-white/70 hover:text-gold">
-                          Tournoi
-                        </Link>
-                      </>
-                    ) : null}
                     {isReferee(user.role) ? (
                       <Link href="/admin" className="px-4 py-3 text-sm text-white/70 hover:text-gold">
                         Administration

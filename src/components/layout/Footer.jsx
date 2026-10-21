@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { FaDiscord } from "react-icons/fa6";
-import { DISCORD_INVITE_URL } from "../../lib/config";
+import { DISCORD_INVITE_URL, MATCH_TEAM_ENABLED } from "../../lib/config";
 import { Container } from "../ui/Container";
 import { Logo } from "../ui/Logo";
 
@@ -8,8 +8,15 @@ const COLUMNS = [
   {
     title: "Jeux",
     links: [
-      { href: "/cod", label: "MW4" },
-      { href: "/gta6", label: "GTA 6", univers: "gta" },
+      { href: "/cod", label: "MW4", bold: true },
+      { href: "/cod/ranked", label: "Classé" },
+      ...(MATCH_TEAM_ENABLED
+        ? [
+            { href: "/cod/division", label: "Division" },
+            { href: "/cod/tournoi", label: "Tournoi" },
+          ]
+        : []),
+      { href: "/gta6", label: "GTA 6", univers: "gta", bold: true },
       { href: "/gta6/events", label: "Événements GTA 6", univers: "gta" },
     ],
   },
@@ -55,7 +62,10 @@ export function Footer() {
             <ul className="mt-4 space-y-2.5">
               {column.links.map((link) => (
                 <li key={link.href} data-univers={link.univers}>
-                  <Link href={link.href} className={`text-sm text-white/60 transition-colors ${link.univers ? "hover:text-gold" : "hover:text-white"}`}>
+                  <Link
+                    href={link.href}
+                    className={`text-sm transition-colors ${link.bold ? "font-semibold text-white/85" : "text-white/60"} ${link.univers ? "hover:text-gold" : "hover:text-white"}`}
+                  >
                     {link.label}
                   </Link>
                 </li>
