@@ -24,11 +24,11 @@ export default function EventsPage() {
   return (
     <>
       <Head>
-        <title>Événements GTA 6 — SixSence</title>
+        <title>Événements GTA 6 — SixSence</title>
       </Head>
       <PageHeader
         image="/images/grand-theft-auto-vi-3840x2160-22311.jpg"
-        eyebrow="GTA 6"
+        eyebrow="GTA 6"
         title={
           <>
             Le <span className="text-gold-gradient">planning</span>

@@ -320,8 +320,8 @@ const SECTIONS = [
   ...(MATCH_TEAM_ENABLED ? DIVISION_SECTIONS() : []),
   {
     id: "evenements",
-    group: "GTA 6",
-    title: "Événements GTA 6",
+    group: "GTA 6",
+    title: "Événements GTA 6",
     content: (
       <p>
         L&apos;inscription à un événement engage à y participer. En cas d&apos;empêchement, désinscris-toi depuis la page de
@@ -331,7 +331,7 @@ const SECTIONS = [
   },
 ];
 
-const GROUP_ORDER = ["Général", "Classé", "Division", "Tournoi", "GTA 6"];
+const GROUP_ORDER = ["Général", "Classé", "Division", "Tournoi", "GTA 6"];
 const ORDERED = [...SECTIONS].sort((a, b) => GROUP_ORDER.indexOf(a.group) - GROUP_ORDER.indexOf(b.group));
 
 /** Règlement de la plateforme, par catégories : général, classé, Division, tournoi, GTA 6. */

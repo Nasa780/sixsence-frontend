@@ -32,7 +32,7 @@ const UNIVERSES = [
   {
     href: "/gta6",
     index: "02",
-    game: "GTA 6",
+    game: "GTA 6",
     image: "/images/grand-theft-auto-vi-3840x2160-22311.jpg",
     // Palette coucher de soleil (voir globals.css), comme sur les pages GTA 6.
     univers: "gta",

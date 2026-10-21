@@ -101,7 +101,7 @@ export default function EventPage() {
       <Head>
         <title>{event.title} — SixSence</title>
       </Head>
-      <PageHeader eyebrow={`GTA 6 · ${event.category}`} title={event.title} description={`Le ${formatDateTime(event.starts_at)} (heure de Paris).`} />
+      <PageHeader eyebrow={`GTA 6 · ${event.category}`} title={event.title} description={`Le ${formatDateTime(event.starts_at)} (heure de Paris).`} />
 
       <Container className="py-12">
         <Link href="/gta6/events" className="inline-flex items-center gap-2 text-sm text-white/55 transition-colors hover:text-gold">
