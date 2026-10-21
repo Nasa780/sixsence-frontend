@@ -52,7 +52,7 @@ export default function App({ Component, pageProps }) {
       className={`${saira.variable} ${orbitron.variable} ${inter.variable} flex min-h-dvh flex-col overflow-x-hidden font-sans`}
     >
       <Head>
-        <title>SixSence — Classé, Division et tournoi MW4 · Événements GTA 6</title>
+        <title>SixSence — Compétition COD &amp; Événements GTA</title>
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <meta name="theme-color" content="#0a0a0a" />
         <meta
