@@ -3,6 +3,7 @@ import { useState } from "react";
 import { LeaderboardView } from "../../components/cod/LeaderboardView";
 import { RanksGrid } from "../../components/cod/RanksGrid";
 import { SeasonArchive } from "../../components/cod/SeasonArchive";
+import { SeasonRewards } from "../../components/cod/SeasonRewards";
 import { ButtonLink } from "../../components/ui/Button";
 import { Container } from "../../components/ui/Container";
 import { PageHeader } from "../../components/ui/Typography";
@@ -17,7 +18,7 @@ import { MATCH_TEAM_ENABLED } from "../../lib/config";
 export default function LeaderboardPage() {
   const { userId } = useSession();
   const user = useUser();
-  const { seasons, label } = useSeasons();
+  const { seasons, label, active } = useSeasons();
   const [selected, setSelected] = useState("live");
 
   const past = (seasons || []).filter((season) => !season.is_active);
@@ -56,6 +57,7 @@ export default function LeaderboardPage() {
           ) : null}
           {archived ? <SeasonArchive season={archived} currentUserId={userId} /> : <LeaderboardView limit={200} currentUserId={userId} />}
         </div>
+        {archived ? null : <SeasonRewards seasonId={active?.id} label={label} />}
         <RanksGrid highlight={user?.profile ? rankFor(user.profile.points).name : null} />
       </Container>
     </>

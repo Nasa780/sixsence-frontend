@@ -2,7 +2,7 @@ import Head from "next/head";
 import Link from "next/link";
 import { useRouter } from "next/router";
 import { useCallback, useEffect, useState } from "react";
-import { LuFlag, LuSettings, LuUserPlus } from "react-icons/lu";
+import { LuCheck, LuFlag, LuSettings, LuShare2, LuUserPlus } from "react-icons/lu";
 import { TeamHero, useTeamInsights } from "../../../components/teams/TeamOverview";
 import { MemberRow, RosterHeading } from "../../../components/teams/TeamParts";
 import { TeamTrophyCase } from "../../../components/teams/TeamTrophyCase";
@@ -19,11 +19,49 @@ import useSession from "../../../hooks/useSession";
 import { api } from "../../../lib/api";
 import { signInWithDiscord } from "../../../lib/auth";
 import { REPORT_REASONS, SOCIALS, TEAM_LIMITS } from "../../../lib/teams";
+import { SITE_URL } from "../../../lib/config";
+import { supabaseRest } from "../../../lib/og";
 
 const dateFr = (iso) => new Date(iso).toLocaleDateString("fr-FR", { day: "numeric", month: "long", year: "numeric" });
 
-/** Fiche publique d'une équipe : bannière, chiffres, effectif. */
-export default function TeamPage() {
+const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+
+/**
+ * Balises de partage calculées côté serveur (Discord lit la page sans son JavaScript) : titre de l'équipe
+ * et carte d'équipe /api/og/team. Le reste de la fiche se charge ensuite dans le navigateur.
+ */
+export async function getServerSideProps({ params, res }) {
+  const id = typeof params?.id === "string" ? params.id : "";
+  if (!UUID.test(id)) return { props: { meta: null } };
+  try {
+    const teams = await supabaseRest(`teams?id=eq.${id}&select=name,tag,points,wins,losses,trophies,disbanded_at,cup_tournament`);
+    const team = teams[0];
+    if (!team || team.cup_tournament) return { props: { meta: null } };
+    res.setHeader("Cache-Control", "public, s-maxage=300, stale-while-revalidate=3600");
+    return { props: { meta: { id, name: team.name, tag: team.tag, points: team.points, wins: team.wins, losses: team.losses, trophies: (team.trophies ?? []).length } } };
+  } catch {
+    return { props: { meta: null } };
+  }
+}
+
+/** Fiche publique d'une équipe : aperçu des liens (carte d'équipe), puis la fiche. */
+export default function TeamPage({ meta }) {
+  // Le paramètre v change avec les résultats : Discord recharge la carte à chaque évolution.
+  const image = meta ? `${SITE_URL}/api/og/team?id=${meta.id}&v=t2-${meta.points}-${meta.wins}-${meta.losses}-${meta.trophies}` : null;
+  return (
+    <>
+      <Head>
+        {meta ? <meta key="og:title" property="og:title" content={`Équipe · [${meta.tag}] ${meta.name}`} /> : null}
+        {meta ? <meta key="og:description" property="og:description" content="" /> : null}
+        {image ? <meta key="og:image" property="og:image" content={image} /> : null}
+        {image ? <meta key="og:image:alt" property="og:image:alt" content={`Carte de l'équipe ${meta.name}`} /> : null}
+      </Head>
+      <TeamSheet />
+    </>
+  );
+}
+
+function TeamSheet() {
   const router = useRouter();
   const { id } = router.query;
   const { userId } = useSession();
@@ -34,6 +72,23 @@ export default function TeamPage() {
   const [pending, setPending] = useState(false);
   const [reporting, setReporting] = useState(false);
   const [history, setHistory] = useState(null);
+  const [shared, setShared] = useState(false);
+
+  // Partager la fiche : partage natif sur téléphone, sinon lien copié (carte d'équipe en aperçu sur Discord).
+  async function share() {
+    const url = `${SITE_URL}/cod/equipes/${id}`;
+    try {
+      if (navigator.share && window.matchMedia("(pointer: coarse)").matches) {
+        await navigator.share({ title: `[${team.tag}] ${team.name} — SixSence`, url });
+        return;
+      }
+      await navigator.clipboard.writeText(url);
+      setShared(true);
+      setTimeout(() => setShared(false), 3000);
+    } catch {
+      window.prompt("Copie ce lien :", url);
+    }
+  }
 
   const load = useCallback(async () => {
     if (!id) return;
@@ -104,7 +159,14 @@ export default function TeamPage() {
           as="h1"
           subline={team.disbanded ? "Équipe dissoute" : `Fondée le ${dateFr(team.createdAt)}`}
           actions={
-            team.disbanded ? null : isMember ? (
+            <div className="flex flex-wrap items-center gap-3">
+            {team.disbanded ? null : (
+              <Button size="lg" variant="outline" onClick={share}>
+                {shared ? <LuCheck aria-hidden className="h-5 w-5" /> : <LuShare2 aria-hidden className="h-5 w-5" />}
+                {shared ? "Lien copié" : "Partager"}
+              </Button>
+            )}
+            {team.disbanded ? null : isMember ? (
               <ButtonLink href="/cod/equipe" size="lg">
                 <LuSettings aria-hidden className="h-5 w-5" />
                 Gérer mon équipe
@@ -114,9 +176,8 @@ export default function TeamPage() {
                 <LuUserPlus aria-hidden className="h-5 w-5" />
                 {requested ? "Candidature envoyée" : team.members.length >= TEAM_LIMITS.maxMembers ? "Équipe complète" : "Candidater"}
               </Button>
-            ) : (
-              <span />
-            )
+            ) : null}
+            </div>
           }
         />
         <CodModeNav />
