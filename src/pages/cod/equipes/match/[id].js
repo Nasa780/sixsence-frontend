@@ -142,8 +142,9 @@ export default function TeamMatchPage() {
         ) : null}
 
         <p>
-          <Link href="/cod/equipes" className="text-sm font-semibold text-gold underline underline-offset-4 hover:text-gold-light">
+          <Link href="/cod/equipes" className="group/l inline-flex items-center gap-3 font-display text-sm font-bold uppercase tracking-[0.14em] text-gold transition-colors hover:text-gold-light">
             Classement des équipes
+            <span aria-hidden className="h-px w-5 bg-gold/50 transition-all duration-300 group-hover/l:w-10 group-hover/l:bg-gold" />
           </Link>
         </p>
       </Container>
