@@ -40,8 +40,9 @@ export function Footer() {
         <div>
           <Logo />
           <p className="mt-4 max-w-sm text-sm leading-relaxed text-white/55">
-            La plateforme gaming de la communauté : classé Call of Duty du 2v2 au 5v5 et événements GTA 6, avec un seul accès,
-            ton compte Discord.
+            {MATCH_TEAM_ENABLED
+              ? "La plateforme gaming de la communauté : classé Call of Duty en solo, Division en équipe et tournoi de fin de saison, événements GTA 6. Un seul accès : ton compte Discord."
+              : "La plateforme gaming de la communauté : classé Call of Duty en solo et événements GTA 6. Un seul accès : ton compte Discord."}
           </p>
           {DISCORD_INVITE_URL ? (
             <a
