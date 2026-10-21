@@ -294,7 +294,7 @@ export function alertMatchFound({ map, mode, deadline }) {
     try {
       const notification = new Notification("Match trouvé sur SixSence", {
         body: `${map} · ${mode} — accepte dans la minute !`,
-        icon: "/favicon.svg",
+        icon: "/icons/icon-192.png",
         tag: "sixsence-match",
         requireInteraction: true,
       });
@@ -317,7 +317,7 @@ export function alertTeamEvent({ title, body, flash, tag = "sixsence-division" }
   flashTitle(flash);
   if (typeof window !== "undefined" && "Notification" in window && Notification.permission === "granted" && document.hidden) {
     try {
-      const notification = new Notification(title, { body, icon: "/favicon.svg", tag });
+      const notification = new Notification(title, { body, icon: "/icons/icon-192.png", tag });
       notification.onclick = () => {
         window.focus();
         notification.close();

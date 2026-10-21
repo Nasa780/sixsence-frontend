@@ -60,7 +60,7 @@ export default function App({ Component, pageProps }) {
           name="description"
           content="La plateforme gaming de la communauté : matchs classés Call of Duty MW4 avec matchmaking automatique, classement en direct et saisons, événements GTA 6 avec inscriptions. Gratuit, connexion avec Discord."
         />
-        <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+        <link rel="icon" href="/favicon.png" type="image/png" sizes="48x48" />
         <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
         {/* Appli installable (PWA) : voir public/manifest.webmanifest et public/sw.js. */}
         <link rel="manifest" href="/manifest.webmanifest" />
@@ -79,7 +79,7 @@ export default function App({ Component, pageProps }) {
           content="La plateforme gaming de la communauté : matchs classés MW4, classement en direct, récompenses de saison et événements GTA 6. Accès gratuit avec Discord."
         />
         <meta property="og:url" content={`${SITE_URL}${asPath.split(/[?#]/)[0]}`} />
-        <meta key="og:image" property="og:image" content={`${SITE_URL}/api/og?v=4`} />
+        <meta key="og:image" property="og:image" content={`${SITE_URL}/api/og?v=5`} />
         <meta property="og:image:width" content="1200" />
         <meta property="og:image:height" content="630" />
         <meta key="og:image:alt" property="og:image:alt" content="SixSence, plateforme gaming : « Entre dans l'arène ». Matchs classés MW4 et événements GTA 6." />

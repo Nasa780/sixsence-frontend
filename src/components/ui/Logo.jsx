@@ -2,10 +2,22 @@ import Link from "next/link";
 import { cn } from "../../lib/cn";
 
 /**
- * Emblème : un œil (le "sixième sens") dans un double hexagone (six côtés).
+ * Logo du site : l'œil d'Horus dans un double hexagone (public/images/logo.png, depuis le 2026-10-21).
+ * USE_PNG_LOGO = false : retour à l'ancien emblème SVG (LegacyLogoMark), gardé pour un retour en arrière.
+ */
+const USE_PNG_LOGO = true;
+
+export function LogoMark({ className = "" }) {
+  if (!USE_PNG_LOGO) return <LegacyLogoMark className={className} />;
+  // eslint-disable-next-line @next/next/no-img-element
+  return <img src="/images/logo.png" alt="" aria-hidden width={512} height={512} className={cn("object-contain", className)} />;
+}
+
+/**
+ * Ancien emblème : un œil (le "sixième sens") dans un double hexagone (six côtés).
  * Les nuances d'or suivent la palette de l'univers (or, ou sunset sur GTA).
  */
-export function LogoMark({ className = "" }) {
+function LegacyLogoMark({ className = "" }) {
   return (
     <svg viewBox="0 0 64 64" fill="none" aria-hidden className={className}>
       <path d="M32 4 56.25 18v28L32 60 7.75 46V18L32 4Z" stroke="currentColor" strokeWidth="3" strokeLinejoin="round" />
