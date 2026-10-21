@@ -15,6 +15,7 @@ import { Avatar } from "../ui/Avatar";
 import { Button } from "../ui/Button";
 import { Container } from "../ui/Container";
 import { InstallButton } from "../ui/InstallButton";
+import { GlobalSearch } from "./GlobalSearch";
 import { Logo } from "../ui/Logo";
 
 /** Sous-menu de MW4 (Classé, Division, Tournoi) masqué provisoirement (2026-10-21) : passer à true pour le remettre. */
@@ -139,6 +140,7 @@ export function Navbar() {
           </nav>
 
           <div className="flex items-center gap-2">
+            <GlobalSearch />
             <InstallButton variant="nav" />
             {/* Zone de largeur fixe pendant le chargement : évite que la barre ne saute. */}
             <div className="hidden min-w-[9rem] justify-end sm:flex">
