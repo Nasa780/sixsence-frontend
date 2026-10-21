@@ -2,6 +2,7 @@ import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
 import { LuArrowRight } from "react-icons/lu";
 import { api } from "../../lib/api";
+import { supabase } from "../../lib/supabase";
 import { MATCH_TEAM_ENABLED } from "../../lib/config";
 import useSeasons from "../../hooks/useSeasons";
 import useSiteStats, { formatCount } from "../../hooks/useSiteStats";
@@ -19,13 +20,13 @@ export function LiveBoard() {
   const { label } = useSeasons();
   const [teams, setTeams] = useState(null);
 
-  // Compteurs de la Division (équipes actives, équipes en recherche), rafraîchis toutes les 30 s.
+  // Compteurs de la Division (équipes actives, matchs en cours, matchs terminés), rafraîchis toutes les 30 s.
   useEffect(() => {
     if (!MATCH_TEAM_ENABLED) return undefined;
     let alive = true;
     const load = () =>
-      api("/teams/status")
-        .then((data) => alive && setTeams(data))
+      Promise.all([api("/teams/status"), supabase.from("team_matches").select("id", { count: "exact", head: true }).eq("status", "completed")])
+        .then(([status, played]) => alive && setTeams({ ...status, matchesPlayed: played.count ?? 0 }))
         .catch(() => {});
     load();
     const timer = setInterval(load, 30_000);
@@ -59,7 +60,6 @@ export function LiveBoard() {
                   </span>
                   En ligne maintenant
                 </p>
-                <p className="mt-1.5 text-xs text-white/40">Visiteurs sur le site en ce moment</p>
               </div>
               <div className="flex items-end gap-4">
                 <span aria-hidden className="hidden h-8 items-end gap-[3px] sm:flex">
@@ -73,18 +73,13 @@ export function LiveBoard() {
               </div>
             </div>
             <dl className="grid grid-cols-2 gap-px bg-white/10">
-              <Counter label="Joueurs inscrits" value={stats?.players} hint="Comptes Discord" />
-              <Counter label="Matchs joués" value={stats?.matchesPlayed} hint="En classé" accent />
-              <Counter label="En file" value={stats?.playersInQueue} hint="Joueurs en recherche" />
-              <Counter label="Matchs en cours" value={(stats?.matchesInProgress ?? 0) + (teams?.matchesInProgress ?? 0)} hint="Classé et Division" ready={Boolean(stats)} />
+              <Counter label="Joueurs inscrits" value={stats?.players} />
+              {/* Matchs joués : classé et Division réunis. */}
+              <Counter label="Matchs joués" value={(stats?.matchesPlayed ?? 0) + (teams?.matchesPlayed ?? 0)} ready={Boolean(stats)} accent />
+              <Counter label="En file" value={stats?.playersInQueue} />
+              <Counter label="Matchs en cours" value={(stats?.matchesInProgress ?? 0) + (teams?.matchesInProgress ?? 0)} ready={Boolean(stats)} />
               {MATCH_TEAM_ENABLED ? (
-                <Counter
-                  label="Équipes en Division"
-                  value={teams?.activeTeams}
-                  hint={teams ? `${teams.teamsSearching} en recherche de match` : null}
-                  univers="division"
-                  wide
-                />
+                <Counter label="Équipes en Division" value={teams?.activeTeams} univers="division" wide />
               ) : null}
             </dl>
           </div>
@@ -158,14 +153,13 @@ function CountUp({ value }) {
   return shown === null ? "—" : formatCount(shown);
 }
 
-/** Une case du panneau : petite légende, grand chiffre, précision ; trait de couleur au survol. */
-function Counter({ label, value, hint = null, accent = false, wide = false, ready = true, univers = undefined }) {
+/** Une case du panneau : petite légende et grand chiffre ; trait de couleur au survol. */
+function Counter({ label, value, accent = false, wide = false, ready = true, univers = undefined }) {
   return (
     <div data-univers={univers} className={`group relative bg-ink px-6 py-5 transition-colors hover:bg-ink-800 ${wide ? "col-span-2" : ""}`}>
       <span aria-hidden className={`absolute inset-y-0 left-0 w-0.5 transition-colors ${accent || univers ? "bg-gold" : "bg-transparent group-hover:bg-gold/60"}`} />
       <dt className="min-h-[2.6em] font-tech text-[10px] uppercase leading-snug tracking-[0.2em] text-white/45 sm:min-h-0">{label}</dt>
       <dd className={`mt-2 font-display text-4xl font-black leading-none tabular-nums ${accent || univers ? "text-gold" : "text-white"}`}>{ready ? <CountUp value={value} /> : "—"}</dd>
-      {hint ? <p className="mt-1.5 text-xs text-white/40">{hint}</p> : null}
     </div>
   );
 }
