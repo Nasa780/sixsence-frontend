@@ -43,7 +43,7 @@ export default function TeamInvitePage({ code, initialTeam }) {
       meta={{
         title: team ? `Rejoins [${team.tag}] ${team.name}` : "Invitation d'équipe",
         description: team
-          ? `Invitation à rejoindre [${team.tag}] ${team.name} en Division sur SixSence : ${team.members.length} / ${TEAM_LIMITS.maxMembers} joueurs, ${team.points} pts.`
+          ? `Invitation à rejoindre [${team.tag}] ${team.name} en Division : ${team.members.length} / ${TEAM_LIMITS.maxMembers} joueurs, ${team.points} pts.`
           : "Invitation à rejoindre une équipe de Division sur SixSence.",
       }}
       hero={{
