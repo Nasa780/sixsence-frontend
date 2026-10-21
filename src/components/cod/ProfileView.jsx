@@ -321,10 +321,13 @@ export function ProfileView({ userId, editable = false, ownUser = null }) {
               <SlantTab active={historyTab === "division"} onClick={() => setHistoryTab("division")}>
                 Division
               </SlantTab>
+              <SlantTab active={historyTab === "tournoi"} onClick={() => setHistoryTab("tournoi")}>
+                Tournoi
+              </SlantTab>
             </div>
           ) : null}
-          {historyTab === "division" ? (
-            <DivisionHistory playerId={player.id} />
+          {historyTab === "division" || historyTab === "tournoi" ? (
+            <DivisionHistory key={historyTab} playerId={player.id} tournament={historyTab === "tournoi"} />
           ) : (
           <div className="mt-6">
             {history.length === 0 ? (
@@ -400,13 +403,14 @@ export function ProfileView({ userId, editable = false, ownUser = null }) {
 }
 
 /** Matchs de Division joués par le joueur (joueur du match) : équipe, adversaire, maps, points de l'équipe, XP. */
-function DivisionHistory({ playerId }) {
+/** Matchs d'équipe du joueur : Division (hors coupes) ou Tournoi (coupes Horus, Anubis et tournoi de saison). */
+function DivisionHistory({ playerId, tournament = false }) {
   const [matches, setMatches] = useState(null);
   useEffect(() => {
     let alive = true;
     setMatches(null);
     api(`/teams/players/${playerId}/matches`)
-      .then((data) => alive && setMatches(data.matches))
+      .then((data) => alive && setMatches(data.matches.filter((match) => Boolean(match.tournament) === tournament)))
       .catch(() => alive && setMatches([]));
     return () => {
       alive = false;
@@ -416,7 +420,11 @@ function DivisionHistory({ playerId }) {
   if (matches === null) return <p className="mt-6 text-sm text-white/45">Chargement…</p>;
   if (matches.length === 0) return (
       <div className="mt-6">
-        <EmptyState title="Aucun match de Division">Les matchs joués avec une équipe apparaîtront ici.</EmptyState>
+        {tournament ? (
+          <EmptyState title="Aucun match de tournoi">Les matchs des coupes Horus et Anubis et du tournoi de saison apparaîtront ici.</EmptyState>
+        ) : (
+          <EmptyState title="Aucun match de Division">Les matchs joués avec une équipe apparaîtront ici.</EmptyState>
+        )}
       </div>
     );
   return (
@@ -444,7 +452,7 @@ function DivisionHistory({ playerId }) {
                 <p className="mt-1 truncate text-xs text-white/45">
                   Avec <span className="normal-case">[{match.team?.tag}]</span> · {done ? `${match.mapsFor} – ${match.mapsAgainst}` : "BO3"}
                   {match.forfeit ? " · par forfait" : ""}
-                  {match.tournament ? " · Tournoi" : ""} · {new Date(match.date).toLocaleDateString("fr-FR", { day: "numeric", month: "short" })}
+                  {" · "}{new Date(match.date).toLocaleDateString("fr-FR", { day: "numeric", month: "short" })}
                 </p>
               </div>
               {done ? (

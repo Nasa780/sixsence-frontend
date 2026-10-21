@@ -8,8 +8,13 @@ import { PageHeader } from "../../components/ui/Typography";
 import useSeasons from "../../hooks/useSeasons";
 import useSession from "../../hooks/useSession";
 import { api } from "../../lib/api";
-import { MATCH_TEAM_ENABLED } from "../../lib/config";
+import { MATCH_TEAM_ENABLED, MY_MATCHES_ENABLED } from "../../lib/config";
 import { supabase } from "../../lib/supabase";
+
+/** Page mise de côté (MY_MATCHES_ENABLED) : 404 tant qu'elle est désactivée. */
+export function getStaticProps() {
+  return MY_MATCHES_ENABLED ? { props: {} } : { notFound: true };
+}
 
 /**
  * Mes matchs : tous les matchs du joueur connecté au même endroit (Classé, Division, coupes), match en

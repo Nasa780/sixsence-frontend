@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { FaDiscord } from "react-icons/fa6";
-import { DISCORD_INVITE_URL, MATCH_TEAM_ENABLED } from "../../lib/config";
+import { DISCORD_INVITE_URL, MATCH_TEAM_ENABLED, MY_MATCHES_ENABLED } from "../../lib/config";
 import { Container } from "../ui/Container";
 import { Logo } from "../ui/Logo";
 
@@ -24,7 +24,7 @@ const COLUMNS = [
     title: "SixSence",
     links: [
       { href: "/cod/profile", label: "Mon profil" },
-      { href: "/cod/matchs", label: "Mes matchs" },
+      ...(MY_MATCHES_ENABLED ? [{ href: "/cod/matchs", label: "Mes matchs" }] : []),
       { href: "/calendrier", label: "Calendrier" },
       { href: "/reglement", label: "Règlement" },
       { href: "/founders", label: "Fondateurs" },

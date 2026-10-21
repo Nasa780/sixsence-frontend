@@ -31,6 +31,9 @@ export const MATCH_TEAM_ENABLED = process.env.NEXT_PUBLIC_MATCH_TEAM !== "off";
  * Groupes du classé (jouer à plusieurs dans la même équipe) : coupés, le classé se joue en solo.
  * NEXT_PUBLIC_GROUPS=on les remet (avec COD_GROUPS=on sur Render) ; les textes du site décrivent le solo.
  */
+/** Page « Mes matchs » (/cod/matchs) mise de côté le 2026-10-21 : historique sur le profil à la place. true pour la remettre (liens compris). */
+export const MY_MATCHES_ENABLED = false;
+
 export const GROUPS_ENABLED = process.env.NEXT_PUBLIC_GROUPS === "on";
 
 /** Adresse WebSocket du backend (file d'attente en temps réel). */

@@ -4,7 +4,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { LuClock, LuCornerDownLeft, LuFileText, LuLoaderCircle, LuSearch, LuX } from "react-icons/lu";
 import { api } from "../../lib/api";
 import { cn } from "../../lib/cn";
-import { MATCH_TEAM_ENABLED } from "../../lib/config";
+import { MATCH_TEAM_ENABLED, MY_MATCHES_ENABLED } from "../../lib/config";
 import { rankFor } from "../../lib/ranks";
 import { TeamCrest } from "../teams/TeamParts";
 import { Avatar } from "../ui/Avatar";
@@ -14,7 +14,7 @@ const PAGES = [
   { href: "/admin", label: "Administration", keywords: "admin contestations signalements sanctions" },
   { href: "/cod/ranked", label: "File classée", keywords: "classe jouer file recherche" },
   { href: "/cod/leaderboard", label: "Classement", keywords: "classement joueurs top" },
-  { href: "/cod/matchs", label: "Mes matchs", keywords: "historique matchs" },
+  ...(MY_MATCHES_ENABLED ? [{ href: "/cod/matchs", label: "Mes matchs", keywords: "historique matchs" }] : []),
   { href: "/cod/profile", label: "Mon profil", keywords: "profil compte activision" },
   ...(MATCH_TEAM_ENABLED
     ? [
