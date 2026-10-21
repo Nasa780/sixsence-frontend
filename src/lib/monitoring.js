@@ -11,6 +11,9 @@ import { API_URL } from "./config";
 const MAX_REPORTS = 5;
 const sent = new Set();
 
+/** Site lancé en local (développement) : ses erreurs ne partent jamais sur Discord. */
+const isLocal = () => ["localhost", "127.0.0.1", "[::1]"].includes(window.location.hostname);
+
 /** « Chrome · Android », « Safari · iPhone »… */
 function browserName() {
   const ua = navigator.userAgent;
@@ -36,7 +39,7 @@ function browserName() {
 export function reportClientError(error, where) {
   try {
     const message = error instanceof Error ? `${error.name}: ${error.message}` : String(error ?? "Erreur inconnue");
-    if (sent.size >= MAX_REPORTS || sent.has(message)) return;
+    if (isLocal() || sent.size >= MAX_REPORTS || sent.has(message)) return;
     sent.add(message);
     fetch(`${API_URL}/errors`, {
       method: "POST",
@@ -57,7 +60,7 @@ let installed = false;
 
 /** Écoute les erreurs non rattrapées de la page (appelé une fois, dans _app). */
 export function installErrorReporting() {
-  if (installed || typeof window === "undefined" || window.location.hostname === "localhost") return;
+  if (installed || typeof window === "undefined" || isLocal()) return;
   installed = true;
   window.addEventListener("error", (event) => {
     // Erreurs de chargement de ressources (image, script tiers) : ignorées.
