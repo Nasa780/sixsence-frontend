@@ -17,13 +17,16 @@ import { Container } from "../ui/Container";
 import { InstallButton } from "../ui/InstallButton";
 import { Logo } from "../ui/Logo";
 
+/** Sous-menu de MW4 (Classé, Division, Tournoi) masqué provisoirement (2026-10-21) : passer à true pour le remettre. */
+const SHOW_MW4_SUBMENU = false;
+
 const LINKS = [
   { href: "/", label: "Accueil" },
   {
     href: "/cod",
     label: "MW4",
     // Les trois sections COD (seulement si la Division est active).
-    children: MATCH_TEAM_ENABLED && [
+    children: SHOW_MW4_SUBMENU && MATCH_TEAM_ENABLED && [
       { href: "/cod/ranked", label: "Classé", univers: "classe", icon: LuCrosshair, color: "#34d399" },
       { href: "/cod/division", label: "Division", univers: "division", icon: LuShield, color: "#22d3ee" },
       { href: "/cod/tournoi", label: "Tournoi", univers: "tournoi", icon: LuTrophy, color: "#e5484d" },
