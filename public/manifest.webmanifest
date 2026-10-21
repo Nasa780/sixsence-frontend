@@ -12,13 +12,13 @@
   "categories": ["games", "sports", "social"],
   "related_applications": [{ "platform": "webapp", "url": "https://www.sixsence.fr/manifest.webmanifest" }],
   "icons": [
-    { "src": "/icons/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
-    { "src": "/icons/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
-    { "src": "/icons/icon-maskable-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+    { "src": "/icons/icon-192-v2.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "/icons/icon-512-v2.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+    { "src": "/icons/icon-maskable-512-v2.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
   ],
   "shortcuts": [
-    { "name": "File classée", "url": "/cod/ranked?source=raccourci", "icons": [{ "src": "/icons/icon-192.png", "sizes": "192x192" }] },
-    { "name": "Classement", "url": "/cod/leaderboard?source=raccourci", "icons": [{ "src": "/icons/icon-192.png", "sizes": "192x192" }] },
-    { "name": "Mon profil", "url": "/cod/profile?source=raccourci", "icons": [{ "src": "/icons/icon-192.png", "sizes": "192x192" }] }
+    { "name": "File classée", "url": "/cod/ranked?source=raccourci", "icons": [{ "src": "/icons/icon-192-v2.png", "sizes": "192x192" }] },
+    { "name": "Classement", "url": "/cod/leaderboard?source=raccourci", "icons": [{ "src": "/icons/icon-192-v2.png", "sizes": "192x192" }] },
+    { "name": "Mon profil", "url": "/cod/profile?source=raccourci", "icons": [{ "src": "/icons/icon-192-v2.png", "sizes": "192x192" }] }
   ]
 }

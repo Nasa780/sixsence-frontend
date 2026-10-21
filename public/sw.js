@@ -24,8 +24,8 @@ self.addEventListener("push", (event) => {
       if (windows.some((client) => client.visibilityState === "visible")) return;
       await self.registration.showNotification(data.title || "SixSence", {
         body: data.body || "",
-        icon: "/icons/icon-192.png",
-        badge: "/icons/icon-192.png",
+        icon: "/icons/icon-192-v2.png",
+        badge: "/icons/icon-192-v2.png",
         tag: data.tag || "sixsence",
         renotify: true,
         requireInteraction: Boolean(data.urgent),

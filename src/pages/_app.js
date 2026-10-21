@@ -61,7 +61,7 @@ export default function App({ Component, pageProps }) {
           content="La plateforme gaming de la communauté : matchs classés Call of Duty MW4 avec matchmaking automatique, classement en direct et saisons, événements GTA 6 avec inscriptions. Gratuit, connexion avec Discord."
         />
         <link rel="icon" href="/favicon.png" type="image/png" sizes="48x48" />
-        <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+        <link rel="apple-touch-icon" href="/apple-touch-icon-v2.png" />
         {/* Appli installable (PWA) : voir public/manifest.webmanifest et public/sw.js. */}
         <link rel="manifest" href="/manifest.webmanifest" />
         <meta name="apple-mobile-web-app-capable" content="yes" />
