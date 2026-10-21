@@ -10,6 +10,9 @@ const nextConfig = {
       { source: "/queue", destination: "/cod/ranked", permanent: false },
       { source: "/profile", destination: "/cod/profile", permanent: false },
       { source: "/profil", destination: "/cod/profile", permanent: false },
+      // Liens d'invitation : une seule forme, /invite/equipe/CODE et /invite/groupe/CODE.
+      { source: "/cod/equipes/rejoindre/:code", destination: "/invite/equipe/:code", permanent: true },
+      { source: "/cod/groupe/:code", destination: "/invite/groupe/:code", permanent: true },
     ];
   },
 

@@ -11,11 +11,13 @@ import { Button, ButtonLink } from "../../components/ui/Button";
 import { ConfirmDialog } from "../../components/ui/ConfirmDialog";
 import { Container } from "../../components/ui/Container";
 import { EmptyState, Loading, Notice } from "../../components/ui/Feedback";
+import { InviteLinkField } from "../../components/ui/InviteLinkField";
 import { LoginPrompt } from "../../components/ui/LoginPrompt";
 import { TacticalCard } from "../../components/ui/TacticalCard";
 import { Eyebrow, PageHeader } from "../../components/ui/Typography";
 import useSession from "../../hooks/useSession";
 import { api } from "../../lib/api";
+import { inviteUrl } from "../../lib/invites";
 import { cn } from "../../lib/cn";
 import { rankFor, rankGradient } from "../../lib/ranks";
 import { SOCIALS, TEAM_COLORS, TEAM_LIMITS, uploadTeamImage } from "../../lib/teams";
@@ -618,7 +620,6 @@ function Recruitment({ team, state, reload }) {
 /** Lien d'invitation (Leader) : à partager à ses mates, qui rejoignent l'équipe en un clic ; « Nouveau lien » coupe l'ancien. */
 function InviteLinkCard({ team }) {
   const [code, setCode] = useState(null);
-  const [copied, setCopied] = useState(false);
   const [pending, setPending] = useState(false);
   const [error, setError] = useState(null);
 
@@ -627,18 +628,6 @@ function InviteLinkCard({ team }) {
       .then((data) => setCode(data.code))
       .catch((caught) => setError(caught.message));
   }, [team.id]);
-
-  const url = code && typeof window !== "undefined" ? `${window.location.origin}/cod/equipes/rejoindre/${code}` : "";
-
-  async function copy() {
-    try {
-      await navigator.clipboard.writeText(url);
-      setCopied(true);
-      setTimeout(() => setCopied(false), 1800);
-    } catch {
-      // Presse-papiers indisponible : le lien reste sélectionnable.
-    }
-  }
 
   async function reset() {
     if (!window.confirm("Créer un nouveau lien ? L'ancien ne fonctionnera plus.")) return;
@@ -653,21 +642,13 @@ function InviteLinkCard({ team }) {
   }
 
   return (
-    <div className="space-y-2 border border-gold/30 bg-gold/[0.05] p-4">
-      <p className="font-tech text-[10px] uppercase tracking-[0.24em] text-gold">Lien d&apos;invitation</p>
-      <p className="text-sm text-white/60">Envoie ce lien à tes mates ; ils rejoignent l&apos;équipe en un clic, sans attendre de validation.</p>
-      {error ? <Notice tone="error">{error}</Notice> : null}
-      <div className="flex flex-col gap-2 sm:flex-row">
-        <input readOnly value={url || "Chargement…"} onFocus={(event) => event.target.select()} className={cn(fieldClass, "font-tech text-xs")} aria-label="Lien d'invitation" />
-        <Button size="sm" onClick={copy} disabled={!url} className="shrink-0">
-          {copied ? <LuCheck aria-hidden className="h-4 w-4" /> : null}
-          {copied ? "Copié" : "Copier"}
-        </Button>
-        <Button size="sm" variant="ghost" onClick={reset} disabled={!url || pending} className="shrink-0">
-          Nouveau lien
-        </Button>
-      </div>
-    </div>
+    <InviteLinkField
+      url={inviteUrl("equipe", code)}
+      text="Envoie ce lien à tes mates ; ils rejoignent l'équipe en un clic, sans attendre de validation."
+      onReset={reset}
+      resetting={pending}
+      error={error}
+    />
   );
 }
 
