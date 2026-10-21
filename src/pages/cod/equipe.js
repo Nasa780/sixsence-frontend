@@ -3,7 +3,8 @@ import Link from "next/link";
 import { useRouter } from "next/router";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { LuCheck, LuCrown, LuExternalLink, LuImagePlus, LuLoaderCircle, LuPlus, LuSearch, LuUserPlus, LuX } from "react-icons/lu";
-import { TeamActivity, TeamHero, TeamKpis, TeamMatchTimeline, TeamRecent, TeamRecords, TeamRival, TeamStandouts, memberBadges, memberLine, useTeamInsights } from "../../components/teams/TeamOverview";
+import { TeamActivity, TeamGoals, TeamHero, TeamMatchTimeline, TeamRecent, TeamRecords, TeamRival, TeamStandouts, TeamWeekly, memberBadges, memberLine, useTeamInsights } from "../../components/teams/TeamOverview";
+import { TeamStats } from "../../components/teams/TeamStats";
 import { MemberRow, RosterHeading, SlantTab, TeamCrest, fieldClass, labelClass } from "../../components/teams/TeamParts";
 import { Avatar } from "../../components/ui/Avatar";
 import { Button, ButtonLink } from "../../components/ui/Button";
@@ -290,14 +291,13 @@ function ManageTeam({ state, userId, reload, created, onLeft }) {
       ) : null}
 
       {tab === "equipe" ? (
-        <div className="space-y-14">
-          {/* Chiffres clés (sans répéter la bannière), puis le fil des matchs de la saison. */}
-          <TeamKpis team={team} insights={insights} />
-          <TeamMatchTimeline insights={insights} />
-
-          {/* Effectif à gauche ; à droite le rival, les records et les joueurs clés. */}
-          <div className="grid gap-10 lg:grid-cols-[minmax(0,1.6fr)_minmax(0,1fr)]">
-            <section aria-label="Effectif">
+        <div className="space-y-16">
+          {/* 1. Statistiques, effectif, puis le fil des matchs de la saison. */}
+          <TeamStats teamId={team.id} />
+          {/* Effectif et joueurs clés regroupés : qui joue, qui brille, les rôles. */}
+          <div className="grid gap-10 lg:grid-cols-[2fr_1fr]">
+            <section aria-label="Effectif" className="space-y-10">
+              <div>
               <RosterHeading title="Effectif" count={team.members.length} max={TEAM_LIMITS.maxMembers} gold />
               <ul className="mt-3 space-y-2">
                 {team.members.map((member) => (
@@ -316,22 +316,10 @@ function ManageTeam({ state, userId, reload, created, onLeft }) {
                   </MemberRow>
                 ))}
               </ul>
+              </div>
+              <TeamStandouts team={team} insights={insights} />
             </section>
-            <aside className="space-y-4">
-              <TeamRival insights={insights} />
-              <TeamRecords insights={insights} />
-              <TeamStandouts team={team} insights={insights} compact />
-            </aside>
-          </div>
-
-          {/* Derniers matchs à gauche, journal d'activité à droite. */}
-          <div className="grid gap-10 lg:grid-cols-[minmax(0,1.6fr)_minmax(0,1fr)]">
-            <TeamRecent insights={insights} />
-            <TeamActivity team={team} insights={insights} limit={6} />
-          </div>
-
-          {/* Mon rôle et zone sensible, côte à côte en bas de page. */}
-          <div className="grid gap-4 md:grid-cols-2">
+            <aside className="space-y-6">
             <TacticalCard innerClassName="space-y-3 p-6">
               <Eyebrow>Mon rôle</Eyebrow>
               <p className="flex items-center gap-2 font-display text-2xl font-black uppercase leading-none">
@@ -346,6 +334,29 @@ function ManageTeam({ state, userId, reload, created, onLeft }) {
                     : "Les Leaders gèrent l'effectif et les invitations."}
               </p>
             </TacticalCard>
+            </aside>
+          </div>
+
+          <TeamMatchTimeline insights={insights} />
+
+          {/* 2. Derniers matchs ; à droite, la semaine, le rival et les records. */}
+          <div className="grid gap-10 lg:grid-cols-[minmax(0,1fr)_22rem]">
+            <TeamRecent insights={insights} />
+            <aside className="space-y-4">
+              <TeamWeekly insights={insights} />
+              <TeamRival insights={insights} />
+              <TeamRecords insights={insights} />
+            </aside>
+          </div>
+
+          {/* 3. Objectifs et journal d'activité. */}
+          <div className="grid gap-10 lg:grid-cols-2">
+            <TeamGoals team={team} insights={insights} compact />
+            <TeamActivity team={team} insights={insights} />
+          </div>
+
+          {/* 4. Zone sensible, tout en bas. */}
+          <div className="max-w-md">
             <TacticalCard innerClassName="space-y-3 p-6">
               <Eyebrow>Zone sensible</Eyebrow>
               {me.crown && others.length > 0 ? (
