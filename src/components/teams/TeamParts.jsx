@@ -132,7 +132,8 @@ export function TeamTag({ team, link = true, className = "" }) {
   if (!team) return null;
   const classes = cn("shrink-0 font-tech text-[11px] font-bold normal-case tracking-[0.16em]", link && "hover:underline", className);
   const label = `[${team.tag}]`;
-  return link ? (
+  // Équipe d'une Coupe Anubis (formée pour la soirée) : pas de fiche.
+  return link && !team.cup ? (
     <Link href={`/cod/equipes/${team.id}`} title={team.name} className={classes} style={{ color: team.color }}>
       {label}
     </Link>

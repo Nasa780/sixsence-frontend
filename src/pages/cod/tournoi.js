@@ -4,6 +4,7 @@ import { useRouter } from "next/router";
 import { useCallback, useEffect, useState } from "react";
 import { LuCheck, LuCrown, LuLoaderCircle, LuTrophy, LuUserMinus, LuUserPlus } from "react-icons/lu";
 import { SlantTab, TeamCrest } from "../../components/teams/TeamParts";
+import { AnubisCup, AnubisTeaser } from "../../components/tournament/AnubisCup";
 import { Avatar } from "../../components/ui/Avatar";
 import { Button, ButtonLink } from "../../components/ui/Button";
 import { Container } from "../../components/ui/Container";
@@ -34,14 +35,16 @@ const PODIUM = [
 ];
 
 /**
- * Tournois de la Division : Coupe Horus (coupes d'équipe à inscription libre, ?coupe=saison pour l'autre
- * onglet) et tournoi de fin de saison (qualification par le classement). Inscription, check-in, tableau en
- * direct (petite finale comprise), podium. Public.
+ * Tournois : Coupe Horus (coupes d'équipe à inscription libre), Coupe Anubis (?coupe=anubis : inscription
+ * solo, équipes tirées au sort, médailles) et tournoi de fin de saison (?coupe=saison : qualification par le
+ * classement). Inscription, check-in, tableau en direct (petite finale comprise), podium. Public.
  */
 export default function TournamentPage() {
   const router = useRouter();
-  const kind = router.query.coupe === "saison" ? "saison" : "horus";
+  const kind = router.query.coupe === "saison" || router.query.coupe === "anubis" ? router.query.coupe : "horus";
   const horus = kind === "horus";
+  const anubis = kind === "anubis";
+  const tab = (coupe) => router.replace({ pathname: router.pathname, query: coupe ? { coupe } : {} }, undefined, { shallow: true });
   const { userId } = useSession();
   const [tournament, setTournament] = useState(undefined);
   const [error, setError] = useState(null);
@@ -90,25 +93,31 @@ export default function TournamentPage() {
   return (
     <>
       <Head>
-        <title>{tournament ? `${tournament.name} — SixSence` : horus ? "Coupe Horus — SixSence" : "Tournoi — SixSence"}</title>
+        <title>{tournament ? `${tournament.name} — SixSence` : horus ? "Coupe Horus — SixSence" : anubis ? "Coupe Anubis — SixSence" : "Tournoi — SixSence"}</title>
         <meta
           name="description"
           content={
             horus
               ? "Coupe Horus de SixSence : coupes d'équipe ouvertes à l'inscription, trophées or, argent, bronze et points de Division."
-              : "Tournoi de fin de saison de SixSence : les meilleures équipes s'affrontent en BO3, finale en BO5."
+              : anubis
+                ? "Coupe Anubis de SixSence : inscris-toi seul, les équipes sont tirées au sort. Médailles or, argent et bronze."
+                : "Tournoi de fin de saison de SixSence : les meilleures équipes s'affrontent en BO3, finale en BO5."
           }
         />
       </Head>
       <PageHeader
         image="/images/mw4.webp"
-        eyebrow={horus ? "Tournoi · Coupe Horus" : "Tournoi · Fin de saison"}
+        eyebrow={horus ? "Tournoi · Coupe Horus" : anubis ? "Tournoi · Coupe Anubis" : "Tournoi · Fin de saison"}
         title={
           tournament ? (
             tournament.name
           ) : horus ? (
             <>
               Coupe <span className="text-gold-gradient">Horus</span>
+            </>
+          ) : anubis ? (
+            <>
+              Coupe <span className="text-gold-gradient">Anubis</span>
             </>
           ) : (
             <>
@@ -117,11 +126,15 @@ export default function TournamentPage() {
           )
         }
         description={
-          tournament
+          tournament?.kind === "anubis"
+            ? `Inscription solo · équipes de ${tournament.teamSize} tirées au sort · ${tournament.status === "completed" ? "terminée" : dateFr(tournament.startsAt)}`
+            : tournament
             ? `${tournament.teams.length} équipe${tournament.teams.length > 1 ? "s" : ""} · BO${tournament.bestOf}, finale en BO${tournament.finalBestOf} · ${tournament.status === "completed" ? "terminé" : dateFr(tournament.startsAt)}`
             : horus
               ? "Les coupes d'équipe ouvertes à tous : inscris ton équipe, gagne un trophée et des points de Division."
-              : `Les meilleures équipes du classement (${TEAM_LIMITS.qualifyMatches} matchs minimum) s'affrontent à la fin de la saison.`
+              : anubis
+                ? "La coupe en solo : inscris-toi seul, le site forme les équipes au hasard. Médailles or, argent et bronze."
+                : `Les meilleures équipes du classement (${TEAM_LIMITS.qualifyMatches} matchs minimum) s'affrontent à la fin de la saison.`
         }
         actions={
           <ButtonLink href="/cod/equipes" variant="outline">
@@ -131,18 +144,32 @@ export default function TournamentPage() {
       />
       <Container className="space-y-10 py-12">
         <div role="tablist" aria-label="Tournois" className="flex gap-2 overflow-x-auto pb-1">
-          <SlantTab active={horus} onClick={() => router.replace({ pathname: router.pathname }, undefined, { shallow: true })}>
+          <SlantTab active={horus} onClick={() => tab(null)}>
             Coupe Horus
           </SlantTab>
-          <SlantTab active={!horus} onClick={() => router.replace({ pathname: router.pathname, query: { coupe: "saison" } }, undefined, { shallow: true })}>
+          <SlantTab active={anubis} onClick={() => tab("anubis")}>
+            Coupe Anubis
+          </SlantTab>
+          <SlantTab active={kind === "saison"} onClick={() => tab("saison")}>
             Fin de saison
           </SlantTab>
         </div>
         {error ? <Notice tone="error">{error}</Notice> : null}
         {tournament === undefined && !error ? <Loading /> : null}
-        {tournament === null ? <TournamentTeaser horus={horus} /> : null}
+        {tournament === null ? anubis ? <AnubisTeaser /> : <TournamentTeaser horus={horus} /> : null}
 
-        {tournament ? (
+        {tournament?.kind === "anubis" ? (
+          <AnubisCup
+            tournament={tournament}
+            userId={userId}
+            now={now}
+            countdown={(target) => countdown(target, now)}
+            onDone={load}
+            bracket={<Bracket tournament={tournament} myTeamId={tournament.viewer?.teamId} />}
+          />
+        ) : null}
+
+        {tournament && tournament.kind !== "anubis" ? (
           <>
             {tournament.status === "completed" && tournament.winner && tournament.kind === "horus" ? (
               <ol className="grid gap-3 sm:grid-cols-3">

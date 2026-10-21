@@ -159,9 +159,13 @@ function TeamSide({ team, side, winner, change, host = false, right = false }) {
         <TeamCrest team={team} size={64} />
       </span>
       <div className="min-w-0">
-        <Link href={`/cod/equipes/${team?.id}`} className={cn("block break-words font-display text-2xl font-black uppercase leading-none hover:text-gold sm:text-4xl", side === "A" && "text-gold")}>
-          {team?.name}
-        </Link>
+        {team?.cup ? (
+          <p className={cn("block break-words font-display text-2xl font-black uppercase leading-none sm:text-4xl", side === "A" && "text-gold")}>{team?.name}</p>
+        ) : (
+          <Link href={`/cod/equipes/${team?.id}`} className={cn("block break-words font-display text-2xl font-black uppercase leading-none hover:text-gold sm:text-4xl", side === "A" && "text-gold")}>
+            {team?.name}
+          </Link>
+        )}
         <p className="mt-1 font-tech text-xs uppercase tracking-[0.2em] text-white/45">
           <span className="normal-case">[{team?.tag}]</span>
           {winner === side ? <LuCrown aria-label="Vainqueur" className="ml-2 inline h-3.5 w-3.5 text-gold" /> : null}
