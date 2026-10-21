@@ -208,7 +208,7 @@ function NoTeam({ state, reload }) {
 function ManageTeam({ state, userId, reload, created, onLeft }) {
   const { team, me } = state;
   const isLeader = me.crown || me.role === "leader";
-  const [tab, setTab] = useState("equipe");
+  const [tab, setTab] = useState("apercu");
   const insights = useTeamInsights(team);
   const [confirm, setConfirm] = useState(null);
   const [pending, setPending] = useState(false);
@@ -273,11 +273,16 @@ function ManageTeam({ state, userId, reload, created, onLeft }) {
 
       <TeamHero team={team} insights={insights} isLeader={isLeader} />
 
-      {/* Onglets seulement pour les Leaders (Recrutement, Apparence) ; les joueurs ont tout sur une page. */}
-      {isLeader ? (
-      <div role="tablist" aria-label="Gestion de l'équipe" className="flex gap-2 overflow-x-auto pb-1">
-        <SlantTab active={tab === "equipe"} onClick={() => setTab("equipe")}>
-          Équipe
+      {/* Catégories : Vue d'ensemble, Effectif, Matchs ; Recrutement et Apparence pour les Leaders. */}
+      <div role="tablist" aria-label="Mon équipe" className="flex gap-2 overflow-x-auto pb-1">
+        <SlantTab active={tab === "apercu"} onClick={() => setTab("apercu")}>
+          Vue d&apos;ensemble
+        </SlantTab>
+        <SlantTab active={tab === "effectif"} onClick={() => setTab("effectif")}>
+          Effectif · {team.members.length}
+        </SlantTab>
+        <SlantTab active={tab === "matchs"} onClick={() => setTab("matchs")}>
+          Matchs
         </SlantTab>
         {isLeader ? (
           <SlantTab active={tab === "recrutement"} onClick={() => setTab("recrutement")}>
@@ -290,16 +295,28 @@ function ManageTeam({ state, userId, reload, created, onLeft }) {
           </SlantTab>
         ) : null}
       </div>
+
+      {tab === "apercu" ? (
+        <div className="space-y-14">
+          {/* Statistiques et objectifs ; journal d'activité avec, à droite, la semaine, le rival et les records. */}
+          <TeamStats teamId={team.id} />
+          <TeamGoals team={team} insights={insights} />
+          <div className="grid gap-10 lg:grid-cols-[minmax(0,1fr)_22rem]">
+            <TeamActivity team={team} insights={insights} />
+            <aside className="space-y-4">
+              <TeamWeekly insights={insights} />
+              <TeamRival insights={insights} />
+              <TeamRecords insights={insights} />
+            </aside>
+          </div>
+        </div>
       ) : null}
 
-      {tab === "equipe" ? (
-        <div className="space-y-16">
-          {/* 1. Statistiques, effectif, puis le fil des matchs de la saison. */}
-          <TeamStats teamId={team.id} />
-          {/* Effectif et joueurs clés regroupés : qui joue, qui brille, les rôles. */}
-          <div className="grid gap-10 lg:grid-cols-[2fr_1fr]">
-            <section aria-label="Effectif" className="space-y-10">
-              <div>
+      {tab === "effectif" ? (
+        <div className="grid gap-10 lg:grid-cols-[2fr_1fr]">
+          {/* Effectif et joueurs clés ; à droite, mon rôle et la zone sensible. */}
+          <section aria-label="Effectif" className="space-y-10">
+            <div>
               <RosterHeading title="Effectif" count={team.members.length} max={TEAM_LIMITS.maxMembers} gold />
               <ul className="mt-3 space-y-2">
                 {team.members.map((member) => (
@@ -318,10 +335,10 @@ function ManageTeam({ state, userId, reload, created, onLeft }) {
                   </MemberRow>
                 ))}
               </ul>
-              </div>
-              <TeamStandouts team={team} insights={insights} />
-            </section>
-            <aside className="space-y-6">
+            </div>
+            <TeamStandouts team={team} insights={insights} />
+          </section>
+          <aside className="space-y-6">
             <TacticalCard innerClassName="space-y-3 p-6">
               <Eyebrow>Mon rôle</Eyebrow>
               <p className="flex items-center gap-2 font-display text-2xl font-black uppercase leading-none">
@@ -336,29 +353,6 @@ function ManageTeam({ state, userId, reload, created, onLeft }) {
                     : "Les Leaders gèrent l'effectif et les invitations."}
               </p>
             </TacticalCard>
-            </aside>
-          </div>
-
-          <TeamMatchTimeline insights={insights} />
-
-          {/* 2. Derniers matchs ; à droite, la semaine, le rival et les records. */}
-          <div className="grid gap-10 lg:grid-cols-[minmax(0,1fr)_22rem]">
-            <TeamRecent insights={insights} />
-            <aside className="space-y-4">
-              <TeamWeekly insights={insights} />
-              <TeamRival insights={insights} />
-              <TeamRecords insights={insights} />
-            </aside>
-          </div>
-
-          {/* 3. Objectifs et journal d'activité. */}
-          <div className="grid gap-10 lg:grid-cols-2">
-            <TeamGoals team={team} insights={insights} compact />
-            <TeamActivity team={team} insights={insights} />
-          </div>
-
-          {/* 4. Zone sensible, tout en bas. */}
-          <div className="max-w-md">
             <TacticalCard innerClassName="space-y-3 p-6">
               <Eyebrow>Zone sensible</Eyebrow>
               {me.crown && others.length > 0 ? (
@@ -379,7 +373,15 @@ function ManageTeam({ state, userId, reload, created, onLeft }) {
               ) : null}
               <p className="text-xs text-white/45">Après un départ, il faut attendre {24} h avant de rejoindre une autre équipe.</p>
             </TacticalCard>
-          </div>
+          </aside>
+        </div>
+      ) : null}
+
+      {tab === "matchs" ? (
+        <div className="space-y-14">
+          {/* Fil des matchs de la saison, puis les derniers matchs (dépliables). */}
+          <TeamMatchTimeline insights={insights} />
+          <TeamRecent insights={insights} />
         </div>
       ) : null}
 

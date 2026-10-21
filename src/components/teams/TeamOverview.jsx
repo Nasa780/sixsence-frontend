@@ -17,7 +17,7 @@ import { TeamCrest } from "./TeamParts";
  * Données de « Mon équipe » : historique, forme, série, statistiques par joueur (matchs joués et gagnés
  * avec l'équipe) et équipe juste devant au classement. Lectures publiques (API et Supabase).
  */
-export function useTeamInsights(team) {
+export function useTeamInsights(team, { withPlay = true } = {}) {
   const [history, setHistory] = useState(null);
   const [rosters, setRosters] = useState(null);
   const [teams, setTeams] = useState(null);
@@ -38,12 +38,15 @@ export function useTeamInsights(team) {
     api("/teams")
       .then((data) => alive && setTeams(data.teams))
       .catch(() => alive && setTeams([]));
-    api("/teams/me/play")
-      .then((data) => alive && setPlay(data))
-      .catch(() => {});
+    // État « jouer » de son équipe : seulement sur Mon équipe (pas sur la fiche publique d'une autre équipe).
+    if (withPlay)
+      api("/teams/me/play")
+        .then((data) => alive && setPlay(data))
+        .catch(() => {});
     return () => {
       alive = false;
     };
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [team.id]);
 
   return useMemo(() => {
@@ -69,7 +72,11 @@ export function useTeamInsights(team) {
 const winRate = (wins, played) => (played > 0 ? Math.round((wins / played) * 100) : null);
 
 /** Bannière de l'équipe : blason, nom, place, points, bilan, forme, trophées et action du moment. */
-export function TeamHero({ team, insights, isLeader }) {
+/**
+ * Bannière d'équipe (Mon équipe et fiche publique). actions : boutons à la place de « Lancer un match »
+ * (fiche publique) ; subline : ligne d'infos sous les badges ; as : balise du nom (h1 sur la fiche).
+ */
+export function TeamHero({ team, insights, isLeader = false, actions = null, subline = null, as: Title = "h2" }) {
   const rate = winRate(team.wins, team.played);
   const { form, streak, play } = insights;
   const live = play?.activeMatchId;
@@ -97,7 +104,7 @@ export function TeamHero({ team, insights, isLeader }) {
             <p className="font-tech text-xs uppercase tracking-[0.3em]" style={{ color: team.color }}>
               <span className="normal-case">[{team.tag}]</span>
             </p>
-            <h2 className="mt-1 break-words font-display text-5xl font-black uppercase leading-[0.9] sm:text-6xl">{team.name}</h2>
+            <Title className="mt-1 break-words font-display text-5xl font-black uppercase leading-[0.9] sm:text-6xl">{team.name}</Title>
             <div className="mt-3 flex flex-wrap items-center gap-2">
               {team.position ? (
                 <span className="clip-slant bg-gold px-3 py-1 font-display text-sm font-black uppercase tracking-wide text-ink">#{team.position} au classement</span>
@@ -115,6 +122,7 @@ export function TeamHero({ team, insights, isLeader }) {
                 </span>
               ))}
             </div>
+            {subline ? <p className="mt-3 text-sm text-white/55">{subline}</p> : null}
           </div>
         </div>
 
@@ -142,7 +150,9 @@ export function TeamHero({ team, insights, isLeader }) {
               );
             })}
           </div>
-          {live ? (
+          {actions ? (
+            <div className="flex flex-wrap items-center gap-3 lg:justify-end">{actions}</div>
+          ) : live ? (
             <ButtonLink href={`/cod/equipes/match/${live}`} size="lg">
               <span aria-hidden className="h-2 w-2 animate-pulse-gold bg-ink" />
               Match en cours · Feuille de match
