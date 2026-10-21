@@ -1,6 +1,6 @@
 import Image from "next/image";
 import Link from "next/link";
-import { LuArrowRight, LuCheck } from "react-icons/lu";
+import { LuCheck } from "react-icons/lu";
 import { Reveal } from "../effects/Reveal";
 import { Container } from "../ui/Container";
 import { TacticalCard } from "../ui/TacticalCard";
@@ -23,7 +23,7 @@ const UNIVERSES = [
           cta: "Choisir mon mode",
         }
       : {
-          title: "Classé 2v2 → 5v5",
+          title: "Classé 2v2 à 5v5",
           text: "Rejoins la file, laisse le matchmaking composer les équipes et grimpe au classement match après match.",
           points: ["File d'attente en temps réel", "Carte et équipes tirées au sort", "9 rangs, emblèmes et trophées"],
           cta: "Entrer dans la file",
@@ -107,7 +107,6 @@ export function Universes() {
 
                     <p className="mt-9 inline-flex items-center gap-2 font-display text-lg font-bold uppercase tracking-[0.14em] text-gold">
                       {universe.cta}
-                      <LuArrowRight aria-hidden className="h-5 w-5 transition-transform duration-300 group-hover/card:translate-x-1.5" />
                     </p>
                   </div>
                 </TacticalCard>

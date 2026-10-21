@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { useEffect, useState } from "react";
-import { LuArrowRight, LuBell, LuCheck, LuCrosshair, LuIdCard, LuLoaderCircle, LuUserCheck, LuX } from "react-icons/lu";
+import { LuBell, LuCheck, LuCrosshair, LuIdCard, LuLoaderCircle, LuUserCheck, LuX } from "react-icons/lu";
 import { FaDiscord } from "react-icons/fa6";
 import { cn } from "../../lib/cn";
 import { DISCORD_INVITE_URL } from "../../lib/config";
@@ -85,7 +85,7 @@ export function OnboardingPanel({ user }) {
       done: Boolean(profile.activision_id),
       action: (
         <Link href="/cod/profile#titre-compte" className={ACTION}>
-          Renseigner <LuArrowRight aria-hidden className="h-3.5 w-3.5" />
+          Renseigner
         </Link>
       ),
     },
@@ -126,7 +126,7 @@ export function OnboardingPanel({ user }) {
           }}
           className={ACTION}
         >
-          Rejoindre <LuArrowRight aria-hidden className="h-3.5 w-3.5" />
+          Rejoindre
         </a>
       ) : null,
     },
@@ -138,7 +138,7 @@ export function OnboardingPanel({ user }) {
       done: profile.wins + profile.losses > 0,
       action: (
         <Link href="/cod/ranked" className={ACTION}>
-          Jouer <LuArrowRight aria-hidden className="h-3.5 w-3.5" />
+          Jouer
         </Link>
       ),
     },

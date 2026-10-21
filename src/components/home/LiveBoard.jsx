@@ -1,6 +1,5 @@
 import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
-import { LuArrowRight } from "react-icons/lu";
 import { api } from "../../lib/api";
 import { supabase } from "../../lib/supabase";
 import { MATCH_TEAM_ENABLED } from "../../lib/config";
@@ -91,7 +90,6 @@ export function LiveBoard() {
               <p className="font-tech text-[11px] uppercase tracking-[0.3em] text-gold">Top 5 — {label}</p>
               <Link href="/cod/leaderboard" className="inline-flex items-center gap-1.5 text-sm text-white/60 transition-colors hover:text-gold">
                 Classement complet
-                <LuArrowRight aria-hidden className="h-4 w-4" />
               </Link>
             </div>
 

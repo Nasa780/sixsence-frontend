@@ -1,7 +1,7 @@
 import Head from "next/head";
 import Link from "next/link";
 import { useEffect, useState } from "react";
-import { LuArrowRight, LuCrosshair, LuShield, LuTrophy } from "react-icons/lu";
+import { LuCrosshair, LuShield, LuTrophy } from "react-icons/lu";
 import { LeaderboardView } from "./LeaderboardView";
 import { OnboardingPanel } from "./OnboardingPanel";
 import { RankBadge } from "./RankBadge";
@@ -32,7 +32,7 @@ const MODES = [
     title: "Classé",
     lead: "Prouvez votre niveau.",
     text: "Affrontez la communauté du 2v2 au 5v5, gagnez des points et grimpez jusqu'au rang Légende.",
-    facts: ["2v2 → 5v5", "Points individuels", "Rangs Bronze → Légende"],
+    facts: ["2v2 à 5v5", "Points individuels", "Rangs Bronze à Légende"],
     primary: { href: "/cod/ranked", label: "Jouer en classé" },
     links: [
       { href: "/cod/leaderboard", label: "Classement des joueurs" },
@@ -348,7 +348,6 @@ function TopTeams({ label }) {
         )}
         <Link href="/cod/equipes" className="mt-5 inline-flex items-center gap-1.5 font-display text-sm font-bold uppercase tracking-[0.14em] text-gold hover:text-gold-light">
           Classement des équipes
-          <LuArrowRight aria-hidden className="h-4 w-4" />
         </Link>
       </div>
     </section>

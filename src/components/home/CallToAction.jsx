@@ -1,5 +1,4 @@
 import { FaDiscord } from "react-icons/fa6";
-import { LuArrowRight } from "react-icons/lu";
 import useSession from "../../hooks/useSession";
 import { signInWithDiscord } from "../../lib/auth";
 import { DISCORD_INVITE_URL } from "../../lib/config";
@@ -30,7 +29,6 @@ export function CallToAction() {
                 {session ? (
                   <ButtonLink href="/cod/ranked" size="lg">
                     Rejoindre la file
-                    <LuArrowRight aria-hidden className="h-5 w-5" />
                   </ButtonLink>
                 ) : (
                   <Button size="lg" onClick={() => signInWithDiscord("/cod/ranked")}>
