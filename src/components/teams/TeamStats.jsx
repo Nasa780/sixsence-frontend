@@ -66,7 +66,6 @@ export function TeamStats({ teamId, points = null, position = null }) {
         <StatTile
           label="Victoires écrasantes"
           value={stats.playedWins ? `${stats.sweepRate}%` : "—"}
-          hint={stats.playedWins ? `${stats.sweeps} sur ${stats.playedWins} (2-0)` : "Victoires 2-0"}
         />
       </div>
       {series ? (
