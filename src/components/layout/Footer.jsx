@@ -8,20 +8,17 @@ const COLUMNS = [
   {
     title: "Jeux",
     links: [
-      { href: "/cod", label: "Call of Duty · MW4" },
-      { href: "/cod/ranked", label: "File classée" },
-      { href: "/cod/leaderboard", label: "Classement" },
+      { href: "/cod", label: "MW4" },
       { href: "/gta6", label: "GTA 6", univers: "gta" },
-      { href: "/gta6/events", label: "Événements GTA 6", univers: "gta" },
     ],
   },
   {
     title: "SixSence",
     links: [
+      { href: "/cod/profile", label: "Mon profil" },
+      { href: "/reglement", label: "Règlement" },
       { href: "/founders", label: "Fondateurs" },
       { href: "/partners", label: "Partenaires" },
-      { href: "/reglement", label: "Règlement" },
-      { href: "/cod/profile", label: "Mon profil" },
     ],
   },
 ];

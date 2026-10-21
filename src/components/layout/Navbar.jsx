@@ -229,9 +229,22 @@ export function Navbar() {
                     <Link href="/cod/profile" className="px-4 py-3 text-sm text-white/70 hover:text-gold">
                       Mon profil
                     </Link>
-                    <Link href="/cod/ranked" className="px-4 py-3 text-sm text-white/70 hover:text-gold">
-                      File classée
+                    <Link href="/reglement" className="px-4 py-3 text-sm text-white/70 hover:text-gold">
+                      Règlement
                     </Link>
+                    <Link href="/cod/ranked" className="px-4 py-3 text-sm text-white/70 hover:text-gold">
+                      Classé
+                    </Link>
+                    {MATCH_TEAM_ENABLED ? (
+                      <>
+                        <Link href="/cod/division" className="px-4 py-3 text-sm text-white/70 hover:text-gold">
+                          Division
+                        </Link>
+                        <Link href="/cod/tournoi" className="px-4 py-3 text-sm text-white/70 hover:text-gold">
+                          Tournoi
+                        </Link>
+                      </>
+                    ) : null}
                     {isReferee(user.role) ? (
                       <Link href="/admin" className="px-4 py-3 text-sm text-white/70 hover:text-gold">
                         Administration
@@ -325,8 +338,18 @@ function UserMenu({ user }) {
               className="flex items-center gap-2.5 px-4 py-2.5 text-sm text-white/75 transition-colors hover:bg-white/5 hover:text-gold"
             >
               <LuCrosshair aria-hidden className="h-4 w-4" />
-              File classée
+              Classé
             </Link>
+            {MATCH_TEAM_ENABLED ? (
+              <Link
+                role="menuitem"
+                href="/cod/division"
+                className="flex items-center gap-2.5 px-4 py-2.5 text-sm text-white/75 transition-colors hover:bg-white/5 hover:text-gold"
+              >
+                <LuShield aria-hidden className="h-4 w-4" />
+                Division
+              </Link>
+            ) : null}
             {isReferee(user.role) ? (
               <Link
                 role="menuitem"

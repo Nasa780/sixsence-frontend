@@ -1,7 +1,7 @@
 import Head from "next/head";
 import Link from "next/link";
 import { useEffect, useState } from "react";
-import { LuCrosshair, LuShield, LuTrophy } from "react-icons/lu";
+import { LuCrosshair, LuCrown, LuShield, LuTrophy } from "react-icons/lu";
 import { LeaderboardView } from "./LeaderboardView";
 import { OnboardingPanel } from "./OnboardingPanel";
 import { RankBadge } from "./RankBadge";
@@ -65,7 +65,7 @@ const MODES = [
     eyebrow: "Fin de saison",
     title: "Tournoi",
     lead: "Décroche le titre.",
-    text: "Les meilleures équipes de la Division s'affrontent en arbre final (BO3 et finale BO5) pour la gloire et les récompenses.",
+    text: "Les meilleures équipes de la Division s'affrontent en arbre final pour la gloire et les récompenses.",
     facts: ["Top du classement", "BO3, finale BO5", "Trophée et rôle Discord"],
     primary: { href: "/cod/tournoi", label: "Voir le tournoi" },
     links: [
@@ -296,7 +296,8 @@ function TopTeams({ label }) {
   return (
     <section aria-labelledby="titre-top-equipes">
       <SectionHeading eyebrow={`${label} · Division`} title={<span id="titre-top-equipes">Top équipes</span>} />
-      <div className="mt-8">
+      {/* Tout le bloc dans la couleur de la Division (cyan). */}
+      <div data-univers="division" className="mt-8">
         {teams === null ? null : teams.length === 0 ? (
           <p className="text-sm text-white/50">
             Aucune équipe pour l&apos;instant.{" "}
@@ -309,7 +310,7 @@ function TopTeams({ label }) {
           <>
             {/* Même structure que le Top 10 joueurs (ligne d'état, en-têtes, lignes de même hauteur) : les deux listes s'alignent. */}
             {/* Même design que « Mis à jour en direct » (Top 10 joueurs), dans la couleur de la Division : garde aussi les deux listes alignées. */}
-            <p data-univers="division" className="mb-6 inline-flex items-center gap-2 text-xs text-gold">
+            <p className="mb-6 inline-flex items-center gap-2 text-xs text-gold">
               <span aria-hidden className="h-1.5 w-1.5 animate-pulse-gold bg-gold" />
               {teams.length} équipe{teams.length > 1 ? "s" : ""} au classement
             </p>
@@ -320,29 +321,55 @@ function TopTeams({ label }) {
               <span className="pr-4 text-right">Points</span>
             </div>
             <ol className="mt-3 space-y-1.5">
-              {teams.map((team) => (
-                <li key={team.id}>
-                  <Link
-                    href={`/cod/equipes/${team.id}`}
-                    className="grid grid-cols-[4rem_minmax(0,1fr)_auto_auto] min-h-[3.875rem] items-center gap-x-4 border-l-2 border-transparent bg-white/[0.03] py-3 transition-colors hover:border-gold hover:bg-white/[0.06]"
-                  >
-                    <span className="px-4 font-tech text-sm font-bold tabular-nums text-white/50">{team.position}</span>
-                    <span className="flex min-w-0 items-center gap-3">
-                      <TeamCrest team={team} size={34} />
-                      <span className="min-w-0 flex-1">
-                        <span className="block truncate font-display text-lg font-bold uppercase leading-none tracking-wide">{team.name}</span>
-                        <span className="mt-1 block font-tech text-[10px] tracking-[0.2em]" style={{ color: team.color }}>
-                          <span className="normal-case">[{team.tag}]</span>
+              {teams.map((team) => {
+                const podium = team.position <= 3;
+                const played = team.wins + team.losses;
+                const rate = played ? Math.round((team.wins / played) * 100) : 0;
+                return (
+                  <li key={team.id}>
+                    <Link
+                      href={`/cod/equipes/${team.id}`}
+                      className={cn(
+                        "group relative grid min-h-[3.875rem] grid-cols-[4rem_minmax(0,1fr)_auto_auto] items-center gap-x-4 overflow-hidden border-l-2 py-3 transition-colors hover:bg-white/[0.06]",
+                        team.position === 1 ? "border-gold bg-linear-to-r from-gold/[0.14] via-gold/[0.04] to-white/[0.03]" : podium ? "border-gold/60 bg-white/[0.035]" : "border-transparent bg-white/[0.03] hover:border-gold",
+                      )}
+                    >
+                      {/* Balayage lumineux au survol, comme le classement des équipes. */}
+                      <span aria-hidden className="pointer-events-none absolute inset-y-0 -left-1/3 w-1/3 -skew-x-[20deg] bg-linear-to-r from-transparent via-gold/20 to-transparent opacity-0 group-hover:animate-[standings-sweep_0.9s_ease] group-hover:opacity-100" />
+                      <span className="relative flex items-center gap-1.5 px-4">
+                        <span
+                          className={cn(
+                            "font-display font-black leading-none tabular-nums",
+                            team.position === 1 ? "text-2xl text-gold drop-shadow-[0_0_12px_color-mix(in_srgb,var(--color-gold)_75%,transparent)]" : podium ? "text-xl text-gold" : "text-lg text-white/50",
+                          )}
+                        >
+                          {team.position}
+                        </span>
+                        {team.position === 1 ? <LuCrown aria-label="Numéro 1" className="h-4 w-4 text-gold" /> : null}
+                      </span>
+                      <span className="relative flex min-w-0 items-center gap-3">
+                        <TeamCrest team={team} size={34} />
+                        <span className="min-w-0 flex-1">
+                          <span className="block truncate font-display text-lg font-bold uppercase leading-none tracking-wide transition-colors group-hover:text-gold">{team.name}</span>
+                          <span className="mt-1 block font-tech text-[10px] tracking-[0.2em]" style={{ color: team.color }}>
+                            <span className="normal-case">[{team.tag}]</span>
+                          </span>
                         </span>
                       </span>
-                    </span>
-                    <span className="whitespace-nowrap text-right text-sm tabular-nums text-white/70">
-                      {team.wins} / {team.losses}
-                    </span>
-                    <span className="pr-4 text-right font-tech text-base font-bold tabular-nums text-gold">{team.points}</span>
-                  </Link>
-                </li>
-              ))}
+                      <span className="relative w-16 text-right">
+                        <span className="block whitespace-nowrap text-sm tabular-nums text-white/70">
+                          <span className="text-win">{team.wins}</span> / <span className="text-loss">{team.losses}</span>
+                        </span>
+                        {/* Part de victoires en fine jauge. */}
+                        <span aria-label={`${rate} % de victoires`} className="mt-1.5 block h-[3px] -skew-x-[20deg] bg-white/10">
+                          <span className="block h-full bg-gold" style={{ width: `${rate}%` }} />
+                        </span>
+                      </span>
+                      <span className="relative pr-4 text-right font-tech text-base font-bold tabular-nums text-gold">{team.points}</span>
+                    </Link>
+                  </li>
+                );
+              })}
             </ol>
           </>
         )}

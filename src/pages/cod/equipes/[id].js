@@ -101,7 +101,7 @@ export default function TeamPage() {
         <PublicHero
           team={team}
           as="h1"
-          subline={`${team.disbanded ? "Équipe dissoute" : `Fondée le ${dateFr(team.createdAt)}`} · ${team.members.length} / ${TEAM_LIMITS.maxMembers} joueurs · Tournoi : ${Math.min(team.played, TEAM_LIMITS.qualifyMatches)} / ${TEAM_LIMITS.qualifyMatches} matchs`}
+          subline={team.disbanded ? "Équipe dissoute" : `Fondée le ${dateFr(team.createdAt)}`}
           actions={
             team.disbanded ? null : isMember ? (
               <ButtonLink href="/cod/equipe" size="lg">
@@ -124,6 +124,28 @@ export default function TeamPage() {
       <Container className="space-y-10 py-12">
         {message ? <Notice tone={message.tone}>{message.text}</Notice> : null}
 
+        {/* À propos d'abord, puis l'effectif. */}
+        <TacticalCard innerClassName="p-6">
+          <Eyebrow>À propos</Eyebrow>
+          <p className="mt-4 whitespace-pre-line text-sm leading-relaxed text-white/65">{team.description || "Cette équipe n'a pas encore de description."}</p>
+          {socials.length > 0 ? (
+            <ul className="mt-5 flex flex-wrap gap-2">
+              {socials.map((social) => (
+                <li key={social.key}>
+                  <a
+                    href={team.socials[social.key]}
+                    target="_blank"
+                    rel="noopener noreferrer nofollow"
+                    className="clip-slant inline-block bg-white/[0.06] px-4 py-2 font-display text-sm font-bold uppercase tracking-[0.12em] text-white/75 hover:bg-gold hover:text-ink"
+                  >
+                    {social.label}
+                  </a>
+                </li>
+              ))}
+            </ul>
+          ) : null}
+        </TacticalCard>
+
         <div className="grid gap-10 lg:grid-cols-[2fr_1fr]">
           <section aria-label="Effectif">
             <RosterHeading title="Effectif" count={team.members.length} max={TEAM_LIMITS.maxMembers} gold />
@@ -135,26 +157,6 @@ export default function TeamPage() {
           </section>
 
           <aside className="space-y-6">
-            <TacticalCard innerClassName="p-6">
-              <Eyebrow>À propos</Eyebrow>
-              <p className="mt-4 whitespace-pre-line text-sm leading-relaxed text-white/65">{team.description || "Cette équipe n'a pas encore de description."}</p>
-              {socials.length > 0 ? (
-                <ul className="mt-5 flex flex-wrap gap-2">
-                  {socials.map((social) => (
-                    <li key={social.key}>
-                      <a
-                        href={team.socials[social.key]}
-                        target="_blank"
-                        rel="noopener noreferrer nofollow"
-                        className="clip-slant inline-block bg-white/[0.06] px-4 py-2 font-display text-sm font-bold uppercase tracking-[0.12em] text-white/75 hover:bg-gold hover:text-ink"
-                      >
-                        {social.label}
-                      </a>
-                    </li>
-                  ))}
-                </ul>
-              ) : null}
-            </TacticalCard>
             <TacticalCard innerClassName="p-6">
               <Eyebrow>Derniers matchs</Eyebrow>
               <TeamMatchHistory history={history} />
@@ -174,7 +176,7 @@ export default function TeamPage() {
           </aside>
         </div>
 
-        <TeamStats teamId={team.id} />
+        <TeamStats teamId={team.id} points={team.points} position={team.position} />
       </Container>
 
       <ReasonDialog
