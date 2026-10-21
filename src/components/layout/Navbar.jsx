@@ -9,7 +9,7 @@ import useUser from "../../hooks/useUser";
 import { signInWithDiscord, signOut } from "../../lib/auth";
 import { cn } from "../../lib/cn";
 import { codModeOf } from "../cod/CodModeNav";
-import { MATCH_TEAM_ENABLED } from "../../lib/config";
+import { MATCH_TEAM_ENABLED, MY_MATCHES_ENABLED } from "../../lib/config";
 import { isReferee } from "../../lib/roles";
 import { Avatar } from "../ui/Avatar";
 import { Button } from "../ui/Button";
@@ -235,9 +235,11 @@ export function Navbar() {
                     <Link href="/cod/profile" className="px-4 py-3 text-sm text-white/70 hover:text-gold">
                       Mon profil
                     </Link>
-                    <Link href="/cod/matchs" className="px-4 py-3 text-sm text-white/70 hover:text-gold">
-                      Mes matchs
-                    </Link>
+                    {MY_MATCHES_ENABLED ? (
+                      <Link href="/cod/matchs" className="px-4 py-3 text-sm text-white/70 hover:text-gold">
+                        Mes matchs
+                      </Link>
+                    ) : null}
                     <Link href="/calendrier" className="px-4 py-3 text-sm text-white/70 hover:text-gold">
                       Calendrier
                     </Link>
@@ -331,14 +333,16 @@ function UserMenu({ user }) {
               <LuUser aria-hidden className="h-4 w-4" />
               Mon profil
             </Link>
-            <Link
-              role="menuitem"
-              href="/cod/matchs"
-              className="flex items-center gap-2.5 px-4 py-2.5 text-sm text-white/75 transition-colors hover:bg-white/5 hover:text-gold"
-            >
-              <LuSwords aria-hidden className="h-4 w-4" />
-              Mes matchs
-            </Link>
+            {MY_MATCHES_ENABLED ? (
+              <Link
+                role="menuitem"
+                href="/cod/matchs"
+                className="flex items-center gap-2.5 px-4 py-2.5 text-sm text-white/75 transition-colors hover:bg-white/5 hover:text-gold"
+              >
+                <LuSwords aria-hidden className="h-4 w-4" />
+                Mes matchs
+              </Link>
+            ) : null}
             <Link
               role="menuitem"
               href="/cod/ranked"
