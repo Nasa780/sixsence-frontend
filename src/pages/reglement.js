@@ -68,6 +68,11 @@ function DIVISION_SECTIONS() {
           <li>
             Les deux équipes ont <strong>15 minutes</strong> après la création du match pour lancer la partie.
           </li>
+          <li>
+            <strong>Déconnexion</strong> : l&apos;équipe du joueur déconnecté peut demander à arrêter la partie, <strong>une seule fois</strong> par
+            match. La demande se fait en fin de manche ou dans les premières secondes d&apos;une manche, jamais en cours de manche (après un
+            kill, une bombe posée ou toute autre action).
+          </li>
           <li>Le chat du match est réservé aux joueurs du match, aux Leaders des deux équipes et aux arbitres.</li>
         </ul>
       ),
@@ -263,8 +268,9 @@ const SECTIONS = [
         </li>
         <li>Les équipes tirées au sort doivent être respectées : personne ne prend la place d&apos;un joueur du match.</li>
         <li>
-          En cas de déconnexion, le joueur revient dans la partie dès que possible ; la partie ne se relance que si les deux équipes sont
-          d&apos;accord.
+          <strong>Déconnexion</strong> : l&apos;équipe du joueur déconnecté peut demander à arrêter la partie, <strong>une seule fois</strong> par
+          match. La demande se fait en fin de manche ou dans les premières secondes d&apos;une manche, jamais en cours de manche (après un
+          kill, une bombe posée ou toute autre action).
         </li>
         <li>Le chat du salon et, s&apos;il est actif, le salon vocal Discord servent à s&apos;organiser.</li>
       </ul>
