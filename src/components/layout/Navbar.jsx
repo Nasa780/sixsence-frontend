@@ -140,7 +140,8 @@ export function Navbar() {
           </nav>
 
           <div className="flex items-center gap-2">
-            <GlobalSearch />
+            {/* Recherche rapide réservée à l'équipe SixSence (admin, staff, arbitres). */}
+            {user && isReferee(user.role) ? <GlobalSearch /> : null}
             <InstallButton variant="nav" />
             {/* Zone de largeur fixe pendant le chargement : évite que la barre ne saute. */}
             <div className="hidden min-w-[9rem] justify-end sm:flex">
