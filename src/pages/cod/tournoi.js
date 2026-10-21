@@ -190,7 +190,11 @@ export default function TournamentPage() {
                 <StatTile label={checkInOpen ? "Début dans" : "Check-in dans"} value={countdown(checkInOpen ? tournament.startsAt : tournament.checkInOpensAt, now)} accent />
                 <StatTile label={tournament.kind === "horus" ? "Inscrites" : "Équipes"} value={tournament.kind === "horus" ? `${tournament.teams.length} / ${tournament.size}` : tournament.teams.length} />
                 <StatTile label="Check-in" value={`${tournament.teams.filter((team) => team.checkedIn).length} / ${tournament.teams.length}`} />
-                <StatTile label="Format" value={`BO${tournament.bestOf}`} hint={`Finale en BO${tournament.finalBestOf}${tournament.kind === "horus" ? " · petite finale" : ""}`} />
+                <StatTile
+                  label="Format"
+                  value={`BO${tournament.bestOf}`}
+                  hint={`Finale en BO${tournament.finalBestOf}${tournament.bracket === "double" ? " · double élimination" : tournament.kind === "horus" ? " · petite finale" : ""}`}
+                />
               </div>
             ) : null}
             {tournament.status === "running" ? <Notice>Le tournoi est en cours : le tableau se met à jour après chaque match.</Notice> : null}
@@ -369,10 +373,12 @@ function CheckInPanel({ tournament, open, onDone }) {
 }
 
 function Bracket({ tournament, myTeamId }) {
+  const double = tournament.bracket === "double";
   return (
-    <section aria-labelledby="titre-tableau">
+    <section aria-labelledby="titre-tableau" className="space-y-10">
+      <div>
       <h2 id="titre-tableau" className="font-display text-3xl font-black uppercase leading-none sm:text-4xl">
-        Tableau
+        {double ? "Tableau des gagnants" : "Tableau"}
       </h2>
       <div className="mt-6 overflow-x-auto pb-2">
         <div className="flex min-w-max gap-6">
@@ -384,7 +390,7 @@ function Bracket({ tournament, myTeamId }) {
               <ul className="mt-3 flex flex-1 flex-col justify-around gap-3">
                 {round.entries.map((entry) => (
                   <li key={entry.slot}>
-                    <BracketEntry entry={entry} myTeamId={myTeamId} final={round.round === tournament.rounds.length} />
+                    <BracketEntry entry={entry} myTeamId={myTeamId} final={!double && round.round === tournament.rounds.length} />
                   </li>
                 ))}
                 {round.round === tournament.rounds.length && tournament.thirdPlace ? (
@@ -400,6 +406,44 @@ function Bracket({ tournament, myTeamId }) {
           ))}
         </div>
       </div>
+      </div>
+
+      {double && tournament.losers?.length ? (
+        <div>
+          <h2 className="font-display text-3xl font-black uppercase leading-none sm:text-4xl">Tableau des perdants</h2>
+          <p className="mt-2 text-sm text-white/50">Une défaite au tableau des gagnants envoie ici : une deuxième défaite élimine.</p>
+          <div className="mt-6 overflow-x-auto pb-2">
+            <div className="flex min-w-max gap-6">
+              {tournament.losers.map((round) => (
+                <div key={round.round} className="flex w-64 flex-col">
+                  <p className="font-tech text-[10px] uppercase tracking-[0.24em] text-white/60">
+                    {round.name} · BO{round.bestOf}
+                  </p>
+                  <ul className="mt-3 flex flex-1 flex-col justify-around gap-3">
+                    {round.entries.map((entry) => (
+                      <li key={entry.slot}>
+                        <BracketEntry entry={entry} myTeamId={myTeamId} />
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      ) : null}
+
+      {double && tournament.grandFinal ? (
+        <div className="max-w-sm">
+          <h2 className="font-display text-3xl font-black uppercase leading-none sm:text-4xl">
+            Grande <span className="text-gold-gradient">finale</span>
+          </h2>
+          <p className="mt-2 font-tech text-[10px] uppercase tracking-[0.24em] text-gold">BO{tournament.grandFinal.bestOf} · un seul match</p>
+          <div className="mt-4">
+            <BracketEntry entry={tournament.grandFinal.entry} myTeamId={myTeamId} final />
+          </div>
+        </div>
+      ) : null}
     </section>
   );
 }
