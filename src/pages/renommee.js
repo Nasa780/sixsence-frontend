@@ -3,6 +3,7 @@ import Head from "next/head";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import { LuCrown, LuFlame, LuMedal, LuStar, LuTrophy, LuZap } from "react-icons/lu";
+import { PlayerOfWeek } from "../components/cod/HubHighlights";
 import { TeamCrest } from "../components/teams/TeamParts";
 import { Avatar } from "../components/ui/Avatar";
 import { Container } from "../components/ui/Container";
@@ -19,16 +20,21 @@ const dateFr = (iso) => (iso ? new Date(iso).toLocaleDateString("fr-FR", { day: 
 
 /**
  * Renommée (page « Bureau des Légendes », ancienne page Hall of Fame) : records de tous les temps, champions de chaque saison (joueurs et équipes), vainqueurs
- * des coupes (trophées Horus, médailles Anubis) et MVP du mois. Données GET /hall-of-fame du backend.
+ * des coupes (trophées Horus, médailles Anubis) et MVP du mois. Données GET /hall-of-fame du backend ; en tête, joueur
+ * de la semaine (GET /highlights : le plus de points gagnés en classé sur 7 jours, 3 matchs au moins).
  */
 export default function RenownPage() {
   const [data, setData] = useState(null);
   const [error, setError] = useState(null);
+  const [playerOfWeek, setPlayerOfWeek] = useState(null);
 
   useEffect(() => {
     api("/hall-of-fame")
       .then(setData)
       .catch((caught) => setError(caught.message));
+    api("/highlights")
+      .then((highlights) => setPlayerOfWeek(highlights.playerOfWeek ?? null))
+      .catch(() => {});
   }, []);
 
   const records = data
@@ -61,6 +67,15 @@ export default function RenownPage() {
 
         {data ? (
           <>
+            {playerOfWeek ? (
+              <section aria-labelledby="titre-semaine">
+                <SectionTitle id="titre-semaine" eyebrow="7 derniers jours" title="Top de la semaine" />
+                <div className="mt-6">
+                  <PlayerOfWeek player={playerOfWeek} />
+                </div>
+              </section>
+            ) : null}
+
             {records.length ? (
               <section aria-labelledby="titre-records">
                 <SectionTitle id="titre-records" eyebrow="De tous les temps" title="Records" />
