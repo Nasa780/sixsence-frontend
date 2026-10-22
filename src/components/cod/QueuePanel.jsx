@@ -27,6 +27,7 @@ import { Chip, Notice } from "../ui/Feedback";
 import { TacticalCard } from "../ui/TacticalCard";
 import { AppPanel } from "./AppPanel";
 import { PointsAtStake } from "./PointsAtStake";
+import { ActiveMatchBanner } from "./ActiveMatchBanner";
 import { PartyPanel } from "./PartyPanel";
 import { GROUPS_ENABLED } from "../../lib/config";
 
@@ -151,6 +152,28 @@ export function QueuePanel({ profileComplete, userId }) {
   }
 
   /** « Rester en file » : confirme la présence, la place dans la file est conservée. */
+  // Retour de fin de match (bouton « Rejoindre la file » de la feuille de match, ?rejoindre=3v3) : la recherche se
+  // relance toute seule dès que la connexion temps réel est prête, une seule fois, puis l'adresse est nettoyée.
+  const autoJoined = useRef(false);
+  useEffect(() => {
+    const wanted = router.query.rejoindre;
+    if (!wanted || autoJoined.current || queue.status !== "online" || queue.queues.length === 0) return;
+    autoJoined.current = true;
+    router.replace("/cod/ranked", undefined, { shallow: true });
+    if (!profileComplete || queue.inQueue || queue.activeMatchId || queue.readyCheck || queue.bannedUntil) return;
+    const format = queue.queues.some((item) => item.format === wanted) ? wanted : selectedId;
+    if (format && format !== selectedId) {
+      setChosen(format);
+      try {
+        window.localStorage.setItem(FORMAT_KEY, format);
+      } catch {
+        // Stockage indisponible : le choix vaut pour la visite.
+      }
+    }
+    run(async () => applyState(await api("/cod/queue/join", { method: "POST", body: { format } })));
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [router.query.rejoindre, queue.status, queue.queues.length]);
+
   function stayInQueue() {
     return run(async () => applyState(await api("/cod/queue/stay", { method: "POST" })));
   }
@@ -363,14 +386,7 @@ export function QueuePanel({ profileComplete, userId }) {
 
             {tooBig ? <Notice tone="error">Ton groupe compte {groupSize} joueurs : trop pour du {selected?.label}. Choisis une autre file.</Notice> : null}
 
-            {hasActiveMatch ? (
-              <Notice>
-                Tu as un match en cours : termine-le avant de relancer une recherche.{" "}
-                <Link href={`/cod/match/${queue.activeMatchId}`} className="font-semibold text-gold underline underline-offset-4 hover:text-gold-light">
-                  Ouvrir le match
-                </Link>
-              </Notice>
-            ) : null}
+            {hasActiveMatch ? <ActiveMatchBanner matchId={queue.activeMatchId} text="Termine-le avant de relancer une recherche." /> : null}
 
             {disputed && disputed.id !== queue.activeMatchId ? (
               <Notice>

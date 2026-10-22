@@ -20,6 +20,7 @@ import { ConfirmDialog } from "../ui/ConfirmDialog";
 import { ReasonDialog } from "../ui/ReasonDialog";
 import { PointsAtStake } from "./PointsAtStake";
 import { ReadyCheckOverlay } from "./QueuePanel";
+import { RequeueCard } from "./RequeueCard";
 import { signInWithDiscord } from "../../lib/auth";
 import { RankEmblem } from "./RankEmblem";
 import { RankUpOverlay } from "./RankUpOverlay";
@@ -446,21 +447,33 @@ export function MatchView({ matchId }) {
             <p className="font-display text-3xl font-black uppercase leading-none tracking-wide sm:text-4xl">
               Victoire de l&apos;<span className="text-gold-gradient">{teamLabel(match.winner).toLowerCase()}</span>
             </p>
-            <Link href="/cod/ranked" className="text-sm font-semibold text-gold underline underline-offset-4 hover:text-gold-light sm:ml-auto">
-              Relancer une recherche
-            </Link>
           </div>
+        ) : null}
+        {match.status === "completed" && myTeam ? (
+          <RequeueCard
+            format={match.format}
+            title={match.winner === myTeam ? "On enchaîne ?" : "Prends ta revanche"}
+            text="Un clic et ta recherche repart tout de suite, sans recliquer sur la file."
+          />
         ) : null}
 
         {match.status === "cancelled" ? (
-          <Notice>
-            {match.cancel_reason === "ready_check_failed"
-              ? "Match annulé : tous les joueurs n'ont pas accepté à temps. Les joueurs prêts ont été remis en tête de file."
-              : "Ce match a été annulé : aucun point n'a été modifié."}{" "}
-            <Link href="/cod/ranked" className="font-semibold text-gold underline underline-offset-4 hover:text-gold-light">
-              Retourner à la file
-            </Link>
-          </Notice>
+          myTeam ? (
+            <RequeueCard
+              format={match.format}
+              tone="grey"
+              title="Match annulé"
+              text={
+                match.cancel_reason === "ready_check_failed"
+                  ? "Un joueur n'a pas accepté à temps. Si tu étais prêt, tu es déjà remis en tête de file."
+                  : "Aucun point n'a été modifié. Relance une recherche quand tu veux."
+              }
+            />
+          ) : (
+            <Notice>
+              {match.cancel_reason === "ready_check_failed" ? "Match annulé : tous les joueurs n'ont pas accepté à temps." : "Ce match a été annulé : aucun point n'a été modifié."}
+            </Notice>
+          )
         ) : null}
 
         {match.correction_action ? (
