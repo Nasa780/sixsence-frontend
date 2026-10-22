@@ -35,7 +35,7 @@ export function HexAvatar({ player, size = 44, gold = false, dim = false }) {
 }
 
 /** Médaille flottante : halo, rayons qui tournent lentement, léger balancement. */
-function FloatingMedal({ metal = "or", size = 260 }) {
+function FloatingMedal({ metal = "or", size = 260, src = null, alt = null }) {
   return (
     <div className="relative mx-auto flex items-center justify-center" style={{ width: size, height: size }}>
       <div aria-hidden className="absolute inset-[8%] rounded-full bg-[radial-gradient(circle,rgba(231,192,90,0.35),transparent_68%)] blur-2xl" />
@@ -47,8 +47,8 @@ function FloatingMedal({ metal = "or", size = 260 }) {
         transition={{ duration: 90, repeat: Infinity, ease: "linear" }}
       />
       <motion.img
-        src={MEDAL_IMAGE[metal]}
-        alt={`Médaille Anubis (${metal})`}
+        src={src ?? MEDAL_IMAGE[metal]}
+        alt={alt ?? `Médaille Anubis (${metal})`}
         width={420}
         height={420}
         className="relative h-[92%] w-auto object-contain drop-shadow-[0_24px_30px_rgba(0,0,0,0.75)]"
@@ -480,6 +480,36 @@ function AnubisRules({ teamSize }) {
   );
 }
 
+/** Aucune Coupe Horus prévue : même carte que l'Anubis, avec le trophée Horus. */
+export function HorusTeaser() {
+  return (
+    <TacticalCard highlight cut={28} innerClassName="relative overflow-hidden">
+      <div aria-hidden className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_20%_40%,rgba(231,192,90,0.14),transparent_55%)]" />
+      <div className="relative grid items-center gap-6 p-6 sm:p-10 lg:grid-cols-[260px_1fr]">
+        <FloatingMedal size={230} src="/images/trophees/horus-or.png" alt="Trophée de la Coupe Horus" />
+        <div className="max-w-xl">
+          <p className="font-tech text-[11px] uppercase tracking-[0.32em] text-[#e7c05a]">Coupe d&apos;équipe</p>
+          <p className="mt-3 font-display text-4xl font-black uppercase leading-none sm:text-5xl">
+            Aucune Coupe Horus <span className="text-[#e7c05a]">prévue</span>
+          </p>
+          <p className="mt-4 text-sm leading-relaxed text-white/60">
+            La Coupe Horus se joue en équipe : le Leader inscrit sa formation pour rejoindre le tableau en direct. Décroche un trophée d&apos;or,
+            d&apos;argent ou de bronze sur la fiche d&apos;équipe et gagne des points de Division. La prochaine sera annoncée ici et sur Discord.
+          </p>
+          <div className="mt-7 flex flex-wrap gap-3">
+            <ButtonLink href="/cod/division" size="lg">
+              File Division
+            </ButtonLink>
+            <ButtonLink href="/cod/equipes" size="lg" variant="outline">
+              Classement des équipes
+            </ButtonLink>
+          </div>
+        </div>
+      </div>
+    </TacticalCard>
+  );
+}
+
 /** Aucune Coupe Anubis prévue. */
 export function AnubisTeaser() {
   return (
@@ -493,8 +523,8 @@ export function AnubisTeaser() {
             Aucune Coupe Anubis <span className="text-[#e7c05a]">prévue</span>
           </p>
           <p className="mt-4 text-sm leading-relaxed text-white/60">
-            La Coupe Anubis se joue sans équipe : inscris-toi seul, le site forme les équipes au hasard au début de la coupe. Médailles or, argent et bronze sur ton profil. La prochaine sera
-            annoncée ici et sur Discord.
+            La Coupe Anubis se joue en solo : inscris-toi individuellement et le site forme les équipes au hasard au début de la coupe. Décroche une
+            médaille d&apos;or, d&apos;argent ou de bronze sur ton profil. La prochaine sera annoncée ici et sur Discord.
           </p>
           <div className="mt-7 flex flex-wrap gap-3">
             <ButtonLink href="/cod/ranked" size="lg">
