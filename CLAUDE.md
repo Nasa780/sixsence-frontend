@@ -10,7 +10,7 @@ L'API vit dans un dépôt séparé : `Nasa780/sixsence-backend` (Express + WebSo
 - Tailwind CSS v4 (thème en CSS dans `src/styles/globals.css`, pas de `tailwind.config` chargé)
 - framer-motion (animations), tsParticles (particules dorées), react-icons
 - Supabase JS : connexion Discord (Supabase Auth) et lectures publiques
-- Déployé sur Vercel (`www.sixsence.fr`) : chaque commit sur `main` part en production, chaque PR a un aperçu.
+- Déployé sur Vercel (`www.sixsence.fr`) : chaque commit sur `main` part en production. Plus d'aperçu Vercel pour les PR (`vercel.json` : seule la branche `main` est déployée), le plan gratuit limitant à 100 déploiements par 24 h ; la vérification des PR est faite par la CI GitHub (build).
 
 ## Commandes
 
