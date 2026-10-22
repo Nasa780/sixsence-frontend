@@ -88,7 +88,10 @@ export default function TournamentPage() {
   }, []);
 
   const scheduled = tournament?.status === "scheduled";
-  const checkInOpen = scheduled && now >= new Date(tournament.checkInOpensAt).getTime();
+  // Check-in : de 2 h à 15 min avant le début ; à la fermeture, tirage dévoilé, premiers matchs à l'heure du début.
+  const closesAt = tournament?.checkInClosesAt ?? tournament?.startsAt;
+  const checkInOpen = scheduled && now >= new Date(tournament.checkInOpensAt).getTime() && now < new Date(closesAt).getTime();
+  const drawnWaiting = tournament?.status === "running" && now < new Date(tournament.startsAt).getTime();
 
   return (
     <>
@@ -214,7 +217,7 @@ export default function TournamentPage() {
 
             {scheduled ? (
               <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
-                <StatTile label={checkInOpen ? "Début dans" : "Check-in dans"} value={countdown(checkInOpen ? tournament.startsAt : tournament.checkInOpensAt, now)} accent />
+                <StatTile label={checkInOpen ? "Tirage dans" : "Check-in dans"} value={countdown(checkInOpen ? closesAt : tournament.checkInOpensAt, now)} accent />
                 <StatTile label={tournament.kind === "horus" ? "Inscrites" : "Équipes"} value={tournament.kind === "horus" ? `${tournament.teams.length} / ${tournament.size}` : tournament.teams.length} />
                 <StatTile label="Check-in" value={`${tournament.teams.filter((team) => team.checkedIn).length} / ${tournament.teams.length}`} />
                 <StatTile
@@ -224,7 +227,8 @@ export default function TournamentPage() {
                 />
               </div>
             ) : null}
-            {tournament.status === "running" ? <Notice>Le tournoi est en cours : le tableau se met à jour après chaque match.</Notice> : null}
+            {drawnWaiting ? <Notice>Tirage effectué : premiers matchs dans {countdown(tournament.startsAt, now)}. Rejoins ton équipe et prépare la partie.</Notice> : null}
+            {tournament.status === "running" && !drawnWaiting ? <Notice>Le tournoi est en cours : le tableau se met à jour après chaque match.</Notice> : null}
             {tournament.status === "cancelled" ? <Notice tone="error">{tournament.kind === "horus" ? "Cette coupe a été annulée (pas assez d'équipes présentes)." : "Ce tournoi a été annulé."}</Notice> : null}
 
             {tournament.kind === "horus" && scheduled ? <RegistrationPanel tournament={tournament} userId={userId} onDone={load} /> : null}
@@ -292,7 +296,7 @@ function RegistrationPanel({ tournament, userId, onDone }) {
   else if (viewer.registered)
     content = (
       <div className="flex flex-wrap items-center justify-between gap-3">
-        <p className="text-sm text-white/65">Ton équipe est inscrite. Le check-in ouvre 30 min avant le début.</p>
+        <p className="text-sm text-white/65">Ton équipe est inscrite. Le check-in est ouvert de 2 h à 15 min avant le début.</p>
         {viewer.canUnregister ? (
           <Button variant="outline" size="sm" disabled={pending} onClick={() => run("DELETE")}>
             <LuUserMinus aria-hidden className="h-4 w-4" />
@@ -361,7 +365,7 @@ function CheckInPanel({ tournament, open, onDone }) {
         ) : null}
       </div>
       {!open ? (
-        <p className="text-sm text-white/55">Le check-in ouvre 30 min avant le début. Sans check-in d&apos;un Leader à l&apos;heure du début, ton équipe est déclarée forfait.</p>
+        <p className="text-sm text-white/55">Le check-in est ouvert de 2 h à 15 min avant le début. Sans check-in d&apos;un Leader à sa fermeture, ton équipe est déclarée forfait.</p>
       ) : viewer.isLeader ? (
         <>
           <p className="text-sm text-white/55">

@@ -136,7 +136,7 @@ function DIVISION_SECTIONS() {
             places du tournoi (8, 16 ou 32, annoncées à sa création). Leur effectif est figé jusqu&apos;à la fin du tournoi.
           </li>
           <li>
-            Un Leader fait le <strong>check-in</strong> dans les 30 minutes avant le début et choisit les joueurs parmi l&apos;effectif
+            Un Leader fait le <strong>check-in</strong> entre 2 h et 15 minutes avant le début et choisit les joueurs parmi l&apos;effectif
             inscrit ; sans check-in, l&apos;équipe est déclarée forfait.
           </li>
           <li>
@@ -181,8 +181,8 @@ function DIVISION_SECTIONS() {
             limitées (4, 8 ou 16 équipes).
           </li>
           <li>
-            Check-in d&apos;un Leader dans les <strong>30 minutes</strong> avant le début. Moins de 4 équipes présentes : coupe annulée. Le
-            tableau est tiré au sort.
+            Check-in d&apos;un Leader entre <strong>2 h et 15 minutes</strong> avant le début. Moins de 4 équipes présentes : coupe annulée. Le
+            tableau est tiré au sort et dévoilé 15 minutes avant les premiers matchs.
           </li>
           <li>
             Matchs en BO1 ou BO3, finale en BO3 ou BO5, même déroulé que la Division. Élimination directe avec petite finale, ou double
@@ -206,7 +206,7 @@ function DIVISION_SECTIONS() {
             désinscrire jusqu&apos;au début.
           </li>
           <li>
-            Check-in individuel dans les <strong>30 minutes</strong> avant le début : seuls les joueurs présents sont répartis.
+            Check-in individuel entre <strong>2 h et 15 minutes</strong> avant le début : seuls les joueurs présents sont répartis, et les équipes sont dévoilées 15 minutes avant les premiers matchs.
           </li>
           <li>
             Les équipes sont <strong>tirées au sort</strong> à la taille annoncée (2, 3 ou 4 joueurs). Le joueur le mieux classé de chaque
