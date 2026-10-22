@@ -1,5 +1,5 @@
 import { FaDiscord } from "react-icons/fa6";
-import { LuCrosshair, LuTrophy } from "react-icons/lu";
+import { LuSwords, LuTrophy } from "react-icons/lu";
 import { Reveal } from "../effects/Reveal";
 import { Container } from "../ui/Container";
 import { SectionHeading } from "../ui/Typography";
@@ -11,14 +11,14 @@ const STEPS = [
     text: "Pas de mot de passe ni de formulaire : ton compte Discord sert d'identité sur toute la plateforme.",
   },
   {
-    icon: LuCrosshair,
-    title: "Rejoins la file",
-    text: "En solo, du 2v2 au 5v5 : dès que les deux équipes sont complètes, le match se lance et la carte est tirée au sort.",
+    icon: LuSwords,
+    title: "Choisis ton mode",
+    text: "Le Classé en solo du 2v2 au 5v5, la Division avec ton équipe en BO3, et les coupes Horus et Anubis.",
   },
   {
     icon: LuTrophy,
-    title: "Grimpe au classement",
-    text: "+40 à +60 points par victoire selon le niveau adverse, de Bronze à Légende. Le classement se met à jour à l'instant.",
+    title: "Grimpe et gagne",
+    text: "Monte de Bronze à Légende, hisse ton équipe en tête de la Division, décroche trophées et médailles, et ta place au Hall of Fame.",
   },
 ];
 
