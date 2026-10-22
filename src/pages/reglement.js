@@ -155,7 +155,7 @@ function DIVISION_SECTIONS() {
         <ul>
           <li>
             Un Leader peut <strong>défier</strong> une autre équipe depuis sa fiche : BO3 <strong>amical</strong> (aucun point, aucun bilan) ou
-            <strong> classé</strong> (points de Division normaux), maintenant ou à une heure fixée (jusqu&apos;à 7 jours). Mêmes règles que les
+            <strong> officiel</strong> (points de Division normaux), maintenant ou à une heure fixée (jusqu&apos;à 7 jours). Mêmes règles que les
             matchs de la Division ; sans réponse, le défi expire après 24 h.
           </li>
           <li>
