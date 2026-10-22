@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { FaDiscord } from "react-icons/fa6";
-import { DISCORD_INVITE_URL, MATCH_TEAM_ENABLED, MY_MATCHES_ENABLED } from "../../lib/config";
+import { DISCORD_INVITE_URL, MATCH_TEAM_ENABLED } from "../../lib/config";
 import { Container } from "../ui/Container";
 import { Logo } from "../ui/Logo";
 
@@ -8,18 +8,16 @@ const COLUMNS = [
   {
     title: "Jeux",
     links: [
-      { href: "/cod", label: "MW4", bold: true },
+      { href: "/cod", label: "MW4", univers: "or", bold: true },
       { href: "/gta6", label: "GTA VI", univers: "gta", bold: true },
     ],
   },
   {
     title: "SixSence",
     links: [
-      { href: "/cod/profile", label: "Mon profil" },
-      ...(MY_MATCHES_ENABLED ? [{ href: "/cod/matchs", label: "Mes matchs" }] : []),
+      { href: "/nouveautes", label: "Nouveautés" },
       { href: "/calendrier", label: "Calendrier" },
       { href: "/renommee", label: "Renommée" },
-      { href: "/nouveautes", label: "Nouveautés" },
       { href: "/reglement", label: "Règlement" },
     ],
   },

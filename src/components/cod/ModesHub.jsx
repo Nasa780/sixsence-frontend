@@ -20,7 +20,6 @@ import { supabase } from "../../lib/supabase";
 import { api } from "../../lib/api";
 import { cn } from "../../lib/cn";
 import { HubHighlights, SHOW_WEEK_HIGHLIGHTS } from "./HubHighlights";
-import { HallOfFameBlock } from "./HallOfFameBlock";
 
 /** Les deux modes de jeu, présentés séparément sur le hub. */
 const MODES = [
@@ -226,9 +225,6 @@ export function ModesHub() {
           </section>
           <TopTeams label={seasonLabel} />
         </div>
-
-        {/* Renommée : records, dernier vainqueur de coupe, MVP du mois ; page complète /renommee. */}
-        <HallOfFameBlock />
       </Container>
     </>
   );
