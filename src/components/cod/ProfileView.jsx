@@ -186,7 +186,7 @@ export function ProfileView({ userId, editable = false, ownUser = null }) {
         <div className="relative flex flex-col gap-8 lg:flex-row lg:items-center lg:justify-between">
           <div className="flex items-center gap-5">
             {/* Sur mobile, le tag d'équipe passe au-dessus de l'avatar : le pseudo garde toute la largeur. */}
-            <div className="flex shrink-0 flex-col items-center gap-2">
+            <div className="flex shrink-0 flex-col items-end gap-1.5">
               {team ? (
                 <Link
                   href={`/cod/equipes/${team.id}`}
