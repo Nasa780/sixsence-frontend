@@ -8,17 +8,17 @@ const STEPS = [
   {
     icon: FaDiscord,
     title: "Connecte ton Discord",
-    text: "Pas de mot de passe ni de formulaire : ton compte Discord sert d'identité sur toute la plateforme.",
+    text: "Zéro mot de passe, zéro formulaire. Ton compte Discord devient ton identité unique pour te connecter en un clic.",
   },
   {
     icon: LuGamepad2,
     title: "Choisis ton jeu",
-    text: "Call of Duty MW4 pour la compétition, GTA 6 pour les événements de la communauté.",
+    text: "Call of Duty Modern Warfare 4 pour la compétition,\nGrand Theft Auto 6 pour les événements de la communauté.",
   },
   {
     icon: LuTrophy,
-    title: "Fais ta place",
-    text: "Matchs, classements, événements : laisse ta marque sur SixSence.",
+    title: "Laisse ta marque",
+    text: "Matchs intenses, classements disputés, événements exclusifs : impose ton style, forge ta renommée et laisse ton empreinte sur SixSence.",
   },
 ];
 
@@ -44,7 +44,7 @@ export function HowItWorks() {
                   </span>
                 </div>
                 <h3 className="mt-6 font-display text-3xl font-bold uppercase leading-none tracking-wide">{step.title}</h3>
-                <p className="mt-3 text-sm leading-relaxed text-white/60">{step.text}</p>
+                <p className="mt-3 whitespace-pre-line text-sm leading-relaxed text-white/60">{step.text}</p>
               </li>
             </Reveal>
           ))}
