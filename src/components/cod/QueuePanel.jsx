@@ -488,7 +488,8 @@ function ConnectionStatus({ status }) {
 }
 
 /** Écran plein « Match trouvé » : une minute pour accepter. */
-function ReadyCheckOverlay({ check, started, userId }) {
+/** Plein écran « Match trouvé » (page de la file, et feuille de match pendant la vérification « Prêt ? »). */
+export function ReadyCheckOverlay({ check, started, userId }) {
   const [accepting, setAccepting] = useState(false);
   const [acceptedByMe, setAcceptedByMe] = useState(false);
   const [error, setError] = useState(null);
