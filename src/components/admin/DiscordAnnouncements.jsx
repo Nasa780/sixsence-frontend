@@ -68,6 +68,8 @@ export function DiscordAnnouncements() {
       setSettings(await api("/admin/discord/announce/settings", { method: "POST", body: { disabled } }));
     });
   const createRoles = () => run("roles", async () => setSettings(await api("/admin/discord/onboarding-roles", { method: "POST" })), "Rôles prêts sur le serveur.");
+  const giveMember = () =>
+    run("member", () => api("/admin/discord/member-role", { method: "POST" }), "Distribution du rôle Membre lancée : le bilan arrive dans le salon du journal.");
   const publish = (event) => {
     event.preventDefault();
     run(
@@ -133,6 +135,17 @@ export function DiscordAnnouncements() {
             <Button size="sm" variant="outline" onClick={createRoles} disabled={pending !== null || missing.length === 0}>
               {pending === "roles" ? <LuLoaderCircle aria-hidden className="h-4 w-4 animate-spin" /> : null}
               Créer les rôles
+            </Button>
+          </div>
+
+          <div className="flex flex-col gap-3 border-t border-white/8 pt-4 sm:flex-row sm:items-center sm:justify-between">
+            <div>
+              <p className="text-sm font-semibold text-white/85">Rôle Membre pour tous</p>
+              <p className="mt-1 text-xs text-white/50">Donne « Membre » à tous ceux déjà sur le serveur (les nouveaux le reçoivent par l’Intégration).</p>
+            </div>
+            <Button size="sm" variant="outline" onClick={giveMember} disabled={pending !== null}>
+              {pending === "member" ? <LuLoaderCircle aria-hidden className="h-4 w-4 animate-spin" /> : null}
+              Donner le rôle Membre
             </Button>
           </div>
 
