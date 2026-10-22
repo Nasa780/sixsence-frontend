@@ -4,7 +4,7 @@ import { useRouter } from "next/router";
 import { useCallback, useEffect, useState } from "react";
 import { LuCheck, LuCrown, LuLoaderCircle, LuTrophy, LuUserMinus, LuUserPlus } from "react-icons/lu";
 import { SlantTab, TeamCrest } from "../../components/teams/TeamParts";
-import { AnubisCup, AnubisTeaser } from "../../components/tournament/AnubisCup";
+import { AnubisCup, AnubisTeaser, HorusTeaser } from "../../components/tournament/AnubisCup";
 import { Avatar } from "../../components/ui/Avatar";
 import { Button, ButtonLink } from "../../components/ui/Button";
 import { Container } from "../../components/ui/Container";
@@ -156,7 +156,7 @@ export default function TournamentPage() {
         </div>
         {error ? <Notice tone="error">{error}</Notice> : null}
         {tournament === undefined && !error ? <Loading /> : null}
-        {tournament === null ? anubis ? <AnubisTeaser /> : <TournamentTeaser horus={horus} /> : null}
+        {tournament === null ? anubis ? <AnubisTeaser /> : horus ? <HorusTeaser /> : <TournamentTeaser /> : null}
 
         {tournament?.kind === "anubis" ? (
           <AnubisCup
