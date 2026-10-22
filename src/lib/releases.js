@@ -29,7 +29,7 @@ export const RELEASES = [
     items: [
       { tag: "Tournoi", text: "Coupe Anubis : inscris-toi seul, les équipes sont tirées au sort. Médailles or, argent et bronze sur ton profil.", href: "/cod/tournoi?coupe=anubis" },
       { tag: "Tournoi", text: "Coupe Horus : coupes d'équipe ouvertes à l'inscription, trophées et points de Division. Élimination directe ou double élimination.", href: "/cod/tournoi" },
-      { tag: "Discord", text: "Commandes du bot : /profil, /classement, /equipe, /coupe, /file, /match et /site." },
+      { tag: "Discord", text: "Commandes du bot : /profil, /classement, /equipe, /trophees, /file, /match et /site." },
       { tag: "Site", text: "Nouveau logo, nouvelle icône de l'appli et nouvel aperçu des liens." },
       { tag: "Site", text: "Règlement réorganisé par mode, avec la règle de déconnexion." },
     ],
