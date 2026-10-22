@@ -8,7 +8,8 @@ const GREEN = "#34d399";
 
 /**
  * Images du message privé Discord « Match trouvé » (backend services/matchFoundDm.ts), seulement les infos de base :
- *   /api/og/match?map=Plaza&format=3v3&mode=…   bannière 1200 x 400 : « Match trouvé », map, format, anneau 60 s
+ *   /api/og/match?map=Plaza&format=3v3&mode=…&left=45   bannière 1200 x 400 : « Match trouvé », map, format, anneau
+ *                                               du temps restant (left secondes, 60 par défaut ; rouge sous 15 s)
  *   /api/og/match?bar=4&total=6[&go=1]          barre des joueurs prêts 1200 x 90 (dorée quand tout le monde est prêt)
  */
 export default async function handler(request) {
@@ -51,6 +52,12 @@ export default async function handler(request) {
   const format = (searchParams.get("format") ?? "").slice(0, 8).toUpperCase();
   const mode = (searchParams.get("mode") ?? "").replace(/hardcore/i, "HC").slice(0, 36).toUpperCase();
   const [bg, logo] = await Promise.all([dataUrl(`${origin}/images/og/classe-bg.jpg`), dataUrl(`${origin}/images/logo.png`, "image/png")]);
+  // Anneau du décompte : arc proportionnel au temps restant (le message Discord change d'image toutes les 5 s).
+  const left = Math.min(60, Math.max(0, Math.round(Number(searchParams.get("left") ?? 60)) || 0));
+  const ring = left <= 15 ? "#e5484d" : GREEN;
+  const arc = `data:image/svg+xml;utf8,${encodeURIComponent(
+    `<svg xmlns="http://www.w3.org/2000/svg" width="240" height="240"><circle cx="120" cy="120" r="106" fill="none" stroke="rgba(255,255,255,0.1)" stroke-width="14"/><circle cx="120" cy="120" r="106" fill="none" stroke="${ring}" stroke-width="14" stroke-linecap="round" stroke-dasharray="${((2 * Math.PI * 106 * left) / 60).toFixed(1)} 9999" transform="rotate(-90 120 120)"/></svg>`,
+  )}`;
   const corner = (style) => <div style={{ position: "absolute", width: 40, height: 40, borderColor: gold, borderStyle: "solid", display: "flex", ...style }} />;
 
   return new ImageResponse(
@@ -77,10 +84,11 @@ export default async function handler(request) {
         </div>
 
         {/* Anneau des 60 secondes */}
-        <div style={{ position: "absolute", right: 64, top: 80, width: 240, height: 240, display: "flex", alignItems: "center", justifyContent: "center", borderRadius: 9999, border: `14px solid ${GREEN}`, boxShadow: `0 0 36px ${GREEN}88, inset 0 0 24px ${GREEN}55` }}>
+        <div style={{ position: "absolute", right: 64, top: 80, width: 240, height: 240, display: "flex", alignItems: "center", justifyContent: "center", borderRadius: 9999, boxShadow: `0 0 40px ${ring}66` }}>
+          <img src={arc} width={240} height={240} style={{ position: "absolute", left: 0, top: 0 }} />
           <div style={{ display: "flex", flexDirection: "column", alignItems: "center" }}>
-            <div style={{ display: "flex", fontFamily: display, fontWeight: 900, fontSize: 92, lineHeight: 1 }}>60</div>
-            <div style={{ display: "flex", fontFamily: text, fontWeight: 700, fontSize: 16, letterSpacing: 6, color: GREEN }}>SECONDES</div>
+            <div style={{ display: "flex", fontFamily: display, fontWeight: 900, fontSize: 92, lineHeight: 1, color: left <= 15 ? "#ffb4b4" : "#fff" }}>{left}</div>
+            <div style={{ display: "flex", fontFamily: text, fontWeight: 700, fontSize: 16, letterSpacing: 6, color: ring }}>SECONDES</div>
           </div>
         </div>
 
