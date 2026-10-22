@@ -43,7 +43,7 @@ export default function CalendarPage() {
     <>
       <Head>
         <title>Calendrier — SixSence</title>
-        <meta name="description" content="Calendrier SixSence : coupes Horus et Anubis, événements GTA 6, fin de saison. Abonne-toi depuis ton agenda." />
+        <meta name="description" content="Calendrier SixSence : trophées Horus et Anubis, événements GTA 6, fin de saison. Abonne-toi depuis ton agenda." />
       </Head>
       <PageHeader
         eyebrow="SixSence · Calendrier"
@@ -52,7 +52,7 @@ export default function CalendarPage() {
             Calen<span className="text-gold-gradient">drier</span>
           </>
         }
-        description="Coupes, événements GTA 6 et temps forts de la saison. Abonne-toi pour les retrouver dans ton agenda."
+        description="Trophées, événements GTA 6 et temps forts de la saison. Abonne-toi pour les retrouver dans ton agenda."
       />
       <Container className="py-12">
         {error ? <Notice tone="error">{error}</Notice> : null}

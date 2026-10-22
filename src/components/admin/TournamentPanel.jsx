@@ -299,13 +299,13 @@ function CupPanel({ kind }) {
           </h2>
         </div>
         {anubis ? null : <Button variant={state.auto ? "primary" : "outline"} disabled={pending !== null} onClick={() => run("auto", () => api("/admin/cups/auto", { method: "POST", body: { on: !state.auto } }), state.auto ? "Coupes automatiques désactivées." : "Coupes automatiques activées.")}>
-          {state.auto ? "Coupes automatiques : activées" : "Coupes automatiques : désactivées"}
+          {state.auto ? "Trophées automatiques : activés" : "Trophées automatiques : désactivés"}
         </Button>}
       </div>
       <p className="text-sm text-white/55">
         {anubis
-          ? "Rendez-vous ouverts automatiquement si l'interrupteur des coupes automatiques (au-dessus) est activé. "
-          : "Quand les coupes automatiques sont activées (Horus et Anubis), chaque rendez-vous actif ouvre sa prochaine coupe aux inscriptions (dès la précédente terminée). "}
+          ? "Rendez-vous ouverts automatiquement si l'interrupteur des trophées automatiques (au-dessus) est activé. "
+          : "Quand les trophées automatiques sont activés (Horus et Anubis), chaque rendez-vous actif ouvre sa prochaine coupe aux inscriptions (dès la précédente terminée). "}
         {CUP_TEXT[kind].rewards}
       </p>
       {error ? <Notice tone="error">{error}</Notice> : null}

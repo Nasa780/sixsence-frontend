@@ -21,7 +21,7 @@ export default function NewsPage() {
     <>
       <Head>
         <title>Nouveautés — SixSence</title>
-        <meta name="description" content="Les dernières nouveautés de SixSence : coupes, Division, classé, Discord." />
+        <meta name="description" content="Les dernières nouveautés de SixSence : trophées, Division, classé, Discord." />
       </Head>
       <PageHeader
         eyebrow="SixSence · Journal"
