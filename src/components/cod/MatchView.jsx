@@ -19,6 +19,8 @@ import { TacticalCard } from "../ui/TacticalCard";
 import { ConfirmDialog } from "../ui/ConfirmDialog";
 import { ReasonDialog } from "../ui/ReasonDialog";
 import { PointsAtStake } from "./PointsAtStake";
+import { ReadyCheckOverlay } from "./QueuePanel";
+import { signInWithDiscord } from "../../lib/auth";
 import { RankEmblem } from "./RankEmblem";
 import { RankUpOverlay } from "./RankUpOverlay";
 import { Eyebrow } from "../ui/Typography";
@@ -334,8 +336,28 @@ export function MatchView({ matchId }) {
       <div aria-live="polite" className="space-y-4">
         {error ? <Notice tone="error">{error}</Notice> : null}
 
+        {/* Vérification « Prêt ? » : le même plein écran que la page de la file pour les joueurs du match
+            (arrivés par la notification ou le message Discord), impossible à rater. */}
+        {match.status === "ready_check" && myTeam ? (
+          <ReadyCheckOverlay
+            userId={userId}
+            started={false}
+            check={{
+              matchId: match.id,
+              format: match.format,
+              map: match.map,
+              mode: match.mode,
+              deadline: match.ready_deadline,
+              total: match.team_a.length + match.team_b.length,
+              accepted: readyUsers.length,
+              readyUsers,
+              points: data.pointsAtStake?.[userId] ?? null,
+            }}
+          />
+        ) : null}
         {match.status === "ready_check" ? (
           <ReadyCheckBlock
+            signedIn={Boolean(userId)}
             match={match}
             isPlayer={Boolean(myTeam)}
             iAmReady={readyUsers.includes(userId)}
@@ -886,7 +908,7 @@ function MatchChat({ matchId, messages, canWrite, currentUserId }) {
 }
 
 /** Vérification « Prêt ? » : chaque joueur a une minute pour accepter. */
-function ReadyCheckBlock({ match, isPlayer, iAmReady, pending, onAccept }) {
+function ReadyCheckBlock({ match, isPlayer, iAmReady, pending, onAccept, signedIn }) {
   const left = useCountdown(match.ready_deadline);
   const total = match.team_a.length + match.team_b.length;
   const accepted = (match.ready_users || []).length;
@@ -914,6 +936,11 @@ function ReadyCheckBlock({ match, isPlayer, iAmReady, pending, onAccept }) {
             Accepter le match
           </Button>
         )
+      ) : !signedIn ? (
+        // Arrivé par un lien sans être connecté (navigateur de Discord, autre appareil) : connexion puis retour ici.
+        <Button size="lg" onClick={() => signInWithDiscord(`/cod/match/${match.id}`)} disabled={left <= 0}>
+          Se connecter pour accepter
+        </Button>
       ) : null}
     </TacticalCard>
   );
