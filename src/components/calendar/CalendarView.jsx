@@ -130,15 +130,8 @@ export function CalendarView({ events, weekStart, now, onWeek }) {
 
       {events.length === 0 ? <EmptyState title="Rien de prévu pour l'instant">Les coupes et les événements GTA 6 apparaîtront ici dès leur annonce.</EmptyState> : null}
 
-      <div className="flex flex-col gap-4 border-t border-white/8 pt-6 sm:flex-row sm:items-center sm:justify-between">
-        <ul className="flex flex-wrap gap-4 text-xs text-white/55">
-          {Object.entries(KINDS).map(([key, kind]) => (
-            <li key={key} className="inline-flex items-center gap-2">
-              <span aria-hidden className="h-2.5 w-2.5" style={{ background: kind.color }} />
-              {kind.label}
-            </li>
-          ))}
-        </ul>
+      {/* Pas de légende : chaque rendez-vous porte la couleur de son type (coupes, GTA 6, saison, rendez-vous). */}
+      <div className="flex flex-col gap-4 border-t border-white/8 pt-6 sm:flex-row sm:items-center sm:justify-end">
         <div className="flex flex-wrap gap-2">
           <ButtonLink href={icsUrl.replace(/^https?:/, "webcal:")} size="sm">
             <LuCalendarPlus aria-hidden className="h-4 w-4" />

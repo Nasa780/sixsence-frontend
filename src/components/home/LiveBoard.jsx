@@ -37,8 +37,10 @@ export function LiveBoard() {
   }, []);
 
   return (
-    <section className="py-20 sm:py-28">
-      <Container className="grid grid-cols-1 gap-10 lg:grid-cols-[1fr_1.1fr] lg:items-start">
+    <section className="relative border-t border-white/10 bg-ink-800 py-20 sm:py-28">
+      {/* Même fond que le calendrier, juste en dessous : un seul bandeau sombre quadrillé. */}
+      <div aria-hidden className="absolute inset-0 bg-grid opacity-40" />
+      <Container className="relative grid grid-cols-1 gap-10 lg:grid-cols-[1fr_1.1fr] lg:items-start">
         <Reveal>
           <SectionHeading
             eyebrow="En direct"
