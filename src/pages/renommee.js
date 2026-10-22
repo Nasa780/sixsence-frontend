@@ -1,14 +1,16 @@
 import { motion } from "framer-motion";
+import Head from "next/head";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import { LuCrown, LuFlame, LuMedal, LuStar, LuTrophy, LuZap } from "react-icons/lu";
-import { TeamCrest } from "../teams/TeamParts";
-import { Avatar } from "../ui/Avatar";
-import { EmptyState, Loading, Notice } from "../ui/Feedback";
-import { TacticalCard } from "../ui/TacticalCard";
-import { Eyebrow } from "../ui/Typography";
-import { api } from "../../lib/api";
-import { cn } from "../../lib/cn";
+import { TeamCrest } from "../components/teams/TeamParts";
+import { Avatar } from "../components/ui/Avatar";
+import { Container } from "../components/ui/Container";
+import { EmptyState, Loading, Notice } from "../components/ui/Feedback";
+import { TacticalCard } from "../components/ui/TacticalCard";
+import { Eyebrow, PageHeader } from "../components/ui/Typography";
+import { api } from "../lib/api";
+import { cn } from "../lib/cn";
 
 const CUP_IMAGE = { horus: "/images/trophees/horus-or.png", anubis: "/images/trophees/anubis-or.png", saison: "/images/trophees/horus-or.png" };
 const CUP_LABEL = { horus: "Coupe Horus", anubis: "Coupe Anubis", saison: "Tournoi de saison" };
@@ -16,11 +18,10 @@ const monthFr = (iso) => new Date(iso).toLocaleDateString("fr-FR", { month: "lon
 const dateFr = (iso) => (iso ? new Date(iso).toLocaleDateString("fr-FR", { day: "numeric", month: "short", year: "numeric" }) : "");
 
 /**
- * Hall of Fame (page MW4, sous les tops ; ancienne page /hall-of-fame redirigée ici) : records de tous les
- * temps, champions de chaque saison (joueurs et équipes), vainqueurs des coupes (trophées Horus, médailles
- * Anubis) et MVP du mois. Données GET /hall-of-fame du backend.
+ * Renommée (page « Bureau des Légendes », ancienne page Hall of Fame) : records de tous les temps, champions de chaque saison (joueurs et équipes), vainqueurs
+ * des coupes (trophées Horus, médailles Anubis) et MVP du mois. Données GET /hall-of-fame du backend.
  */
-export function HallOfFame() {
+export default function RenownPage() {
   const [data, setData] = useState(null);
   const [error, setError] = useState(null);
 
@@ -40,14 +41,21 @@ export function HallOfFame() {
     : [];
 
   return (
-    <section id="hall-of-fame" aria-labelledby="titre-hall-of-fame" className="scroll-mt-28 space-y-16">
-      <div>
-        <Eyebrow>Légendes</Eyebrow>
-        <h2 id="titre-hall-of-fame" className="mt-3 font-display text-5xl font-black uppercase leading-none sm:text-6xl">
-          Hall of <span className="text-gold-gradient">Fame</span>
-        </h2>
-        <p className="mt-3 max-w-2xl text-sm text-white/55">Les champions, les vainqueurs de coupes et les records de SixSence.</p>
-      </div>
+    <>
+      <Head>
+        <title>Renommée — SixSence</title>
+        <meta name="description" content="Renommée SixSence, le Bureau des Légendes : champions de saison, vainqueurs des coupes Horus et Anubis, MVP du mois et records." />
+      </Head>
+      <PageHeader
+        eyebrow="SixSence · Renommée"
+        title={
+          <>
+            Bureau des <span className="text-gold-gradient">Légendes</span>
+          </>
+        }
+        description="Les champions, les vainqueurs de coupes et les records de SixSence. Ceux qui ont marqué l'histoire de la communauté."
+      />
+      <Container className="space-y-16 py-12">
         {error ? <Notice tone="error">{error}</Notice> : null}
         {!data && !error ? <Loading /> : null}
 
@@ -162,7 +170,7 @@ export function HallOfFame() {
               <SectionTitle id="titre-mvp" eyebrow="Élus par les joueurs" title="MVP du mois" />
               {data.mvps.length === 0 ? (
                 <div className="mt-6">
-                  <EmptyState title="Pas encore de MVP du mois">Vote pour le MVP après chaque victoire : le plus élu du mois entre au Hall of Fame.</EmptyState>
+                  <EmptyState title="Pas encore de MVP du mois">Vote pour le MVP après chaque victoire : le plus élu du mois entre dans la Renommée.</EmptyState>
                 </div>
               ) : (
                 <ul className="mt-6 grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-6">
@@ -183,7 +191,8 @@ export function HallOfFame() {
             </section>
           </>
         ) : null}
-    </section>
+      </Container>
+    </>
   );
 }
 
@@ -191,9 +200,9 @@ function SectionTitle({ id, eyebrow, title }) {
   return (
     <div>
       <Eyebrow>{eyebrow}</Eyebrow>
-      <h3 id={id} className="mt-2 font-display text-3xl font-black uppercase leading-none sm:text-4xl">
+      <h2 id={id} className="mt-2 font-display text-4xl font-black uppercase leading-none sm:text-5xl">
         {title}
-      </h3>
+      </h2>
     </div>
   );
 }

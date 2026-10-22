@@ -11,7 +11,7 @@ import { PageHeader } from "./Typography";
  * Page d'arrivée d'un lien d'invitation, la même pour une équipe et un groupe :
  * en-tête du mode, carte (visuel, nom, infos, joueurs), puis connexion ou boutons.
  *
- *   meta      { title, description } : titre de l'onglet et aperçu du lien partagé
+ *   meta      { title, description, image? } : titre de l'onglet et aperçu du lien partagé (image : carte de l'équipe)
  *   hero      { eyebrow, title, description } : en-tête de page
  *   invalid   texte si le lien ne marche plus ; ready : aperçu chargé
  *   card      { label, icon, visual, overline, name, line, members }
@@ -27,7 +27,7 @@ export function InviteLanding({ meta, hero, invalid, ready, card, error, actions
         <meta key="og:title" property="og:title" content={meta.title} />
         <meta key="og:description" property="og:description" content={meta.description} />
         <meta key="description" name="description" content={meta.description} />
-        <meta key="og:image" property="og:image" content={`${SITE_URL}/api/og?v=6`} />
+        <meta key="og:image" property="og:image" content={meta.image ?? `${SITE_URL}/api/og?v=6`} />
       </Head>
       <PageHeader image="/images/mw4.webp" eyebrow={hero.eyebrow} title={hero.title} description={hero.description} />
       <Container className="max-w-3xl py-12">

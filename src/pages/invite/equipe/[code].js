@@ -7,6 +7,7 @@ import { InviteLanding } from "../../../components/ui/InviteLanding";
 import useSession from "../../../hooks/useSession";
 import { api } from "../../../lib/api";
 import { fetchInvitePreview } from "../../../lib/invites";
+import { SITE_URL } from "../../../lib/config";
 import { TEAM_LIMITS } from "../../../lib/teams";
 
 /** Arrivée par un lien d'invitation d'équipe (/invite/equipe/CODE) : aperçu de l'équipe, puis « Rejoindre l'équipe ». */
@@ -45,6 +46,8 @@ export default function TeamInvitePage({ code, initialTeam }) {
         description: team
           ? `Invitation à rejoindre [${team.tag}] ${team.name} en Division : ${team.members.length} / ${TEAM_LIMITS.maxMembers} joueurs, ${team.points} pts.`
           : "Invitation à rejoindre une équipe de Division sur SixSence.",
+        // Aperçu du lien sur Discord : la carte de l'équipe, bandeau « Invitation ».
+        image: team?.id ? `${SITE_URL}/api/og/team?id=${team.id}&invite=1&v=i1-${team.points}-${team.members.length}` : undefined,
       }}
       hero={{
         eyebrow: "Division MW4",

@@ -9,15 +9,7 @@ const COLUMNS = [
     title: "Jeux",
     links: [
       { href: "/cod", label: "MW4", bold: true },
-      { href: "/cod/ranked", label: "Classé" },
-      ...(MATCH_TEAM_ENABLED
-        ? [
-            { href: "/cod/division", label: "Division" },
-            { href: "/cod/tournoi", label: "Tournoi" },
-          ]
-        : []),
-      { href: "/gta6", label: "GTA 6", univers: "gta", bold: true },
-      { href: "/gta6/events", label: "Événements", univers: "gta" },
+      { href: "/gta6", label: "GTA VI", univers: "gta", bold: true },
     ],
   },
   {
@@ -26,10 +18,9 @@ const COLUMNS = [
       { href: "/cod/profile", label: "Mon profil" },
       ...(MY_MATCHES_ENABLED ? [{ href: "/cod/matchs", label: "Mes matchs" }] : []),
       { href: "/calendrier", label: "Calendrier" },
+      { href: "/renommee", label: "Renommée" },
       { href: "/nouveautes", label: "Nouveautés" },
       { href: "/reglement", label: "Règlement" },
-      { href: "/founders", label: "Fondateurs" },
-      { href: "/partners", label: "Partenaires" },
     ],
   },
 ];
