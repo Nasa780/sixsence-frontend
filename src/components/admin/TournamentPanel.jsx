@@ -100,7 +100,7 @@ export function TournamentPanel() {
               </div>
             </div>
             <p className="text-xs text-white/45">
-              À la création, les qualifiés et leurs effectifs sont figés et prévenus. Check-in 30 min avant ; le tournoi se déroule ensuite tout seul (BO3, finale en BO5).
+              À la création, les qualifiés et leurs effectifs sont figés et prévenus. Check-in de 2 h à 15 min avant, tirage dévoilé 15 min avant ; le tournoi se déroule ensuite tout seul (BO3, finale en BO5).
             </p>
             <Button
               disabled={pending !== null || !form.name.trim() || !form.startsAt || (preview?.qualified?.length ?? 0) < 2}

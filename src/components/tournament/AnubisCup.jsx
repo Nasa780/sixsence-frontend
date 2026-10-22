@@ -65,7 +65,10 @@ function FloatingMedal({ metal = "or", size = 260, src = null, alt = null }) {
  */
 export function AnubisCup({ tournament, userId, now, countdown, onDone, bracket }) {
   const scheduled = tournament.status === "scheduled";
-  const checkInOpen = scheduled && now >= new Date(tournament.checkInOpensAt).getTime();
+  // Check-in : de 2 h à 15 min avant le début ; à la fermeture, tirage dévoilé, premiers matchs à l'heure du début.
+  const closesAt = tournament?.checkInClosesAt ?? tournament?.startsAt;
+  const checkInOpen = scheduled && now >= new Date(tournament.checkInOpensAt).getTime() && now < new Date(closesAt).getTime();
+  const drawnWaiting = tournament?.status === "running" && now < new Date(tournament.startsAt).getTime();
   const plannedTeams = Math.min(tournament.size, Math.floor(tournament.registered / tournament.teamSize));
   const mySquad = tournament.squads.find((squad) => squad.team?.id === tournament.viewer?.teamId);
 
@@ -90,7 +93,7 @@ export function AnubisCup({ tournament, userId, now, countdown, onDone, bracket 
             {scheduled ? (
               <>
                 <div className="mt-7 grid grid-cols-2 gap-3 sm:grid-cols-4">
-                  <HudStat label={checkInOpen ? "Début dans" : "Check-in dans"} value={countdown(checkInOpen ? tournament.startsAt : tournament.checkInOpensAt)} gold />
+                  <HudStat label={checkInOpen ? "Tirage dans" : "Check-in dans"} value={countdown(checkInOpen ? closesAt : tournament.checkInOpensAt)} gold />
                   <HudStat label="Inscrits" value={`${tournament.registered} / ${tournament.capacity}`} />
                   <HudStat label="Équipes prévues" value={plannedTeams} hint={plannedTeams < 4 ? `4 minimum (${4 * tournament.teamSize} joueurs)` : `${tournament.size} au plus`} />
                   <HudStat label="Check-in" value={`${tournament.checkedInCount} / ${tournament.registered}`} />
@@ -106,6 +109,7 @@ export function AnubisCup({ tournament, userId, now, countdown, onDone, bracket 
         </div>
       </TacticalCard>
 
+      {drawnWaiting ? <Notice>Équipes tirées au sort : premiers matchs dans {countdown(tournament.startsAt)}. Rejoins ton capitaine et ton salon vocal.</Notice> : null}
       {tournament.status === "cancelled" ? <Notice tone="error">Cette coupe a été annulée : pas assez de joueurs présents au check-in.</Notice> : null}
 
       {mySquad && tournament.viewer?.canSetRoster ? <CaptainRoster tournament={tournament} squad={mySquad} onDone={onDone} /> : null}
@@ -183,7 +187,7 @@ function SoloRegistration({ tournament, userId, checkInOpen, onDone }) {
           {viewer.checkedIn ? "Présent" : "Inscrit"}
         </Chip>
         <p className="min-w-0 flex-1 text-sm text-white/65">
-          {viewer.checkedIn ? "Check-in validé : ton équipe sera tirée au sort au début." : checkInOpen ? "Le check-in est ouvert : confirme ta présence." : "Le check-in ouvre 30 min avant le début."}
+          {viewer.checkedIn ? "Check-in validé : ton équipe sera tirée au sort 15 min avant le début." : checkInOpen ? "Le check-in est ouvert : confirme ta présence." : "Le check-in ouvre 2 h avant le début."}
         </p>
         {viewer.canCheckIn ? (
           <Button disabled={Boolean(pending)} onClick={() => run("checkin")}>
@@ -458,7 +462,7 @@ function AnubisPodium({ tournament }) {
 function AnubisRules({ teamSize }) {
   const steps = [
     ["01", "Inscris-toi seul", "Pas besoin d'équipe : identifiant Activision et compte Discord suffisent."],
-    ["02", "Check-in", "30 min avant le début, confirme ta présence. Sans check-in, pas de place."],
+    ["02", "Check-in", "De 2 h à 15 min avant le début, confirme ta présence. Sans check-in, pas de place."],
     ["03", "Tirage", `Les présents sont répartis au hasard en équipes de ${teamSize}. Le mieux classé devient capitaine, les joueurs en trop remplaçants.`],
     ["04", "Médailles", "Or, argent, bronze sur ton profil, et le rôle Discord « Vainqueur — Coupe Anubis » jusqu'à la prochaine coupe."],
   ];
