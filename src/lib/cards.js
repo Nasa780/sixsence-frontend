@@ -57,7 +57,6 @@ const CARDS = {
   beta: { rarity: "rare", art: { type: "glyph", glyph: "β", color: "#5cc8ff", video: "/images/cartes/beta.mp4", og: "/images/cartes/og/beta.jpg", poster: "/images/cartes/beta-poster.webp" } },
   partenaire: { rarity: "rare", art: { type: "glyph", glyph: "P", color: "#ff9a5c" } },
   "staff-6": { rarity: "rare", art: { type: "glyph", glyph: "6", color: "#d4af37" } },
-  arbitre: { rarity: "epique", art: { type: "illustration", glyph: "A", hue: "#e5484d", image: "/images/cartes/arbitre.webp", og: "/images/cartes/og/arbitre.jpg", position: "center", mobilePosition: "center" } },
   "premiere-viree": { rarity: "commune", art: { type: "sunset", color: "#ff9a5c" } },
   habitue: { rarity: "rare", art: { type: "sunset", glyph: "×5", color: "#ff5f8a" } },
 };
@@ -65,7 +64,7 @@ const CARDS = {
 /** Illustrations propres à une saison (même clé que la carte, ex. « s1-champion »). */
 const SEASON_ART = {
   "s1-participant": { image: "/images/cartes/s1/participant.webp", og: "/images/cartes/og/s1-participant.jpg", position: "center", mobilePosition: "center" },
-  "s1-top10": { image: "/images/cartes/s1/top10.webp", og: "/images/cartes/og/s1-top10.jpg", position: "center 42%", mobilePosition: "center 42%" },
+  "s1-top10": { image: "/images/cartes/s1/top10.webp", og: "/images/cartes/og/s1-top10.jpg", position: "center 32%", mobilePosition: "center 32%" },
   "s1-champion": { image: "/images/cartes/s1/champion.webp", og: "/images/cartes/og/s1-champion.jpg", position: "center", mobilePosition: "center" },
 };
 
