@@ -19,7 +19,7 @@ import useUser from "../../hooks/useUser";
 import { supabase } from "../../lib/supabase";
 import { api } from "../../lib/api";
 import { cn } from "../../lib/cn";
-import { HubHighlights } from "./HubHighlights";
+import { HubHighlights, SHOW_WEEK_HIGHLIGHTS } from "./HubHighlights";
 
 /** Les deux modes de jeu, présentés séparément sur le hub. */
 const MODES = [
@@ -214,7 +214,7 @@ export function ModesHub() {
         </div>
 
         {/* Joueur et match de la semaine, fil d'activité en direct. */}
-        <HubHighlights />
+        {SHOW_WEEK_HIGHLIGHTS ? <HubHighlights /> : null}
 
         <div className="grid grid-cols-1 gap-12 xl:grid-cols-[3fr_2fr]">
           <section aria-labelledby="titre-top10">
