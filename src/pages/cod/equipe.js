@@ -637,6 +637,18 @@ function InviteLinkCard({ team }) {
       .catch((caught) => setError(caught.message));
   }, [team.id]);
 
+  // Aperçu Discord prêt avant d'être collé : la page d'invitation (et le serveur, s'il dormait) puis l'image de
+  // la carte sont générées maintenant et gardées en cache ; sinon Discord abandonne au bout de quelques secondes
+  // et n'affiche que le lien.
+  useEffect(() => {
+    if (!code) return;
+    const url = inviteUrl("equipe", code);
+    const image = `${window.location.origin}/api/og/team?id=${team.id}&invite=1&v=i1-${team.points}-${team.members?.length ?? 0}`;
+    fetch(url, { credentials: "omit" })
+      .catch(() => {})
+      .finally(() => fetch(image).catch(() => {}));
+  }, [code, team.id, team.points, team.members?.length]);
+
   async function reset() {
     if (!window.confirm("Créer un nouveau lien ? L'ancien ne fonctionnera plus.")) return;
     setPending(true);

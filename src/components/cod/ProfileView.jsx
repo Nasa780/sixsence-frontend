@@ -187,14 +187,14 @@ export function ProfileView({ userId, editable = false, ownUser = null }) {
           <div className="flex items-center gap-5">
             <Avatar src={player.avatar_url} name={player.username} size={96} className="[--cut:18px]" ring={rankGradient(rankFor(profile.points), 160)} />
             <div className="min-w-0">
-              <div className="flex min-w-0 items-baseline gap-3">
-                <h2 className="truncate font-display text-5xl font-black uppercase leading-[0.9] sm:text-6xl">{player.username}</h2>
-                {/* Équipe : seulement son tag, à côté du pseudo, dans la couleur de l'équipe (lien vers sa fiche). */}
+              <div className="flex min-w-0 items-baseline gap-2 sm:gap-3">
+                <h2 className="truncate font-display text-4xl font-black uppercase leading-[0.9] sm:text-6xl">{player.username}</h2>
+                {/* Équipe : seulement son tag, dans la couleur de l'équipe (lien vers sa fiche) ; à gauche du pseudo sur mobile, à droite sur ordinateur. */}
                 {team ? (
                   <Link
                     href={`/cod/equipes/${team.id}`}
                     title={team.name}
-                    className="shrink-0 font-tech text-xl font-bold normal-case tracking-[0.12em] transition-opacity hover:opacity-80 sm:text-2xl"
+                    className="order-first shrink-0 font-tech text-base font-bold normal-case tracking-[0.12em] transition-opacity hover:opacity-80 sm:order-none sm:text-2xl"
                     style={{ color: team.color, textShadow: `0 0 12px ${team.color}66` }}
                   >
                     [{team.tag}]
