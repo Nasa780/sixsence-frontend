@@ -430,7 +430,7 @@ function DivisionHistory({ playerId, tournament = false }) {
   if (matches.length === 0) return (
       <div className="mt-6">
         {tournament ? (
-          <EmptyState title="Aucun match de tournoi">Les matchs des coupes Horus et Anubis et du tournoi de saison apparaîtront ici.</EmptyState>
+          <EmptyState title="Aucun match de tournoi">Les matchs des trophées Horus et Anubis et du tournoi de saison apparaîtront ici.</EmptyState>
         ) : (
           <EmptyState title="Aucun match de Division">Les matchs joués avec une équipe apparaîtront ici.</EmptyState>
         )}

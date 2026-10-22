@@ -30,7 +30,7 @@ const PAGES = [
   { href: "/reglement", label: "Règlement", keywords: "regles reglement" },
   { href: "/renommee", label: "Renommée", keywords: "bureau des legendes hall of fame champions records mvp" },
   { href: "/nouveautes", label: "Nouveautés", keywords: "mises a jour changelog nouveautes" },
-  { href: "/calendrier", label: "Calendrier", keywords: "agenda coupes evenements" },
+  { href: "/calendrier", label: "Calendrier", keywords: "agenda trophees coupes evenements" },
 ];
 const RECENT_KEY = "sixsence-recherches";
 const plain = (text) => text.normalize("NFKD").toLowerCase().replace(/[^a-z0-9 ]/g, "");

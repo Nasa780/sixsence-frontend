@@ -44,7 +44,7 @@ export default function RenownPage() {
     <>
       <Head>
         <title>Renommée — SixSence</title>
-        <meta name="description" content="Renommée SixSence, le Bureau des Légendes : champions de saison, vainqueurs des coupes Horus et Anubis, MVP du mois et records." />
+        <meta name="description" content="Renommée SixSence, le Bureau des Légendes : champions de saison, vainqueurs des trophées Horus et Anubis, MVP du mois et records." />
       </Head>
       <PageHeader
         eyebrow="SixSence · Renommée"
@@ -53,7 +53,7 @@ export default function RenownPage() {
             Bureau des <span className="text-gold-gradient">Légendes</span>
           </>
         }
-        description="Les champions, les vainqueurs de coupes et les records de SixSence. Ceux qui ont marqué l'histoire de la communauté."
+        description="Les champions, les vainqueurs de trophées et les records de SixSence. Ceux qui ont marqué l'histoire de la communauté."
       />
       <Container className="space-y-16 py-12">
         {error ? <Notice tone="error">{error}</Notice> : null}
@@ -121,7 +121,7 @@ export default function RenownPage() {
             </section>
 
             <section aria-labelledby="titre-coupes">
-              <SectionTitle id="titre-coupes" eyebrow="Horus, Anubis, fin de saison" title="Vainqueurs des coupes" />
+              <SectionTitle id="titre-coupes" eyebrow="Horus, Anubis, fin de saison" title="Vainqueurs des trophées" />
               {data.cups.length === 0 ? (
                 <div className="mt-6">
                   <EmptyState title="Aucune coupe terminée">Le premier vainqueur aura sa place ici.</EmptyState>

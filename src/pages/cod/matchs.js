@@ -53,7 +53,7 @@ export default function MyMatchesPage() {
             Mes <span className="text-gold-gradient">matchs</span>
           </>
         }
-        description="Classé, Division et coupes : ton match en cours et tout ton historique au même endroit."
+        description="Classé, Division et trophées : ton match en cours et tout ton historique au même endroit."
       />
       <Container className="space-y-10 py-12">
         {loading || (userId && rows === null) ? <Loading /> : null}

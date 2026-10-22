@@ -9,7 +9,7 @@ import { TacticalCard } from "../ui/TacticalCard";
 
 /** Couleurs par type : coupes rouge, GTA 6 coucher de soleil, saison cyan, rendez-vous vert. */
 export const KINDS = {
-  coupe: { label: "Coupes", color: "#e5484d" },
+  coupe: { label: "Trophées", color: "#e5484d" },
   gta: { label: "GTA 6", color: "#f59e0b" },
   saison: { label: "Saison", color: "#22d3ee" },
   rdv: { label: "Rendez-vous", color: "#34d399" },
@@ -128,7 +128,7 @@ export function CalendarView({ events, weekStart, now, onWeek }) {
         </section>
       ) : null}
 
-      {events.length === 0 ? <EmptyState title="Rien de prévu pour l'instant">Les coupes et les événements GTA 6 apparaîtront ici dès leur annonce.</EmptyState> : null}
+      {events.length === 0 ? <EmptyState title="Rien de prévu pour l'instant">Les trophées et les événements GTA 6 apparaîtront ici dès leur annonce.</EmptyState> : null}
 
       {/* Pas de légende : chaque rendez-vous porte la couleur de son type (coupes, GTA 6, saison, rendez-vous). */}
       <div className="flex flex-col gap-4 border-t border-white/8 pt-6 sm:flex-row sm:items-center sm:justify-end">
