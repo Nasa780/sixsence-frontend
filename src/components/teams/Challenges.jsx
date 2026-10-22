@@ -56,7 +56,7 @@ function useMyTeam() {
 }
 
 /**
- * Bouton « Défier » de la fiche d'une autre équipe (Leaders) et fenêtre du défi : amical ou classé,
+ * Bouton « Défier » de la fiche d'une autre équipe (Leaders) et fenêtre du défi : amical ou officiel,
  * maintenant ou à une heure fixée, joueurs du match, message.
  */
 export function ChallengeButton({ target }) {
@@ -140,7 +140,7 @@ function ChallengeDialog({ target, mine, onClose }) {
               <div className="grid gap-2 sm:grid-cols-2">
                 {[
                   [true, "Amical", "Sans points ni bilan : pour s'entraîner."],
-                  [false, "Classé", "Points de Division normaux."],
+                  [false, "Officiel", "Compte pour les points et le bilan de la Division."],
                 ].map(([value, label, hint]) => (
                   <button key={label} type="button" aria-pressed={friendly === value} onClick={() => setFriendly(value)} className={cn("border p-3 text-left transition", friendly === value ? "border-gold bg-gold/10" : "border-white/10 hover:border-white/25")}>
                     <span className="block font-display text-xl font-bold uppercase">{label}</span>
@@ -227,7 +227,7 @@ export function ChallengesPanel() {
                 [{other?.tag}] {other?.name}
               </p>
               <p className="mt-1 text-xs text-white/50">
-                {challenge.friendly ? "Amical" : "Classé"} · BO3 · {challenge.scheduledAt ? when(challenge.scheduledAt) : "dès l'acceptation"}
+                {challenge.friendly ? "Amical" : "Officiel"} · BO3 · {challenge.scheduledAt ? when(challenge.scheduledAt) : "dès l'acceptation"}
                 {challenge.message ? ` · « ${challenge.message} »` : ""}
               </p>
             </div>
@@ -273,7 +273,7 @@ export function ChallengesPanel() {
         <h2 id="titre-defis" className="mt-2 font-display text-3xl font-black uppercase leading-none sm:text-4xl">
           Défis
         </h2>
-        <p className="mt-2 text-sm text-white/55">Défie une équipe depuis sa fiche (bouton « Défier »). Amical pour s&apos;entraîner, ou classé pour les points.</p>
+        <p className="mt-2 text-sm text-white/55">Défie une équipe depuis sa fiche (bouton « Défier »). Amical pour s&apos;entraîner, ou officiel pour les points de Division.</p>
       </div>
       {error ? <Notice tone="error">{error}</Notice> : null}
       <div className="grid gap-6 lg:grid-cols-2">
@@ -293,7 +293,7 @@ export function ChallengesPanel() {
             {data.recent.map((c) => (
               <li key={c.id} className="flex flex-wrap items-center gap-3 border-l-2 border-white/10 bg-white/[0.02] px-3 py-2 text-sm">
                 <span className="min-w-0 flex-1 truncate">
-                  [{c.from?.tag}] vs [{c.to?.tag}] · {c.friendly ? "amical" : "classé"}
+                  [{c.from?.tag}] vs [{c.to?.tag}] · {c.friendly ? "amical" : "officiel"}
                 </span>
                 <span className="text-xs text-white/45">{{ declined: "Refusé", cancelled: "Annulé", expired: "Expiré", played: "Joué", accepted: "Lancé" }[c.status] ?? c.status}</span>
                 {c.matchId ? (
