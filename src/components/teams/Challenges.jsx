@@ -7,6 +7,7 @@ import { cn } from "../../lib/cn";
 import { Avatar } from "../ui/Avatar";
 import { Button } from "../ui/Button";
 import { Chip, Notice } from "../ui/Feedback";
+import { Portal } from "../ui/Portal";
 import { TacticalCard } from "../ui/TacticalCard";
 import { Eyebrow } from "../ui/Typography";
 import { TeamCrest, fieldClass, labelClass } from "./TeamParts";
@@ -101,84 +102,86 @@ function ChallengeDialog({ target, mine, onClose }) {
   }
 
   return (
-    <motion.div
-      className="fixed inset-0 z-[80] flex items-start justify-center overflow-y-auto bg-black/75 px-4 py-[8vh] backdrop-blur-sm"
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      exit={{ opacity: 0 }}
-      onMouseDown={(event) => event.target === event.currentTarget && onClose()}
-    >
-      <motion.div role="dialog" aria-modal="true" aria-label="Défier une équipe" initial={{ y: -16, opacity: 0 }} animate={{ y: 0, opacity: 1 }} exit={{ y: -10, opacity: 0 }} className="w-full max-w-xl">
-        <TacticalCard highlight cut={22} innerClassName="space-y-5 p-6">
-          <div className="flex items-start justify-between gap-3">
-            <div className="flex items-center gap-3">
-              <TeamCrest team={target} size={44} />
-              <div>
-                <Eyebrow>Défi direct</Eyebrow>
-                <p className="mt-1 font-display text-3xl font-black uppercase leading-none">
-                  [{target.tag}] {target.name}
-                </p>
-              </div>
-            </div>
-            <button type="button" onClick={onClose} aria-label="Fermer" className="text-white/50 hover:text-white">
-              <LuX className="h-5 w-5" />
-            </button>
-          </div>
-
-          {done ? (
-            <>
-              <Notice tone="success">Défi envoyé : les Leaders de [{target.tag}] sont prévenus. Suis la réponse dans Mon équipe, onglet Défis.</Notice>
-              <div className="flex gap-2">
-                <Button onClick={onClose}>Fermer</Button>
-                <Link href="/cod/equipe?onglet=defis" className="inline-flex items-center px-3 text-sm text-gold underline underline-offset-4">
-                  Mes défis
-                </Link>
-              </div>
-            </>
-          ) : (
-            <>
-              <div className="grid gap-2 sm:grid-cols-2">
-                {[
-                  [true, "Amical", "Sans points ni bilan : pour s'entraîner."],
-                  [false, "Officiel", "Compte pour les points et le bilan de la Division."],
-                ].map(([value, label, hint]) => (
-                  <button key={label} type="button" aria-pressed={friendly === value} onClick={() => setFriendly(value)} className={cn("border p-3 text-left transition", friendly === value ? "border-gold bg-gold/10" : "border-white/10 hover:border-white/25")}>
-                    <span className="block font-display text-xl font-bold uppercase">{label}</span>
-                    <span className="mt-1 block text-xs text-white/50">{hint}</span>
-                  </button>
-                ))}
-              </div>
-              <div className="flex flex-wrap items-end gap-3">
-                <div className="flex gap-2">
-                  <Button size="sm" variant={!later ? "primary" : "outline"} onClick={() => setLater(false)}>
-                    <LuZap aria-hidden className="h-4 w-4" />
-                    Maintenant
-                  </Button>
-                  <Button size="sm" variant={later ? "primary" : "outline"} onClick={() => setLater(true)}>
-                    <LuClock aria-hidden className="h-4 w-4" />
-                    À une heure
-                  </Button>
+    <Portal>
+      <motion.div
+        className="fixed inset-0 z-[80] flex items-start justify-center overflow-y-auto bg-black/75 px-4 py-[8vh] backdrop-blur-sm"
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        exit={{ opacity: 0 }}
+        onMouseDown={(event) => event.target === event.currentTarget && onClose()}
+      >
+        <motion.div role="dialog" aria-modal="true" aria-label="Défier une équipe" initial={{ y: -16, opacity: 0 }} animate={{ y: 0, opacity: 1 }} exit={{ y: -10, opacity: 0 }} className="w-full max-w-xl">
+          <TacticalCard highlight cut={22} innerClassName="space-y-5 p-6">
+            <div className="flex items-start justify-between gap-3">
+              <div className="flex items-center gap-3">
+                <TeamCrest team={target} size={44} />
+                <div>
+                  <Eyebrow>Défi direct</Eyebrow>
+                  <p className="mt-1 font-display text-3xl font-black uppercase leading-none">
+                    [{target.tag}] {target.name}
+                  </p>
                 </div>
-                {later ? <input type="datetime-local" aria-label="Date et heure du match" className={cn(fieldClass, "max-w-xs")} value={at} onChange={(event) => setAt(event.target.value)} /> : null}
               </div>
-              <RosterPicker members={mine.team.members} size={mine.rosterSize} value={roster} onChange={setRoster} />
-              <div>
-                <label htmlFor="defi-message" className={labelClass}>
-                  Message (facultatif)
-                </label>
-                <input id="defi-message" className={fieldClass} maxLength={200} placeholder="GG d'avance, on vous attend !" value={message} onChange={(event) => setMessage(event.target.value)} />
-              </div>
-              {error ? <Notice tone="error">{error}</Notice> : null}
-              <Button disabled={pending || roster.length !== mine.rosterSize || (later && !at)} onClick={send}>
-                {pending ? <LuLoaderCircle aria-hidden className="h-5 w-5 animate-spin" /> : <LuSwords aria-hidden className="h-5 w-5" />}
-                Envoyer le défi
-              </Button>
-              <p className="text-xs text-white/40">BO3, même feuille de match que la Division. Sans réponse, le défi expire après 24 h (ou à l&apos;heure prévue).</p>
-            </>
-          )}
-        </TacticalCard>
+              <button type="button" onClick={onClose} aria-label="Fermer" className="text-white/50 hover:text-white">
+                <LuX className="h-5 w-5" />
+              </button>
+            </div>
+
+            {done ? (
+              <>
+                <Notice tone="success">Défi envoyé : les Leaders de [{target.tag}] sont prévenus. Suis la réponse dans Mon équipe, onglet Défis.</Notice>
+                <div className="flex gap-2">
+                  <Button onClick={onClose}>Fermer</Button>
+                  <Link href="/cod/equipe?onglet=defis" className="inline-flex items-center px-3 text-sm text-gold underline underline-offset-4">
+                    Mes défis
+                  </Link>
+                </div>
+              </>
+            ) : (
+              <>
+                <div className="grid gap-2 sm:grid-cols-2">
+                  {[
+                    [true, "Amical", "Sans points ni bilan : pour s'entraîner."],
+                    [false, "Officiel", "Compte pour les points et le bilan de la Division."],
+                  ].map(([value, label, hint]) => (
+                    <button key={label} type="button" aria-pressed={friendly === value} onClick={() => setFriendly(value)} className={cn("border p-3 text-left transition", friendly === value ? "border-gold bg-gold/10" : "border-white/10 hover:border-white/25")}>
+                      <span className="block font-display text-xl font-bold uppercase">{label}</span>
+                      <span className="mt-1 block text-xs text-white/50">{hint}</span>
+                    </button>
+                  ))}
+                </div>
+                <div className="flex flex-wrap items-end gap-3">
+                  <div className="flex gap-2">
+                    <Button size="sm" variant={!later ? "primary" : "outline"} onClick={() => setLater(false)}>
+                      <LuZap aria-hidden className="h-4 w-4" />
+                      Maintenant
+                    </Button>
+                    <Button size="sm" variant={later ? "primary" : "outline"} onClick={() => setLater(true)}>
+                      <LuClock aria-hidden className="h-4 w-4" />
+                      À une heure
+                    </Button>
+                  </div>
+                  {later ? <input type="datetime-local" aria-label="Date et heure du match" className={cn(fieldClass, "max-w-xs")} value={at} onChange={(event) => setAt(event.target.value)} /> : null}
+                </div>
+                <RosterPicker members={mine.team.members} size={mine.rosterSize} value={roster} onChange={setRoster} />
+                <div>
+                  <label htmlFor="defi-message" className={labelClass}>
+                    Message (facultatif)
+                  </label>
+                  <input id="defi-message" className={fieldClass} maxLength={200} placeholder="GG d'avance, on vous attend !" value={message} onChange={(event) => setMessage(event.target.value)} />
+                </div>
+                {error ? <Notice tone="error">{error}</Notice> : null}
+                <Button disabled={pending || roster.length !== mine.rosterSize || (later && !at)} onClick={send}>
+                  {pending ? <LuLoaderCircle aria-hidden className="h-5 w-5 animate-spin" /> : <LuSwords aria-hidden className="h-5 w-5" />}
+                  Envoyer le défi
+                </Button>
+                <p className="text-xs text-white/40">BO3, même feuille de match que la Division. Sans réponse, le défi expire après 24 h (ou à l&apos;heure prévue).</p>
+              </>
+            )}
+          </TacticalCard>
+        </motion.div>
       </motion.div>
-    </motion.div>
+    </Portal>
   );
 }
 

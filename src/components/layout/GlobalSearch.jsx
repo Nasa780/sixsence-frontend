@@ -8,6 +8,7 @@ import { MATCH_TEAM_ENABLED, MY_MATCHES_ENABLED } from "../../lib/config";
 import { rankFor } from "../../lib/ranks";
 import { TeamCrest } from "../teams/TeamParts";
 import { Avatar } from "../ui/Avatar";
+import { Portal } from "../ui/Portal";
 
 /** Pages proposées (et retrouvées par leur nom). */
 const PAGES = [
@@ -178,106 +179,108 @@ function SearchDialog({ onClose }) {
   const empty = query.trim().length >= 2 && !pending && result.players.length === 0 && result.teams.length === 0 && pages.length === 0;
 
   return (
-    <motion.div
-      className="fixed inset-0 z-[80] flex items-start justify-center bg-black/70 px-4 pt-[10vh] backdrop-blur-sm"
-      initial={{ opacity: 0 }}
-      animate={{ opacity: 1 }}
-      exit={{ opacity: 0 }}
-      onMouseDown={(event) => event.target === event.currentTarget && onClose()}
-    >
+    <Portal>
       <motion.div
-        role="dialog"
-        aria-modal="true"
-        aria-label="Recherche"
-        initial={{ opacity: 0, y: -16, scale: 0.98 }}
-        animate={{ opacity: 1, y: 0, scale: 1 }}
-        exit={{ opacity: 0, y: -10, scale: 0.98 }}
-        transition={{ duration: 0.18 }}
-        className="relative w-full max-w-xl overflow-hidden border border-[#e7c05a]/35 bg-ink-800 shadow-2xl shadow-black/70 [clip-path:polygon(16px_0,100%_0,100%_calc(100%-16px),calc(100%-16px)_100%,0_100%,0_16px)]"
+        className="fixed inset-0 z-[80] flex items-start justify-center bg-black/70 px-4 pt-[10vh] backdrop-blur-sm"
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        exit={{ opacity: 0 }}
+        onMouseDown={(event) => event.target === event.currentTarget && onClose()}
       >
-        <div aria-hidden className="pointer-events-none absolute inset-x-0 top-0 h-px bg-linear-to-r from-transparent via-[#e7c05a] to-transparent" />
-        <div className="flex items-center gap-3 border-b border-white/10 px-5">
-          {pending ? <LuLoaderCircle aria-hidden className="h-5 w-5 shrink-0 animate-spin text-[#e7c05a]" /> : <LuSearch aria-hidden className="h-5 w-5 shrink-0 text-[#e7c05a]" />}
-          <input
-            ref={input}
-            value={query}
-            onChange={(event) => setQuery(event.target.value)}
-            onKeyDown={onKeyDown}
-            placeholder="Pseudo, ID Activision, équipe, page…"
-            aria-label="Rechercher un joueur, une équipe ou une page"
-            maxLength={40}
-            className="h-16 min-w-0 flex-1 bg-transparent text-lg text-white placeholder:text-white/30 focus:outline-none"
-          />
-          <button type="button" onClick={onClose} aria-label="Fermer" className="shrink-0 border border-white/15 px-2 py-1 font-tech text-[10px] text-white/45 hover:text-white">
-            <span className="hidden sm:inline">Échap</span>
-            <LuX aria-hidden className="h-4 w-4 sm:hidden" />
-          </button>
-        </div>
+        <motion.div
+          role="dialog"
+          aria-modal="true"
+          aria-label="Recherche"
+          initial={{ opacity: 0, y: -16, scale: 0.98 }}
+          animate={{ opacity: 1, y: 0, scale: 1 }}
+          exit={{ opacity: 0, y: -10, scale: 0.98 }}
+          transition={{ duration: 0.18 }}
+          className="relative w-full max-w-xl overflow-hidden border border-[#e7c05a]/35 bg-ink-800 shadow-2xl shadow-black/70 [clip-path:polygon(16px_0,100%_0,100%_calc(100%-16px),calc(100%-16px)_100%,0_100%,0_16px)]"
+        >
+          <div aria-hidden className="pointer-events-none absolute inset-x-0 top-0 h-px bg-linear-to-r from-transparent via-[#e7c05a] to-transparent" />
+          <div className="flex items-center gap-3 border-b border-white/10 px-5">
+            {pending ? <LuLoaderCircle aria-hidden className="h-5 w-5 shrink-0 animate-spin text-[#e7c05a]" /> : <LuSearch aria-hidden className="h-5 w-5 shrink-0 text-[#e7c05a]" />}
+            <input
+              ref={input}
+              value={query}
+              onChange={(event) => setQuery(event.target.value)}
+              onKeyDown={onKeyDown}
+              placeholder="Pseudo, ID Activision, équipe, page…"
+              aria-label="Rechercher un joueur, une équipe ou une page"
+              maxLength={40}
+              className="h-16 min-w-0 flex-1 bg-transparent text-lg text-white placeholder:text-white/30 focus:outline-none"
+            />
+            <button type="button" onClick={onClose} aria-label="Fermer" className="shrink-0 border border-white/15 px-2 py-1 font-tech text-[10px] text-white/45 hover:text-white">
+              <span className="hidden sm:inline">Échap</span>
+              <LuX aria-hidden className="h-4 w-4 sm:hidden" />
+            </button>
+          </div>
 
-        <div className="max-h-[60vh] overflow-y-auto py-2">
-          <Group title="Récentes" rows={section("recent")} active={active} onPick={go} onHover={setActive} render={(item) => <PlainRow icon={LuClock} label={item.label} />} />
-          <Group
-            title="Joueurs"
-            rows={section("player")}
-            active={active}
-            onPick={go}
-            onHover={setActive}
-            render={({ player }) => (
-              <>
-                <Avatar full src={player.avatarUrl} name={player.username} size={34} />
-                <div className="min-w-0 flex-1">
-                  <p className="truncate text-sm font-semibold text-white">
-                    {player.username}
-                    {player.team ? (
-                      <span className="ml-2 font-tech text-[10px] font-bold" style={{ color: player.team.color }}>
-                        [{player.team.tag}]
+          <div className="max-h-[60vh] overflow-y-auto py-2">
+            <Group title="Récentes" rows={section("recent")} active={active} onPick={go} onHover={setActive} render={(item) => <PlainRow icon={LuClock} label={item.label} />} />
+            <Group
+              title="Joueurs"
+              rows={section("player")}
+              active={active}
+              onPick={go}
+              onHover={setActive}
+              render={({ player }) => (
+                <>
+                  <Avatar full src={player.avatarUrl} name={player.username} size={34} />
+                  <div className="min-w-0 flex-1">
+                    <p className="truncate text-sm font-semibold text-white">
+                      {player.username}
+                      {player.team ? (
+                        <span className="ml-2 font-tech text-[10px] font-bold" style={{ color: player.team.color }}>
+                          [{player.team.tag}]
+                        </span>
+                      ) : null}
+                    </p>
+                    <p className="text-xs text-white/45">
+                      {rankFor(player.points).name} · {player.points.toLocaleString("fr-FR")} pts{player.position ? ` · #${player.position}` : ""}
+                      {player.activisionId ? <span className="ml-1 text-white/35">· {player.activisionId}</span> : null}
+                    </p>
+                  </div>
+                </>
+              )}
+            />
+            <Group
+              title="Équipes"
+              rows={section("team")}
+              active={active}
+              onPick={go}
+              onHover={setActive}
+              render={({ team }) => (
+                <>
+                  <TeamCrest team={team} size={34} />
+                  <div className="min-w-0 flex-1">
+                    <p className="truncate text-sm font-semibold text-white">
+                      {team.name}
+                      <span className="ml-2 font-tech text-[10px] font-bold" style={{ color: team.color }}>
+                        [{team.tag}]
                       </span>
-                    ) : null}
-                  </p>
-                  <p className="text-xs text-white/45">
-                    {rankFor(player.points).name} · {player.points.toLocaleString("fr-FR")} pts{player.position ? ` · #${player.position}` : ""}
-                    {player.activisionId ? <span className="ml-1 text-white/35">· {player.activisionId}</span> : null}
-                  </p>
-                </div>
-              </>
-            )}
-          />
-          <Group
-            title="Équipes"
-            rows={section("team")}
-            active={active}
-            onPick={go}
-            onHover={setActive}
-            render={({ team }) => (
-              <>
-                <TeamCrest team={team} size={34} />
-                <div className="min-w-0 flex-1">
-                  <p className="truncate text-sm font-semibold text-white">
-                    {team.name}
-                    <span className="ml-2 font-tech text-[10px] font-bold" style={{ color: team.color }}>
-                      [{team.tag}]
-                    </span>
-                  </p>
-                  <p className="text-xs text-white/45">
-                    #{team.position} Division · {team.points.toLocaleString("fr-FR")} pts · {team.size} joueur{team.size > 1 ? "s" : ""}
-                  </p>
-                </div>
-              </>
-            )}
-          />
-          <Group title="Pages" rows={section("page")} active={active} onPick={go} onHover={setActive} render={(item) => <PlainRow icon={LuFileText} label={item.label} />} />
-          {empty ? <p className="px-5 py-8 text-center text-sm text-white/45">Aucun résultat pour « {query.trim()} ».</p> : null}
-        </div>
+                    </p>
+                    <p className="text-xs text-white/45">
+                      #{team.position} Division · {team.points.toLocaleString("fr-FR")} pts · {team.size} joueur{team.size > 1 ? "s" : ""}
+                    </p>
+                  </div>
+                </>
+              )}
+            />
+            <Group title="Pages" rows={section("page")} active={active} onPick={go} onHover={setActive} render={(item) => <PlainRow icon={LuFileText} label={item.label} />} />
+            {empty ? <p className="px-5 py-8 text-center text-sm text-white/45">Aucun résultat pour « {query.trim()} ».</p> : null}
+          </div>
 
-        <div className="hidden items-center gap-5 border-t border-white/10 px-5 py-2.5 font-tech text-[9px] uppercase tracking-[0.18em] text-white/35 sm:flex">
-          <span>↑ ↓ naviguer</span>
-          <span className="inline-flex items-center gap-1">
-            <LuCornerDownLeft aria-hidden className="h-3 w-3" /> ouvrir
-          </span>
-          <span>Ctrl K rechercher</span>
-        </div>
+          <div className="hidden items-center gap-5 border-t border-white/10 px-5 py-2.5 font-tech text-[9px] uppercase tracking-[0.18em] text-white/35 sm:flex">
+            <span>↑ ↓ naviguer</span>
+            <span className="inline-flex items-center gap-1">
+              <LuCornerDownLeft aria-hidden className="h-3 w-3" /> ouvrir
+            </span>
+            <span>Ctrl K rechercher</span>
+          </div>
+        </motion.div>
       </motion.div>
-    </motion.div>
+    </Portal>
   );
 }
 
