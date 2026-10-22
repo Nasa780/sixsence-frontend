@@ -66,7 +66,8 @@ export function HubHighlights() {
   );
 }
 
-function PlayerOfWeek({ player }) {
+/** Carte « Joueur de la semaine » (aussi sur la page Renommée). */
+export function PlayerOfWeek({ player }) {
   const rank = rankFor(player.points ?? 0);
   return (
     <TacticalCard highlight cut={26} innerClassName="relative overflow-hidden">
