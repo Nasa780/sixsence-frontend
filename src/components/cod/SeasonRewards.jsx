@@ -79,9 +79,6 @@ export function SeasonRewards({ seasonId, label }) {
           </motion.li>
         ))}
       </ol>
-      <p className="mt-5 text-xs text-white/40">
-        En plus : la carte de rang de la saison correspondant au plus haut rang atteint pendant la saison (Argent, Or, Platine, Diamant…). La Division a son propre classement final et son tournoi de fin de saison.
-      </p>
     </section>
   );
 }
