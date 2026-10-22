@@ -148,6 +148,29 @@ function DIVISION_SECTIONS() {
       ),
     },
     {
+      id: "defis-ligues",
+      group: "Division",
+      title: "Défis directs et ligues",
+      content: (
+        <ul>
+          <li>
+            Un Leader peut <strong>défier</strong> une autre équipe depuis sa fiche : BO3 <strong>amical</strong> (aucun point, aucun bilan) ou
+            <strong> classé</strong> (points de Division normaux), maintenant ou à une heure fixée (jusqu&apos;à 7 jours). Mêmes règles que les
+            matchs de la Division ; sans réponse, le défi expire après 24 h.
+          </li>
+          <li>
+            Dès 16 équipes, la Division se joue en <strong>ligues</strong> : Élite (8 équipes), Ligue 1 (8 équipes) et Ligue 2. À chaque fin de
+            saison, les 2 premières de Ligue 1 et de Ligue 2 montent, les 2 dernières d&apos;Élite et de Ligue 1 descendent ; une nouvelle équipe
+            commence en Ligue 2.
+          </li>
+          <li>
+            Le <strong>score de fiabilité</strong> (sur 100, sur le profil) baisse avec les « Prêt ? » manqués, les forfaits et les résultats
+            corrigés, et remonte avec chaque match joué jusqu&apos;au bout. Il est indicatif.
+          </li>
+        </ul>
+      ),
+    },
+    {
       id: "coupe-horus",
       group: "Tournoi",
       title: "Coupe Horus (équipes)",

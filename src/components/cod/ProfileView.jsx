@@ -24,6 +24,7 @@ import { CardBackdrop } from "./CallingCard";
 import { CardPicker } from "./CardPicker";
 import { PerformancePanel } from "./PerformancePanel";
 import { PlayerMedals } from "./PlayerMedals";
+import { Reliability } from "./Reliability";
 import { TwitchForm, TwitchPanel } from "./TwitchPanel";
 import { RankBadge } from "./RankBadge";
 import { RankCard } from "./RankCard";
@@ -304,6 +305,8 @@ export function ProfileView({ userId, editable = false, ownUser = null }) {
       </section>
 
       <SeasonRecap playerId={player.id} seasons={seasons} badges={profile.badges} />
+
+      <Reliability playerId={player.id} />
 
       <PlayerMedals playerId={player.id} />
 

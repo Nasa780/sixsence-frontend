@@ -472,7 +472,34 @@ export function SeasonPanel() {
           Clôturer la saison
         </Button>
       </form>
+      <LeaguesAdmin />
     </div>
+  );
+}
+
+/** Ligues de la Division : état, première répartition (16 équipes au moins) ; ensuite, elles évoluent à chaque clôture. */
+function LeaguesAdmin() {
+  const [state, setState] = useState(null);
+  const { pending, error, run } = useAction();
+  useEffect(() => {
+    api("/teams/leagues").then(setState).catch(() => {});
+  }, []);
+  if (!state) return null;
+  return (
+    <TacticalCard innerClassName="space-y-3 p-6">
+      <p className="font-display text-2xl font-black uppercase leading-none">Ligues de Division</p>
+      <p className="text-sm text-white/55">
+        {state.active
+          ? "Actives : Élite, Ligue 1, Ligue 2. À chaque clôture, les 2 premières de Ligue 1 et de Ligue 2 montent, les 2 dernières d'Élite et de Ligue 1 descendent."
+          : `Pas encore actives : ${state.teams} équipe${state.teams > 1 ? "s" : ""} sur ${state.minTeams} nécessaires. Elles s'activent toutes seules à la clôture si le seuil est atteint, ou dès maintenant avec le bouton.`}
+      </p>
+      {error ? <Notice tone="error">{error}</Notice> : null}
+      {!state.active ? (
+        <Button size="sm" variant="outline" disabled={pending !== null || state.teams < state.minTeams} onClick={async () => { const data = await run("leagues", () => api("/admin/leagues/activate", { method: "POST" })); if (data) setState(data); }}>
+          Activer les ligues maintenant
+        </Button>
+      ) : null}
+    </TacticalCard>
   );
 }
 
