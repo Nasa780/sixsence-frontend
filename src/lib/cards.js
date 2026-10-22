@@ -57,6 +57,7 @@ const CARDS = {
   beta: { rarity: "rare", art: { type: "glyph", glyph: "β", color: "#5cc8ff", video: "/images/cartes/beta.mp4", og: "/images/cartes/og/beta.jpg", poster: "/images/cartes/beta-poster.webp" } },
   partenaire: { rarity: "rare", art: { type: "glyph", glyph: "P", color: "#ff9a5c" } },
   "staff-6": { rarity: "rare", art: { type: "glyph", glyph: "6", color: "#d4af37" } },
+  arbitre: { rarity: "epique", art: { type: "illustration", glyph: "A", hue: "#e5484d", image: "/images/cartes/arbitre.webp", og: "/images/cartes/og/arbitre.jpg", position: "center", mobilePosition: "center" } },
   "premiere-viree": { rarity: "commune", art: { type: "sunset", color: "#ff9a5c" } },
   habitue: { rarity: "rare", art: { type: "sunset", glyph: "×5", color: "#ff5f8a" } },
 };
