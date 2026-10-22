@@ -64,7 +64,7 @@ const CARDS = {
 /** Illustrations propres à une saison (même clé que la carte, ex. « s1-champion »). */
 const SEASON_ART = {
   "s1-participant": { image: "/images/cartes/s1/participant.webp", og: "/images/cartes/og/s1-participant.jpg", position: "center", mobilePosition: "center" },
-  "s1-top10": { image: "/images/cartes/s1/top10.webp", og: "/images/cartes/og/s1-top10.jpg", position: "center 32%", mobilePosition: "center 32%" },
+  // Top 10 S1 : dessin de base en attendant une nouvelle illustration (l'ancienne est dans references/cartes/reserve).
   "s1-champion": { image: "/images/cartes/s1/champion.webp", og: "/images/cartes/og/s1-champion.jpg", position: "center", mobilePosition: "center" },
 };
 
