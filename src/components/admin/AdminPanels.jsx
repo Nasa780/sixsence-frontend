@@ -88,6 +88,7 @@ export function OverviewPanel({ onNavigate, role = "admin" }) {
       ) : null}
       {admin ? <DiscordRolesSync /> : null}
       {admin ? <DiscordRulesPublish /> : null}
+      {admin ? <DiscordTicketsPanel /> : null}
       {admin ? <DiscordAnnouncements /> : null}
     </div>
   );
@@ -146,6 +147,35 @@ function DiscordRulesPublish() {
       <Button size="sm" variant="outline" onClick={publish} disabled={pending !== null}>
         {pending === "rules" ? <LuLoaderCircle aria-hidden className="h-4 w-4 animate-spin" /> : null}
         Publier le règlement
+      </Button>
+    </TacticalCard>
+  );
+}
+
+/** Publie (ou met à jour) le panneau des tickets Discord : boutons Contestation, Question, Signalement, Bug. */
+function DiscordTicketsPanel() {
+  const [result, setResult] = useState(null);
+  const { pending, error, run } = useAction();
+
+  const publish = () =>
+    run("tickets", async () => {
+      const { action } = await api("/admin/discord/tickets-panel", { method: "POST" });
+      setResult(action === "updated" ? "Panneau des tickets mis à jour sur Discord." : "Panneau des tickets publié sur Discord.");
+    });
+
+  return (
+    <TacticalCard cut={16} innerClassName="flex flex-col gap-3 p-5 sm:flex-row sm:items-center sm:justify-between">
+      <div>
+        <p className="font-display text-xl font-black uppercase leading-none">Tickets Discord</p>
+        <p className="mt-1 text-sm text-white/55">
+          Le bot publie le panneau « Ouvrir un ticket » dans le salon prévu. Chaque ticket crée un salon privé avec l’équipe ; un nouveau clic met à jour le même message.
+        </p>
+        {result ? <p className="mt-1 text-sm text-win">{result}</p> : null}
+        {error ? <p className="mt-1 text-sm text-loss">{error}</p> : null}
+      </div>
+      <Button size="sm" variant="outline" onClick={publish} disabled={pending !== null}>
+        {pending === "tickets" ? <LuLoaderCircle aria-hidden className="h-4 w-4 animate-spin" /> : null}
+        Publier le panneau
       </Button>
     </TacticalCard>
   );
