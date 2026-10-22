@@ -1,7 +1,7 @@
 import { motion } from "framer-motion";
 import Link from "next/link";
 import { useEffect, useState } from "react";
-import { LuArrowRight, LuMap, LuSwords } from "react-icons/lu";
+import { LuChevronRight, LuMap, LuSwords } from "react-icons/lu";
 import { supabase } from "../../lib/supabase";
 
 const STATUS = {
@@ -13,7 +13,7 @@ const STATUS = {
 
 /**
  * Bandeau « Match en cours » (hub MW4, page de la file) : impossible à rater, carte animée (point « en direct »,
- * lueur), map, format et étape du match, gros bouton vers le salon de match.
+ * lueur), map, format et étape du match, gros bouton « Retour au combat » (chevrons animés) vers le salon de match.
  */
 export function ActiveMatchBanner({ matchId, text = "Ton salon de match t'attend." }) {
   const [match, setMatch] = useState(null);
@@ -81,10 +81,20 @@ export function ActiveMatchBanner({ matchId, text = "Ton salon de match t'attend
             </div>
           </div>
           <span className="inline-flex shrink-0 items-center justify-center gap-2.5 bg-gold-sheen px-6 py-3.5 font-display text-lg font-black uppercase tracking-[0.12em] text-ink clip-slant">
-            Ouvrir le salon
-            <motion.span animate={{ x: [0, 5, 0] }} transition={{ duration: 1.2, repeat: Infinity, ease: "easeInOut" }} className="inline-flex">
-              <LuArrowRight aria-hidden className="h-5 w-5" />
-            </motion.span>
+            Retour au combat
+            {/* Trois chevrons qui s'allument tour à tour. */}
+            <span aria-hidden className="inline-flex">
+              {[0, 1, 2].map((index) => (
+                <motion.span
+                  key={index}
+                  className={index ? "-ml-2 inline-flex" : "inline-flex"}
+                  animate={{ opacity: [0.2, 1, 0.2] }}
+                  transition={{ duration: 1.2, repeat: Infinity, delay: index * 0.2 }}
+                >
+                  <LuChevronRight className="h-5 w-5" />
+                </motion.span>
+              ))}
+            </span>
           </span>
         </div>
       </Link>
