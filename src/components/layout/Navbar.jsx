@@ -19,7 +19,7 @@ import { GlobalSearch } from "./GlobalSearch";
 import { Logo } from "../ui/Logo";
 
 /** Lien du menu du compte sur mobile (icône + libellé, comme le menu du profil sur ordinateur). */
-const MOBILE_ITEM = "flex items-center gap-2.5 px-4 py-3 text-sm text-white/70 transition-colors hover:text-gold";
+const MOBILE_ITEM = "flex items-center gap-2.5 px-4 py-3 text-sm text-white/75 transition-colors hover:bg-white/5 hover:text-gold";
 
 /** Sous-menu de MW4 (Classé, Division, Tournoi) masqué provisoirement (2026-10-21) : passer à true pour le remettre. */
 const SHOW_MW4_SUBMENU = false;
