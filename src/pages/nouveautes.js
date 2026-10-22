@@ -20,8 +20,12 @@ const TAGS = {
 const RELEASES = [
   {
     date: "2026-10-22",
-    title: "Hall of Fame, semaine et fil d'activité",
+    title: "Hall of Fame, défis et ligues",
     items: [
+      { tag: "Division", text: "Défis directs : défie une équipe depuis sa fiche, en amical (sans points) ou classé, maintenant ou à l'heure de ton choix." },
+      { tag: "Division", text: "Ligues de Division : Élite, Ligue 1 et Ligue 2 avec montées et descentes, activées dès 16 équipes.", href: "/cod/equipes" },
+      { tag: "Classé", text: "Score de fiabilité sur le profil : il récompense les joueurs qui vont au bout de leurs matchs." },
+      { tag: "Classé", text: "Remplis ton identifiant Activision depuis une capture de ton profil COD, lue directement dans ton navigateur.", href: "/cod/profile" },
       { tag: "Site", text: "Hall of Fame : champions de saison, vainqueurs des coupes, MVP du mois et records de tous les temps.", href: "/hall-of-fame" },
       { tag: "Classé", text: "Joueur et match de la semaine, et un fil d'activité en direct sur la page MW4.", href: "/cod" },
       { tag: "Site", text: "Chaîne Twitch sur le profil, avec le lecteur intégré." },

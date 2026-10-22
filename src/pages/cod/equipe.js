@@ -6,6 +6,7 @@ import { LuCheck, LuCrown, LuExternalLink, LuImagePlus, LuLoaderCircle, LuPlus, 
 import { TeamActivity, TeamGoals, TeamHero, TeamMatchTimeline, TeamRecent, TeamRecords, TeamRival, TeamStandouts, TeamWeekly, memberBadges, memberLine, useTeamInsights } from "../../components/teams/TeamOverview";
 import { TeamStats } from "../../components/teams/TeamStats";
 import { MemberRow, RosterHeading, SlantTab, TeamCrest, fieldClass, labelClass } from "../../components/teams/TeamParts";
+import { ChallengesPanel } from "../../components/teams/Challenges";
 import { Avatar } from "../../components/ui/Avatar";
 import { Button, ButtonLink } from "../../components/ui/Button";
 import { ConfirmDialog } from "../../components/ui/ConfirmDialog";
@@ -208,7 +209,8 @@ function NoTeam({ state, reload }) {
 function ManageTeam({ state, userId, reload, created, onLeft }) {
   const { team, me } = state;
   const isLeader = me.crown || me.role === "leader";
-  const [tab, setTab] = useState("apercu");
+  // ?onglet=defis ouvre directement les défis (lien du défi envoyé).
+  const [tab, setTab] = useState(() => (typeof window !== "undefined" && new URLSearchParams(window.location.search).get("onglet") === "defis" ? "defis" : "apercu"));
   const insights = useTeamInsights(team);
   const [confirm, setConfirm] = useState(null);
   const [pending, setPending] = useState(false);
@@ -283,6 +285,9 @@ function ManageTeam({ state, userId, reload, created, onLeft }) {
         </SlantTab>
         <SlantTab active={tab === "matchs"} onClick={() => setTab("matchs")}>
           Matchs
+        </SlantTab>
+        <SlantTab active={tab === "defis"} onClick={() => setTab("defis")}>
+          Défis
         </SlantTab>
         {isLeader ? (
           <SlantTab active={tab === "recrutement"} onClick={() => setTab("recrutement")}>
@@ -385,6 +390,7 @@ function ManageTeam({ state, userId, reload, created, onLeft }) {
         </div>
       ) : null}
 
+      {tab === "defis" ? <ChallengesPanel /> : null}
       {tab === "recrutement" && isLeader ? <Recruitment team={team} state={state} reload={reload} /> : null}
       {tab === "apparence" && isLeader ? <Appearance team={team} userId={userId} canRename={me.crown} reload={reload} /> : null}
 

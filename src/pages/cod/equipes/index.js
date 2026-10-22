@@ -13,6 +13,7 @@ import useSession from "../../../hooks/useSession";
 import { api } from "../../../lib/api";
 import { supabase } from "../../../lib/supabase";
 import { TEAM_LIMITS } from "../../../lib/teams";
+import { LEAGUES, LEAGUES_MIN_TEAMS } from "../../../lib/leagues";
 
 /** Places qualificatives par défaut, tant qu'aucun tournoi n'est prévu (sinon, celles du tournoi). */
 const QUALIFIED_SPOTS = 16;
@@ -25,6 +26,7 @@ export default function TeamsPage() {
   const past = (seasons || []).filter((season) => !season.is_active);
   const archived = past.find((season) => String(season.id) === selected);
   const [teams, setTeams] = useState(null);
+  const [league, setLeague] = useState("elite");
   const [error, setError] = useState(null);
   const [mine, setMine] = useState(undefined);
 
@@ -135,7 +137,34 @@ export default function TeamsPage() {
                   <span aria-hidden className="h-1.5 w-1.5 animate-pulse-gold bg-gold" />
                   Classement en direct
                 </p>
-                <TeamStandings teams={teams} mineId={mine?.id ?? null} qualified={qualified} qualifiedSpots={spots} seasonStart={active?.starts_at ?? null} />
+                {teams.some((team) => team.league) ? (
+                  <>
+                    {/* Ligues actives : un classement par ligue (places renumérotées dans la ligue). */}
+                    <div role="tablist" aria-label="Ligue" className="mb-6 flex flex-wrap gap-2">
+                      {LEAGUES.map((item) => (
+                        <SlantTab key={item.key} active={league === item.key} onClick={() => setLeague(item.key)}>
+                          <span style={{ color: league === item.key ? undefined : item.color }}>{item.label}</span>
+                        </SlantTab>
+                      ))}
+                    </div>
+                    <TeamStandings
+                      key={league}
+                      teams={teams.filter((team) => (team.league ?? "ligue2") === league).map((team, index) => ({ ...team, position: index + 1 }))}
+                      mineId={mine?.id ?? null}
+                      qualified={league === "elite" ? qualified : () => false}
+                      qualifiedSpots={league === "elite" ? spots : 0}
+                      seasonStart={active?.starts_at ?? null}
+                    />
+                    <p className="mt-4 text-xs text-white/45">Fin de saison : les 2 premières de Ligue 1 et de Ligue 2 montent, les 2 dernières d&apos;Élite et de Ligue 1 descendent.</p>
+                  </>
+                ) : (
+                  <>
+                    <TeamStandings teams={teams} mineId={mine?.id ?? null} qualified={qualified} qualifiedSpots={spots} seasonStart={active?.starts_at ?? null} />
+                    <p className="mt-4 text-xs text-white/45">
+                      Ligues de Division (Élite, Ligue 1, Ligue 2, montées et descentes) dès {LEAGUES_MIN_TEAMS} équipes : {teams.length} / {LEAGUES_MIN_TEAMS} aujourd&apos;hui.
+                    </p>
+                  </>
+                )}
               </>
             ) : null}
 

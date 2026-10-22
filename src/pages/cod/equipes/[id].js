@@ -8,6 +8,8 @@ import { MemberRow, RosterHeading } from "../../../components/teams/TeamParts";
 import { TeamTrophyCase } from "../../../components/teams/TeamTrophyCase";
 import { TeamMatchHistory } from "../../../components/teams/TeamMatchHistory";
 import { TeamStats } from "../../../components/teams/TeamStats";
+import { ChallengeButton } from "../../../components/teams/Challenges";
+import { leagueOf } from "../../../lib/leagues";
 import { CodModeNav } from "../../../components/cod/CodModeNav";
 import { Button, ButtonLink } from "../../../components/ui/Button";
 import { Container } from "../../../components/ui/Container";
@@ -157,7 +159,7 @@ function TeamSheet() {
         <PublicHero
           team={team}
           as="h1"
-          subline={team.disbanded ? "Équipe dissoute" : `Fondée le ${dateFr(team.createdAt)}`}
+          subline={team.disbanded ? "Équipe dissoute" : `Fondée le ${dateFr(team.createdAt)}${leagueOf(team.league) ? ` · ${leagueOf(team.league).label}` : ""}`}
           actions={
             <div className="flex flex-wrap items-center gap-3">
             {team.disbanded ? null : (
@@ -166,6 +168,7 @@ function TeamSheet() {
                 {shared ? "Lien copié" : "Partager"}
               </Button>
             )}
+            {team.disbanded || isMember || !userId ? null : <ChallengeButton target={team} />}
             {team.disbanded ? null : isMember ? (
               <ButtonLink href="/cod/equipe" size="lg">
                 <LuSettings aria-hidden className="h-5 w-5" />

@@ -24,6 +24,8 @@ export function TeamStats({ teamId, points = null, position = null }) {
       .select("id, team_a, team_b, winner, scores, points_changes, forfeit, completed_at")
       .or(`team_a.eq.${teamId},team_b.eq.${teamId}`)
       .eq("status", "completed")
+      // Les défis amicaux ne comptent pas dans les statistiques.
+      .eq("friendly", false)
       .order("completed_at", { ascending: false })
       .limit(500);
     if (seasonStart) query = query.gte("completed_at", seasonStart);
