@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { useRouter } from "next/router";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { LuCheck, LuCrown, LuFlag, LuImagePlus, LuLoaderCircle, LuLock, LuMap, LuRotateCcw, LuSend, LuShieldAlert, LuStar, LuSwords, LuX } from "react-icons/lu";
 import useCountdown from "../../hooks/useCountdown";
@@ -236,6 +237,22 @@ export function MatchView({ matchId }) {
     if (isPlayer) loadMe();
   }, [isPlayer, loadMe, data?.match?.status]);
 
+  // « Prêt ? » raté à cause d'un absent : les joueurs du match repartent vers la file (les joueurs prêts y sont déjà
+  // remis en tête), au lieu de rester sur une feuille annulée. Seulement juste après l'annulation (pas en relisant
+  // un vieux match) : passage de « ready_check » à « annulé » vu sur la page, ou délai terminé il y a moins de 2 min.
+  const router = useRouter();
+  const previousStatus = useRef(null);
+  useEffect(() => {
+    const current = data?.match;
+    if (!current) return;
+    const before = previousStatus.current;
+    previousStatus.current = current.status;
+    const mine = current.team_a.includes(userId) || current.team_b.includes(userId);
+    if (!mine || current.status !== "cancelled" || current.cancel_reason !== "ready_check_failed") return;
+    const recent = current.ready_deadline && Date.now() - new Date(current.ready_deadline).getTime() < 2 * 60_000;
+    if (before === "ready_check" || recent) router.replace("/cod/ranked");
+  }, [data?.match, userId, router]);
+
   /** Appelle une action du backend puis recharge le match. */
   async function act(action, body, key) {
     setPending(key);
@@ -456,6 +473,8 @@ export function MatchView({ matchId }) {
           />
         ) : null}
 
+        {/* Annulé par l'équipe SixSence (arbitre) : personne n'est remis en file automatiquement, on propose de relancer. */}
+        {match.status === "cancelled" && match.cancel_reason !== "ready_check_failed" && myTeam ? <RequeueCard format={match.format} title="On relance ?" /> : null}
         {match.status === "cancelled" ? (
           <Notice>
             {match.cancel_reason === "ready_check_failed"
