@@ -15,11 +15,12 @@ const frameLine = (color) =>
 /**
  * Carte d'équipe (aperçu du lien d'une fiche d'équipe sur Discord, X…), 1200 x 630 : lueur à la couleur
  * de l'équipe, blason ou logo, nom et tag, place en Division, points, bilan, trophées ; coins taillés.
- * /api/og/team?id=<équipe>  (le paramètre v ne sert qu'à forcer le rafraîchissement).
+ * /api/og/team?id=<équipe>  (invite=1 : bandeau « Invitation » pour un lien d'invitation ; v ne sert qu'à forcer le rafraîchissement).
  */
 export default async function handler(request) {
   const { searchParams, origin } = new URL(request.url);
   const id = searchParams.get("id") ?? "";
+  const invite = searchParams.get("invite") === "1";
   if (!UUID.test(id)) return new Response("Équipe invalide", { status: 400 });
 
   const [fonts, teams, members] = await Promise.all([
@@ -68,6 +69,9 @@ export default async function handler(request) {
             <div style={{ display: "flex", fontFamily: display, fontWeight: 800, fontSize: 28, letterSpacing: 6, color: goldLight }}>SIXSENCE</div>
             <div style={{ display: "flex", width: 40, height: 2, background: `${gold}88`, marginLeft: 8, marginRight: 8 }} />
             <div style={{ display: "flex", fontFamily: text, fontSize: 20, letterSpacing: 6, color: "#22d3ee" }}>DIVISION</div>
+            {invite ? (
+              <div style={{ display: "flex", marginLeft: "auto", padding: "10px 22px", background: gold, color: ink, fontFamily: display, fontWeight: 900, fontSize: 24, letterSpacing: 4 }}>INVITATION</div>
+            ) : null}
           </div>
 
           {/* Blason, nom, tag */}

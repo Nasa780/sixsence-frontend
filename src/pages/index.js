@@ -6,7 +6,7 @@ import { HowItWorks } from "../components/home/HowItWorks";
 import { LiveBoard } from "../components/home/LiveBoard";
 import { Universes } from "../components/home/Universes";
 
-/** Bloc « Comment ça marche » (textes mis à jour le 2026-10-22, sous En direct et le calendrier) : false pour le retirer. */
+/** Bloc « Comment ça marche » (les deux jeux, MW4 et GTA 6), au-dessus d'En direct : false pour le retirer. */
 const SHOW_HOW_IT_WORKS = true;
 
 /** Page d'accueil publique. Chaque section vit dans src/components/home. */
@@ -15,9 +15,9 @@ export default function HomePage() {
     <>
       <Hero />
       <Universes />
+      {SHOW_HOW_IT_WORKS ? <HowItWorks /> : null}
       <LiveBoard />
       <HomeCalendar />
-      {SHOW_HOW_IT_WORKS ? <HowItWorks /> : null}
       <Features />
       <CallToAction />
     </>

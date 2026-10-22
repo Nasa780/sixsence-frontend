@@ -1,5 +1,5 @@
 import { FaDiscord } from "react-icons/fa6";
-import { LuSwords, LuTrophy } from "react-icons/lu";
+import { LuGamepad2, LuTrophy } from "react-icons/lu";
 import { Reveal } from "../effects/Reveal";
 import { Container } from "../ui/Container";
 import { SectionHeading } from "../ui/Typography";
@@ -8,17 +8,17 @@ const STEPS = [
   {
     icon: FaDiscord,
     title: "Connecte ton Discord",
-    text: "Pas de mot de passe ni de formulaire : ton compte Discord sert d'identité sur toute la plateforme.",
+    text: "Zéro mot de passe, zéro formulaire. Ton compte Discord devient ton identité unique pour te connecter en un clic.",
   },
   {
-    icon: LuSwords,
-    title: "Choisis ton mode",
-    text: "Le Classé en solo du 2v2 au 5v5, la Division avec ton équipe en BO3, et les coupes Horus et Anubis.",
+    icon: LuGamepad2,
+    title: "Choisis ton jeu",
+    text: "Call of Duty Modern Warfare 4 pour la compétition,\nGrand Theft Auto 6 pour les événements de la communauté.",
   },
   {
     icon: LuTrophy,
-    title: "Grimpe et gagne",
-    text: "Monte de Bronze à Légende, hisse ton équipe en tête de la Division, décroche trophées et médailles, et ta place au Hall of Fame.",
+    title: "Laisse ta marque",
+    text: "Matchs intenses, classements disputés, événements exclusifs : impose ton style, forge ta renommée et laisse ton empreinte sur SixSence.",
   },
 ];
 
@@ -44,7 +44,7 @@ export function HowItWorks() {
                   </span>
                 </div>
                 <h3 className="mt-6 font-display text-3xl font-bold uppercase leading-none tracking-wide">{step.title}</h3>
-                <p className="mt-3 text-sm leading-relaxed text-white/60">{step.text}</p>
+                <p className="mt-3 whitespace-pre-line text-sm leading-relaxed text-white/60">{step.text}</p>
               </li>
             </Reveal>
           ))}

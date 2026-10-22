@@ -18,7 +18,7 @@ export function SeasonRewards({ seasonId, label }) {
       title: "Champion",
       who: "N°1 du classement à la clôture",
       color: "#e7c05a",
-      rewards: ["Carte légendaire Champion", "Badge Champion de la saison", "Entrée au Hall of Fame"],
+      rewards: ["Carte légendaire Champion", "Badge Champion de la saison", "Entrée dans la Renommée"],
       card: { key: `s${seasonId}-champion`, name: `Champion S${seasonId}`, condition: "Finir n°1 de la saison", rarity: "legendaire", owned: true, exclusive: true },
     },
     {
@@ -27,7 +27,7 @@ export function SeasonRewards({ seasonId, label }) {
       title: "Top 10",
       who: "Places 1 à 10 à la clôture",
       color: "#c084fc",
-      rewards: ["Carte épique Top 10", "Badge Top 10 de la saison", "Podium du Hall of Fame (top 3)"],
+      rewards: ["Carte épique Top 10", "Badge Top 10 de la saison", "Podium de la Renommée (top 3)"],
       card: { key: `s${seasonId}-top10`, name: `Top 10 S${seasonId}`, condition: "Finir dans le top 10", rarity: "epique", owned: true, exclusive: true },
     },
     {

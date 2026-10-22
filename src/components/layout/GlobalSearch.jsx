@@ -27,7 +27,7 @@ const PAGES = [
     : []),
   { href: "/gta6/events", label: "Événements GTA 6", keywords: "gta evenements" },
   { href: "/reglement", label: "Règlement", keywords: "regles reglement" },
-  { href: "/cod#hall-of-fame", label: "Hall of Fame", keywords: "champions records legendes mvp" },
+  { href: "/renommee", label: "Renommée", keywords: "bureau des legendes hall of fame champions records mvp" },
   { href: "/nouveautes", label: "Nouveautés", keywords: "mises a jour changelog nouveautes" },
   { href: "/calendrier", label: "Calendrier", keywords: "agenda coupes evenements" },
 ];
