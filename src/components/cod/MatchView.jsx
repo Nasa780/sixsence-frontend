@@ -237,9 +237,10 @@ export function MatchView({ matchId }) {
     if (isPlayer) loadMe();
   }, [isPlayer, loadMe, data?.match?.status]);
 
-  // « Prêt ? » raté à cause d'un absent : les joueurs du match repartent vers la file (les joueurs prêts y sont déjà
-  // remis en tête), au lieu de rester sur une feuille annulée. Seulement juste après l'annulation (pas en relisant
-  // un vieux match) : passage de « ready_check » à « annulé » vu sur la page, ou délai terminé il y a moins de 2 min.
+  // Match annulé (absent au « Prêt ? », match abandonné, arbitre) : les joueurs du match repartent vers la file au lieu
+  // de rester sur une feuille annulée. Absent au « Prêt ? » : les joueurs prêts y sont déjà remis en tête ; sinon la
+  // recherche est relancée dans le même format (?rejoindre=). Seulement juste après l'annulation (vue en direct ou
+  // il y a moins de 2 min), pas en relisant un vieux match.
   const router = useRouter();
   const previousStatus = useRef(null);
   useEffect(() => {
@@ -248,9 +249,12 @@ export function MatchView({ matchId }) {
     const before = previousStatus.current;
     previousStatus.current = current.status;
     const mine = current.team_a.includes(userId) || current.team_b.includes(userId);
-    if (!mine || current.status !== "cancelled" || current.cancel_reason !== "ready_check_failed") return;
-    const recent = current.ready_deadline && Date.now() - new Date(current.ready_deadline).getTime() < 2 * 60_000;
-    if (before === "ready_check" || recent) router.replace("/cod/ranked");
+    if (!mine || current.status !== "cancelled") return;
+    const at = current.cancel_reason === "ready_check_failed" ? current.ready_deadline : current.completed_at;
+    const recent = at && Date.now() - new Date(at).getTime() < 2 * 60_000;
+    const live = before && before !== "cancelled";
+    if (!live && !recent) return;
+    router.replace(current.cancel_reason === "ready_check_failed" ? "/cod/ranked" : `/cod/ranked?rejoindre=${encodeURIComponent(current.format || "auto")}`);
   }, [data?.match, userId, router]);
 
   /** Appelle une action du backend puis recharge le match. */
