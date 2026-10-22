@@ -12,6 +12,10 @@ import { Reveal } from "../effects/Reveal";
 import { Container } from "../ui/Container";
 import { TacticalCard } from "../ui/TacticalCard";
 import { SectionHeading } from "../ui/Typography";
+import { LiveFeed } from "../cod/HubHighlights";
+
+/** Top 5 du classé à côté des chiffres, remplacé le 2026-10-22 par le fil d'activité : true pour le remettre. */
+const SHOW_TOP5 = false;
 
 /** Section « En direct » : vrais compteurs de la plateforme et top 5 du classement. */
 export function LiveBoard() {
@@ -37,8 +41,10 @@ export function LiveBoard() {
   }, []);
 
   return (
-    <section className="py-20 sm:py-28">
-      <Container className="grid grid-cols-1 gap-10 lg:grid-cols-[1fr_1.1fr] lg:items-start">
+    <section className="relative border-t border-white/10 bg-ink-800 py-20 sm:py-28">
+      {/* Même fond que le calendrier, juste en dessous : un seul bandeau sombre quadrillé. */}
+      <div aria-hidden className="absolute inset-0 bg-grid opacity-40" />
+      <Container className="relative grid grid-cols-1 gap-10 lg:grid-cols-[1fr_1.1fr] lg:items-start">
         <Reveal>
           <SectionHeading
             eyebrow="En direct"
@@ -64,7 +70,14 @@ export function LiveBoard() {
               <div className="flex items-end gap-4">
                 <span aria-hidden className="hidden h-8 items-end gap-[3px] sm:flex">
                   {[0, 1, 2, 3, 4].map((bar) => (
-                    <span key={bar} className="lobby-eq w-[3px] bg-win/70" style={{ animationDuration: "0.9s", animationDelay: `${bar * 0.15}s` }} />
+                    <span
+                      key={bar}
+                      className="lobby-eq w-[3px] bg-win/70"
+                      style={{
+                        animationDuration: "0.9s",
+                        animationDelay: `${bar * 0.15}s`,
+                      }}
+                    />
                   ))}
                 </span>
                 <span className="font-display text-5xl font-black leading-none tabular-nums text-win drop-shadow-[0_0_18px_rgba(52,211,153,0.45)]">
@@ -78,53 +91,47 @@ export function LiveBoard() {
               <Counter label="Matchs joués" value={(stats?.matchesPlayed ?? 0) + (teams?.matchesPlayed ?? 0)} ready={Boolean(stats)} accent />
               <Counter label="En file" value={stats?.playersInQueue} />
               <Counter label="Matchs en cours" value={(stats?.matchesInProgress ?? 0) + (teams?.matchesInProgress ?? 0)} ready={Boolean(stats)} />
-              {MATCH_TEAM_ENABLED ? (
-                <Counter label="Équipes en Division" value={teams?.activeTeams} univers="division" wide />
-              ) : null}
+              {MATCH_TEAM_ENABLED ? <Counter label="Équipes en Division" value={teams?.activeTeams} univers="division" wide /> : null}
             </dl>
           </div>
         </Reveal>
 
         <Reveal delay={0.12}>
-          <TacticalCard cut={24} innerClassName="p-6 sm:p-8">
-            <div className="flex items-center justify-between gap-4">
-              <p className="font-tech text-[11px] uppercase tracking-[0.3em] text-gold">Top 5 — {label}</p>
-              <Link href="/cod/leaderboard" className="inline-flex items-center gap-1.5 text-sm text-white/60 transition-colors hover:text-gold">
-                Classement complet
-                <LuArrowRight aria-hidden className="h-4 w-4" />
-              </Link>
-            </div>
+          {SHOW_TOP5 ? (
+            <TacticalCard cut={24} innerClassName="p-6 sm:p-8">
+              <div className="flex items-center justify-between gap-4">
+                <p className="font-tech text-[11px] uppercase tracking-[0.3em] text-gold">Top 5 — {label}</p>
+                <Link href="/cod/leaderboard" className="inline-flex items-center gap-1.5 text-sm text-white/60 transition-colors hover:text-gold">
+                  Classement complet
+                  <LuArrowRight aria-hidden className="h-4 w-4" />
+                </Link>
+              </div>
 
-            {top === null ? (
-              <p className="mt-6 text-sm text-white/45">Chargement…</p>
-            ) : top.length === 0 ? (
-              <p className="mt-6 text-sm leading-relaxed text-white/55">
-                Aucun match classé n&apos;a encore été joué. La première place est à prendre.
-              </p>
-            ) : (
-              <ol className="mt-6 space-y-2">
-                {top.map((player, index) => (
-                  <li key={player.user_id}>
-                    <Link
-                      href={`/cod/profile/${player.user_id}`}
-                      className="flex items-center gap-4 border-l-2 border-white/10 bg-white/[0.03] px-4 py-3 transition-colors hover:border-gold hover:bg-white/[0.06]"
-                    >
-                      <span className={`w-6 font-tech text-sm font-bold tabular-nums ${index === 0 ? "text-gold" : "text-white/50"}`}>
-                        {index + 1}
-                      </span>
-                      <span className="min-w-0 flex-1 truncate font-display text-xl font-bold uppercase leading-none tracking-wide">
-                        {player.username}
-                      </span>
-                      <span className="hidden font-display text-sm font-bold uppercase tracking-[0.14em] text-white/45 sm:inline">
-                        {rankFor(player.points).name}
-                      </span>
-                      <span className="font-tech text-base font-bold tabular-nums text-gold">{player.points}</span>
-                    </Link>
-                  </li>
-                ))}
-              </ol>
-            )}
-          </TacticalCard>
+              {top === null ? (
+                <p className="mt-6 text-sm text-white/45">Chargement…</p>
+              ) : top.length === 0 ? (
+                <p className="mt-6 text-sm leading-relaxed text-white/55">Aucun match classé n&apos;a encore été joué. La première place est à prendre.</p>
+              ) : (
+                <ol className="mt-6 space-y-2">
+                  {top.map((player, index) => (
+                    <li key={player.user_id}>
+                      <Link
+                        href={`/cod/profile/${player.user_id}`}
+                        className="flex items-center gap-4 border-l-2 border-white/10 bg-white/[0.03] px-4 py-3 transition-colors hover:border-gold hover:bg-white/[0.06]"
+                      >
+                        <span className={`w-6 font-tech text-sm font-bold tabular-nums ${index === 0 ? "text-gold" : "text-white/50"}`}>{index + 1}</span>
+                        <span className="min-w-0 flex-1 truncate font-display text-xl font-bold uppercase leading-none tracking-wide">{player.username}</span>
+                        <span className="hidden font-display text-sm font-bold uppercase tracking-[0.14em] text-white/45 sm:inline">{rankFor(player.points).name}</span>
+                        <span className="font-tech text-base font-bold tabular-nums text-gold">{player.points}</span>
+                      </Link>
+                    </li>
+                  ))}
+                </ol>
+              )}
+            </TacticalCard>
+          ) : (
+            <LiveFeed />
+          )}
         </Reveal>
       </Container>
     </section>
@@ -159,7 +166,9 @@ function Counter({ label, value, accent = false, wide = false, ready = true, uni
     <div data-univers={univers} className={`group relative bg-ink px-6 py-5 transition-colors hover:bg-ink-800 ${wide ? "col-span-2" : ""}`}>
       <span aria-hidden className={`absolute inset-y-0 left-0 w-0.5 transition-colors ${accent || univers ? "bg-gold" : "bg-transparent group-hover:bg-gold/60"}`} />
       <dt className="min-h-[2.6em] font-tech text-[10px] uppercase leading-snug tracking-[0.2em] text-white/45 sm:min-h-0">{label}</dt>
-      <dd className={`mt-2 font-display text-4xl font-black leading-none tabular-nums ${accent || univers ? "text-gold" : "text-white"}`}>{ready ? <CountUp value={value} /> : "—"}</dd>
+      <dd className={`mt-2 font-display text-4xl font-black leading-none tabular-nums ${accent || univers ? "text-gold" : "text-white"}`}>
+        {ready ? <CountUp value={value} /> : "—"}
+      </dd>
     </div>
   );
 }

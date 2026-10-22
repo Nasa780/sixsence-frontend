@@ -30,6 +30,9 @@ function ago(iso) {
   return `il y a ${days} j`;
 }
 
+/** Joueur et match de la semaine sur le hub MW4, mis de côté le 2026-10-22 (fil d'activité sur l'accueil) : true pour les remettre. */
+export const SHOW_WEEK_HIGHLIGHTS = false;
+
 /**
  * Hub MW4 : joueur de la semaine, match de la semaine et fil d'activité en direct (GET /highlights,
  * rafraîchi toutes les minutes). Rien n'est affiché tant qu'il n'y a pas de données.
@@ -39,7 +42,10 @@ export function HubHighlights() {
 
   useEffect(() => {
     let alive = true;
-    const load = () => api("/highlights").then((d) => alive && setData(d)).catch(() => {});
+    const load = () =>
+      api("/highlights")
+        .then((d) => alive && setData(d))
+        .catch(() => {});
     load();
     const timer = setInterval(load, 60000);
     return () => {
@@ -65,10 +71,21 @@ function PlayerOfWeek({ player }) {
   return (
     <TacticalCard highlight cut={26} innerClassName="relative overflow-hidden">
       <div aria-hidden className="pointer-events-none absolute -left-16 top-1/2 h-72 w-72 -translate-y-1/2 rounded-full bg-gold/15 blur-3xl" />
-      <div aria-hidden className="pointer-events-none absolute right-4 top-2 select-none font-display text-[7rem] font-black uppercase leading-none text-outline opacity-20">MVP</div>
+      <div aria-hidden className="pointer-events-none absolute right-4 top-2 select-none font-display text-[7rem] font-black uppercase leading-none text-outline opacity-20">
+        MVP
+      </div>
       <Link href={`/cod/profile/${player.id}`} className="relative flex flex-col gap-6 p-6 sm:flex-row sm:items-center sm:p-8">
-        <motion.span initial={{ scale: 0.85, opacity: 0 }} whileInView={{ scale: 1, opacity: 1 }} viewport={{ once: true }} transition={{ type: "spring", stiffness: 140, damping: 14 }} className="relative shrink-0">
-          <span aria-hidden className="absolute -inset-2 rounded-xl bg-[conic-gradient(from_0deg,transparent,rgba(231,192,90,0.6),transparent_40%)] opacity-70 blur-[2px] animate-[spin_6s_linear_infinite]" />
+        <motion.span
+          initial={{ scale: 0.85, opacity: 0 }}
+          whileInView={{ scale: 1, opacity: 1 }}
+          viewport={{ once: true }}
+          transition={{ type: "spring", stiffness: 140, damping: 14 }}
+          className="relative shrink-0"
+        >
+          <span
+            aria-hidden
+            className="absolute -inset-2 rounded-xl bg-[conic-gradient(from_0deg,transparent,rgba(231,192,90,0.6),transparent_40%)] opacity-70 blur-[2px] animate-[spin_6s_linear_infinite]"
+          />
           <Avatar full src={player.avatarUrl} name={player.username} size={104} className="relative" />
         </motion.span>
         <div className="min-w-0 flex-1">
@@ -128,6 +145,55 @@ function MatchOfWeek({ match }) {
   );
 }
 
+/**
+ * Fil d'activité de l'accueil (bloc « En direct ») : se charge seul (GET /highlights, toutes les minutes),
+ * dans une carte, sans grand titre. Rien n'est affiché tant qu'il n'y a pas d'activité.
+ */
+export function LiveFeed() {
+  const [feed, setFeed] = useState(null);
+  useEffect(() => {
+    let alive = true;
+    const load = () =>
+      api("/highlights")
+        .then((d) => alive && setFeed(d.feed ?? []))
+        .catch(() => alive && setFeed([]));
+    load();
+    const timer = setInterval(load, 60000);
+    return () => {
+      alive = false;
+      clearInterval(timer);
+    };
+  }, []);
+  return (
+    <TacticalCard cut={24} innerClassName="p-6 sm:p-8">
+      <div className="flex items-center justify-between gap-4">
+        <p className="font-tech text-[11px] uppercase tracking-[0.3em] text-gold">Fil d&apos;activité</p>
+        <LiveDot />
+      </div>
+      {feed === null ? (
+        <p className="mt-6 text-sm text-white/45">Chargement…</p>
+      ) : feed.length === 0 ? (
+        <p className="mt-6 text-sm text-white/55">Rien pour l&apos;instant : le premier match lancera le fil.</p>
+      ) : (
+        <FeedList feed={feed} limit={8} />
+      )}
+    </TacticalCard>
+  );
+}
+
+function LiveDot() {
+  return (
+    <span className="inline-flex items-center gap-2 font-tech text-[10px] uppercase tracking-[0.24em] text-win">
+      <span className="relative flex h-2 w-2">
+        <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-win opacity-60" />
+        <span className="relative inline-flex h-2 w-2 rounded-full bg-win" />
+      </span>
+      <LuRadio aria-hidden className="h-3.5 w-3.5" />
+      Live
+    </span>
+  );
+}
+
 function ActivityFeed({ feed }) {
   return (
     <section aria-labelledby="titre-fil">
@@ -147,27 +213,39 @@ function ActivityFeed({ feed }) {
           Live
         </span>
       </div>
-      <ol className="relative mt-6 space-y-1 before:absolute before:bottom-2 before:left-[15px] before:top-2 before:w-px before:bg-white/10">
-        {feed.slice(0, 12).map((event, index) => {
-          const kind = FEED[event.type] ?? FEED.classe;
-          return (
-            <motion.li key={event.id} initial={{ opacity: 0, x: 10 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: index * 0.04 }}>
-              <Link href={event.href} className="group relative flex items-center gap-3 px-1 py-2 transition-colors hover:bg-white/[0.03]">
-                <span className="relative z-10 grid h-8 w-8 shrink-0 place-items-center border bg-ink" style={{ borderColor: `${kind.color}66`, color: kind.color }}>
-                  {event.team ? <TeamCrest team={event.team} size={26} /> : event.avatar ? <Avatar full src={event.avatar} name="?" size={26} /> : <kind.icon aria-hidden className="h-4 w-4" />}
-                </span>
-                <span className="min-w-0 flex-1">
-                  <span className="block truncate text-sm text-white/85 group-hover:text-white">{event.text}</span>
-                  <span className="block font-tech text-[9px] uppercase tracking-[0.2em]" style={{ color: kind.color }}>
-                    {kind.label} <span className="text-white/35">· {ago(event.at)}</span>
-                  </span>
-                </span>
-                {typeof event.points === "number" ? <span className="font-tech text-xs font-bold text-win tabular-nums">+{event.points}</span> : null}
-              </Link>
-            </motion.li>
-          );
-        })}
-      </ol>
+      <FeedList feed={feed} limit={12} />
     </section>
+  );
+}
+
+function FeedList({ feed, limit }) {
+  return (
+    <ol className="relative mt-6 space-y-1 before:absolute before:bottom-2 before:left-[15px] before:top-2 before:w-px before:bg-white/10">
+      {feed.slice(0, limit).map((event, index) => {
+        const kind = FEED[event.type] ?? FEED.classe;
+        return (
+          <motion.li key={event.id} initial={{ opacity: 0, x: 10 }} animate={{ opacity: 1, x: 0 }} transition={{ delay: index * 0.04 }}>
+            <Link href={event.href} className="group relative flex items-center gap-3 px-1 py-2 transition-colors hover:bg-white/[0.03]">
+              <span className="relative z-10 grid h-8 w-8 shrink-0 place-items-center border bg-ink" style={{ borderColor: `${kind.color}66`, color: kind.color }}>
+                {event.team ? (
+                  <TeamCrest team={event.team} size={26} />
+                ) : event.avatar ? (
+                  <Avatar full src={event.avatar} name="?" size={26} />
+                ) : (
+                  <kind.icon aria-hidden className="h-4 w-4" />
+                )}
+              </span>
+              <span className="min-w-0 flex-1">
+                <span className="block truncate text-sm text-white/85 group-hover:text-white">{event.text}</span>
+                <span className="block font-tech text-[9px] uppercase tracking-[0.2em]" style={{ color: kind.color }}>
+                  {kind.label} <span className="text-white/35">· {ago(event.at)}</span>
+                </span>
+              </span>
+              {typeof event.points === "number" ? <span className="font-tech text-xs font-bold text-win tabular-nums">+{event.points}</span> : null}
+            </Link>
+          </motion.li>
+        );
+      })}
+    </ol>
   );
 }
