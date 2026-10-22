@@ -453,27 +453,15 @@ export function MatchView({ matchId }) {
           <RequeueCard
             format={match.format}
             title={match.winner === myTeam ? "On enchaîne ?" : "Prends ta revanche"}
-            text="Un clic et ta recherche repart tout de suite, sans recliquer sur la file."
           />
         ) : null}
 
         {match.status === "cancelled" ? (
-          myTeam ? (
-            <RequeueCard
-              format={match.format}
-              tone="grey"
-              title="Match annulé"
-              text={
-                match.cancel_reason === "ready_check_failed"
-                  ? "Un joueur n'a pas accepté à temps. Si tu étais prêt, tu es déjà remis en tête de file."
-                  : "Aucun point n'a été modifié. Relance une recherche quand tu veux."
-              }
-            />
-          ) : (
-            <Notice>
-              {match.cancel_reason === "ready_check_failed" ? "Match annulé : tous les joueurs n'ont pas accepté à temps." : "Ce match a été annulé : aucun point n'a été modifié."}
-            </Notice>
-          )
+          <Notice>
+            {match.cancel_reason === "ready_check_failed"
+              ? "Match annulé : tous les joueurs n'ont pas accepté à temps. Les joueurs prêts ont été remis automatiquement en tête de file."
+              : "Ce match a été annulé : aucun point n'a été modifié."}
+          </Notice>
         ) : null}
 
         {match.correction_action ? (

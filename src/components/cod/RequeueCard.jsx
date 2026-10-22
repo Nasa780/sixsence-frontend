@@ -6,9 +6,9 @@ import { askNotificationPermission, unlockAudio } from "../../lib/notify";
 import { cn } from "../../lib/cn";
 
 /**
- * Fin de match (terminé ou annulé) : carte avec un bouton qui ouvre la page de la file avec ?rejoindre=<format> ;
+ * Fin de match (terminé) : carte avec un bouton qui ouvre la page de la file avec ?rejoindre=<format> ;
  * la file relance la recherche toute seule dès sa connexion temps réel (QueuePanel), plus besoin de recliquer.
- * Déjà en file (joueur prêt remis en tête après une annulation) : la page de la file s'ouvre simplement.
+ * Déjà en file : la page de la file s'ouvre simplement.
  */
 export function RequeueCard({ format, title, text, tone = "gold" }) {
   const router = useRouter();
@@ -32,16 +32,10 @@ export function RequeueCard({ format, title, text, tone = "gold" }) {
         tone === "gold" ? "border-gold/40" : "border-white/12",
       )}
     >
-      <motion.span
-        aria-hidden
-        className="pointer-events-none absolute inset-y-0 -left-1/3 w-1/3 -skew-x-[24deg] bg-linear-to-r from-transparent via-gold/10 to-transparent"
-        animate={{ x: ["0%", "420%"] }}
-        transition={{ duration: 3.2, repeat: Infinity, repeatDelay: 2.4, ease: "easeInOut" }}
-      />
       <div className="relative flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <div className="min-w-0">
           <p className="font-display text-2xl font-black uppercase leading-none sm:text-3xl">{title}</p>
-          <p className="mt-1.5 text-sm text-white/60">{text}</p>
+          {text ? <p className="mt-1.5 text-sm text-white/60">{text}</p> : null}
         </div>
         <button
           type="button"

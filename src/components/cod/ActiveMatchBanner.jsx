@@ -13,7 +13,7 @@ const STATUS = {
 
 /**
  * Bandeau « Match en cours » (hub MW4, page de la file) : impossible à rater, carte animée (point « en direct »,
- * reflet qui balaie le cadre, lueur), map, format et étape du match, gros bouton vers le salon de match.
+ * lueur), map, format et étape du match, gros bouton vers le salon de match.
  */
 export function ActiveMatchBanner({ matchId, text = "Ton salon de match t'attend." }) {
   const [match, setMatch] = useState(null);
@@ -48,13 +48,6 @@ export function ActiveMatchBanner({ matchId, text = "Ton salon de match t'attend
         href={href}
         className="group relative block overflow-hidden border border-gold/50 bg-linear-to-br from-gold/[0.16] via-ink-800 to-ink clip-tactical [--cut:18px] transition-colors hover:border-gold"
       >
-        {/* Reflet qui balaie la carte */}
-        <motion.span
-          aria-hidden
-          className="pointer-events-none absolute inset-y-0 -left-1/2 w-1/2 -skew-x-[24deg] bg-linear-to-r from-transparent via-white/12 to-transparent"
-          animate={{ x: ["0%", "320%"] }}
-          transition={{ duration: 2.8, repeat: Infinity, repeatDelay: 1.6, ease: "easeInOut" }}
-        />
         <div aria-hidden className="absolute inset-0 bg-grid opacity-[0.06]" />
         <div className="relative flex flex-col gap-5 p-5 sm:flex-row sm:items-center sm:justify-between sm:p-6">
           <div className="flex min-w-0 items-center gap-4">
