@@ -8,6 +8,7 @@ export const RELEASES = [
     date: "2026-10-22",
     title: "Renommée, défis et ligues",
     items: [
+      { tag: "Discord", text: "Tickets : ouvre un ticket sur le serveur pour une contestation, une question, un signalement ou un bug, l’équipe te répond en privé." },
       { tag: "Discord", text: "Annonces du bot : coupes, événements GTA 6 et fin de saison, avec les notifications que tu choisis en rejoignant le serveur." },
       { tag: "Division", text: "Défis directs : défie une équipe depuis sa fiche, en amical (sans points) ou officiel (points de Division), maintenant ou à l'heure de ton choix." },
       { tag: "Division", text: "Ligues de Division : Élite, Ligue 1 et Ligue 2 avec montées et descentes, activées dès 16 équipes.", href: "/cod/equipes" },
