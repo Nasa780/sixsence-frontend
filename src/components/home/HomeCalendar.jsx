@@ -8,8 +8,7 @@ import { SectionHeading } from "../ui/Typography";
 const DAY = 86400000;
 
 /**
- * Accueil : le calendrier (coupes, événements GTA 6, temps forts de la saison), dans le même bandeau sombre
- * quadrillé que le bloc « En direct » juste au-dessus. Données GET /calendar ; rien n'est affiché en cas d'erreur.
+ * Accueil : le calendrier (coupes, événements GTA 6, temps forts de la saison), sous le bloc « En direct », sans fond. Données GET /calendar ; rien n'est affiché en cas d'erreur.
  */
 export function HomeCalendar() {
   const [weekStart, setWeekStart] = useState(null);
@@ -39,9 +38,8 @@ export function HomeCalendar() {
   const onWeek = (step) => setWeekStart((current) => (step === 0 ? mondayOf(Date.now()) : new Date(current.getTime() + step * 7 * DAY)));
 
   return (
-    <section className="relative border-b border-white/10 bg-ink-800 pb-20 pt-4 sm:pb-28 sm:pt-8">
-      <div aria-hidden className="absolute inset-0 bg-grid opacity-40" />
-      <Container className="relative">
+    <section className="py-20 sm:py-28">
+      <Container>
         <Reveal>
           <SectionHeading eyebrow="Calendrier" title="Les prochains rendez-vous" center />
         </Reveal>

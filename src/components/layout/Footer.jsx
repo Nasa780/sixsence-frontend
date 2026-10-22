@@ -26,7 +26,6 @@ const COLUMNS = [
       { href: "/cod/profile", label: "Mon profil" },
       ...(MY_MATCHES_ENABLED ? [{ href: "/cod/matchs", label: "Mes matchs" }] : []),
       { href: "/calendrier", label: "Calendrier" },
-      { href: "/hall-of-fame", label: "Hall of Fame" },
       { href: "/nouveautes", label: "Nouveautés" },
       { href: "/reglement", label: "Règlement" },
       { href: "/founders", label: "Fondateurs" },
