@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { useRouter } from "next/router";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { LuCheck, LuCrown, LuFlag, LuImagePlus, LuLoaderCircle, LuLock, LuMap, LuRotateCcw, LuSend, LuShieldAlert, LuStar, LuSwords, LuX } from "react-icons/lu";
 import useCountdown from "../../hooks/useCountdown";
@@ -236,6 +237,26 @@ export function MatchView({ matchId }) {
     if (isPlayer) loadMe();
   }, [isPlayer, loadMe, data?.match?.status]);
 
+  // Match annulé (absent au « Prêt ? », match abandonné, arbitre) : les joueurs du match repartent vers la file au lieu
+  // de rester sur une feuille annulée. Absent au « Prêt ? » : les joueurs prêts y sont déjà remis en tête ; sinon la
+  // recherche est relancée dans le même format (?rejoindre=). Seulement juste après l'annulation (vue en direct ou
+  // il y a moins de 2 min), pas en relisant un vieux match.
+  const router = useRouter();
+  const previousStatus = useRef(null);
+  useEffect(() => {
+    const current = data?.match;
+    if (!current) return;
+    const before = previousStatus.current;
+    previousStatus.current = current.status;
+    const mine = current.team_a.includes(userId) || current.team_b.includes(userId);
+    if (!mine || current.status !== "cancelled") return;
+    const at = current.cancel_reason === "ready_check_failed" ? current.ready_deadline : current.completed_at;
+    const recent = at && Date.now() - new Date(at).getTime() < 2 * 60_000;
+    const live = before && before !== "cancelled";
+    if (!live && !recent) return;
+    router.replace(current.cancel_reason === "ready_check_failed" ? "/cod/ranked" : `/cod/ranked?rejoindre=${encodeURIComponent(current.format || "auto")}`);
+  }, [data?.match, userId, router]);
+
   /** Appelle une action du backend puis recharge le match. */
   async function act(action, body, key) {
     setPending(key);
@@ -456,6 +477,8 @@ export function MatchView({ matchId }) {
           />
         ) : null}
 
+        {/* Annulé par l'équipe SixSence (arbitre) : personne n'est remis en file automatiquement, on propose de relancer. */}
+        {match.status === "cancelled" && match.cancel_reason !== "ready_check_failed" && myTeam ? <RequeueCard format={match.format} title="On relance ?" /> : null}
         {match.status === "cancelled" ? (
           <Notice>
             {match.cancel_reason === "ready_check_failed"
