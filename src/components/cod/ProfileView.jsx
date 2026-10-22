@@ -184,14 +184,14 @@ export function ProfileView({ userId, editable = false, ownUser = null }) {
         <CardBackdrop cardKey={profile.calling_card} />
         <div aria-hidden className="absolute -right-10 top-0 h-full w-40 -skew-x-[24deg] bg-linear-to-b from-gold/14 to-transparent" />
         <div className="relative flex flex-col gap-8 lg:flex-row lg:items-center lg:justify-between">
-          <div className="flex items-center gap-5">
-            {/* Sur mobile, le tag d'équipe passe au-dessus de l'avatar : le pseudo garde toute la largeur. */}
+          <div className="flex items-start gap-5 sm:items-center">
+            {/* Sur mobile, le tag d'équipe passe au-dessus de l'avatar, à la hauteur du pseudo : le pseudo garde toute la largeur. */}
             <div className="flex shrink-0 flex-col items-end gap-1.5">
               {team ? (
                 <Link
                   href={`/cod/equipes/${team.id}`}
                   title={team.name}
-                  className="font-tech text-base font-bold normal-case tracking-[0.12em] transition-opacity hover:opacity-80 sm:hidden"
+                  className="mt-2 font-tech text-base font-bold normal-case tracking-[0.12em] transition-opacity hover:opacity-80 sm:hidden"
                   style={{ color: team.color, textShadow: `0 0 12px ${team.color}66` }}
                 >
                   [{team.tag}]
