@@ -185,16 +185,29 @@ export function ProfileView({ userId, editable = false, ownUser = null }) {
         <div aria-hidden className="absolute -right-10 top-0 h-full w-40 -skew-x-[24deg] bg-linear-to-b from-gold/14 to-transparent" />
         <div className="relative flex flex-col gap-8 lg:flex-row lg:items-center lg:justify-between">
           <div className="flex items-center gap-5">
-            <Avatar src={player.avatar_url} name={player.username} size={96} className="[--cut:18px]" ring={rankGradient(rankFor(profile.points), 160)} />
+            {/* Sur mobile, le tag d'équipe passe au-dessus de l'avatar : le pseudo garde toute la largeur. */}
+            <div className="flex shrink-0 flex-col items-end gap-1.5">
+              {team ? (
+                <Link
+                  href={`/cod/equipes/${team.id}`}
+                  title={team.name}
+                  className="font-tech text-base font-bold normal-case tracking-[0.12em] transition-opacity hover:opacity-80 sm:hidden"
+                  style={{ color: team.color, textShadow: `0 0 12px ${team.color}66` }}
+                >
+                  [{team.tag}]
+                </Link>
+              ) : null}
+              <Avatar src={player.avatar_url} name={player.username} size={96} className="[--cut:18px]" ring={rankGradient(rankFor(profile.points), 160)} />
+            </div>
             <div className="min-w-0">
-              <div className="flex min-w-0 items-baseline gap-2 sm:gap-3">
-                <h2 className="truncate font-display text-4xl font-black uppercase leading-[0.9] sm:text-6xl">{player.username}</h2>
-                {/* Équipe : seulement son tag, dans la couleur de l'équipe (lien vers sa fiche) ; à gauche du pseudo sur mobile, à droite sur ordinateur. */}
+              <div className="flex min-w-0 items-baseline gap-3">
+                <h2 className="truncate font-display text-5xl font-black uppercase leading-[0.9] sm:text-6xl">{player.username}</h2>
+                {/* Équipe : seulement son tag, à côté du pseudo sur ordinateur, dans la couleur de l'équipe (lien vers sa fiche). */}
                 {team ? (
                   <Link
                     href={`/cod/equipes/${team.id}`}
                     title={team.name}
-                    className="order-first shrink-0 font-tech text-base font-bold normal-case tracking-[0.12em] transition-opacity hover:opacity-80 sm:order-none sm:text-2xl"
+                    className="hidden shrink-0 font-tech text-xl font-bold normal-case tracking-[0.12em] transition-opacity hover:opacity-80 sm:inline sm:text-2xl"
                     style={{ color: team.color, textShadow: `0 0 12px ${team.color}66` }}
                   >
                     [{team.tag}]
