@@ -3,6 +3,7 @@ import Link from "next/link";
 import { useEffect, useState } from "react";
 import { LuArrowRight, LuCrosshair, LuTrophy, LuUser } from "react-icons/lu";
 import { LeaderboardView } from "./LeaderboardView";
+import { ActiveMatchBanner } from "./ActiveMatchBanner";
 import { OnboardingPanel } from "./OnboardingPanel";
 import { RankBadge } from "./RankBadge";
 import { Reveal } from "../effects/Reveal";
@@ -83,14 +84,7 @@ export function ClassicHub() {
             </Link>
           </Notice>
         ) : null}
-        {session && extra.activeMatchId ? (
-          <Notice>
-            Tu as un match en cours.{" "}
-            <Link href={`/cod/match/${extra.activeMatchId}`} className="font-semibold text-gold underline underline-offset-4 hover:text-gold-light">
-              Ouvrir le salon de match
-            </Link>
-          </Notice>
-        ) : null}
+        {session && extra.activeMatchId ? <ActiveMatchBanner matchId={extra.activeMatchId} /> : null}
 
         {/* Mise en route d'un nouveau joueur (identifiant Activision, notifications, Discord, premier match). */}
         <OnboardingPanel user={user} />
