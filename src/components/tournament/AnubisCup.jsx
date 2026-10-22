@@ -493,8 +493,8 @@ export function HorusTeaser() {
             Aucune Coupe Horus <span className="text-[#e7c05a]">prévue</span>
           </p>
           <p className="mt-4 text-sm leading-relaxed text-white/60">
-            La Coupe Horus se joue en équipe : un Leader inscrit son équipe, tableau en direct, trophée or, argent ou bronze sur la fiche d&apos;équipe et
-            des points de Division à la clé. La prochaine sera annoncée ici et sur Discord.
+            La Coupe Horus se joue en équipe : le Leader inscrit sa formation pour rejoindre le tableau en direct. Décroche un trophée d&apos;or,
+            d&apos;argent ou de bronze sur la fiche d&apos;équipe et gagne des points de Division. La prochaine sera annoncée ici et sur Discord.
           </p>
           <div className="mt-7 flex flex-wrap gap-3">
             <ButtonLink href="/cod/division" size="lg">
@@ -523,8 +523,8 @@ export function AnubisTeaser() {
             Aucune Coupe Anubis <span className="text-[#e7c05a]">prévue</span>
           </p>
           <p className="mt-4 text-sm leading-relaxed text-white/60">
-            La Coupe Anubis se joue sans équipe : inscris-toi seul, le site forme les équipes au hasard au début de la coupe. Médailles or, argent et bronze sur ton profil. La prochaine sera
-            annoncée ici et sur Discord.
+            La Coupe Anubis se joue en solo : inscris-toi individuellement et le site forme les équipes au hasard au début de la coupe. Décroche une
+            médaille d&apos;or, d&apos;argent ou de bronze sur ton profil. La prochaine sera annoncée ici et sur Discord.
           </p>
           <div className="mt-7 flex flex-wrap gap-3">
             <ButtonLink href="/cod/ranked" size="lg">
