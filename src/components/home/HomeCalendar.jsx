@@ -8,12 +8,14 @@ import { SectionHeading } from "../ui/Typography";
 const DAY = 86400000;
 
 /**
- * Accueil : le calendrier (coupes, événements GTA 6, temps forts de la saison), dans le même bandeau sombre
- * quadrillé que le bloc « En direct » juste au-dessus. Données GET /calendar ; rien n'est affiché en cas d'erreur.
+ * Accueil : le calendrier (coupes, événements GTA 6, temps forts de la saison), sous le bloc « En direct », sans fond ;
+ * masqué tant qu'aucun vrai rendez-vous n'est prévu (le top de la semaine seul ne suffit pas). Données GET /calendar ; rien n'est affiché en cas d'erreur.
  */
 export function HomeCalendar() {
   const [weekStart, setWeekStart] = useState(null);
   const [events, setEvents] = useState(null);
+  // Affiché seulement s'il y a un vrai rendez-vous (coupe, événement GTA 6, saison) dans les 6 semaines à venir.
+  const [visible, setVisible] = useState(false);
   const [now, setNow] = useState(0);
 
   useEffect(() => {
@@ -27,7 +29,9 @@ export function HomeCalendar() {
     try {
       const from = new Date(start.getTime()).toISOString();
       const to = new Date(start.getTime() + 42 * DAY).toISOString();
-      setEvents((await api(`/calendar?from=${encodeURIComponent(from)}&to=${encodeURIComponent(to)}`)).events);
+      const list = (await api(`/calendar?from=${encodeURIComponent(from)}&to=${encodeURIComponent(to)}`)).events;
+      setEvents(list);
+      if (list.some((event) => event.kind !== "rdv")) setVisible(true);
     } catch {
       setEvents([]);
     }
@@ -38,10 +42,10 @@ export function HomeCalendar() {
 
   const onWeek = (step) => setWeekStart((current) => (step === 0 ? mondayOf(Date.now()) : new Date(current.getTime() + step * 7 * DAY)));
 
+  if (!visible) return null;
   return (
-    <section className="relative border-b border-white/10 bg-ink-800 pb-20 pt-4 sm:pb-28 sm:pt-8">
-      <div aria-hidden className="absolute inset-0 bg-grid opacity-40" />
-      <Container className="relative">
+    <section className="py-20 sm:py-28">
+      <Container>
         <Reveal>
           <SectionHeading eyebrow="Calendrier" title="Les prochains rendez-vous" center />
         </Reveal>

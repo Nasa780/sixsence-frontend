@@ -11,7 +11,6 @@ const STATIC_PAGES = [
   { path: "/founders", priority: "0.5", changefreq: "monthly" },
   { path: "/partners", priority: "0.5", changefreq: "monthly" },
   { path: "/reglement", priority: "0.4", changefreq: "monthly" },
-  { path: "/hall-of-fame", priority: "0.6", changefreq: "weekly" },
   { path: "/calendrier", priority: "0.6", changefreq: "daily" },
   { path: "/nouveautes", priority: "0.5", changefreq: "weekly" },
   { path: "/mentions-legales", priority: "0.2", changefreq: "yearly" },
