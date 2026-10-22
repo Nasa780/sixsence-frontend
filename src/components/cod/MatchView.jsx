@@ -729,8 +729,6 @@ function TeamColumn({ team, match, ids, stakes = null, playerById, currentUserId
               <div className="min-w-0 flex-1">
                 <p className="flex items-center gap-2">
                   {player ? <RankEmblem rank={rankFor(player.points)} size={20} animated={false} /> : null}
-                  {/* Tag d'équipe : à gauche du pseudo sur mobile (le pseudo garde la place), à droite sur ordinateur. */}
-                  <TeamTag team={teamTags.get(id)} className="sm:hidden" />
                   <Link
                     href={`/cod/profile/${id}`}
                     className="truncate font-display text-xl font-bold uppercase leading-none tracking-wide hover:!text-gold"
@@ -738,7 +736,7 @@ function TeamColumn({ team, match, ids, stakes = null, playerById, currentUserId
                   >
                     {player?.username ?? "Joueur inconnu"}
                   </Link>
-                  <TeamTag team={teamTags.get(id)} className="hidden sm:inline" />
+                  <TeamTag team={teamTags.get(id)} />
                   {isMe ? <Chip className="shrink-0">Toi</Chip> : null}
                   {groupMark ? (
                     <span

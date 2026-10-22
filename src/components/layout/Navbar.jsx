@@ -3,7 +3,7 @@ import Link from "next/link";
 import { useRouter } from "next/router";
 import { useEffect, useRef, useState } from "react";
 import { FaDiscord } from "react-icons/fa6";
-import { LuCrosshair, LuLogOut, LuMenu, LuShield, LuShieldCheck, LuSwords, LuTrophy, LuUser, LuX } from "react-icons/lu";
+import { LuCalendarDays, LuCrosshair, LuLogOut, LuMenu, LuScrollText, LuShield, LuShieldCheck, LuSwords, LuTrophy, LuUser, LuX } from "react-icons/lu";
 import useSession from "../../hooks/useSession";
 import useUser from "../../hooks/useUser";
 import { signInWithDiscord, signOut } from "../../lib/auth";
@@ -17,6 +17,9 @@ import { Container } from "../ui/Container";
 import { InstallButton } from "../ui/InstallButton";
 import { GlobalSearch } from "./GlobalSearch";
 import { Logo } from "../ui/Logo";
+
+/** Lien du menu du compte sur mobile (icône + libellé, comme le menu du profil sur ordinateur). */
+const MOBILE_ITEM = "flex items-center gap-2.5 px-4 py-3 text-sm text-white/75 transition-colors hover:bg-white/5 hover:text-gold";
 
 /** Sous-menu de MW4 (Classé, Division, Tournoi) masqué provisoirement (2026-10-21) : passer à true pour le remettre. */
 const SHOW_MW4_SUBMENU = false;
@@ -232,22 +235,37 @@ export function Navbar() {
                       <Avatar src={user.avatar} name={user.username} size={36} />
                       <span className="truncate font-display text-lg font-bold uppercase tracking-wide">{user.username}</span>
                     </div>
-                    <Link href="/cod/profile" className="px-4 py-3 text-sm text-white/70 hover:text-gold">
+                    <Link href="/cod/profile" className={MOBILE_ITEM}>
+                      <LuUser aria-hidden className="h-4 w-4" />
                       Mon profil
                     </Link>
                     {MY_MATCHES_ENABLED ? (
-                      <Link href="/cod/matchs" className="px-4 py-3 text-sm text-white/70 hover:text-gold">
+                      <Link href="/cod/matchs" className={MOBILE_ITEM}>
+                        <LuSwords aria-hidden className="h-4 w-4" />
                         Mes matchs
                       </Link>
                     ) : null}
-                    <Link href="/calendrier" className="px-4 py-3 text-sm text-white/70 hover:text-gold">
+                    <Link href="/calendrier" className={MOBILE_ITEM}>
+                      <LuCalendarDays aria-hidden className="h-4 w-4" />
                       Calendrier
                     </Link>
-                    <Link href="/reglement" className="px-4 py-3 text-sm text-white/70 hover:text-gold">
+                    <Link href="/reglement" className={MOBILE_ITEM}>
+                      <LuScrollText aria-hidden className="h-4 w-4" />
                       Règlement
                     </Link>
+                    <Link href="/cod/ranked" className={MOBILE_ITEM}>
+                      <LuCrosshair aria-hidden className="h-4 w-4" />
+                      Classé
+                    </Link>
+                    {MATCH_TEAM_ENABLED ? (
+                      <Link href="/cod/division" className={MOBILE_ITEM}>
+                        <LuShield aria-hidden className="h-4 w-4" />
+                        Division
+                      </Link>
+                    ) : null}
                     {isReferee(user.role) ? (
-                      <Link href="/admin" className="px-4 py-3 text-sm text-white/70 hover:text-gold">
+                      <Link href="/admin" className={MOBILE_ITEM}>
+                        <LuShieldCheck aria-hidden className="h-4 w-4" />
                         Administration
                       </Link>
                     ) : null}
