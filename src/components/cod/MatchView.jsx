@@ -319,7 +319,8 @@ export function MatchView({ matchId }) {
   return (
     <div className="space-y-8">
       {/* --- Bandeau : carte, mode, état ---------------------------------- */}
-      <TacticalCard highlight cut={28} innerClassName="holo overflow-hidden p-6 sm:p-10">
+      {/* Avec l'image de la map : pas de lignes « holo » par-dessus (elles faisaient un filtre sur l'image). */}
+      <TacticalCard highlight cut={28} innerClassName={cn(!mapImage(match.map) && "holo", "overflow-hidden p-6 sm:p-10")}>
         {/* La map du match en fond (ancienne map sans image : visuel Call of Duty). */}
         <div
           aria-hidden

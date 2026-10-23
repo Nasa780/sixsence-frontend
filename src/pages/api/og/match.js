@@ -72,7 +72,6 @@ export default async function handler(request) {
         {bg ? <img src={bg} width={1200} height={400} style={{ position: "absolute", left: 0, top: 0, opacity: 0.35, objectFit: "cover" }} /> : null}
         <div style={{ position: "absolute", left: 0, top: 0, width: 1200, height: 400, display: "flex", background: "linear-gradient(90deg, #040506 0%, rgba(4,5,6,0.9) 42%, rgba(4,5,6,0.2) 100%)" }} />
         <div style={{ position: "absolute", left: -160, top: -220, width: 760, height: 760, display: "flex", borderRadius: 9999, background: "radial-gradient(circle, rgba(52,211,153,0.38) 0%, rgba(52,211,153,0) 65%)" }} />
-        <div style={{ position: "absolute", left: 0, top: 0, width: 1200, height: 400, display: "flex", opacity: 0.07, backgroundImage: "linear-gradient(0deg, #fff 1px, transparent 1px)", backgroundSize: "100% 8px" }} />
 
         <div style={{ position: "relative", display: "flex", flexDirection: "column", padding: "44px 56px", width: 860 }}>
           <div style={{ display: "flex", alignItems: "center", gap: 16 }}>

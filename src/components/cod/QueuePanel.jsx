@@ -566,7 +566,8 @@ export function ReadyCheckOverlay({ check, started, userId }) {
               <div aria-hidden className="absolute inset-0 bg-linear-to-b from-ink/70 via-ink/80 to-ink" />
             </>
           ) : null}
-          <div aria-hidden className="absolute inset-0 bg-grid mask-fade" />
+          {/* Quadrillage seulement sans image de map (il faisait un filtre sur l'image). */}
+          {check?.map && mapImage(check.map) ? null : <div aria-hidden className="absolute inset-0 bg-grid mask-fade" />}
           <div aria-hidden className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,color-mix(in_srgb,var(--color-gold)_22%,transparent),transparent_60%)]" />
           <motion.div
             aria-hidden
