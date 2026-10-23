@@ -22,6 +22,7 @@ import { ReasonDialog } from "../ui/ReasonDialog";
 import { PointsAtStake } from "./PointsAtStake";
 import { ReadyCheckOverlay } from "./QueuePanel";
 import { RequeueCard } from "./RequeueCard";
+import { mapImage } from "../../lib/maps";
 import { signInWithDiscord } from "../../lib/auth";
 import { RankEmblem } from "./RankEmblem";
 import { RankUpOverlay } from "./RankUpOverlay";
@@ -318,7 +319,13 @@ export function MatchView({ matchId }) {
     <div className="space-y-8">
       {/* --- Bandeau : carte, mode, état ---------------------------------- */}
       <TacticalCard highlight cut={28} innerClassName="holo overflow-hidden p-6 sm:p-10">
-        <div aria-hidden className="absolute inset-0 bg-[url('/images/call-of-duty-black-3840x2160-22670.jpg')] bg-cover bg-center opacity-15" />
+        {/* La map du match en fond (ancienne map sans image : visuel Call of Duty). */}
+        <div
+          aria-hidden
+          className={cn("absolute inset-0 bg-cover bg-center", mapImage(match.map) ? "opacity-40" : "opacity-15")}
+          style={{ backgroundImage: `url('${mapImage(match.map) ?? "/images/call-of-duty-black-3840x2160-22670.jpg"}')` }}
+        />
+        {mapImage(match.map) ? <div aria-hidden className="absolute inset-0 bg-linear-to-r from-ink via-ink/70 to-ink/20" /> : null}
         <div aria-hidden className="absolute -right-10 top-0 h-full w-40 -skew-x-[24deg] bg-linear-to-b from-gold/14 to-transparent" />
         <div className="relative flex flex-col gap-6 sm:flex-row sm:items-end sm:justify-between">
           <div>

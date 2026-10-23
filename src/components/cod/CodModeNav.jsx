@@ -18,6 +18,7 @@ export const COD_MODES = [
       { href: "/cod/ranked", label: "File classée" },
       { href: "/cod/leaderboard", label: "Classement" },
       { href: "/cod/profile", label: "Mon profil" },
+      { href: "/cod/maps?mode=classe", label: "Maps" },
     ],
   },
   {
@@ -29,6 +30,7 @@ export const COD_MODES = [
       { href: "/cod/division", label: "File Division" },
       { href: "/cod/equipes", label: "Classement" },
       { href: "/cod/equipe", label: "Mon équipe" },
+      { href: "/cod/maps?mode=division", label: "Maps" },
     ],
   },
   {
@@ -36,7 +38,10 @@ export const COD_MODES = [
     label: "Tournoi",
     icon: LuTrophy,
     href: "/cod/tournoi",
-    links: [{ href: "/cod/tournoi", label: "Tableau" }],
+    links: [
+      { href: "/cod/tournoi", label: "Tableau" },
+      { href: "/cod/maps?mode=tournoi", label: "Maps" },
+    ],
   },
 ];
 

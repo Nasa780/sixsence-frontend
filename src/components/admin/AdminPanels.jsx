@@ -11,6 +11,7 @@ import { Chip, EmptyState, Loading, Notice, StatTile } from "../ui/Feedback";
 import { TacticalCard } from "../ui/TacticalCard";
 import { SearchInput } from "./Fields";
 import { DiscordAnnouncements } from "./DiscordAnnouncements";
+import { MapPoolsPanel } from "./MapPoolsPanel";
 import { SanctionDialog } from "./Sanctions";
 import { TeamDisputes } from "./TeamsPanel";
 
@@ -88,6 +89,7 @@ export function OverviewPanel({ onNavigate, role = "admin" }) {
       ) : null}
       {admin ? <DiscordRolesSync /> : null}
       {admin ? <DiscordRulesPublish /> : null}
+      {admin ? <MapPoolsPanel /> : null}
       {admin ? <DiscordTicketsPanel /> : null}
       {admin ? <DiscordAnnouncements /> : null}
     </div>

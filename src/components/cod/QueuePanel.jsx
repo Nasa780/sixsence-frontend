@@ -28,6 +28,7 @@ import { TacticalCard } from "../ui/TacticalCard";
 import { AppPanel } from "./AppPanel";
 import { PointsAtStake } from "./PointsAtStake";
 import { ActiveMatchBanner } from "./ActiveMatchBanner";
+import { mapImage } from "../../lib/maps";
 import { PartyPanel } from "./PartyPanel";
 import { GROUPS_ENABLED } from "../../lib/config";
 
@@ -550,6 +551,21 @@ export function ReadyCheckOverlay({ check, started, userId }) {
           exit={{ opacity: 0 }}
           className="fixed inset-0 z-[80] flex items-center justify-center overflow-hidden bg-ink/95 px-4 backdrop-blur-md"
         >
+          {/* Fond : l'image de la map tirée au sort (Kenburns lent), assombrie pour garder le texte lisible. */}
+          {check?.map && mapImage(check.map) ? (
+            <>
+              <motion.img
+                aria-hidden
+                src={mapImage(check.map)}
+                alt=""
+                className="absolute inset-0 h-full w-full object-cover"
+                initial={{ scale: 1.15, opacity: 0 }}
+                animate={{ scale: 1, opacity: 0.45 }}
+                transition={{ duration: 6, ease: "easeOut" }}
+              />
+              <div aria-hidden className="absolute inset-0 bg-linear-to-b from-ink/70 via-ink/80 to-ink" />
+            </>
+          ) : null}
           <div aria-hidden className="absolute inset-0 bg-grid mask-fade" />
           <div aria-hidden className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,color-mix(in_srgb,var(--color-gold)_22%,transparent),transparent_60%)]" />
           <motion.div
