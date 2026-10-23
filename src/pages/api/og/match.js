@@ -1,4 +1,5 @@
 import { ImageResponse } from "next/og";
+import { mapImage } from "../../../lib/maps";
 import { OG_COLORS, dataUrl, loadFonts } from "../../../lib/og";
 
 export const config = { runtime: "edge" };
@@ -51,7 +52,9 @@ export default async function handler(request) {
   const map = (searchParams.get("map") ?? "").slice(0, 24).toUpperCase();
   const format = (searchParams.get("format") ?? "").slice(0, 8).toUpperCase();
   const mode = (searchParams.get("mode") ?? "").replace(/hardcore/i, "HC").slice(0, 36).toUpperCase();
-  const [bg, logo] = await Promise.all([dataUrl(`${origin}/images/og/classe-bg.jpg`), dataUrl(`${origin}/images/logo.png`, "image/png")]);
+  // Fond : l'image de la map tirée (public/images/maps/og), sinon le visuel du Classé.
+  const mapOg = mapImage(searchParams.get("map"), { og: true });
+  const [bg, logo] = await Promise.all([dataUrl(`${origin}${mapOg ?? "/images/og/classe-bg.jpg"}`), dataUrl(`${origin}/images/logo.png`, "image/png")]);
   // Anneau du décompte : arc proportionnel au temps restant (le message Discord change d'image toutes les 5 s).
   // left=none : bannière fixe du message Discord (anneau plein « PRÊT ? ») ; le décompte est dans le texte, car une
   // image dont l'adresse change à chaque mise à jour clignote dans Discord.

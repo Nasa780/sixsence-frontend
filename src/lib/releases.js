@@ -5,6 +5,15 @@
  */
 export const RELEASES = [
   {
+    date: "2026-10-23",
+    title: "Modern Warfare 4 est là",
+    items: [
+      { tag: "Classé", text: "Les 13 maps de Modern Warfare 4 remplacent les anciennes, en Classé, en Division et en Tournoi." },
+      { tag: "Site", text: "Page Map pool : les maps qui peuvent tomber dans chaque mode.", href: "/cod/maps" },
+      { tag: "Classé", text: "Match trouvé : la map tirée au sort s'affiche en fond, sur le site comme sur Discord." },
+    ],
+  },
+  {
     date: "2026-10-22",
     title: "Renommée, défis et ligues",
     items: [
