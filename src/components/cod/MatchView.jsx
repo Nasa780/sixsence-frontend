@@ -289,7 +289,8 @@ export function MatchView({ matchId }) {
   const reporterTeam = match.reported_by ? (match.team_a.includes(match.reported_by) ? "A" : "B") : null;
   const reporterName = match.reported_by ? playerById.get(match.reported_by)?.username ?? "Un joueur" : "Un joueur";
   const hostName = playerById.get(match.team_a[0])?.username ?? "L'hôte";
-  const canResolve = isReferee(user?.role);
+  // Pas d'arbitrage de son propre match : un arbitre qui joue déclare le résultat comme les autres (double validation).
+  const canResolve = isReferee(user?.role) && !myTeam;
   const spinner = <LuLoaderCircle aria-hidden className="h-5 w-5 animate-spin" />;
   const namesOf = (team) => (team === "A" ? match.team_a : match.team_b).map((id) => playerById.get(id)?.username ?? "?").join(", ");
 
