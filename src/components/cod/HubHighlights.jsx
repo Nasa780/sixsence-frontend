@@ -12,7 +12,7 @@ import { Eyebrow } from "../ui/Typography";
 import { RankEmblem } from "./RankEmblem";
 
 /** Fil d'activité : icône et couleur par type d'événement. */
-const FEED = {
+export const FEED = {
   classe: { icon: LuSwords, color: "#34d399", label: "Classé" },
   division: { icon: LuShield, color: "#22d3ee", label: "Division" },
   tournoi: { icon: LuTrophy, color: "#e5484d", label: "Tournoi" },
@@ -21,7 +21,7 @@ const FEED = {
   arrivee: { icon: LuUserPlus, color: "#e7c05a", label: "Arrivée" },
 };
 
-function ago(iso) {
+export function ago(iso) {
   const minutes = Math.max(1, Math.round((Date.now() - new Date(iso).getTime()) / 60000));
   if (minutes < 60) return `il y a ${minutes} min`;
   const hours = Math.round(minutes / 60);

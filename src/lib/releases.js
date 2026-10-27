@@ -6,6 +6,15 @@
 export const RELEASES = [
   {
     date: "2026-10-28",
+    title: "En direct sur l'accueil",
+    items: [
+      { tag: "Site", text: "Accueil : un panneau « En direct » montre ce qui se passe maintenant (matchs classés, Division, coupes, GTA 6) et les dernières actions." },
+      { tag: "Site", text: "Page MW4 : les cartes donnent une info utile même quand c'est calme (file ouverte, équipes actives, prochaine coupe)." },
+      { tag: "Site", text: "Menu : MW4 s'ouvre sur Classé, Division et Tournoi." },
+    ],
+  },
+  {
+    date: "2026-10-28",
     title: "FAQ",
     items: [
       { tag: "Site", text: "Questions fréquentes : compte, Classé, Division, tournois, Discord, avec une recherche et un lien direct vers chaque réponse.", href: "/faq" },

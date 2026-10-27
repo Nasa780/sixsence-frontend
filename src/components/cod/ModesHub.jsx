@@ -14,6 +14,7 @@ import { TacticalCard } from "../ui/TacticalCard";
 import { Eyebrow, PageHeader, SectionHeading } from "../ui/Typography";
 import { TeamCrest } from "../teams/TeamParts";
 import useDisputedMatch from "../../hooks/useDisputedMatch";
+import useLive from "../../hooks/useLive";
 import useSeasons from "../../hooks/useSeasons";
 import useSession from "../../hooks/useSession";
 import useUser from "../../hooks/useUser";
@@ -242,42 +243,38 @@ function ModeLinks({ links }) {
   );
 }
 
-/** Info en direct sur chaque carte : joueurs en file (Classé), équipes en recherche (Division), prochain tournoi. */
+/**
+ * Info sur chaque carte (GET /live, partagé avec l'accueil) : jamais de zéro. Au calme, une info utile sans point
+ * clignotant (file ouverte, équipes actives, prochaine coupe) ; le point pulse dès qu'il se passe quelque chose.
+ */
+const plural = (n, word) => `${n} ${word}${n > 1 ? "s" : ""}`;
+function badgeOf(mode, live) {
+  if (mode === "classe") {
+    const c = live.classe;
+    if (!c) return { text: "File ouverte · 2v2 à 5v5", hot: false };
+    return { text: [c.inQueue ? `${c.inQueue} en file` : null, c.inProgress ? `${c.inProgress} en jeu` : null].filter(Boolean).join(" · "), hot: true };
+  }
+  if (mode === "team") {
+    const d = live.division;
+    if (d?.inProgress) return { text: `${plural(d.inProgress, "match")} en cours`, hot: true };
+    if (d?.searching) return { text: `${plural(d.searching, "équipe")} en recherche`, hot: true };
+    return live.activeTeams ? { text: `${plural(live.activeTeams, "équipe")} ${live.activeTeams > 1 ? "actives" : "active"}`, hot: false } : null;
+  }
+  const cup = live.cup;
+  if (!cup) return null;
+  if (cup.phase === "checkin") return { text: "Check-in ouvert", hot: true };
+  if (cup.phase === "drawn" || cup.phase === "running") return { text: `${cup.name} en cours`, hot: true };
+  return { text: `${cup.name} · ${new Date(cup.startsAt).toLocaleDateString("fr-FR", { weekday: "short", day: "numeric", month: "short" })}`, hot: false };
+}
+
 function LiveBadge({ mode }) {
-  const [text, setText] = useState(null);
-  useEffect(() => {
-    let alive = true;
-    const load = async () => {
-      try {
-        if (mode === "classe") {
-          const status = await api("/cod/status");
-          if (alive) setText(`${status.playersInQueue} en file · ${status.matchesInProgress} en jeu`);
-        } else if (mode === "team") {
-          const status = await api("/teams/status");
-          if (alive) setText(`${status.teamsSearching} équipe${status.teamsSearching > 1 ? "s" : ""} en recherche`);
-        } else {
-          const { tournament } = await api("/teams/tournament");
-          if (!alive) return;
-          if (!tournament || tournament.status === "completed" || tournament.status === "cancelled") setText("Aucun tournoi prévu");
-          else if (tournament.status === "running") setText("En cours");
-          else setText(new Date(tournament.startsAt).toLocaleDateString("fr-FR", { day: "numeric", month: "short" }));
-        }
-      } catch {
-        // Info facultative.
-      }
-    };
-    load();
-    const timer = setInterval(load, 20_000);
-    return () => {
-      alive = false;
-      clearInterval(timer);
-    };
-  }, [mode]);
-  if (!text) return null;
+  const live = useLive();
+  const badge = live ? badgeOf(mode, live) : null;
+  if (!badge) return null;
   return (
-    <span className="inline-flex items-center gap-2 border border-gold/40 bg-ink/70 px-2.5 py-1 font-tech text-[10px] uppercase tracking-[0.2em] text-gold backdrop-blur-sm">
-      <span aria-hidden className="h-1.5 w-1.5 animate-pulse-gold bg-gold" />
-      {text}
+    <span className="inline-flex max-w-full items-center gap-2 border border-gold/40 bg-ink/70 px-2.5 py-1 font-tech text-[10px] uppercase tracking-[0.2em] text-gold backdrop-blur-sm">
+      <span aria-hidden className={cn("h-1.5 w-1.5 shrink-0 bg-gold", badge.hot ? "animate-pulse-gold" : "opacity-60")} />
+      <span className="truncate">{badge.text}</span>
     </span>
   );
 }
