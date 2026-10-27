@@ -7,11 +7,11 @@ import { GoldParticles } from "../effects/GoldParticles";
 import { Button, ButtonLink } from "../ui/Button";
 import { Container } from "../ui/Container";
 import { MATCH_TEAM_ENABLED } from "../../lib/config";
-import { LivePanel, LiveStrip } from "./LivePanel";
+import { LiveBand } from "./LiveBand";
 
 /**
- * Écran d'accueil : particules dorées, grand titre, appel à la connexion Discord ; à droite, le panneau « En direct »
- * (ordinateur), ou une bande sous les boutons (téléphone).
+ * Écran d'accueil : particules dorées, grand titre, appel à la connexion Discord ; en bas, la bande « En direct »
+ * qui défile (activité du moment, sinon ce qui arrive).
  */
 export function Hero() {
   const reduceMotion = useReducedMotion();
@@ -28,7 +28,7 @@ export function Hero() {
   };
 
   return (
-    <section className="relative isolate flex min-h-svh items-center overflow-hidden pt-28 pb-14">
+    <section className="relative isolate flex min-h-svh items-center overflow-hidden pt-28 pb-32">
       {/* --- Décor --------------------------------------------------------- */}
       <div aria-hidden className="absolute inset-0 -z-30 bg-[radial-gradient(ellipse_at_70%_20%,rgba(212,175,55,0.16),transparent_55%)]" />
       <div aria-hidden className="absolute inset-0 -z-30 bg-grid mask-fade" />
@@ -54,8 +54,8 @@ export function Hero() {
       <div aria-hidden className="absolute inset-x-0 bottom-0 -z-10 h-40 bg-linear-to-t from-ink to-transparent" />
 
       {/* --- Contenu ------------------------------------------------------- */}
-      <Container className="grid grid-cols-1 items-center gap-10 lg:grid-cols-[minmax(0,1fr)_auto]">
-        <motion.div variants={container} initial="hidden" animate="show" className="min-w-0 max-w-4xl">
+      <Container>
+        <motion.div variants={container} initial="hidden" animate="show" className="max-w-4xl">
           <motion.div variants={item} className="inline-flex items-center gap-3 border border-gold/30 bg-gold/8 px-4 py-2">
             <span aria-hidden className="h-1.5 w-1.5 animate-pulse-gold bg-gold shadow-[0_0_10px_var(--color-gold)]" />
             <span className="font-tech text-[10px] font-medium uppercase tracking-[0.3em] text-gold sm:text-[11px]">
@@ -65,7 +65,7 @@ export function Hero() {
 
           <motion.h1
             variants={item}
-            className="mt-6 font-display text-[clamp(4.25rem,15vw,10.5rem)] font-black uppercase leading-[0.8] tracking-tight"
+            className="mt-6 font-display text-[clamp(4.25rem,17vw,12.5rem)] font-black uppercase leading-[0.8] tracking-tight"
           >
             Six<span className="text-gold-gradient">Sence</span>
           </motion.h1>
@@ -98,15 +98,10 @@ export function Hero() {
               <LuChevronRight aria-hidden className="h-5 w-5" />
             </ButtonLink>
           </motion.div>
-
-          <motion.div variants={item} className="mt-10 max-w-xl lg:hidden">
-            <LiveStrip />
-          </motion.div>
         </motion.div>
-        <div className="hidden lg:block">
-          <LivePanel />
-        </div>
       </Container>
+
+      <LiveBand />
     </section>
   );
 }

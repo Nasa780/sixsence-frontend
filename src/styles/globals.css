@@ -59,6 +59,10 @@
     from { transform: translateX(0) skewX(-20deg); }
     to { transform: translateX(450%) skewX(-20deg); }
   }
+  /* Bande « En direct » de l'accueil : la liste doublée défile d'une moitié puis recommence. */
+  @keyframes band-scroll {
+    to { transform: translateX(-50%); }
+  }
 }
 
 /* -----------------------------------------------------------------------------
