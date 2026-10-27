@@ -4,13 +4,13 @@ import { useEffect, useState } from "react";
 import { LuCrosshair, LuCrown, LuShield, LuTrophy } from "react-icons/lu";
 import { LeaderboardView } from "./LeaderboardView";
 import { ActiveMatchBanner } from "./ActiveMatchBanner";
+import { MySeason } from "./MySeason";
 import { OnboardingPanel } from "./OnboardingPanel";
 import { DivisionOnboarding } from "../teams/DivisionOnboarding";
-import { RankBadge } from "./RankBadge";
 import { Reveal } from "../effects/Reveal";
 import { ButtonLink } from "../ui/Button";
 import { Container } from "../ui/Container";
-import { Chip, Notice, StatTile } from "../ui/Feedback";
+import { Chip, Notice } from "../ui/Feedback";
 import { TacticalCard } from "../ui/TacticalCard";
 import { Eyebrow, PageHeader, SectionHeading } from "../ui/Typography";
 import { TeamCrest } from "../teams/TeamParts";
@@ -79,9 +79,8 @@ const MODES = [
   },
 ];
 
-const winRate = (wins, losses) => (wins + losses > 0 ? Math.round((wins / (wins + losses)) * 100) : null);
 
-/** Hub COD : résumé du joueur connecté, les trois sections (Classé, Division, Tournoi) séparées, top joueurs et top équipes. Public. */
+/** Hub COD : « Ma saison » du joueur connecté, les trois sections (Classé, Division, Tournoi) séparées, top joueurs et top équipes. Public. */
 export function ModesHub() {
   const { session } = useSession();
   const user = useUser();
@@ -103,7 +102,6 @@ export function ModesHub() {
     })();
   }, [user?.id, profile]);
 
-  const rate = profile ? winRate(profile.wins, profile.losses) : null;
 
   return (
     <>
@@ -146,6 +144,9 @@ export function ModesHub() {
           </Notice>
         ) : null}
         {session && extra.activeMatchId ? <ActiveMatchBanner matchId={extra.activeMatchId} /> : null}
+
+        {/* Ma saison : Classé et Division du joueur connecté, en une ligne. */}
+        {profile ? <MySeason profile={profile} position={extra.position} /> : null}
 
         <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
           {MODES.map((mode, index) => (
@@ -199,17 +200,6 @@ export function ModesHub() {
         {/* Premiers pas en Division : indépendants du Classé (pas besoin d'un match classé). */}
         <DivisionOnboarding user={user} />
 
-        {profile ? (
-          <section aria-label="Mon résumé" className="grid grid-cols-1 gap-6 lg:grid-cols-[auto_1fr] lg:items-center">
-            <RankBadge points={profile.points} showProgress />
-            <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
-              <StatTile label="Points" value={profile.points} accent />
-              <StatTile label="Classement" value={extra.position ? `#${extra.position}` : "—"} />
-              <StatTile label="Victoires / Défaites" value={`${profile.wins} / ${profile.losses}`} />
-              <StatTile label="Taux de victoire" value={rate === null ? "—" : `${rate}%`} />
-            </div>
-          </section>
-        ) : null}
 
         {/* Joueur et match de la semaine, fil d'activité en direct. */}
         {SHOW_WEEK_HIGHLIGHTS ? <HubHighlights /> : null}
