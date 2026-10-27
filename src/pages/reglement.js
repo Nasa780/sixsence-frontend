@@ -1,4 +1,5 @@
 import Link from "next/link";
+import { MatchSettings, RulesConduct, RulesEssentials, RulesLoadout } from "../components/cod/MatchRules";
 import { LegalPage } from "../components/ui/LegalPage";
 import { MATCH_TEAM_ENABLED } from "../lib/config";
 import { LOSS_ADJUST, LOSS_XP, PLACEMENT_MATCHES, RANKS, WIN_POINTS, WIN_POINTS_MAX, WIN_POINTS_MIN, WIN_XP } from "../lib/ranks";
@@ -58,7 +59,7 @@ function DIVISION_SECTIONS() {
       content: (
         <ul>
           <li>
-            Le match se joue en <strong>BO3</strong> (Recherche &amp; Destruction Hardcore), 6 manches gagnantes par map. Les 3 maps sont
+            Le match se joue en <strong>BO3</strong> (Recherche &amp; Destruction Hardcore), 6 manches gagnantes par map, avec les <a href="#regles-parametres">paramètres</a> et la <a href="#regles-classe">classe</a> des règles de match. Les 3 maps sont
             tirées au sort à la création du match et affichées tout de suite ; la map 3 n&apos;est jouée qu&apos;à 1-1.
           </li>
           <li>
@@ -226,6 +227,60 @@ function DIVISION_SECTIONS() {
 
 const SECTIONS = [
   {
+    id: "regles-essentiel",
+    group: "Règles de match",
+    title: "L'essentiel",
+    content: (
+      <>
+        <p>
+          Tous les matchs se jouent sur <strong>Modern Warfare 4</strong>, en <strong>Recherche &amp; Destruction Hardcore</strong>, en partie
+          privée créée par l&apos;hôte. Une partie jouée avec d&apos;autres réglages ou une classe interdite peut être annulée ou donnée perdante.
+        </p>
+        <RulesEssentials />
+      </>
+    ),
+  },
+  {
+    id: "regles-parametres",
+    group: "Règles de match",
+    title: "Paramètres de la partie privée",
+    content: (
+      <>
+        <p>
+          L&apos;hôte crée la partie en mode <strong>Call of Duty League : R&amp;D</strong> et change uniquement les réglages en or, onglet par
+          onglet, comme dans le menu « Règles du jeu ». Le <strong>Mode hôte</strong> en fait une liste à cocher ; elle s&apos;ouvre aussi sur
+          la feuille de match de l&apos;hôte.
+        </p>
+        <MatchSettings />
+      </>
+    ),
+  },
+  {
+    id: "regles-classe",
+    group: "Règles de match",
+    title: "Classe autorisée",
+    content: (
+      <>
+        <p>Tout ce qui n&apos;est pas autorisé ci-dessous est interdit. Les trois atouts sont imposés.</p>
+        <RulesLoadout />
+      </>
+    ),
+  },
+  {
+    id: "regles-conduite",
+    group: "Règles de match",
+    title: "Pendant le match",
+    content: (
+      <>
+        <RulesConduct />
+        <p>
+          Il n&apos;y a pas d&apos;anti-triche sur le site : les arbitres décident sur preuves et peuvent sanctionner tout glitch ou toute faille,
+          même s&apos;ils ne sont pas cités ici.
+        </p>
+      </>
+    ),
+  },
+  {
     id: "compte",
     group: "Général",
     title: "Compte et identité",
@@ -334,8 +389,9 @@ const SECTIONS = [
     content: (
       <ul>
         <li>
-          Uniquement en <strong>Recherche &amp; Destruction Hardcore</strong>. Une partie jouée dans un autre mode ou sans le réglage
-          Hardcore ne compte pas.
+          En <strong>BO1</strong> : une seule map, <strong>8 manches</strong> à gagner, avec les{" "}
+          <a href="#regles-parametres">paramètres de la partie privée</a> et la <a href="#regles-classe">classe autorisée</a> des règles de
+          match. Une partie jouée avec d&apos;autres réglages ne compte pas.
         </li>
         <li>
           L&apos;<strong>hôte</strong> est tiré au sort et indiqué dans le salon de match : il crée la partie privée sur la carte tirée au
@@ -447,7 +503,7 @@ const SECTIONS = [
   },
 ];
 
-const GROUP_ORDER = ["Général", "Classé", "Division", "Tournoi", "GTA 6"];
+const GROUP_ORDER = ["Général", "Règles de match", "Classé", "Division", "Tournoi", "GTA 6"];
 const ORDERED = [...SECTIONS].sort((a, b) => GROUP_ORDER.indexOf(a.group) - GROUP_ORDER.indexOf(b.group));
 
 /** Règlement de la plateforme, par catégories : général, classé, Division, tournoi, GTA 6. */
@@ -457,7 +513,7 @@ export default function RulesPage() {
       eyebrow="Fair-play"
       title="Règlement"
       description={MATCH_TEAM_ENABLED ? "Les règles de SixSence : général, classé, Division, tournoi et événements GTA 6." : "Les règles du classé SixSence : file d'attente, sanctions, déroulement des matchs, points et saisons."}
-      updated="21 octobre 2026"
+      updated="27 octobre 2026"
       sections={ORDERED}
     />
   );
