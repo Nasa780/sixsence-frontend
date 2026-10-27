@@ -5,6 +5,16 @@
  */
 export const RELEASES = [
   {
+    date: "2026-10-28",
+    title: "Tournois et défis",
+    items: [
+      { tag: "Division", text: "Défis : un défi officiel par semaine et par équipe, les amicaux restent illimités." },
+      { tag: "Tournoi", text: "Matchs de tournoi : une équipe hôte tirée au sort donne de nouveau le code de la partie, et la feuille de match passe aux couleurs des tournois." },
+      { tag: "Tournoi", text: "Tableaux : les matchs validés s'affichent bien comme terminés." },
+      { tag: "Tournoi", text: "Les arbitres peuvent corriger les scores d'un match de tournoi après validation." },
+    ],
+  },
+  {
     date: "2026-10-27",
     title: "Règles de match",
     items: [

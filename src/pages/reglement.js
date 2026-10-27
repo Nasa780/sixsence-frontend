@@ -141,8 +141,12 @@ function DIVISION_SECTIONS() {
             inscrit ; sans check-in, l&apos;équipe est déclarée forfait.
           </li>
           <li>
-            Les matchs suivent le même déroulé que la Division (hôte, chat, forfait) : BO3, finale en BO5, sans points
+            Les matchs suivent le même déroulé que la Division (hôte, code de la partie, chat, forfait) : BO3, finale en BO5, sans points
             d&apos;équipe en jeu.
+          </li>
+          <li>
+            En cas de contestation, un <strong>arbitre</strong> tranche. Après validation, l&apos;équipe SixSence peut corriger les scores d&apos;un
+            match de tournoi ; le vainqueur ne change que si aucune des deux équipes n&apos;a encore joué la rencontre suivante.
           </li>
           <li>Le vainqueur reçoit un trophée sur sa fiche d&apos;équipe et un rôle Discord.</li>
         </ul>
@@ -158,6 +162,10 @@ function DIVISION_SECTIONS() {
             Un Leader peut <strong>défier</strong> une autre équipe depuis sa fiche : BO3 <strong>amical</strong> (aucun point, aucun bilan) ou
             <strong> officiel</strong> (points de Division normaux), maintenant ou à une heure fixée (jusqu&apos;à 7 jours). Mêmes règles que les
             matchs de la Division ; sans réponse, le défi expire après 24 h.
+          </li>
+          <li>
+            <strong>Un seul défi officiel par semaine</strong> et par équipe (7 jours glissants, défi lancé ou accepté). Les défis amicaux sont
+            illimités.
           </li>
           <li>
             Dès 16 équipes, la Division se joue en <strong>ligues</strong> : Élite (8 équipes), Ligue 1 (8 équipes) et Ligue 2. À chaque fin de
