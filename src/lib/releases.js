@@ -5,6 +5,14 @@
  */
 export const RELEASES = [
   {
+    date: "2026-10-27",
+    title: "Règles de match",
+    items: [
+      { tag: "Classé", text: "Règles de match Modern Warfare 4 : paramètres de la partie privée onglet par onglet, classe autorisée et atouts imposés, glitchs et déconnexions.", href: "/reglement#regles-essentiel" },
+      { tag: "Site", text: "Mode hôte : une liste à cocher facultative des réglages de la partie privée, aussi sur la feuille de match." },
+    ],
+  },
+  {
     date: "2026-10-23",
     title: "Modern Warfare 4 est là",
     items: [

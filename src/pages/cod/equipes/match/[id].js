@@ -14,6 +14,7 @@ import { TacticalCard } from "../../../../components/ui/TacticalCard";
 import { Eyebrow } from "../../../../components/ui/Typography";
 import useCountdown from "../../../../hooks/useCountdown";
 import useSession from "../../../../hooks/useSession";
+import { MatchRulesCard } from "../../../../components/cod/MatchRules";
 import { api } from "../../../../lib/api";
 import { cn } from "../../../../lib/cn";
 import { rankFor, rankGradient } from "../../../../lib/ranks";
@@ -97,6 +98,7 @@ export default function TeamMatchPage() {
         </TacticalCard>
 
         <MatchNotices match={match} name={name} />
+        {match.status === "in_progress" && match.viewer?.side ? <MatchRulesCard bestOf={match.bestOf} isHost={match.viewer.side === match.hostSide} /> : null}
 
         {match.status === "in_progress" && match.scores.length === 0 && !match.pendingScores ? <KickoffBlock match={match} name={name} onDone={load} /> : null}
         {match.status === "forfeit_claimed" ? <ForfeitBlock match={match} name={name} onDone={load} /> : null}
