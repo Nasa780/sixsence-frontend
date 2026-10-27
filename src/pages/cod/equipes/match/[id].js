@@ -75,6 +75,8 @@ export default function TeamMatchPage() {
       <Head>
         <title>{`[${match.teamA?.tag}] vs [${match.teamB?.tag}] — Division — SixSence`}</title>
       </Head>
+      {/* Match de tournoi : palette rouge des tournois ; Division et défis gardent l'or. */}
+      <div data-univers={match.tournament ? "tournoi" : undefined}>
       <Container className="space-y-8 pb-16 pt-28 sm:pt-32">
         <div>
           <Eyebrow>
@@ -150,6 +152,7 @@ export default function TeamMatchPage() {
           </Link>
         </p>
       </Container>
+      </div>
     </>
   );
 }
@@ -254,7 +257,7 @@ function MapCard({ index, match, name }) {
             <span className={score[1] > score[0] ? "text-white" : "text-white/45"}>{score[1]}</span>
           </div>
         ) : (
-          <p className="mt-6 text-sm text-white/40">{map && decider && !decided ? `Jouée seulement à ${match.bestOf === 5 ? "2 – 2" : "1 – 1"}` : map ? "Score pas encore déclaré" : decider ? (match.scores.length === match.bestOf - 1 && !decided ? "Choix de la map en cours" : `Jouée seulement à ${match.bestOf === 5 ? "2 – 2" : "1 – 1"}`) : ""}</p>
+          <p className="mt-6 text-sm text-white/40">{decided ? "Non jouée : série déjà gagnée" : map && decider && !decided ? `Jouée seulement à ${match.bestOf === 5 ? "2 – 2" : "1 – 1"}` : map ? "Score pas encore déclaré" : decider ? (match.scores.length === match.bestOf - 1 && !decided ? "Choix de la map en cours" : `Jouée seulement à ${match.bestOf === 5 ? "2 – 2" : "1 – 1"}`) : ""}</p>
         )}
       </div>
     </TacticalCard>
@@ -710,7 +713,11 @@ function CorrectionForm({ match, onDone }) {
   return (
     <TacticalCard innerClassName="space-y-4 p-6">
       <Eyebrow>Corriger le résultat</Eyebrow>
-      <p className="text-sm text-white/55">Mauvaise déclaration ? Saisis les bons scores (le vainqueur peut changer) ou annule le match : les points des deux équipes sont recalculés.</p>
+      <p className="text-sm text-white/55">
+        {match.tournament
+          ? "Mauvaise déclaration ? Saisis les bons scores. Le vainqueur ne peut changer que si aucune des deux équipes n'a joué la rencontre suivante : le tableau est alors refait."
+          : "Mauvaise déclaration ? Saisis les bons scores (le vainqueur peut changer) ou annule le match : les points des deux équipes sont recalculés."}
+      </p>
       <div className={cn("grid gap-3 md:grid-cols-3", match.bestOf === 5 && "lg:grid-cols-5")}>
         {scores.map((value, i) => (
           <div key={i} className="space-y-2">
@@ -734,9 +741,11 @@ function CorrectionForm({ match, onDone }) {
         <Button disabled={pending || reason.trim().length < 3 || filled.length < need || scores.slice(0, need).some((v) => !v)} onClick={() => setAsk("scores")}>
           Corriger les scores
         </Button>
-        <Button variant="danger" disabled={pending || reason.trim().length < 3} onClick={() => setAsk("cancel")}>
-          Annuler le match
-        </Button>
+        {match.tournament ? null : (
+          <Button variant="danger" disabled={pending || reason.trim().length < 3} onClick={() => setAsk("cancel")}>
+            Annuler le match
+          </Button>
+        )}
       </div>
       <ConfirmDialog
         open={Boolean(ask)}

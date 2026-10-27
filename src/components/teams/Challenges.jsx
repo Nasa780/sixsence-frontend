@@ -84,6 +84,17 @@ function ChallengeDialog({ target, mine, onClose }) {
   const [pending, setPending] = useState(false);
   const [error, setError] = useState(null);
   const [done, setDone] = useState(false);
+  // Un défi officiel par semaine : date du prochain possible (null = dès maintenant).
+  const [officialAt, setOfficialAt] = useState(null);
+
+  useEffect(() => {
+    api("/teams/me/challenges")
+      .then((data) => {
+        setOfficialAt(data?.officialAvailableAt ?? null);
+        if (data?.officialAvailableAt) setFriendly(true);
+      })
+      .catch(() => {});
+  }, []);
 
   async function send() {
     setPending(true);
@@ -142,13 +153,23 @@ function ChallengeDialog({ target, mine, onClose }) {
                 <div className="grid gap-2 sm:grid-cols-2">
                   {[
                     [true, "Amical", "Sans points ni bilan : pour s'entraîner."],
-                    [false, "Officiel", "Compte pour les points et le bilan de la Division."],
-                  ].map(([value, label, hint]) => (
-                    <button key={label} type="button" aria-pressed={friendly === value} onClick={() => setFriendly(value)} className={cn("border p-3 text-left transition", friendly === value ? "border-gold bg-gold/10" : "border-white/10 hover:border-white/25")}>
-                      <span className="block font-display text-xl font-bold uppercase">{label}</span>
-                      <span className="mt-1 block text-xs text-white/50">{hint}</span>
-                    </button>
-                  ))}
+                    [false, "Officiel", officialAt ? `Un par semaine : le prochain ${when(officialAt)}.` : "Points et bilan de la Division. Un par semaine."],
+                  ].map(([value, label, hint]) => {
+                    const locked = value === false && Boolean(officialAt);
+                    return (
+                      <button
+                        key={label}
+                        type="button"
+                        aria-pressed={friendly === value}
+                        disabled={locked}
+                        onClick={() => setFriendly(value)}
+                        className={cn("border p-3 text-left transition", locked ? "cursor-not-allowed border-white/5 opacity-50" : friendly === value ? "border-gold bg-gold/10" : "border-white/10 hover:border-white/25")}
+                      >
+                        <span className="block font-display text-xl font-bold uppercase">{label}</span>
+                        <span className="mt-1 block text-xs text-white/50">{hint}</span>
+                      </button>
+                    );
+                  })}
                 </div>
                 <div className="flex flex-wrap items-end gap-3">
                   <div className="flex gap-2">
@@ -276,7 +297,7 @@ export function ChallengesPanel() {
         <h2 id="titre-defis" className="mt-2 font-display text-3xl font-black uppercase leading-none sm:text-4xl">
           Défis
         </h2>
-        <p className="mt-2 text-sm text-white/55">Défie une équipe depuis sa fiche (bouton « Défier »). Amical pour s&apos;entraîner, ou officiel pour les points de Division.</p>
+        <p className="mt-2 text-sm text-white/55">Défie une équipe depuis sa fiche (bouton « Défier »). Amical pour s&apos;entraîner, sans limite, ou officiel pour les points de Division : un par semaine.</p>
       </div>
       {error ? <Notice tone="error">{error}</Notice> : null}
       <div className="grid gap-6 lg:grid-cols-2">
