@@ -1,5 +1,8 @@
-import { LuCircleAlert, LuLoaderCircle, LuTriangleAlert } from "react-icons/lu";
+import { useEffect, useState } from "react";
+import { LuCircleAlert, LuTriangleAlert } from "react-icons/lu";
 import { cn } from "../../lib/cn";
+import { randomTip } from "../../lib/tips";
+import { LoaderEmblem } from "./LoaderEmblem";
 
 const TONES = {
   gold: "bg-gold/12 text-gold",
@@ -70,10 +73,21 @@ export function StatTile({ label, value, hint = null, accent = false }) {
 
 /** Indicateur de chargement discret. */
 export function Loading({ label = "Chargement…" }) {
+  // Astuce tirée côté navigateur seulement (même rendu serveur et client au premier affichage).
+  const [tip, setTip] = useState(null);
+  useEffect(() => setTip(randomTip()), []);
   return (
-    <div role="status" className="flex items-center justify-center gap-2.5 py-16 text-sm text-white/50">
-      <LuLoaderCircle aria-hidden className="h-4 w-4 animate-spin text-gold" />
-      {label}
+    <div role="status" className="flex justify-center py-14">
+      <div className="flex max-w-md items-center gap-4">
+        <LoaderEmblem size={48} />
+        <div className="min-w-0">
+          <p className="font-display text-lg font-black uppercase leading-none tracking-wide">{label}</p>
+          <p className={cn("mt-1.5 text-xs leading-snug text-white/50 transition-opacity duration-500", tip ? "opacity-100" : "opacity-0")}>
+            <span className="font-tech text-[9px] uppercase tracking-[0.24em] text-gold">Astuce · </span>
+            {tip ?? "\u00a0"}
+          </p>
+        </div>
+      </div>
     </div>
   );
 }
