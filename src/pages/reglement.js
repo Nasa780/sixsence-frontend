@@ -133,8 +133,13 @@ function DIVISION_SECTIONS() {
       content: (
         <ul>
           <li>
-            Sont qualifiées les meilleures équipes du classement de la Division ayant joué au moins <strong>25 matchs</strong>, dans la limite des
-            places du tournoi (8, 16 ou 32, annoncées à sa création). Leur effectif est figé jusqu&apos;à la fin du tournoi.
+            C&apos;est la <strong>grande finale</strong> du <Link href="/cod/circuit">circuit SixSence</Link> : chaque Coupe Horus de la saison
+            rapporte des points (1re 100, 2e 70, 3e 50, autres équipes présentes 15). Sont qualifiées les premières du circuit, et les{" "}
+            <strong>2 dernières places</strong> reviennent aux meilleures équipes de la Division pas encore qualifiées (au moins{" "}
+            <strong>25 matchs</strong>). Sans Coupe Horus jouée dans la saison, la qualification se fait au classement de la Division.
+          </li>
+          <li>
+            Places du tournoi : 8, 16 ou 32, annoncées à sa création. L&apos;effectif des qualifiées est figé jusqu&apos;à la fin du tournoi.
           </li>
           <li>
             N&apos;importe quel joueur de l&apos;équipe fait le <strong>check-in</strong> entre 2 h et 15 minutes avant le début et choisit les joueurs parmi l&apos;effectif

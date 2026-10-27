@@ -40,6 +40,7 @@ export const COD_MODES = [
     href: "/cod/tournoi",
     links: [
       { href: "/cod/tournoi", label: "Tableau" },
+      { href: "/cod/circuit", label: "Circuit" },
       { href: "/cod/maps?mode=tournoi", label: "Maps" },
     ],
   },
@@ -48,7 +49,7 @@ export const COD_MODES = [
 /** Section d'une page COD (« classe », « team », « tournoi »), ou null (hub, pages hors COD). */
 export function codModeOf(pathname) {
   if (!MATCH_TEAM_ENABLED) return null;
-  if (pathname.startsWith("/cod/tournoi")) return "tournoi";
+  if (pathname.startsWith("/cod/tournoi") || pathname.startsWith("/cod/circuit")) return "tournoi";
   if (pathname === "/cod/equipe" || pathname === "/cod/division" || pathname.startsWith("/cod/equipes") || pathname.startsWith("/invite/equipe")) return "team";
   if (pathname.startsWith("/cod/ranked") || pathname.startsWith("/cod/leaderboard") || pathname.startsWith("/cod/profile") || pathname.startsWith("/cod/match/") || pathname.startsWith("/invite/groupe")) {
     return "classe";

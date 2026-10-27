@@ -6,6 +6,14 @@
 export const RELEASES = [
   {
     date: "2026-10-27",
+    title: "Circuit SixSence",
+    items: [
+      { tag: "Tournoi", text: "Circuit SixSence : chaque Coupe Horus rapporte des points, les meilleures équipes du circuit se qualifient pour la grande finale de la saison.", href: "/cod/circuit" },
+      { tag: "Division", text: "Seconde chance : les 2 dernières places de la grande finale reviennent aux meilleures équipes de la Division." },
+    ],
+  },
+  {
+    date: "2026-10-27",
     title: "Profils et équipes",
     items: [
       { tag: "Division", text: "Match programmé : choisis l'heure au quart d'heure près (jusqu'à 48 h), l'adversaire est dévoilé 5 min avant.", href: "/cod/division" },
