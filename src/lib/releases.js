@@ -6,6 +6,14 @@
 export const RELEASES = [
   {
     date: "2026-10-28",
+    title: "Bande en direct",
+    items: [
+      { tag: "Site", text: "Accueil : une bande défile en bas de l'écran, avec ce qui se passe en direct, sinon la fin de saison, les leaders, le dernier match et ce qui arrive." },
+      { tag: "Site", text: "Page MW4 : barre « Ma saison » en haut, avec ton Classé et ton équipe." },
+    ],
+  },
+  {
+    date: "2026-10-28",
     title: "En direct sur l'accueil",
     items: [
       { tag: "Site", text: "Accueil : un panneau « En direct » montre ce qui se passe maintenant (matchs classés, Division, coupes, GTA 6) et les dernières actions." },
