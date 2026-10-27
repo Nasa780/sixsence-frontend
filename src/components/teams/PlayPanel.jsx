@@ -13,6 +13,7 @@ import { Button, ButtonLink } from "../ui/Button";
 import { Notice } from "../ui/Feedback";
 import { TacticalCard } from "../ui/TacticalCard";
 import { Eyebrow } from "../ui/Typography";
+import { SchedulePanel } from "./SchedulePanel";
 import { TeamCrest } from "./TeamParts";
 
 const clock = (seconds) => {
@@ -117,6 +118,7 @@ export function PlayPanel({ team, isLeader }) {
   const toggle = (id) => setRoster(chosen.includes(id) ? chosen.filter((x) => x !== id) : chosen.length < size ? [...chosen, id] : chosen);
 
   return (
+    <div className="space-y-6">
     <DivisionLobby
       team={team}
       isLeader={isLeader}
@@ -137,6 +139,17 @@ export function PlayPanel({ team, isLeader }) {
       onStop={() => act(() => api("/teams/me/queue", { method: "DELETE" }))}
       onStay={() => act(() => api("/teams/me/queue/stay", { method: "POST" }))}
     />
+    {/* Match programmé : créneau au quart d'heure, adversaire dévoilé 5 min avant. */}
+    <SchedulePanel
+      team={team}
+      isLeader={isLeader}
+      play={play}
+      chosen={chosen}
+      pending={pending}
+      onSchedule={(slot) => act(() => api("/teams/me/schedule", { method: "POST", body: { slot, roster: chosen } }))}
+      onCancel={() => act(() => api("/teams/me/schedule", { method: "DELETE" }))}
+    />
+    </div>
   );
 }
 

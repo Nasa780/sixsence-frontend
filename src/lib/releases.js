@@ -8,6 +8,7 @@ export const RELEASES = [
     date: "2026-10-27",
     title: "Profils et équipes",
     items: [
+      { tag: "Division", text: "Match programmé : choisis l'heure au quart d'heure près (jusqu'à 48 h), l'adversaire est dévoilé 5 min avant.", href: "/cod/division" },
       { tag: "Site", text: "Accueil : « En ce moment », avec les podiums du Classé et de la Division, la prochaine coupe et les records du moment." },
       { tag: "Classé", text: "Profil : nouvelle section Analyse, avec ta place sur le site pour chaque chiffre, ton ratio sur 30 jours, tes adversaires et coéquipiers fréquents, ton activité et tes équipes." },
       { tag: "Classé", text: "Face à face : sur le profil d'un joueur, ton bilan contre lui." },
