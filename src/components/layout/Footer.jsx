@@ -19,6 +19,7 @@ const COLUMNS = [
       { href: "/calendrier", label: "Calendrier" },
       { href: "/renommee", label: "Renommée" },
       { href: "/reglement", label: "Règlement" },
+      { href: "/faq", label: "FAQ" },
     ],
   },
 ];

@@ -1,9 +1,10 @@
 import { AnimatePresence, motion } from "framer-motion";
 import { useEffect, useState } from "react";
 import { LuCircleCheck, LuDownload, LuX } from "react-icons/lu";
-import { browserGuide, installApp, useInstall } from "../../lib/install";
+import { installApp, useInstall } from "../../lib/install";
 import { cn } from "../../lib/cn";
 import { Button } from "./Button";
+import { InstallGuide } from "./InstallGuide";
 import { Portal } from "./Portal";
 
 /**
@@ -93,7 +94,7 @@ export function InstallButton({ variant = "panel", className = "" }) {
                 initial={{ y: 24 }}
                 animate={{ y: 0 }}
                 exit={{ y: 24 }}
-                className="w-full max-w-md border border-gold/30 bg-ink-800 p-6 shadow-2xl shadow-black/60"
+                className="max-h-[90vh] w-full max-w-md overflow-y-auto border border-gold/30 bg-ink-800 p-6 shadow-2xl shadow-black/60"
               >
                 <div className="flex items-start justify-between gap-4">
                   <h2 id="titre-installation" className="font-display text-3xl font-black uppercase leading-none">
@@ -103,15 +104,12 @@ export function InstallButton({ variant = "panel", className = "" }) {
                     <LuX aria-hidden className="h-5 w-5" />
                   </button>
                 </div>
-                <p className="mt-2 text-sm text-white/55">L&apos;installation en un clic n&apos;est pas disponible ici. Ça prend 10 secondes :</p>
-                <ol className="mt-4 space-y-3">
-                  {browserGuide(browser).map((step, index) => (
-                    <li key={step} className="flex gap-3 text-sm text-white/80">
-                      <span className="flex h-6 w-6 shrink-0 items-center justify-center bg-gold font-display text-sm font-black text-ink">{index + 1}</span>
-                      {step}
-                    </li>
-                  ))}
-                </ol>
+                <p className="mt-2 text-sm text-white/55">
+                  {browser === "ios-safari" ? "Sur iPhone, avec Safari. Ça prend 10 secondes :" : "L'installation en un clic n'est pas disponible ici. Ça prend 10 secondes :"}
+                </p>
+                <div className="mt-4">
+                  <InstallGuide browser={browser} />
+                </div>
                 <p className="mt-4 text-xs text-white/40">Déjà installée ? Ouvre SixSence depuis ton écran d&apos;accueil ou ton menu Démarrer.</p>
               <Button className="mt-5" onClick={() => setGuide(false)}>
                   C&apos;est compris

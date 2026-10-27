@@ -6,6 +6,14 @@
 export const RELEASES = [
   {
     date: "2026-10-28",
+    title: "FAQ",
+    items: [
+      { tag: "Site", text: "Questions fréquentes : compte, Classé, Division, tournois, Discord, avec une recherche et un lien direct vers chaque réponse.", href: "/faq" },
+      { tag: "Site", text: "Installer l'appli sur iPhone : la marche à suivre de Safari en 4 étapes illustrées, et un guide pour les autres navigateurs." },
+    ],
+  },
+  {
+    date: "2026-10-28",
     title: "Coupes, saison et parcours",
     items: [
       { tag: "Tournoi", text: "Fiche de coupe en onglets (Infos, Tableau, Équipes, Récompenses, Règles), avec ce que rapporte chaque place et le déroulé en 5 étapes.", href: "/cod/tournoi" },

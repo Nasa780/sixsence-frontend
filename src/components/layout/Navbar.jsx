@@ -3,7 +3,7 @@ import Link from "next/link";
 import { useRouter } from "next/router";
 import { useEffect, useRef, useState } from "react";
 import { FaDiscord } from "react-icons/fa6";
-import { LuCalendarDays, LuCrosshair, LuLogOut, LuMenu, LuScrollText, LuShield, LuShieldCheck, LuSwords, LuTrophy, LuUser, LuX } from "react-icons/lu";
+import { LuCalendarDays, LuCircleHelp, LuCrosshair, LuLogOut, LuMenu, LuScrollText, LuShield, LuShieldCheck, LuSwords, LuTrophy, LuUser, LuX } from "react-icons/lu";
 import useSession from "../../hooks/useSession";
 import useUser from "../../hooks/useUser";
 import { signInWithDiscord, signOut } from "../../lib/auth";
@@ -252,6 +252,10 @@ export function Navbar() {
                     <Link href="/reglement" className={MOBILE_ITEM}>
                       <LuScrollText aria-hidden className="h-4 w-4" />
                       Règlement
+                    </Link>
+                    <Link href="/faq" className={MOBILE_ITEM}>
+                      <LuCircleHelp aria-hidden className="h-4 w-4" />
+                      FAQ
                     </Link>
                     <Link href="/cod/ranked" className={MOBILE_ITEM}>
                       <LuCrosshair aria-hidden className="h-4 w-4" />
