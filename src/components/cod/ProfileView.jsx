@@ -22,6 +22,7 @@ import { Eyebrow } from "../ui/Typography";
 import { ActivisionForm } from "./ActivisionForm";
 import { CardBackdrop } from "./CallingCard";
 import { CardPicker } from "./CardPicker";
+import { PlayerInsights } from "./PlayerInsights";
 import { PerformancePanel } from "./PerformancePanel";
 import { PlayerMedals } from "./PlayerMedals";
 import { Reliability } from "./Reliability";
@@ -316,6 +317,9 @@ export function ProfileView({ userId, editable = false, ownUser = null }) {
       <section aria-label="Performance">
         <PerformancePanel history={history} userId={player.id} points={profile.points} seasonId={activeSeason?.id ?? null} seasonLabel={seasonLabel} />
       </section>
+
+      {/* --- Analyse : place sur le site, ratio 30 j, face à face, adversaires, activité, équipes */}
+      <PlayerInsights playerId={player.id} />
 
       <SeasonRecap playerId={player.id} seasons={seasons} badges={profile.badges} />
 
