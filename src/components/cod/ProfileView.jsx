@@ -14,6 +14,7 @@ import { supabase } from "../../lib/supabase";
 import useTeamTags from "../../hooks/useTeamTags";
 import { MATCH_TEAM_ENABLED } from "../../lib/config";
 import { SlantTab, TeamCrest } from "../teams/TeamParts";
+import { MapScoreChips } from "../teams/TeamMatchHistory";
 import { Avatar } from "../ui/Avatar";
 import { Chip, EmptyState, Loading, Notice, StatTile } from "../ui/Feedback";
 import { TacticalCard } from "../ui/TacticalCard";
@@ -480,6 +481,7 @@ function DivisionHistory({ playerId, tournament = false }) {
                   {match.forfeit ? " · par forfait" : ""}
                   {" · "}{new Date(match.date).toLocaleDateString("fr-FR", { day: "numeric", month: "short" })}
                 </p>
+                {done && !match.forfeit ? <MapScoreChips scores={match.mapScores} className="mt-1.5" /> : null}
               </div>
               {done ? (
                 <p className="shrink-0 text-right font-tech text-xs font-bold tabular-nums">

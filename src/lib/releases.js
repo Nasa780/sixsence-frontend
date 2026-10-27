@@ -5,6 +5,18 @@
  */
 export const RELEASES = [
   {
+    date: "2026-10-28",
+    title: "Coupes, saison et parcours",
+    items: [
+      { tag: "Tournoi", text: "Fiche de coupe en onglets (Infos, Tableau, Équipes, Récompenses, Règles), avec ce que rapporte chaque place et le déroulé en 5 étapes.", href: "/cod/tournoi" },
+      { tag: "Tournoi", text: "Play-in : les 7e et 8e du circuit affrontent les 2 meilleures équipes de la Division pour les dernières places de la grande finale.", href: "/cod/circuit" },
+      { tag: "Site", text: "Classements : compte à rebours de fin de saison et nombre de matchs joués dans la saison." },
+      { tag: "Division", text: "Historiques : le score de chaque map (« Lotus 6-3 ») sur le profil et les fiches d'équipe." },
+      { tag: "Division", text: "Profil : ton parcours en Division (équipes, rôle, dates, matchs et trophées) ; fiche d'équipe : trophées comptés par type." },
+      { tag: "Division", text: "Premiers pas en Division : une fois ton compte prêt, les étapes pour jouer ton premier match et ta première coupe." },
+    ],
+  },
+  {
     date: "2026-10-27",
     title: "Circuit SixSence",
     items: [

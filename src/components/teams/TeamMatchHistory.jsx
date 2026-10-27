@@ -1,9 +1,31 @@
 import Link from "next/link";
 import { cn } from "../../lib/cn";
+import { MAPS } from "../../lib/maps";
 import { Chip } from "../ui/Feedback";
 import { TeamCrest } from "./TeamParts";
 
 const dateShort = (iso) => new Date(iso).toLocaleDateString("fr-FR", { day: "numeric", month: "short" });
+const mapName = (map) => MAPS.find((m) => m.id === map)?.name ?? map ?? "Map";
+
+/** Score de chaque map jouée (« Lotus 6-3 ») en pastilles vertes ou rouges ; rien pour un forfait. */
+export function MapScoreChips({ scores, className = "" }) {
+  if (!scores?.length) return null;
+  return (
+    <span className={cn("flex flex-wrap gap-1", className)}>
+      {scores.map((score, index) => (
+        <span
+          key={index}
+          className={cn("inline-flex items-center gap-1 border px-1.5 py-px text-[11px] leading-4", score.for > score.against ? "border-win/40 bg-win/10" : "border-loss/40 bg-loss/10")}
+        >
+          <span className="text-white/60">{mapName(score.map)}</span>
+          <span className="font-tech font-bold tabular-nums text-white">
+            {score.for}-{score.against}
+          </span>
+        </span>
+      ))}
+    </span>
+  );
+}
 
 /**
  * Derniers matchs de Division d'une équipe (GET /teams/:id/matches) : résultat, adversaire, maps,
@@ -41,6 +63,7 @@ export function TeamMatchHistory({ history, limit = null }) {
                   {match.forfeit ? " · par forfait" : ""}
                   {match.tournament ? " · Tournoi" : ""}
                 </p>
+                {!match.forfeit ? <MapScoreChips scores={match.mapScores} className="mt-1.5" /> : null}
               </div>
               {done ? (
                 <div className="shrink-0 text-right">

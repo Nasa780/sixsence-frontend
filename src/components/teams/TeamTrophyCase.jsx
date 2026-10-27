@@ -17,5 +17,27 @@ export function TeamTrophyCase({ trophies }) {
       const metal = METAL[trophy.place] ?? "or";
       return { key: `${trophy.tournamentId}-${trophy.place}`, metal, image: `/images/trophees/horus-${metal}.png`, label: trophyLabel(trophy), title: trophy.name, sub: dateFr(trophy.date) };
     });
-  return <AwardShelf id="titre-vitrine" title="Vitrine" items={items} />;
+  const counts = ["or", "argent", "bronze"].map((metal) => [metal, items.filter((item) => item.metal === metal).length]).filter(([, n]) => n > 0);
+  return (
+    <div className="space-y-4">
+      <ul aria-label="Trophées par type" className="flex flex-wrap gap-3">
+        {counts.map(([metal, n]) => (
+          <li key={metal} className="clip-tactical flex items-center gap-3 border border-white/10 bg-white/[0.03] py-2 pl-2 pr-5 [--cut:10px]">
+            <img src={`/images/trophees/horus-${metal}.png`} alt="" className="h-12 w-12 object-contain" />
+            <span>
+              <span className="block font-display text-3xl font-black leading-none">×{n}</span>
+              <span className="block font-tech text-[10px] uppercase tracking-[0.2em] text-white/45">{metal === "or" ? "Or" : metal === "argent" ? "Argent" : "Bronze"}</span>
+            </span>
+          </li>
+        ))}
+        <li className="clip-tactical flex items-center gap-3 border border-gold/40 bg-gold/10 px-5 py-2 [--cut:10px]">
+          <span>
+            <span className="block font-display text-3xl font-black leading-none text-gold">{items.length}</span>
+            <span className="block font-tech text-[10px] uppercase tracking-[0.2em] text-white/45">Podium{items.length > 1 ? "s" : ""}</span>
+          </span>
+        </li>
+      </ul>
+      <AwardShelf id="titre-vitrine" title="Vitrine" items={items} />
+    </div>
+  );
 }
