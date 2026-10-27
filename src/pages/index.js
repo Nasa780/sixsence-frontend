@@ -4,6 +4,7 @@ import { Hero } from "../components/home/Hero";
 import { HomeCalendar } from "../components/home/HomeCalendar";
 import { HowItWorks } from "../components/home/HowItWorks";
 import { LiveBoard } from "../components/home/LiveBoard";
+import { RightNow } from "../components/home/RightNow";
 import { Universes } from "../components/home/Universes";
 
 /** Bloc « Comment ça marche » (les deux jeux, MW4 et GTA 6), au-dessus d'En direct : false pour le retirer. */
@@ -17,6 +18,7 @@ export default function HomePage() {
       <Universes />
       {SHOW_HOW_IT_WORKS ? <HowItWorks /> : null}
       <LiveBoard />
+      <RightNow />
       <HomeCalendar />
       <Features />
       <CallToAction />
