@@ -1,24 +1,17 @@
 import Link from "next/link";
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useState } from "react";
 import { LuArrowDownRight, LuArrowUpRight, LuCrown, LuSwords, LuTrophy, LuUsers } from "react-icons/lu";
 import { api } from "../../lib/api";
 import { cn } from "../../lib/cn";
 import { MATCH_TEAM_ENABLED } from "../../lib/config";
-import { Avatar } from "../ui/Avatar";
 import { Eyebrow } from "../ui/Typography";
 
 /**
  * Section « Analyse » du profil, sous la performance (GET /cod/players/:id/insights) : place sur le site pour
- * chaque chiffre, ratio sur 30 jours, face à face avec le visiteur, adversaires et coéquipiers, activité, parcours
- * en Division (équipes, rôle, arrivée et départ, matchs et trophées pendant le passage).
+ * chaque chiffre, ratio sur 30 jours, face à face avec le visiteur, parcours en Division (équipes, rôle, arrivée et
+ * départ, matchs et trophées pendant le passage). Adversaires, coéquipiers et activité retirés le 2026-10-28.
  * Chaque bloc ne s'affiche que s'il a quelque chose à montrer.
  */
-const PERIODS = [
-  [7, "7 j"],
-  [14, "14 j"],
-  [30, "1 mois"],
-  [90, "3 mois"],
-];
 const PLACES = [
   ["played", "Matchs joués", (v) => v],
   ["wins", "Victoires", (v) => v],
@@ -30,8 +23,6 @@ const dateShort = (iso) => new Date(iso).toLocaleDateString("fr-FR", { day: "num
 
 export function PlayerInsights({ playerId, initialData = null }) {
   const [data, setData] = useState(initialData);
-  const [people, setPeople] = useState("opponents");
-  const [period, setPeriod] = useState(30);
 
   useEffect(() => {
     if (initialData) return undefined;
@@ -44,21 +35,8 @@ export function PlayerInsights({ playerId, initialData = null }) {
     };
   }, [playerId, initialData]);
 
-  // Matchs par jour sur la période choisie (jours de Paris), du plus ancien au plus récent.
-  const days = useMemo(() => {
-    if (!data) return [];
-    return Array.from({ length: period }, (_, i) => {
-      const date = new Date(Date.now() - (period - 1 - i) * 86_400_000);
-      const key = date.toLocaleDateString("sv-SE", { timeZone: "Europe/Paris" });
-      return { key, count: data.activity[key] ?? 0, label: date.toLocaleDateString("fr-FR", { day: "numeric", month: "short" }) };
-    });
-  }, [data, period]);
-
   if (!data) return null;
   const places = data.ranks ? PLACES.filter(([key]) => data.ranks[key]?.place) : [];
-  const list = people === "opponents" ? data.opponents : data.teammates;
-  const max = Math.max(1, ...days.map((d) => d.count));
-  const total = days.reduce((sum, d) => sum + d.count, 0);
   const trend = data.ratio.last30 !== null && data.ratio.overall !== null ? data.ratio.last30 - data.ratio.overall : null;
   const h2h = data.headToHead && data.headToHead.viewerWins + data.headToHead.viewerLosses + data.headToHead.together > 0 ? data.headToHead : null;
   const teams = MATCH_TEAM_ENABLED ? data.teams : [];
@@ -136,85 +114,6 @@ export function PlayerInsights({ playerId, initialData = null }) {
             </p>
           </div>
         ) : null}
-      </div>
-
-      <div className="grid gap-6 lg:grid-cols-2">
-        {/* Adversaires et coéquipiers (Classé, 3 matchs au moins) */}
-        {data.opponents.length || data.teammates.length ? (
-          <div>
-            <div role="tablist" aria-label="Joueurs" className="flex gap-1 border-b border-white/10">
-              {[
-                ["opponents", "Adversaires fréquents"],
-                ["teammates", "Coéquipiers fréquents"],
-              ].map(([id, label]) => (
-                <button
-                  key={id}
-                  type="button"
-                  role="tab"
-                  aria-selected={people === id}
-                  onClick={() => setPeople(id)}
-                  className={cn("px-3 py-2.5 font-display text-sm font-bold uppercase tracking-[0.12em]", people === id ? "border-b-2 border-gold text-gold" : "text-white/50 hover:text-white")}
-                >
-                  {label}
-                </button>
-              ))}
-            </div>
-            {list.length ? (
-              <ul className="mt-3 space-y-2">
-                {list.map((p) => (
-                  <li key={p.id} className="bg-white/[0.03] px-4 py-3">
-                    <div className="flex items-center gap-3 text-sm">
-                      <Avatar full src={p.avatarUrl} name={p.username} size={28} />
-                      <Link href={`/cod/profile/${p.id}`} className="min-w-0 flex-1 truncate font-semibold hover:text-gold">
-                        {p.username}
-                      </Link>
-                      <span className="shrink-0 text-white/50">
-                        {p.played} matchs · <span className="text-win">{p.won} V</span> · <span className="text-loss">{p.lost} D</span>
-                      </span>
-                    </div>
-                    <div className="mt-2 flex h-1.5 overflow-hidden bg-loss/40">
-                      <div className="bg-win" style={{ width: `${(p.won / p.played) * 100}%` }} />
-                    </div>
-                  </li>
-                ))}
-              </ul>
-            ) : (
-              <p className="mt-4 text-sm text-white/45">Pas encore assez de matchs avec les mêmes joueurs (3 au moins).</p>
-            )}
-          </div>
-        ) : null}
-
-        {/* Activité */}
-        <div>
-          <div className="flex flex-wrap items-center justify-between gap-2">
-            <p className="font-tech text-[11px] uppercase tracking-[0.24em] text-gold">
-              Activité · {total} match{total > 1 ? "s" : ""}
-            </p>
-            <div role="tablist" aria-label="Période" className="flex gap-1">
-              {PERIODS.map(([value, label]) => (
-                <button
-                  key={value}
-                  type="button"
-                  role="tab"
-                  aria-selected={period === value}
-                  onClick={() => setPeriod(value)}
-                  className={cn("px-2 py-1 font-tech text-[10px] uppercase", period === value ? "bg-gold text-ink" : "bg-white/5 text-white/50 hover:text-white")}
-                >
-                  {label}
-                </button>
-              ))}
-            </div>
-          </div>
-          <div className="mt-3 flex h-28 items-end gap-px border-b border-white/10" role="img" aria-label={`${total} matchs sur la période`}>
-            {days.map((d) => (
-              <div key={d.key} title={`${d.label} : ${d.count} match${d.count > 1 ? "s" : ""}`} className="flex-1 bg-linear-to-t from-gold/30 to-gold" style={{ height: d.count ? `${Math.max(6, (d.count / max) * 100)}%` : "2px", opacity: d.count ? 1 : 0.25 }} />
-            ))}
-          </div>
-          <div className="mt-1 flex justify-between text-[10px] text-white/35">
-            <span>{days[0]?.label}</span>
-            <span>aujourd&apos;hui</span>
-          </div>
-        </div>
       </div>
 
       {/* Parcours en Division : équipe actuelle puis anciennes */}

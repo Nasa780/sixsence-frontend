@@ -5,6 +5,7 @@ import { LuCrosshair, LuCrown, LuShield, LuTrophy } from "react-icons/lu";
 import { LeaderboardView } from "./LeaderboardView";
 import { ActiveMatchBanner } from "./ActiveMatchBanner";
 import { OnboardingPanel } from "./OnboardingPanel";
+import { DivisionOnboarding } from "../teams/DivisionOnboarding";
 import { RankBadge } from "./RankBadge";
 import { Reveal } from "../effects/Reveal";
 import { ButtonLink } from "../ui/Button";
@@ -146,21 +147,6 @@ export function ModesHub() {
         ) : null}
         {session && extra.activeMatchId ? <ActiveMatchBanner matchId={extra.activeMatchId} /> : null}
 
-        {/* Mise en route d'un nouveau joueur (identifiant Activision, notifications, Discord, premier match). */}
-        <OnboardingPanel user={user} />
-
-        {profile ? (
-          <section aria-label="Mon résumé" className="grid grid-cols-1 gap-6 lg:grid-cols-[auto_1fr] lg:items-center">
-            <RankBadge points={profile.points} showProgress />
-            <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
-              <StatTile label="Points" value={profile.points} accent />
-              <StatTile label="Classement" value={extra.position ? `#${extra.position}` : "—"} />
-              <StatTile label="Victoires / Défaites" value={`${profile.wins} / ${profile.losses}`} />
-              <StatTile label="Taux de victoire" value={rate === null ? "—" : `${rate}%`} />
-            </div>
-          </section>
-        ) : null}
-
         <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
           {MODES.map((mode, index) => (
             <Reveal key={mode.key} delay={index * 0.08} className="h-full">
@@ -207,6 +193,23 @@ export function ModesHub() {
             </Reveal>
           ))}
         </div>
+
+        {/* Mise en route d'un nouveau joueur (identifiant Activision, notifications, Discord, premier match). */}
+        <OnboardingPanel user={user} />
+        {/* Premiers pas en Division : indépendants du Classé (pas besoin d'un match classé). */}
+        <DivisionOnboarding user={user} />
+
+        {profile ? (
+          <section aria-label="Mon résumé" className="grid grid-cols-1 gap-6 lg:grid-cols-[auto_1fr] lg:items-center">
+            <RankBadge points={profile.points} showProgress />
+            <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
+              <StatTile label="Points" value={profile.points} accent />
+              <StatTile label="Classement" value={extra.position ? `#${extra.position}` : "—"} />
+              <StatTile label="Victoires / Défaites" value={`${profile.wins} / ${profile.losses}`} />
+              <StatTile label="Taux de victoire" value={rate === null ? "—" : `${rate}%`} />
+            </div>
+          </section>
+        ) : null}
 
         {/* Joueur et match de la semaine, fil d'activité en direct. */}
         {SHOW_WEEK_HIGHLIGHTS ? <HubHighlights /> : null}

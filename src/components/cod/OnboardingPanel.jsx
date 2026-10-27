@@ -3,9 +3,8 @@ import { useEffect, useState } from "react";
 import { LuArrowRight, LuBell, LuCheck, LuCrosshair, LuIdCard, LuLoaderCircle, LuUserCheck, LuX } from "react-icons/lu";
 import { FaDiscord } from "react-icons/fa6";
 import { cn } from "../../lib/cn";
-import { DISCORD_INVITE_URL, MATCH_TEAM_ENABLED } from "../../lib/config";
+import { DISCORD_INVITE_URL } from "../../lib/config";
 import { enablePush, isPushEnabled, pushSupport } from "../../lib/push";
-import { DivisionOnboarding } from "../teams/DivisionOnboarding";
 import { TacticalCard } from "../ui/TacticalCard";
 
 const DISCORD_KEY = "sixsence:discord-rejoint";
@@ -29,8 +28,8 @@ const write = (key, value) => {
 /**
  * « Premiers pas » : la mise en route d'un nouveau joueur, étape par étape
  * (identifiant Activision, notifications, Discord, premier match).
- * Disparaît quand tout est fait, ou si le joueur la masque : place alors aux premiers pas en Division
- * (DivisionOnboarding), jamais les deux ensemble.
+ * Disparaît quand tout est fait, ou si le joueur la masque. Les premiers pas en Division (DivisionOnboarding) sont
+ * affichés à part sur la page MW4.
  */
 export function OnboardingPanel({ user }) {
   const profile = user?.profile;
@@ -54,9 +53,7 @@ export function OnboardingPanel({ user }) {
     });
   }, [user?.id]);
 
-  if (!ready || !profile) return null;
-  const division = MATCH_TEAM_ENABLED ? <DivisionOnboarding user={user} /> : null;
-  if (hidden) return division;
+  if (!ready || !profile || hidden) return null;
 
   async function activatePush() {
     setPending(true);
@@ -150,7 +147,7 @@ export function OnboardingPanel({ user }) {
 
   const doneCount = steps.filter((step) => step.done).length;
   const total = steps.length;
-  if (doneCount === total) return division;
+  if (doneCount === total) return null;
   const nextKey = steps.find((step) => !step.done)?.key;
 
   return (
