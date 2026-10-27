@@ -7,6 +7,7 @@ import { TeamActivity, TeamGoals, TeamHero, TeamMatchTimeline, TeamRecent, TeamR
 import { TeamStats } from "../../components/teams/TeamStats";
 import { MemberRow, RosterHeading, SlantTab, TeamCrest, fieldClass, labelClass } from "../../components/teams/TeamParts";
 import { ChallengesPanel } from "../../components/teams/Challenges";
+import { MottoEditor, RecruitingSettings } from "../../components/teams/TeamExtras";
 import { Avatar } from "../../components/ui/Avatar";
 import { Button, ButtonLink } from "../../components/ui/Button";
 import { ConfirmDialog } from "../../components/ui/ConfirmDialog";
@@ -337,6 +338,11 @@ function ManageTeam({ state, userId, reload, created, onLeft }) {
                       <span className="font-tech text-[10px] uppercase tracking-[0.14em] text-white/40">{memberLine(insights, member.id)}</span>
                     </span>
                     {controls(member)}
+                    {isLeader ? (
+                      <span className="w-full">
+                        <MottoEditor team={team} member={member} reload={reload} />
+                      </span>
+                    ) : null}
                   </MemberRow>
                 ))}
               </ul>
@@ -519,6 +525,7 @@ function Recruitment({ team, state, reload }) {
         {error ? <Notice tone="error">{error}</Notice> : null}
         {sent ? <Notice tone="success">{sent}</Notice> : null}
         <SlotsBar used={team.members.length} max={TEAM_LIMITS.maxMembers} />
+        <RecruitingSettings team={team} reload={reload} />
         {!full ? <InviteLinkCard team={team} /> : null}
 
         {/* Ajouter un joueur : recherche par pseudo ou identifiant Activision, puis invitation. */}

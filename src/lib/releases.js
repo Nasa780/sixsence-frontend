@@ -6,6 +6,15 @@
 export const RELEASES = [
   {
     date: "2026-10-27",
+    title: "Profils et équipes",
+    items: [
+      { tag: "Classé", text: "Profil : nouvelle section Analyse, avec ta place sur le site pour chaque chiffre, ton ratio sur 30 jours, tes adversaires et coéquipiers fréquents, ton activité et tes équipes." },
+      { tag: "Classé", text: "Face à face : sur le profil d'un joueur, ton bilan contre lui." },
+      { tag: "Division", text: "Fiche d'équipe : force de l'équipe, recrutement ouvert ou fermé avec un message, et une devise pour chaque joueur choisie par les Leaders." },
+    ],
+  },
+  {
+    date: "2026-10-27",
     title: "Tournois et défis",
     items: [
       { tag: "Tournoi", text: "Check-in des coupes Horus et du tournoi de saison : n'importe quel joueur de l'équipe peut le faire, plus seulement un Leader." },

@@ -6,6 +6,7 @@ import { LuCheck, LuFlag, LuSettings, LuShare2, LuUserPlus } from "react-icons/l
 import { TeamHero, useTeamInsights } from "../../../components/teams/TeamOverview";
 import { MemberRow, RosterHeading } from "../../../components/teams/TeamParts";
 import { TeamTrophyCase } from "../../../components/teams/TeamTrophyCase";
+import { RecruitingBanner, TeamStrength } from "../../../components/teams/TeamExtras";
 import { TeamMatchHistory } from "../../../components/teams/TeamMatchHistory";
 import { TeamStats } from "../../../components/teams/TeamStats";
 import { ChallengeButton } from "../../../components/teams/Challenges";
@@ -175,9 +176,9 @@ function TeamSheet() {
                 Gérer mon équipe
               </ButtonLink>
             ) : !mine?.team ? (
-              <Button size="lg" onClick={apply} disabled={pending || requested || team.members.length >= TEAM_LIMITS.maxMembers}>
+              <Button size="lg" onClick={apply} disabled={pending || requested || team.recruiting === false || team.members.length >= TEAM_LIMITS.maxMembers}>
                 <LuUserPlus aria-hidden className="h-5 w-5" />
-                {requested ? "Candidature envoyée" : team.members.length >= TEAM_LIMITS.maxMembers ? "Équipe complète" : "Candidater"}
+                {requested ? "Candidature envoyée" : team.members.length >= TEAM_LIMITS.maxMembers ? "Équipe complète" : team.recruiting === false ? "Recrutement fermé" : "Candidater"}
               </Button>
             ) : null}
             </div>
@@ -210,6 +211,14 @@ function TeamSheet() {
             </ul>
           ) : null}
         </TacticalCard>
+
+        {/* Recrutement (ouvert avec le message des Leaders, ou fermé) et force de l'équipe. */}
+        {team.disbanded ? null : (
+          <div className="grid gap-4 sm:grid-cols-[1fr_auto] sm:items-stretch">
+            <RecruitingBanner team={team} />
+            <TeamStrength strength={team.strength} />
+          </div>
+        )}
 
         <TeamTrophyCase trophies={team.trophies} />
 
