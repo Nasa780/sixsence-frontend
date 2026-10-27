@@ -365,8 +365,8 @@ function CheckInPanel({ tournament, open, onDone }) {
         ) : null}
       </div>
       {!open ? (
-        <p className="text-sm text-white/55">Le check-in est ouvert de 2 h à 15 min avant le début. Sans check-in d&apos;un Leader à sa fermeture, ton équipe est déclarée forfait.</p>
-      ) : viewer.isLeader ? (
+        <p className="text-sm text-white/55">Le check-in est ouvert de 2 h à 15 min avant le début. N&apos;importe quel joueur de l&apos;équipe peut le faire ; sans check-in à sa fermeture, ton équipe est déclarée forfait.</p>
+      ) : viewer.canCheckIn ? (
         <>
           <p className="text-sm text-white/55">
             Choisis tes {viewer.rosterSize} joueurs parmi l&apos;effectif inscrit au tournoi ({roster.length} / {viewer.rosterSize}). Tu peux les changer jusqu&apos;au début.
@@ -397,7 +397,7 @@ function CheckInPanel({ tournament, open, onDone }) {
           </Button>
         </>
       ) : (
-        <p className="text-sm text-white/55">{viewer.checkedIn ? "Un Leader a validé le check-in : soyez prêts à l'heure." : "Un Leader de ton équipe doit faire le check-in."}</p>
+        <p className="text-sm text-white/55">{viewer.checkedIn ? "Le check-in est validé : soyez prêts à l'heure." : "Le check-in est fermé."}</p>
       )}
     </TacticalCard>
   );

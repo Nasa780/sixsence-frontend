@@ -4,6 +4,7 @@ import { useEffect } from "react";
 import { Inter, Orbitron, Saira_Condensed } from "next/font/google";
 import { Footer } from "../components/layout/Footer";
 import { Navbar } from "../components/layout/Navbar";
+import { RouteLoader } from "../components/layout/RouteLoader";
 import { ErrorBoundary } from "../components/ui/ErrorBoundary";
 import { GROUPS_ENABLED, MATCH_TEAM_ENABLED, SITE_URL } from "../lib/config";
 import NotFound from "./404";
@@ -103,6 +104,8 @@ export default function App({ Component, pageProps }) {
             </ErrorBoundary>
           </main>
           <Footer />
+          {/* Changement de page lent : écran de chargement SixSence avec une astuce. */}
+          <RouteLoader />
         </>
       )}
     </div>

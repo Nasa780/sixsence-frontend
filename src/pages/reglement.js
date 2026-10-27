@@ -137,7 +137,7 @@ function DIVISION_SECTIONS() {
             places du tournoi (8, 16 ou 32, annoncées à sa création). Leur effectif est figé jusqu&apos;à la fin du tournoi.
           </li>
           <li>
-            Un Leader fait le <strong>check-in</strong> entre 2 h et 15 minutes avant le début et choisit les joueurs parmi l&apos;effectif
+            N&apos;importe quel joueur de l&apos;équipe fait le <strong>check-in</strong> entre 2 h et 15 minutes avant le début et choisit les joueurs parmi l&apos;effectif
             inscrit ; sans check-in, l&apos;équipe est déclarée forfait.
           </li>
           <li>
@@ -190,7 +190,7 @@ function DIVISION_SECTIONS() {
             limitées (4, 8 ou 16 équipes).
           </li>
           <li>
-            Check-in d&apos;un Leader entre <strong>2 h et 15 minutes</strong> avant le début. Moins de 4 équipes présentes : coupe annulée. Le
+            Check-in par n&apos;importe quel joueur de l&apos;équipe entre <strong>2 h et 15 minutes</strong> avant le début. Moins de 4 équipes présentes : coupe annulée. Le
             tableau est tiré au sort et dévoilé 15 minutes avant les premiers matchs.
           </li>
           <li>
