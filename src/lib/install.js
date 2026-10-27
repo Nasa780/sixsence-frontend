@@ -23,13 +23,13 @@ export function detectBrowser() {
   return "autre";
 }
 
-/** Étapes d'installation quand le clic direct n'est pas possible. */
+/** Étapes d'installation quand le clic direct n'est pas possible (iPhone avec Safari : étapes illustrées d'InstallGuide). */
 export function browserGuide(browser) {
   switch (browser) {
     case "ios-safari":
-      return ["Touche « ••• » en bas à droite (ou le bouton Partager, un carré avec une flèche).", "Touche « Partager », puis « Sur l'écran d'accueil ».", "Touche « Ajouter » : l'icône SixSence apparaît sur ton écran d'accueil."];
+      return ["Touche le bouton Partager dans la barre du bas (un carré avec une flèche).", "Touche « En voir plus », puis « Sur l'écran d'accueil ».", "Touche « Ajouter » : l'icône SixSence apparaît sur ton écran d'accueil."];
     case "ios-autre":
-      return ["Touche le bouton Partager à côté de la barre d'adresse.", "Choisis « Ajouter à l'écran d'accueil ».", "Si l'option n'apparaît pas, ouvre sixsence.fr dans Safari et recommence."];
+      return ["Touche le bouton Partager (un carré avec une flèche) : à côté de la barre d'adresse, ou dans le menu du navigateur (⋯, ⋮ ou ≡).", "Cherche « Ajouter à l'écran d'accueil » ou « Installer » (parfois après « Plus » ou « En voir plus »).", "Confirme avec « Ajouter », puis ouvre SixSence depuis ton écran d'accueil pour recevoir les notifications."];
     case "samsung":
       return ["Touche le menu ≡ en bas à droite.", "Choisis « Ajouter la page à », puis « Écran d'accueil »."];
     case "firefox-android":
@@ -45,7 +45,7 @@ export function browserGuide(browser) {
     case "firefox":
       return ["Firefox sur ordinateur n'installe pas les applis web : ouvre sixsence.fr dans Chrome ou Edge pour l'installer."];
     default:
-      return ["Dans le menu de ton navigateur, cherche « Installer » ou « Ajouter à l'écran d'accueil »."];
+      return ["Touche le bouton Partager (un carré avec une flèche) : à côté de la barre d'adresse, ou dans le menu du navigateur (⋯, ⋮ ou ≡).", "Cherche « Ajouter à l'écran d'accueil » ou « Installer » (parfois après « Plus » ou « En voir plus »).", "Confirme avec « Ajouter », puis ouvre SixSence depuis ton écran d'accueil pour recevoir les notifications."];
   }
 }
 
