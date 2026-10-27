@@ -7,14 +7,12 @@ import { GoldParticles } from "../effects/GoldParticles";
 import { Button, ButtonLink } from "../ui/Button";
 import { Container } from "../ui/Container";
 import { MATCH_TEAM_ENABLED } from "../../lib/config";
+import { LivePanel, LiveStrip } from "./LivePanel";
 
-const HUD = [
-  { value: "MW4", label: MATCH_TEAM_ENABLED ? "Classé · Division · Tournoi" : "Classé 2v2 à 5v5" },
-  { value: "LIVE", label: "File en temps réel" },
-  { value: "GTA 6", label: "Événements", univers: "gta" },
-];
-
-/** Écran d'accueil : particules dorées, grand titre, appel à la connexion Discord. */
+/**
+ * Écran d'accueil : particules dorées, grand titre, appel à la connexion Discord ; à droite, le panneau « En direct »
+ * (ordinateur), ou une bande sous les boutons (téléphone).
+ */
 export function Hero() {
   const reduceMotion = useReducedMotion();
   const { session, loading } = useSession();
@@ -56,8 +54,8 @@ export function Hero() {
       <div aria-hidden className="absolute inset-x-0 bottom-0 -z-10 h-40 bg-linear-to-t from-ink to-transparent" />
 
       {/* --- Contenu ------------------------------------------------------- */}
-      <Container>
-        <motion.div variants={container} initial="hidden" animate="show" className="max-w-4xl">
+      <Container className="grid grid-cols-1 items-center gap-10 lg:grid-cols-[minmax(0,1fr)_auto]">
+        <motion.div variants={container} initial="hidden" animate="show" className="min-w-0 max-w-4xl">
           <motion.div variants={item} className="inline-flex items-center gap-3 border border-gold/30 bg-gold/8 px-4 py-2">
             <span aria-hidden className="h-1.5 w-1.5 animate-pulse-gold bg-gold shadow-[0_0_10px_var(--color-gold)]" />
             <span className="font-tech text-[10px] font-medium uppercase tracking-[0.3em] text-gold sm:text-[11px]">
@@ -67,7 +65,7 @@ export function Hero() {
 
           <motion.h1
             variants={item}
-            className="mt-6 font-display text-[clamp(4.25rem,17vw,12.5rem)] font-black uppercase leading-[0.8] tracking-tight"
+            className="mt-6 font-display text-[clamp(4.25rem,15vw,10.5rem)] font-black uppercase leading-[0.8] tracking-tight"
           >
             Six<span className="text-gold-gradient">Sence</span>
           </motion.h1>
@@ -101,20 +99,13 @@ export function Hero() {
             </ButtonLink>
           </motion.div>
 
-          <motion.dl variants={item} className="mt-12 grid max-w-2xl grid-cols-3 gap-px bg-white/10 sm:mt-14">
-            {HUD.map((entry) => (
-              <div key={entry.value} data-univers={entry.univers} className="bg-ink/90 px-3 py-3.5 backdrop-blur-sm sm:px-5 sm:py-4">
-                <dt className="sr-only">{entry.label}</dt>
-                <dd>
-                  <span className="block font-tech text-base font-bold tracking-[0.1em] text-gold sm:text-xl">{entry.value}</span>
-                  <span aria-hidden className="mt-1 block text-[11px] leading-tight text-white/50 sm:text-xs">
-                    {entry.label}
-                  </span>
-                </dd>
-              </div>
-            ))}
-          </motion.dl>
+          <motion.div variants={item} className="mt-10 max-w-xl lg:hidden">
+            <LiveStrip />
+          </motion.div>
         </motion.div>
+        <div className="hidden lg:block">
+          <LivePanel />
+        </div>
       </Container>
     </section>
   );

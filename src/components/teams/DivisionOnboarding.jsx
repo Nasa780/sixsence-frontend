@@ -9,9 +9,9 @@ import { TacticalCard } from "../ui/TacticalCard";
 const HIDDEN_KEY = "sixsence:premiers-pas-division-masques";
 
 /**
- * « Premiers pas · Division » : suite des premiers pas du compte (OnboardingPanel, qui l'affiche à sa place une fois
- * terminé ou masqué : jamais les deux ensemble). Une équipe, assez de joueurs pour un match, premier match de
- * Division, première coupe (check-in fait). Disparaît quand tout est fait, ou si le joueur la masque.
+ * « Premiers pas · Division » (page MW4, sous les premiers pas du compte et indépendants d'eux : aucun match classé
+ * exigé). Une équipe, assez de joueurs pour un match, premier match de Division, première coupe (check-in fait).
+ * Disparaît quand tout est fait, ou si le joueur la masque.
  */
 export function DivisionOnboarding({ user }) {
   const [state, setState] = useState(null);
