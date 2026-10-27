@@ -10,12 +10,13 @@ import { Chip, EmptyState, Loading, Notice } from "../ui/Feedback";
 import { TacticalCard } from "../ui/TacticalCard";
 
 const STATUS = { scheduled: "Prévu", running: "En cours", completed: "Terminé", cancelled: "Annulé" };
+const VIA = { circuit: "Circuit", playin: "Play-in", division: "Division" };
 const dateFr = (iso) => new Date(iso).toLocaleString("fr-FR", { weekday: "short", day: "numeric", month: "short", hour: "2-digit", minute: "2-digit" });
 
 /**
- * Onglet admin « Tournoi » : Coupe Horus et Coupe Anubis (coupes automatiques, rendez-vous, coupe ponctuelle) puis tournoi
- * de fin de saison (aperçu des qualifiés, création), suivi (rencontres bloquées, vainqueur désigné à la main),
- * annulation.
+ * Onglet admin « Tournoi » : Coupe Horus et Coupe Anubis (coupes automatiques, rendez-vous, coupe ponctuelle), play-in
+ * puis tournoi de fin de saison (aperçu des qualifiés, création), suivi (rencontres bloquées, vainqueur désigné à la
+ * main), annulation.
  */
 export function TournamentPanel() {
   const [current, setCurrent] = useState(undefined);
@@ -60,6 +61,7 @@ export function TournamentPanel() {
     <div className="space-y-10">
       <CupPanel kind="horus" />
       <CupPanel kind="anubis" />
+      <PlayInPanel />
       <h2 className="border-t border-white/10 pt-8 font-display text-3xl font-black uppercase leading-none">Tournoi de fin de saison</h2>
       {error ? <Notice tone="error">{error}</Notice> : null}
       {message ? <Notice tone="success">{message}</Notice> : null}
@@ -127,6 +129,7 @@ export function TournamentPanel() {
                     <span className="w-7 font-tech text-xs text-gold">#{team.seed}</span>
                     <TeamCrest team={team} size={28} />
                     <span className="min-w-0 flex-1 truncate font-display text-base font-bold uppercase leading-none">{team.name}</span>
+                    {team.via ? <span className="font-tech text-[9px] uppercase text-white/45">{VIA[team.via]}</span> : null}
                     <span className="font-tech text-xs text-white/55">{team.points} pts</span>
                   </li>
                 ))}
@@ -174,7 +177,7 @@ function ActiveTournamentCard({ current, pending, run, onCancel }) {
           <Chip tone={current.status === "running" ? "win" : current.status === "cancelled" ? "loss" : current.status === "completed" ? "neutral" : "gold"}>{STATUS[current.status]}</Chip>
         </div>
         <div className="flex flex-wrap gap-3">
-          <Link href={current.kind === "horus" ? "/cod/tournoi" : current.kind === "anubis" ? "/cod/tournoi?coupe=anubis" : "/cod/tournoi?coupe=saison"} className="inline-flex items-center gap-1.5 text-sm font-semibold text-gold underline underline-offset-4">
+          <Link href={current.kind === "horus" ? "/cod/tournoi" : current.kind === "anubis" ? "/cod/tournoi?coupe=anubis" : current.kind === "playin" ? "/cod/tournoi?coupe=playin" : "/cod/tournoi?coupe=saison"} className="inline-flex items-center gap-1.5 text-sm font-semibold text-gold underline underline-offset-4">
             Voir le tableau
             <LuExternalLink aria-hidden className="h-3.5 w-3.5" />
           </Link>
@@ -219,6 +222,129 @@ function ActiveTournamentCard({ current, pending, run, onCancel }) {
           </div>
         ) : null}
       </TacticalCard>
+  );
+}
+
+/**
+ * Play-in (admin) : à créer avant la grande finale. 7e et 8e du circuit contre les 2 meilleures équipes de la Division
+ * (BO3, check-in comme le tournoi de saison) ; les 2 vainqueurs prennent les dernières places de la grande finale.
+ */
+function PlayInPanel() {
+  const [overview, setOverview] = useState(undefined);
+  const [current, setCurrent] = useState(null);
+  const [form, setForm] = useState({ startsAt: "", size: 8 });
+  const [pending, setPending] = useState(null);
+  const [error, setError] = useState(null);
+  const [message, setMessage] = useState(null);
+  const [cancelling, setCancelling] = useState(false);
+
+  const load = useCallback(async () => {
+    const [admin, tournament] = await Promise.all([api(`/admin/playin?size=${form.size}`), api("/teams/tournament?kind=playin")]);
+    setOverview(admin.playIn);
+    setCurrent(tournament.tournament);
+  }, [form.size]);
+  useEffect(() => {
+    load().catch(() => setOverview(null));
+  }, [load]);
+
+  async function run(key, action, done) {
+    setPending(key);
+    setError(null);
+    setMessage(null);
+    try {
+      await action();
+      if (done) setMessage(done);
+      await load();
+      return true;
+    } catch (caught) {
+      setError(caught.message);
+      return false;
+    } finally {
+      setPending(null);
+    }
+  }
+
+  const exists = overview && !overview.projected;
+  return (
+    <section aria-labelledby="titre-playin-admin" className="space-y-4 border-t border-white/10 pt-8">
+      <div>
+        <p className={labelClass}>Seconde chance, avant la grande finale</p>
+        <h2 id="titre-playin-admin" className="font-display text-3xl font-black uppercase leading-none">
+          Play-in
+        </h2>
+      </div>
+      {error ? <Notice tone="error">{error}</Notice> : null}
+      {message ? <Notice tone="success">{message}</Notice> : null}
+      {overview === undefined ? <Loading /> : null}
+      {exists && current ? <ActiveTournamentCard current={current} pending={pending} run={run} onCancel={() => setCancelling(true)} /> : null}
+      {overview === null ? (
+        <EmptyState title="Pas de play-in possible pour l'instant">
+          Il faut {form.size} équipes au circuit (Coupes Horus terminées cette saison) et 2 équipes de Division (25 matchs) pas encore qualifiées. Sans play-in, la grande finale prend
+          directement les 2 meilleures de la Division.
+        </EmptyState>
+      ) : null}
+      {overview && overview.projected ? (
+        <div className="grid gap-6 lg:grid-cols-[1fr_1fr]">
+          <TacticalCard innerClassName="space-y-4 p-6">
+            <div className="grid gap-4 sm:grid-cols-2">
+              <div>
+                <label htmlFor="p-start" className={labelClass}>
+                  Début (heure de Paris)
+                </label>
+                <input id="p-start" type="datetime-local" className={fieldClass} value={form.startsAt} onChange={(event) => setForm({ ...form, startsAt: event.target.value })} />
+              </div>
+              <div>
+                <label htmlFor="p-size" className={labelClass}>
+                  Places de la grande finale
+                </label>
+                <select id="p-size" className={fieldClass} value={form.size} onChange={(event) => setForm({ ...form, size: Number(event.target.value) })}>
+                  {[8, 16, 32].map((size) => (
+                    <option key={size} value={size}>
+                      {size} équipes
+                    </option>
+                  ))}
+                </select>
+              </div>
+            </div>
+            <p className="text-xs text-white/45">À créer la veille de la grande finale : équipes et effectifs figés et prévenus, check-in de 2 h à 15 min avant, 2 rencontres BO3.</p>
+            <Button
+              disabled={pending !== null || !form.startsAt}
+              onClick={() => run("create", () => api("/admin/playin", { method: "POST", body: { size: form.size, startsAt: new Date(form.startsAt).toISOString() } }), "Play-in créé : les 4 équipes sont prévenues.")}
+            >
+              {pending === "create" ? <LuLoaderCircle aria-hidden className="h-5 w-5 animate-spin" /> : null}
+              Créer le play-in
+            </Button>
+          </TacticalCard>
+          <TacticalCard innerClassName="space-y-2 p-6">
+            <p className={labelClass}>Affiches si le play-in était créé maintenant</p>
+            {overview.pairs.map((pair, index) => (
+              <div key={index} className="flex items-center gap-3 border-l-2 border-white/10 bg-white/[0.03] px-3 py-2.5">
+                <span className="font-tech text-[10px] uppercase text-white/45">#{index + 1}</span>
+                <TeamCrest team={pair.a} size={26} />
+                <span className="min-w-0 flex-1 truncate font-display text-base font-bold uppercase">{pair.a?.name}</span>
+                <span className="font-display text-sm text-white/35">VS</span>
+                <span className="min-w-0 flex-1 truncate text-right font-display text-base font-bold uppercase">{pair.b?.name}</span>
+                <TeamCrest team={pair.b} size={26} />
+              </div>
+            ))}
+          </TacticalCard>
+        </div>
+      ) : null}
+      <ConfirmDialog
+        open={cancelling}
+        onClose={() => setCancelling(false)}
+        title="Annuler le play-in ?"
+        confirmLabel="Annuler le play-in"
+        tone="danger"
+        pending={pending !== null}
+        onConfirm={async () => {
+          const ok = await run("cancel", () => api(`/admin/tournaments/${current.id}`, { method: "DELETE" }), "Play-in annulé.");
+          if (ok) setCancelling(false);
+        }}
+      >
+        Les matchs en cours sont annulés. Sans play-in joué, la grande finale prend directement les 2 meilleures de la Division.
+      </ConfirmDialog>
+    </section>
   );
 }
 

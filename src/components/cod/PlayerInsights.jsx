@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { useEffect, useMemo, useState } from "react";
-import { LuArrowDownRight, LuArrowUpRight, LuSwords, LuUsers } from "react-icons/lu";
+import { LuArrowDownRight, LuArrowUpRight, LuCrown, LuSwords, LuTrophy, LuUsers } from "react-icons/lu";
 import { api } from "../../lib/api";
 import { cn } from "../../lib/cn";
 import { MATCH_TEAM_ENABLED } from "../../lib/config";
@@ -9,7 +9,8 @@ import { Eyebrow } from "../ui/Typography";
 
 /**
  * Section « Analyse » du profil, sous la performance (GET /cod/players/:id/insights) : place sur le site pour
- * chaque chiffre, ratio sur 30 jours, face à face avec le visiteur, adversaires et coéquipiers, activité, équipes.
+ * chaque chiffre, ratio sur 30 jours, face à face avec le visiteur, adversaires et coéquipiers, activité, parcours
+ * en Division (équipes, rôle, arrivée et départ, matchs et trophées pendant le passage).
  * Chaque bloc ne s'affiche que s'il a quelque chose à montrer.
  */
 const PERIODS = [
@@ -216,18 +217,26 @@ export function PlayerInsights({ playerId, initialData = null }) {
         </div>
       </div>
 
-      {/* Équipes : actuelle et anciennes */}
+      {/* Parcours en Division : équipe actuelle puis anciennes */}
       {teams.length ? (
         <div>
           <p className="flex items-center gap-2 font-tech text-[11px] uppercase tracking-[0.24em] text-gold">
-            <LuUsers aria-hidden className="h-3.5 w-3.5" /> Équipes
+            <LuUsers aria-hidden className="h-3.5 w-3.5" /> Parcours
           </p>
-          <ul className="mt-3 grid gap-2 sm:grid-cols-2 lg:grid-cols-3">
+          <ol className="relative mt-3 space-y-2 border-l border-white/15 pl-5">
             {teams.map((t) => (
-              <li key={t.id}>
+              <li key={t.id} className="relative">
+                <span
+                  aria-hidden
+                  className="absolute -left-[26.5px] top-1/2 h-3 w-3 -translate-y-1/2 rotate-45 border-2"
+                  style={{ borderColor: t.color, background: t.current ? t.color : "var(--color-ink)" }}
+                />
                 <Link
                   href={`/cod/equipes/${t.id}`}
-                  className={cn("flex items-center gap-3 px-4 py-3 transition-colors", t.current ? "border border-gold/40 bg-gold/[0.06] hover:bg-gold/10" : "bg-white/[0.03] hover:bg-white/[0.06]")}
+                  className={cn(
+                    "flex flex-wrap items-center gap-x-5 gap-y-2 px-4 py-3 transition-colors",
+                    t.current ? "border border-gold/40 bg-gold/[0.06] hover:bg-gold/10" : "bg-white/[0.03] hover:bg-white/[0.06]",
+                  )}
                 >
                   {t.logoUrl ? (
                     <img src={t.logoUrl} alt="" className="h-10 w-10 object-cover" loading="lazy" />
@@ -237,22 +246,35 @@ export function PlayerInsights({ playerId, initialData = null }) {
                     </span>
                   )}
                   <span className="min-w-0 flex-1">
-                    <span className="block truncate font-semibold">{t.name}</span>
-                    <span className="block text-xs text-white/45">
-                      {t.current
-                        ? `${t.role === "leader" ? "Leader" : "Joueur"} · depuis le ${dateShort(t.since)}`
-                        : `${t.played} match${t.played > 1 ? "s" : ""} · jusqu'au ${dateShort(t.until)}`}
+                    <span className="block truncate font-display text-lg font-black uppercase leading-none">
+                      <span className="normal-case text-white/50">[{t.tag}]</span> {t.name}
+                    </span>
+                    <span className="mt-1 flex flex-wrap items-center gap-x-1.5 text-xs text-white/50">
+                      {t.role === "leader" ? <LuCrown aria-hidden className="h-3.5 w-3.5 text-gold" /> : null}
+                      {t.role ? (t.role === "leader" ? "Leader" : "Joueur") : null}
+                      {t.role && t.since ? " · " : null}
+                      {t.since ? <>{t.exact || t.current ? "arrivé le" : "depuis le"} {dateShort(t.since)}</> : null}
+                      {!t.current && t.until ? <> · {t.exact ? "parti le" : "dernier match le"} {dateShort(t.until)}</> : null}
+                      {!t.current && t.leftReason ? <> ({t.leftReason === "disbanded" ? "équipe dissoute" : "parti"})</> : null}
                     </span>
                   </span>
+                  <span className="text-sm text-white/55">
+                    <span className="font-display text-xl font-black text-white">{t.played}</span> match{t.played > 1 ? "s" : ""}
+                  </span>
+                  {t.trophies ? (
+                    <span className="inline-flex items-center gap-1 text-sm text-gold" title="Trophées gagnés pendant son passage">
+                      <LuTrophy aria-hidden className="h-4 w-4" />×{t.trophies}
+                    </span>
+                  ) : null}
                   {t.current ? (
                     <span className="bg-gold px-2 py-0.5 font-tech text-[9px] uppercase text-ink">Actuelle</span>
-                  ) : (
-                    <span className="font-tech text-[9px] uppercase text-white/40">{t.disbanded ? "Dissoute" : "Ancienne"}</span>
-                  )}
+                  ) : t.disbanded && !t.leftReason ? (
+                    <span className="font-tech text-[9px] uppercase text-white/40">Dissoute</span>
+                  ) : null}
                 </Link>
               </li>
             ))}
-          </ul>
+          </ol>
         </div>
       ) : null}
     </section>

@@ -2,7 +2,8 @@ import Head from "next/head";
 import Link from "next/link";
 import { useRouter } from "next/router";
 import { useCallback, useEffect, useState } from "react";
-import { LuCheck, LuCrown, LuLoaderCircle, LuTrophy, LuUserMinus, LuUserPlus } from "react-icons/lu";
+import { LuCheck, LuCrown, LuDices, LuFlag, LuListOrdered, LuLoaderCircle, LuShield, LuSwords, LuTrophy, LuUserMinus, LuUserPlus, LuUsers } from "react-icons/lu";
+import { MatchRulesCard } from "../../components/cod/MatchRules";
 import { SlantTab, TeamCrest } from "../../components/teams/TeamParts";
 import { AnubisCup, AnubisTeaser, HorusTeaser } from "../../components/tournament/AnubisCup";
 import { Avatar } from "../../components/ui/Avatar";
@@ -28,6 +29,15 @@ function countdown(target, now) {
   return d > 0 ? `${d} j ${h} h ${String(m).padStart(2, "0")}` : `${h}:${String(m).padStart(2, "0")}:${String(s).padStart(2, "0")}`;
 }
 
+/** Onglets de la fiche d'une coupe (Horus) ou du tournoi de saison. */
+const VIEWS = [
+  ["infos", "Infos"],
+  ["tableau", "Tableau"],
+  ["equipes", "Équipes"],
+  ["recompenses", "Récompenses"],
+  ["regles", "Règles"],
+];
+
 const PODIUM = [
   ["winner", "Or", "🥇"],
   ["finalist", "Argent", "🥈"],
@@ -41,7 +51,8 @@ const PODIUM = [
  */
 export default function TournamentPage() {
   const router = useRouter();
-  const kind = router.query.coupe === "saison" || router.query.coupe === "anubis" ? router.query.coupe : "horus";
+  const kind = router.query.coupe === "saison" || router.query.coupe === "anubis" || router.query.coupe === "playin" ? router.query.coupe : "horus";
+  const playin = kind === "playin";
   const horus = kind === "horus";
   const anubis = kind === "anubis";
   const tab = (coupe) => router.replace({ pathname: router.pathname, query: coupe ? { coupe } : {} }, undefined, { shallow: true });
@@ -49,6 +60,7 @@ export default function TournamentPage() {
   const [tournament, setTournament] = useState(undefined);
   const [error, setError] = useState(null);
   const [now, setNow] = useState(Date.now());
+  const [view, setView] = useState(null);
 
   const load = useCallback(async () => {
     try {
@@ -61,6 +73,7 @@ export default function TournamentPage() {
 
   // Changement d'onglet : on repart d'un chargement.
   useEffect(() => setTournament(undefined), [kind]);
+  useEffect(() => setView(null), [tournament?.id]);
 
   useEffect(() => {
     load();
@@ -92,6 +105,7 @@ export default function TournamentPage() {
   const closesAt = tournament?.checkInClosesAt ?? tournament?.startsAt;
   const checkInOpen = scheduled && now >= new Date(tournament.checkInOpensAt).getTime() && now < new Date(closesAt).getTime();
   const drawnWaiting = tournament?.status === "running" && now < new Date(tournament.startsAt).getTime();
+  const currentView = view ?? (scheduled ? "infos" : "tableau");
 
   return (
     <>
@@ -110,7 +124,7 @@ export default function TournamentPage() {
       </Head>
       <PageHeader
         image="/images/mw4.webp"
-        eyebrow={horus ? "Tournoi · Coupe Horus" : anubis ? "Tournoi · Coupe Anubis" : "Tournoi · Fin de saison"}
+        eyebrow={horus ? "Tournoi · Coupe Horus" : anubis ? "Tournoi · Coupe Anubis" : playin ? "Tournoi · Play-in de la grande finale" : "Tournoi · Fin de saison"}
         title={
           tournament ? (
             tournament.name
@@ -121,6 +135,10 @@ export default function TournamentPage() {
           ) : anubis ? (
             <>
               Coupe <span className="text-gold-gradient">Anubis</span>
+            </>
+          ) : playin ? (
+            <>
+              Play-<span className="text-gold-gradient">in</span>
             </>
           ) : (
             <>
@@ -156,6 +174,7 @@ export default function TournamentPage() {
           <SlantTab active={kind === "saison"} onClick={() => tab("saison")}>
             Fin de saison
           </SlantTab>
+          {playin ? <SlantTab active>Play-in</SlantTab> : null}
         </div>
         {error ? <Notice tone="error">{error}</Notice> : null}
         {tournament === undefined && !error ? <Loading /> : null}
@@ -174,86 +193,140 @@ export default function TournamentPage() {
 
         {tournament && tournament.kind !== "anubis" ? (
           <>
-            {tournament.status === "completed" && tournament.winner && tournament.kind === "horus" ? (
-              <ol className="grid gap-3 sm:grid-cols-3">
-                {PODIUM.map(([key, label, medal]) =>
-                  tournament[key] ? (
-                    <li key={key}>
-                      <TacticalCard highlight={key === "winner"} cut={20} innerClassName={cn("flex items-center gap-4 p-5", key === "winner" && "holo")}>
-                        <span aria-hidden className="text-3xl">
-                          {medal}
-                        </span>
-                        <TeamCrest team={tournament[key]} size={52} />
-                        <div className="min-w-0">
-                          <p className="font-tech text-[10px] uppercase tracking-[0.24em] text-gold">{label}</p>
-                          <Link href={`/cod/equipes/${tournament[key].id}`} className="block truncate font-display text-2xl font-black uppercase leading-none hover:text-gold">
-                            {tournament[key].name}
-                          </Link>
-                        </div>
-                      </TacticalCard>
-                    </li>
-                  ) : null,
-                )}
-              </ol>
-            ) : null}
-            {tournament.status === "completed" && tournament.winner && tournament.kind !== "horus" ? (
-              <TacticalCard highlight cut={28} innerClassName="holo overflow-hidden p-6 sm:p-10">
-                <div aria-hidden className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,color-mix(in_srgb,var(--color-gold)_22%,transparent),transparent_65%)]" />
-                <div className="relative flex flex-col items-center gap-5 text-center sm:flex-row sm:text-left">
-                  <TeamCrest team={tournament.winner} size={104} />
-                  <div>
-                    <p className="inline-flex items-center gap-2 font-tech text-[11px] uppercase tracking-[0.3em] text-gold">
-                      <LuTrophy aria-hidden className="h-4 w-4" />
-                      Vainqueur
-                    </p>
-                    <Link href={`/cod/equipes/${tournament.winner.id}`} className="mt-2 block font-display text-5xl font-black uppercase leading-[0.9] hover:text-gold sm:text-6xl">
-                      {tournament.winner.name}
-                    </Link>
-                    {tournament.finalist ? <p className="mt-2 text-sm text-white/55">Finaliste : {tournament.finalist.name}</p> : null}
-                  </div>
+            <div role="tablist" aria-label="Fiche du tournoi" className="flex gap-1 overflow-x-auto border-b border-white/10">
+              {VIEWS.filter(([id]) => id !== "recompenses" || tournament.kind !== "playin").map(([id, label]) => (
+                <button
+                  key={id}
+                  type="button"
+                  role="tab"
+                  aria-selected={currentView === id}
+                  onClick={() => setView(id)}
+                  className={cn(
+                    "-mb-px shrink-0 border-b-2 px-4 py-3 font-display text-sm font-black uppercase tracking-[0.14em] transition-colors",
+                    currentView === id ? "border-gold text-gold" : "border-transparent text-white/50 hover:text-white",
+                  )}
+                >
+                  {label}
+                </button>
+              ))}
+            </div>
+
+            {currentView === "infos" ? (
+              <>
+                {tournament.status === "completed" && tournament.winner && tournament.kind === "horus" ? (
+                  <ol className="grid gap-3 sm:grid-cols-3">
+                    {PODIUM.map(([key, label, medal]) =>
+                      tournament[key] ? (
+                        <li key={key}>
+                          <TacticalCard highlight={key === "winner"} cut={20} innerClassName={cn("flex items-center gap-4 p-5", key === "winner" && "holo")}>
+                            <span aria-hidden className="text-3xl">
+                              {medal}
+                            </span>
+                            <TeamCrest team={tournament[key]} size={52} />
+                            <div className="min-w-0">
+                              <p className="font-tech text-[10px] uppercase tracking-[0.24em] text-gold">{label}</p>
+                              <Link href={`/cod/equipes/${tournament[key].id}`} className="block truncate font-display text-2xl font-black uppercase leading-none hover:text-gold">
+                                {tournament[key].name}
+                              </Link>
+                            </div>
+                          </TacticalCard>
+                        </li>
+                      ) : null,
+                    )}
+                  </ol>
+                ) : null}
+                {tournament.status === "completed" && tournament.winner && tournament.kind !== "horus" ? (
+                  <TacticalCard highlight cut={28} innerClassName="holo overflow-hidden p-6 sm:p-10">
+                    <div aria-hidden className="absolute inset-0 bg-[radial-gradient(ellipse_at_top,color-mix(in_srgb,var(--color-gold)_22%,transparent),transparent_65%)]" />
+                    <div className="relative flex flex-col items-center gap-5 text-center sm:flex-row sm:text-left">
+                      <TeamCrest team={tournament.winner} size={104} />
+                      <div>
+                        <p className="inline-flex items-center gap-2 font-tech text-[11px] uppercase tracking-[0.3em] text-gold">
+                          <LuTrophy aria-hidden className="h-4 w-4" />
+                          {tournament.kind === "playin" ? "Qualifiée pour la grande finale" : "Vainqueur"}
+                        </p>
+                        <Link href={`/cod/equipes/${tournament.winner.id}`} className="mt-2 block font-display text-5xl font-black uppercase leading-[0.9] hover:text-gold sm:text-6xl">
+                          {tournament.winner.name}
+                        </Link>
+                        {tournament.finalist ? <p className="mt-2 text-sm text-white/55">{tournament.kind === "playin" ? "Qualifiée aussi" : "Finaliste"} : {tournament.finalist.name}</p> : null}
+                      </div>
+                    </div>
+                  </TacticalCard>
+                ) : null}
+                <div className="flex flex-wrap gap-2">
+                  {[
+                    tournament.minTeams ? [LuListOrdered, `Min. ${tournament.minTeams} équipes`] : null,
+                    [LuDices, tournament.kind === "horus" ? "Tirage aléatoire" : "Têtes de série au classement"],
+                    tournament.kind === "horus" ? [LuFlag, "Compte au circuit"] : null,
+                  ]
+                    .filter(Boolean)
+                    .map(([Icon, label]) => (
+                      <span key={label} className="inline-flex items-center gap-1.5 border border-gold/40 bg-gold/10 px-3 py-1.5 font-tech text-[11px] uppercase tracking-[0.14em] text-gold">
+                        <Icon aria-hidden className="h-3.5 w-3.5" />
+                        {label}
+                      </span>
+                    ))}
                 </div>
-              </TacticalCard>
+                {scheduled ? (
+                  <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
+                    <StatTile label={checkInOpen ? "Tirage dans" : "Check-in dans"} value={countdown(checkInOpen ? closesAt : tournament.checkInOpensAt, now)} accent />
+                    <StatTile label={tournament.kind === "horus" ? "Inscrites" : "Équipes"} value={tournament.kind === "horus" ? `${tournament.teams.length} / ${tournament.size}` : tournament.teams.length} />
+                    <StatTile label="Check-in" value={`${tournament.teams.filter((team) => team.checkedIn).length} / ${tournament.teams.length}`} />
+                    <StatTile
+                      label="Format"
+                      value={`BO${tournament.bestOf}`}
+                      hint={`Finale en BO${tournament.finalBestOf}${tournament.bracket === "double" ? " · double élimination" : tournament.kind === "horus" ? " · petite finale" : ""}`}
+                    />
+                  </div>
+                ) : null}
+                {drawnWaiting ? <Notice>Tirage effectué : premiers matchs dans {countdown(tournament.startsAt, now)}. Rejoins ton équipe et prépare la partie.</Notice> : null}
+                {tournament.status === "running" && !drawnWaiting ? <Notice>Le tournoi est en cours : le tableau se met à jour après chaque match.</Notice> : null}
+                {tournament.status === "cancelled" ? <Notice tone="error">{tournament.kind === "horus" ? "Cette coupe a été annulée (pas assez d'équipes présentes)." : "Ce tournoi a été annulé."}</Notice> : null}
+
+                {tournament.kind === "horus" && scheduled ? <RegistrationPanel tournament={tournament} userId={userId} onDone={load} /> : null}
+                {tournament.viewer?.registered !== false && tournament.viewer ? <CheckInPanel tournament={tournament} open={checkInOpen} onDone={load} /> : null}
+                <HowItWorks tournament={tournament} />
+              </>
             ) : null}
 
-            {scheduled ? (
-              <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
-                <StatTile label={checkInOpen ? "Tirage dans" : "Check-in dans"} value={countdown(checkInOpen ? closesAt : tournament.checkInOpensAt, now)} accent />
-                <StatTile label={tournament.kind === "horus" ? "Inscrites" : "Équipes"} value={tournament.kind === "horus" ? `${tournament.teams.length} / ${tournament.size}` : tournament.teams.length} />
-                <StatTile label="Check-in" value={`${tournament.teams.filter((team) => team.checkedIn).length} / ${tournament.teams.length}`} />
-                <StatTile
-                  label="Format"
-                  value={`BO${tournament.bestOf}`}
-                  hint={`Finale en BO${tournament.finalBestOf}${tournament.bracket === "double" ? " · double élimination" : tournament.kind === "horus" ? " · petite finale" : ""}`}
-                />
-              </div>
+            {currentView === "tableau" ? <Bracket tournament={tournament} myTeamId={tournament.viewer?.teamId} /> : null}
+            {currentView === "equipes" ? (
+                <section aria-labelledby="titre-qualifies">
+                  <h2 id="titre-qualifies" className="font-display text-3xl font-black uppercase leading-none sm:text-4xl">
+                    {tournament.kind === "horus" ? "Équipes inscrites" : "Qualifiés"}
+                  </h2>
+                  {tournament.teams.length === 0 ? <p className="mt-4 text-sm text-white/50">Aucune équipe inscrite pour l&apos;instant.</p> : null}
+                  <ul className="mt-4 grid gap-2 sm:grid-cols-2 lg:grid-cols-4">
+                    {tournament.teams.map((team) => (
+                      <li key={team.id}>
+                        <Link href={`/cod/equipes/${team.id}`} className={cn("flex items-center gap-3 border-l-2 bg-white/[0.03] px-3 py-2.5 hover:bg-white/[0.06]", team.forfeit ? "border-loss/60 opacity-60" : "border-white/10")}>
+                          {tournament.kind !== "horus" || !scheduled ? <span className="w-6 font-tech text-xs text-white/45">#{team.seed}</span> : null}
+                          <TeamCrest team={team} size={32} />
+                          <span className="min-w-0 flex-1 truncate font-display text-lg font-bold uppercase leading-none">{team.name}</span>
+                          {team.forfeit ? <Chip tone="loss">Forfait</Chip> : scheduled ? <Chip tone={team.checkedIn ? "win" : "neutral"}>{team.checkedIn ? "Prête" : "En attente"}</Chip> : null}
+                        </Link>
+                      </li>
+                    ))}
+                  </ul>
+                </section>
             ) : null}
-            {drawnWaiting ? <Notice>Tirage effectué : premiers matchs dans {countdown(tournament.startsAt, now)}. Rejoins ton équipe et prépare la partie.</Notice> : null}
-            {tournament.status === "running" && !drawnWaiting ? <Notice>Le tournoi est en cours : le tableau se met à jour après chaque match.</Notice> : null}
-            {tournament.status === "cancelled" ? <Notice tone="error">{tournament.kind === "horus" ? "Cette coupe a été annulée (pas assez d'équipes présentes)." : "Ce tournoi a été annulé."}</Notice> : null}
-
-            {tournament.kind === "horus" && scheduled ? <RegistrationPanel tournament={tournament} userId={userId} onDone={load} /> : null}
-            {tournament.viewer?.registered !== false && tournament.viewer ? <CheckInPanel tournament={tournament} open={checkInOpen} onDone={load} /> : null}
-
-            <Bracket tournament={tournament} myTeamId={tournament.viewer?.teamId} />
-
-            <section aria-labelledby="titre-qualifies">
-              <h2 id="titre-qualifies" className="font-display text-3xl font-black uppercase leading-none sm:text-4xl">
-                {tournament.kind === "horus" ? "Équipes inscrites" : "Qualifiés"}
-              </h2>
-              {tournament.teams.length === 0 ? <p className="mt-4 text-sm text-white/50">Aucune équipe inscrite pour l&apos;instant.</p> : null}
-              <ul className="mt-4 grid gap-2 sm:grid-cols-2 lg:grid-cols-4">
-                {tournament.teams.map((team) => (
-                  <li key={team.id}>
-                    <Link href={`/cod/equipes/${team.id}`} className={cn("flex items-center gap-3 border-l-2 bg-white/[0.03] px-3 py-2.5 hover:bg-white/[0.06]", team.forfeit ? "border-loss/60 opacity-60" : "border-white/10")}>
-                      {tournament.kind !== "horus" || !scheduled ? <span className="w-6 font-tech text-xs text-white/45">#{team.seed}</span> : null}
-                      <TeamCrest team={team} size={32} />
-                      <span className="min-w-0 flex-1 truncate font-display text-lg font-bold uppercase leading-none">{team.name}</span>
-                      {team.forfeit ? <Chip tone="loss">Forfait</Chip> : scheduled ? <Chip tone={team.checkedIn ? "win" : "neutral"}>{team.checkedIn ? "Prête" : "En attente"}</Chip> : null}
-                    </Link>
-                  </li>
-                ))}
-              </ul>
-            </section>
+            {currentView === "recompenses" ? <Rewards tournament={tournament} /> : null}
+            {currentView === "regles" ? (
+              <section aria-labelledby="titre-regles-tournoi" className="space-y-4">
+                <h2 id="titre-regles-tournoi" className="font-display text-3xl font-black uppercase leading-none sm:text-4xl">
+                  Règles
+                </h2>
+                <p className="text-sm text-white/60">
+                  {tournament.kind === "horus"
+                    ? `Matchs en BO${tournament.bestOf}, finale en BO${tournament.finalBestOf}${tournament.bracket === "double" ? ", double élimination" : ", petite finale pour le bronze"}. Hôte tiré au sort, code de la partie dans le chat de la feuille de match. Pas d'annulation : un match bloqué est tranché par l'équipe SixSence.`
+                    : `Matchs en BO${tournament.bestOf}, finale en BO${tournament.finalBestOf}. Effectifs figés à la qualification, check-in d'un joueur de l'équipe. Pas de points en jeu ; un match bloqué est tranché par l'équipe SixSence.`}{" "}
+                  <Link href="/reglement" className="text-gold underline underline-offset-4">
+                    Règlement complet
+                  </Link>
+                </p>
+                <MatchRulesCard bestOf={tournament.bestOf} />
+              </section>
+            ) : null}
           </>
         ) : null}
       </Container>
@@ -513,6 +586,104 @@ function BracketEntry({ entry, myTeamId, final }) {
 }
 
 /** Aucun tournoi prévu : tableau en filigrane (8 → 4 → 2 → 1) et accès à la Division pour se préparer. */
+/** Ce que rapporte chaque place : points de Division et de circuit (Coupe Horus, d'après le serveur), trophées. */
+function Rewards({ tournament }) {
+  const r = tournament.rewards;
+  if (!r) {
+    return (
+      <section className="space-y-3">
+        <p className="font-tech text-[11px] uppercase tracking-[0.24em] text-gold">Ce que rapporte le tournoi</p>
+        <ul className="space-y-2 text-sm text-white/65">
+          <li className="flex items-center gap-2"><LuTrophy aria-hidden className="h-4 w-4 text-[#d4af37]" /> Vainqueur : trophée dans la vitrine et rôle Discord « Vainqueur — {tournament.name} ».</li>
+          <li className="flex items-center gap-2"><LuTrophy aria-hidden className="h-4 w-4 text-[#c0c7d0]" /> Finaliste : trophée dans la vitrine.</li>
+          <li className="flex items-center gap-2"><LuShield aria-hidden className="h-4 w-4 text-white/40" /> Pas de points de Division en jeu ; +500 XP par match gagné, +150 XP par match perdu.</li>
+        </ul>
+      </section>
+    );
+  }
+  const rows = [
+    ["1re place", "#d4af37", "Coupe Horus or", "winner"],
+    ["2e place", "#c0c7d0", "Coupe Horus argent", "finalist"],
+    ["3e place", "#c97b4b", "Coupe Horus bronze", "third"],
+    ["Autres présentes", null, "check-in fait", "present"],
+  ];
+  return (
+    <section aria-labelledby="titre-recompenses">
+      <p id="titre-recompenses" className="font-tech text-[11px] uppercase tracking-[0.24em] text-gold">
+        Ce que rapporte chaque place
+      </p>
+      <div className="mt-3 overflow-hidden border border-white/10">
+        <div className="grid grid-cols-[1.4fr_1fr_1fr] bg-white/[0.04] px-4 py-2 font-tech text-[10px] uppercase tracking-[0.2em] text-white/45">
+          <span>Place</span>
+          <span className="text-right">Division</span>
+          <Link href="/cod/circuit" className="text-right hover:text-gold">Circuit</Link>
+        </div>
+        {rows.map(([place, color, sub, key]) => (
+          <div key={key} className="grid grid-cols-[1.4fr_1fr_1fr] items-center border-t border-white/5 px-4 py-3">
+            <span className="flex items-center gap-2.5">
+              {color ? <LuTrophy aria-hidden className="h-5 w-5 shrink-0" style={{ color }} /> : <LuShield aria-hidden className="h-5 w-5 shrink-0 text-white/30" />}
+              <span className="min-w-0">
+                <span className="block font-semibold">{place}</span>
+                <span className="block text-[11px] text-white/45">{color ? `${sub} dans la vitrine` : sub}</span>
+              </span>
+            </span>
+            <span className="text-right font-display text-xl font-black text-[#22d3ee]">+{r.division[key]}</span>
+            <span className="text-right font-display text-xl font-black text-gold">+{r.circuit[key]}</span>
+          </div>
+        ))}
+      </div>
+      <p className="mt-3 text-xs text-white/50">
+        Et pour chaque joueur du match : <span className="text-white/75">+{r.xp.win} XP par match gagné, +{r.xp.loss} XP par match perdu</span>. Le vainqueur reçoit le rôle Discord « Vainqueur — Coupe Horus »
+        jusqu&apos;à la coupe suivante.
+      </p>
+    </section>
+  );
+}
+
+/** Déroulé d'une coupe ou du tournoi de saison, en 5 étapes. */
+function HowItWorks({ tournament }) {
+  const horus = tournament.kind === "horus";
+  const steps = [
+    [
+      LuUsers,
+      horus ? "Inscription" : "Qualification",
+      horus
+        ? "Un Leader inscrit l'équipe, jusqu'à la fermeture du check-in."
+        : tournament.kind === "playin"
+          ? "7e et 8e du circuit contre les 2 meilleures équipes de la Division, effectifs figés."
+          : "Les meilleures équipes (circuit, puis Division) sont qualifiées, effectifs figés.",
+    ],
+    [LuCheck, "Check-in", "De 2 h à 15 min avant : un joueur de l'équipe confirme sa présence et choisit les joueurs du match."],
+    [LuDices, "Tirage", horus ? "15 min avant : tableau tiré au sort parmi les présentes, dévoilé à tous." : "15 min avant : tableau dévoilé, équipes absentes forfait."],
+    [LuSwords, "Matchs", `BO${tournament.bestOf}, finale en BO${tournament.finalBestOf}${horus && tournament.bracket !== "double" ? ", petite finale pour le bronze" : ""}. Hôte tiré au sort.`],
+    [
+      LuTrophy,
+      tournament.kind === "playin" ? "Grande finale" : "Podium",
+      horus ? "Trophées, points de Division et de circuit, rôle Discord du vainqueur." : tournament.kind === "playin" ? "Les 2 vainqueurs prennent les dernières places de la grande finale." : "Trophées et rôle Discord du vainqueur.",
+    ],
+  ];
+  return (
+    <TacticalCard cut={18} innerClassName="p-5 sm:p-6">
+      <p className="font-tech text-[11px] uppercase tracking-[0.24em] text-gold">Comment ça marche</p>
+      <ol className="mt-4 grid gap-4 sm:grid-cols-2 lg:grid-cols-5">
+        {steps.map(([Icon, title, text], index) => (
+          <li key={title} className="flex gap-3 lg:flex-col">
+            <span className="grid h-9 w-9 shrink-0 place-items-center border border-gold/40 bg-gold/10 text-gold">
+              <Icon aria-hidden className="h-4 w-4" />
+            </span>
+            <div>
+              <p className="font-display text-lg font-black uppercase leading-none">
+                <span className="text-white/35">{index + 1}.</span> {title}
+              </p>
+              <p className="mt-1 text-xs leading-relaxed text-white/55">{text}</p>
+            </div>
+          </li>
+        ))}
+      </ol>
+    </TacticalCard>
+  );
+}
+
 function TournamentTeaser({ horus = false }) {
   const rounds = [8, 4, 2, 1];
   return (

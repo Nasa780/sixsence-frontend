@@ -1,7 +1,7 @@
 import Head from "next/head";
 import Link from "next/link";
 import { Fragment, useEffect, useState } from "react";
-import { LuChevronRight, LuCrown, LuShield, LuSwords, LuTrophy } from "react-icons/lu";
+import { LuCalendarClock, LuChevronRight, LuCrown, LuShield, LuSwords, LuTrophy } from "react-icons/lu";
 import { CodModeNav } from "../../components/cod/CodModeNav";
 import { TeamCrest } from "../../components/teams/TeamParts";
 import { Container } from "../../components/ui/Container";
@@ -12,7 +12,8 @@ import { cn } from "../../lib/cn";
 
 /**
  * Circuit SixSence (GET /teams/circuit) : les Coupes Horus de la saison rapportent des points, les premières du
- * circuit et les 2 meilleures de la Division (seconde chance) se qualifient pour la grande finale (tournoi de saison).
+ * circuit se qualifient pour la grande finale (tournoi de saison) ; les 2 dernières places se jouent au play-in (7e et
+ * 8e du circuit contre les 2 meilleures de la Division), ou reviennent directement à la Division sans play-in.
  */
 const MEDALS = { winner: ["1re place", "#d4af37"], finalist: ["2e place", "#c0c7d0"], third: ["3e place", "#c97b4b"] };
 const dateFr = (iso) => new Date(iso).toLocaleDateString("fr-FR", { weekday: "short", day: "numeric", month: "short" });
@@ -76,8 +77,14 @@ export function CircuitView({ data, error = null }) {
             <div className="grid gap-3 lg:grid-cols-[1fr_auto_1fr_auto_1fr] lg:items-stretch">
               {[
                 { icon: LuShield, color: "#d4af37", title: "Coupes Horus", when: "Toute la saison", text: "Chaque coupe rapporte des points de circuit selon la place. Ils restent acquis toute la saison." },
-                { icon: LuSwords, color: "#22d3ee", title: "Seconde chance", when: "Division", text: `Les ${data.divisionSpots} meilleures équipes de la Division pas encore qualifiées prennent les dernières places de la finale.` },
-                { icon: LuCrown, color: "#e5484d", title: "Grande finale", when: "Fin de saison", text: `Le top ${data.circuitSpots} du circuit et les ${data.divisionSpots} équipes de la Division : le tournoi de fin de saison.` },
+                {
+                  icon: LuSwords,
+                  color: "#22d3ee",
+                  title: "Play-in",
+                  when: "Seconde chance",
+                  text: `Les ${data.circuitSpots + 1}e et ${data.circuitSpots + 2}e du circuit affrontent les ${data.divisionSpots} meilleures équipes de la Division en BO3 : les gagnants prennent les dernières places.`,
+                },
+                { icon: LuCrown, color: "#e5484d", title: "Grande finale", when: "Fin de saison", text: `Le top ${data.circuitSpots} du circuit et les ${data.divisionSpots} vainqueurs du play-in : le tournoi de fin de saison.` },
               ].map(({ icon: Icon, color, title, when, text }, i, all) => (
                 <Fragment key={title}>
                   <div className="clip-tactical relative overflow-hidden border bg-white/[0.02] p-5 [--cut:16px]" style={{ borderColor: `${color}66` }}>
@@ -95,6 +102,8 @@ export function CircuitView({ data, error = null }) {
                 </Fragment>
               ))}
             </div>
+
+            {data.playIn ? <PlayIn playIn={data.playIn} spots={data.circuitSpots} /> : null}
 
             <div className="grid gap-8 lg:grid-cols-[1fr_1.6fr]">
               <div className="space-y-8">
@@ -154,7 +163,7 @@ export function CircuitView({ data, error = null }) {
                         {i === data.circuitSpots ? (
                           <div className="flex items-center gap-2 bg-white/[0.04] px-4 py-1.5">
                             <span aria-hidden className="h-px flex-1 bg-white/25" />
-                            <span className="font-tech text-[9px] uppercase tracking-[0.24em] text-white/50">Qualification par la Division possible</span>
+                            <span className="font-tech text-[9px] uppercase tracking-[0.24em] text-white/50">Play-in (seconde chance)</span>
                             <span aria-hidden className="h-px flex-1 bg-white/25" />
                           </div>
                         ) : null}
@@ -196,5 +205,78 @@ export function CircuitView({ data, error = null }) {
         ) : null}
       </Container>
     </>
+  );
+}
+
+/**
+ * Play-in de la grande finale : les 2 rencontres (avec résultats s'il est créé, sinon les affiches d'après le
+ * classement actuel). Check-in et feuilles de match sur /cod/tournoi?coupe=playin.
+ */
+function PlayIn({ playIn, spots }) {
+  const projected = playIn.projected;
+  return (
+    <section aria-labelledby="titre-playin" className="space-y-4">
+      <div className="flex flex-wrap items-end justify-between gap-3">
+        <div>
+          <p className="font-tech text-[11px] uppercase tracking-[0.24em] text-gold">{projected ? "Si la saison s'arrêtait maintenant" : playIn.status === "completed" ? "Terminé" : "Seconde chance"}</p>
+          <h2 id="titre-playin" className="mt-1 font-display text-4xl font-black uppercase leading-none">
+            Play-<span className="text-gold-gradient">in</span>
+          </h2>
+        </div>
+        {!projected ? (
+          <Link href="/cod/tournoi?coupe=playin" className="inline-flex items-center gap-1.5 text-sm font-semibold text-gold underline underline-offset-4">
+            {playIn.status === "scheduled" ? "Check-in et détails" : "Tableau et matchs"} <LuChevronRight aria-hidden className="h-4 w-4" />
+          </Link>
+        ) : null}
+      </div>
+      <div className="grid gap-4 md:grid-cols-2">
+        {playIn.pairs.map((pair, index) => (
+          <div key={index} className="clip-tactical border border-white/10 bg-white/[0.02] p-5 [--cut:16px]">
+            <div className="flex items-center justify-between font-tech text-[10px] uppercase tracking-[0.2em] text-white/45">
+              <span>Play-in {index + 1} · BO3</span>
+              {playIn.startsAt ? (
+                <span className="inline-flex items-center gap-1">
+                  <LuCalendarClock aria-hidden className="h-3.5 w-3.5" /> {dateFr(playIn.startsAt)}
+                </span>
+              ) : null}
+            </div>
+            <div className="mt-4 grid grid-cols-[1fr_auto_1fr] items-center gap-3">
+              {[
+                [pair.a, `${spots + 1 + index}e circuit`, "#d4af37"],
+                null,
+                [pair.b, `${index === 0 ? 2 : 1}${index === 0 ? "e" : "re"} Division`, "#22d3ee"],
+              ].map((side, j) =>
+                side ? (
+                  <div key={j} className={cn("min-w-0", j === 2 && "text-right", pair.winner && side[0] && pair.winner !== side[0].id && "opacity-40")}>
+                    <p className="font-tech text-[10px] uppercase tracking-[0.2em]" style={{ color: side[2] }}>
+                      {side[1]}
+                    </p>
+                    <p className="mt-1 truncate font-display text-2xl font-black uppercase leading-none">
+                      {side[0] ? <><span className="normal-case">[{side[0].tag}]</span> {side[0].name}</> : "Forfait"}
+                    </p>
+                  </div>
+                ) : (
+                  <span key={j} className="font-display text-xl font-black text-white/30">
+                    VS
+                  </span>
+                ),
+              )}
+            </div>
+            <p className="mt-4 flex items-center gap-1.5 border-t border-white/10 pt-3 text-xs text-white/55">
+              <LuCrown aria-hidden className="h-3.5 w-3.5 text-gold" />
+              {pair.winner
+                ? `${[pair.a, pair.b].find((team) => team?.id === pair.winner)?.name ?? "L'équipe gagnante"} rejoint la grande finale.`
+                : "Le gagnant rejoint la grande finale."}
+              {pair.matchId ? (
+                <Link href={`/cod/equipes/match/${pair.matchId}`} className="ml-auto text-gold underline underline-offset-4">
+                  Feuille de match
+                </Link>
+              ) : null}
+            </p>
+          </div>
+        ))}
+      </div>
+      {projected ? <p className="text-xs text-white/45">Affiches provisoires d&apos;après le classement du circuit et de la Division : le play-in est créé avant la grande finale.</p> : null}
+    </section>
   );
 }

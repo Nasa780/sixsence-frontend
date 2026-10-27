@@ -5,6 +5,7 @@ import { SlantTab } from "../../../components/teams/TeamParts";
 import { TeamSeasonArchive } from "../../../components/teams/TeamSeasonArchive";
 import { TeamStandings } from "../../../components/teams/TeamStandings";
 import { ButtonLink } from "../../../components/ui/Button";
+import { SeasonCountdown } from "../../../components/cod/SeasonCountdown";
 import { Container } from "../../../components/ui/Container";
 import { EmptyState, Loading, Notice } from "../../../components/ui/Feedback";
 import { PageHeader } from "../../../components/ui/Typography";
@@ -121,6 +122,7 @@ export default function TeamsPage() {
             ))}
           </div>
         ) : null}
+        {archived ? null : <SeasonCountdown mode="division" />}
         {archived ? (
           <TeamSeasonArchive season={archived} myTeamId={mine?.id ?? null} />
         ) : (

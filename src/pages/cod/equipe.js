@@ -210,8 +210,11 @@ function NoTeam({ state, reload }) {
 function ManageTeam({ state, userId, reload, created, onLeft }) {
   const { team, me } = state;
   const isLeader = me.crown || me.role === "leader";
-  // ?onglet=defis ouvre directement les défis (lien du défi envoyé).
-  const [tab, setTab] = useState(() => (typeof window !== "undefined" && new URLSearchParams(window.location.search).get("onglet") === "defis" ? "defis" : "apercu"));
+  // ?onglet=defis ouvre directement les défis (lien du défi envoyé) ; ?onglet=recrutement le recrutement (Leaders, premiers pas).
+  const [tab, setTab] = useState(() => {
+    const asked = typeof window !== "undefined" ? new URLSearchParams(window.location.search).get("onglet") : null;
+    return asked === "defis" || (asked === "recrutement" && isLeader) ? asked : "apercu";
+  });
   const insights = useTeamInsights(team);
   const [confirm, setConfirm] = useState(null);
   const [pending, setPending] = useState(false);
