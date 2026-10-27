@@ -98,16 +98,16 @@ function itemsOf(live) {
 function Item({ item }) {
   const Icon = item.icon;
   return (
-    <Link href={item.href} className="group flex shrink-0 items-center gap-3 border-r border-white/10 px-6 py-3.5 transition-colors hover:bg-white/[0.05] sm:px-8 sm:py-4">
+    <Link href={item.href} className="group flex shrink-0 items-center gap-2 border-r border-white/10 px-4 py-3 transition-colors hover:bg-white/[0.05] sm:gap-3 sm:px-8 sm:py-4">
       <span className="relative">
-        <Icon aria-hidden className="h-5 w-5" style={{ color: item.color }} />
+        <Icon aria-hidden className="h-4 w-4 sm:h-5 sm:w-5" style={{ color: item.color }} />
         {item.live ? <span aria-hidden className="absolute -right-1 -top-1 h-2 w-2 animate-ping rounded-full" style={{ background: item.color }} /> : null}
       </span>
-      <span className="font-tech text-[10px] uppercase tracking-[0.22em]" style={{ color: item.color }}>
+      <span className="font-tech text-[9px] uppercase tracking-[0.18em] sm:text-[10px] sm:tracking-[0.22em]" style={{ color: item.color }}>
         {item.label}
       </span>
-      <span className={cn("font-display text-lg font-black uppercase leading-none sm:text-xl", item.long && "normal-case")}>{item.value}</span>
-      {item.sub ? <span className="text-xs text-white/40">{item.sub}</span> : null}
+      <span className={cn("whitespace-nowrap font-display text-base font-black uppercase leading-none sm:text-xl", item.long && "normal-case")}>{item.value}</span>
+      {item.sub ? <span className="whitespace-nowrap text-[11px] text-white/40 sm:text-xs">{item.sub}</span> : null}
     </Link>
   );
 }
@@ -120,17 +120,17 @@ export function LiveBand({ initialData = null }) {
   if (!items.length) return null;
   const on = hot.length > 0;
   // Défilement continu : la liste est doublée pour boucler sans saut ; vitesse selon la longueur.
-  const duration = Math.max(25, items.length * 7);
+  const duration = Math.max(18, items.length * 5);
   return (
     <motion.aside
       aria-label={on ? "En direct sur SixSence" : "À venir sur SixSence"}
       initial={{ opacity: 0, y: 30 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.7, delay: 0.6, ease: [0.22, 1, 0.36, 1] }}
-      className="absolute inset-x-0 bottom-0 z-10 border-y border-gold/25 bg-ink/85 backdrop-blur-md"
+      className="absolute inset-x-0 bottom-0 z-10 border-y border-white/10 bg-[#1d1d21]/95 backdrop-blur-md"
     >
       <div className="flex items-stretch">
-        <span className="z-10 flex shrink-0 items-center gap-2 bg-gold px-4 font-display text-sm font-black uppercase tracking-[0.14em] text-ink shadow-[8px_0_24px_rgba(0,0,0,0.5)] sm:px-6 sm:text-lg">
+        <span className="z-10 flex shrink-0 items-center gap-1.5 bg-gold px-3 font-display text-xs font-black uppercase tracking-[0.12em] text-ink shadow-[8px_0_24px_rgba(0,0,0,0.5)] sm:gap-2 sm:px-6 sm:text-lg sm:tracking-[0.14em]">
           <span aria-hidden className={cn("h-2 w-2", on ? "animate-pulse bg-[#0f5132]" : "bg-ink")} />
           {on ? "En direct" : "À venir"}
         </span>
@@ -152,7 +152,8 @@ export function LiveBand({ initialData = null }) {
               ))}
             </div>
           )}
-          <div aria-hidden className="pointer-events-none absolute inset-y-0 right-0 w-16 bg-linear-to-l from-ink to-transparent" />
+          <div aria-hidden className="pointer-events-none absolute inset-y-0 left-0 w-6 bg-linear-to-r from-[#1d1d21] to-transparent" />
+          <div aria-hidden className="pointer-events-none absolute inset-y-0 right-0 w-10 bg-linear-to-l from-[#1d1d21] to-transparent sm:w-16" />
         </div>
       </div>
     </motion.aside>
