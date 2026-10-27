@@ -54,12 +54,12 @@ export function RulesEssentials() {
 
 /**
  * Paramètres de la partie privée. bestOf fixé (feuille de match) ou choisi par onglets (règlement) ;
- * hostFirst : ouvre directement la liste à cocher (l'hôte sur sa feuille de match).
+ * le Mode hôte (liste à cocher) est facultatif.
  */
-export function MatchSettings({ bestOf: fixedBestOf = null, hostFirst = false }) {
+export function MatchSettings({ bestOf: fixedBestOf = null }) {
   const [format, setFormat] = useState(MATCH_FORMATS[0]);
   const [tab, setTab] = useState("JEU");
-  const [host, setHost] = useState(hostFirst);
+  const [host, setHost] = useState(false);
   const [done, setDone] = useState({});
   const bestOf = fixedBestOf ?? format.bestOf;
   const tabs = settingsTabs(bestOf);
@@ -233,8 +233,8 @@ export function RulesConduct() {
 }
 
 /**
- * Bloc repliable « Paramètres de la partie » d'une feuille de match : ouvert d'office pour l'hôte (liste à cocher),
- * replié pour les autres avec le rappel des interdits.
+ * Bloc repliable « Paramètres de la partie » d'une feuille de match : ouvert d'office pour l'hôte (le Mode hôte reste
+ * facultatif), replié pour les autres avec le rappel des interdits.
  */
 export function MatchRulesCard({ bestOf = 1, isHost = false }) {
   const [open, setOpen] = useState(isHost);
@@ -266,7 +266,7 @@ export function MatchRulesCard({ bestOf = 1, isHost = false }) {
       </div>
       {open ? (
         <div className="border-t border-white/[0.06] p-4 sm:p-5">
-          <MatchSettings bestOf={bestOf} hostFirst={isHost} />
+          <MatchSettings bestOf={bestOf} />
           <p className="mt-4 text-xs text-white/45">
             Classe complète, glitchs, déconnexions :{" "}
             <Link href="/reglement#regles-classe" className="text-gold underline underline-offset-4">

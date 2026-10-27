@@ -9,7 +9,7 @@ export const RELEASES = [
     title: "Règles de match",
     items: [
       { tag: "Classé", text: "Règles de match Modern Warfare 4 : paramètres de la partie privée onglet par onglet, classe autorisée et atouts imposés, glitchs et déconnexions.", href: "/reglement#regles-essentiel" },
-      { tag: "Site", text: "Mode hôte : la liste à cocher des réglages de la partie privée, ouverte d'office sur la feuille de match de l'hôte." },
+      { tag: "Site", text: "Mode hôte : une liste à cocher facultative des réglages de la partie privée, aussi sur la feuille de match." },
     ],
   },
   {

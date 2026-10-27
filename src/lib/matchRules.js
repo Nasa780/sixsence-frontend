@@ -98,7 +98,7 @@ export const ESSENTIALS = [
   { key: "hardcore", title: "Hardcore", lines: ["20 PV, sans régénération", "Sans mini-carte, tir allié activé", "Sans séries ni améliorations"] },
   { key: "weapons", title: "Armes", lines: ["Fusils d'assaut, mitraillettes", "Fusils tactiques", "Snipers à verrou"] },
   { key: "perks", title: "Atouts", lines: ["Fantôme", "Ruée ou Ninja", "Sang-froid"] },
-  { key: "disconnect", title: "Déconnexion", lines: ["Une pause de 5 minutes", "une seule fois par match"] },
+  { key: "disconnect", title: "Déconnexion", lines: ["Une pause de 5 minutes", "par équipe et par map"] },
   { key: "banned", title: "Interdit", lines: ["Glitchs et snaking", "Skins spéciaux", "Joueurs hors effectif"] },
 ];
 
@@ -159,7 +159,7 @@ export const CONDUCT = [
   {
     key: "disconnect",
     title: "Déconnexion d'un joueur",
-    text: "Une pause de 5 minutes, une seule fois par match, demandée en fin de manche ou dans les premières secondes d'une manche. Sans retour du joueur, la partie reprend au même score, en infériorité.",
+    text: "Une pause de 5 minutes par équipe et par map, demandée en fin de manche ou dans les premières secondes d'une manche. Sans retour du joueur, la partie reprend au même score, en infériorité.",
   },
   {
     key: "host",

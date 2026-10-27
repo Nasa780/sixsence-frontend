@@ -70,8 +70,8 @@ function DIVISION_SECTIONS() {
             Les deux équipes ont <strong>15 minutes</strong> après la création du match pour lancer la partie.
           </li>
           <li>
-            <strong>Déconnexion</strong> : l&apos;équipe du joueur déconnecté peut demander à arrêter la partie, <strong>une seule fois</strong> par
-            match. La demande se fait en fin de manche ou dans les premières secondes d&apos;une manche, jamais en cours de manche (après un
+            <strong>Déconnexion</strong> : l&apos;équipe du joueur déconnecté peut demander à arrêter la partie, <strong>une fois par map</strong> (chaque
+            équipe a sa pause). La demande se fait en fin de manche ou dans les premières secondes d&apos;une manche, jamais en cours de manche (après un
             kill, une bombe posée ou toute autre action). La partie reprend au même score dans les <strong>5 minutes</strong>, même si le joueur
           n&apos;a pas réussi à se reconnecter.
           </li>
@@ -248,8 +248,8 @@ const SECTIONS = [
       <>
         <p>
           L&apos;hôte crée la partie en mode <strong>Call of Duty League : R&amp;D</strong> et change uniquement les réglages en or, onglet par
-          onglet, comme dans le menu « Règles du jeu ». Le <strong>Mode hôte</strong> en fait une liste à cocher ; elle s&apos;ouvre aussi sur
-          la feuille de match de l&apos;hôte.
+          onglet, comme dans le menu « Règles du jeu ». Le <strong>Mode hôte</strong>, facultatif, en fait une liste à cocher ; il est aussi
+          disponible sur la feuille de match.
         </p>
         <MatchSettings />
       </>
@@ -399,8 +399,8 @@ const SECTIONS = [
         </li>
         <li>Les équipes tirées au sort doivent être respectées : personne ne prend la place d&apos;un joueur du match.</li>
         <li>
-          <strong>Déconnexion</strong> : l&apos;équipe du joueur déconnecté peut demander à arrêter la partie, <strong>une seule fois</strong> par
-          match. La demande se fait en fin de manche ou dans les premières secondes d&apos;une manche, jamais en cours de manche (après un
+          <strong>Déconnexion</strong> : l&apos;équipe du joueur déconnecté peut demander à arrêter la partie, <strong>une fois par map</strong> (chaque
+          équipe a sa pause). La demande se fait en fin de manche ou dans les premières secondes d&apos;une manche, jamais en cours de manche (après un
           kill, une bombe posée ou toute autre action). La partie reprend au même score dans les <strong>5 minutes</strong>, même si le joueur
           n&apos;a pas réussi à se reconnecter.
         </li>
