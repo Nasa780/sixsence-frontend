@@ -231,6 +231,14 @@ export function MatchView({ matchId }) {
     };
   }, [matchId, load]);
 
+  // Pendant le « Prêt ? », la base ne diffuse plus le match (composition cachée) : relu toutes les 3 s jusqu'au départ.
+  const readyCheck = data?.match?.status === "ready_check";
+  useEffect(() => {
+    if (!readyCheck) return undefined;
+    const timer = setInterval(load, 3000);
+    return () => clearInterval(timer);
+  }, [readyCheck, load]);
+
   const playerById = useMemo(() => new Map((data?.players || []).map((player) => [player.id, player])), [data]);
   const isPlayer = Boolean(userId && data && (data.match.team_a.includes(userId) || data.match.team_b.includes(userId)));
 
@@ -306,6 +314,8 @@ export function MatchView({ matchId }) {
     setDialog({ kind: "confirm", result: kind, team, action, body, key });
   }
   const readyUsers = match.ready_users || [];
+  // Composition masquée par le serveur pendant le « Prêt ? » (identifiants « cache-… » à la place des autres joueurs).
+  const teamsHidden = match.status === "ready_check" && [...match.team_a, ...match.team_b].some((id) => String(id).startsWith("cache-"));
   // Correction d'un match terminé : demande du joueur pendant 24 h, correction par l'équipe pendant 48 h (admin sans limite).
   const hoursSinceEnd = match.completed_at ? (Date.now() - new Date(match.completed_at).getTime()) / 3_600_000 : Infinity;
   const canRequestCorrection = Boolean(myTeam) && match.status === "completed" && hoursSinceEnd < 24;
@@ -558,7 +568,16 @@ export function MatchView({ matchId }) {
         <MvpVote match={match} playerById={playerById} votes={mvpVotes} myVote={me.myVote} userId={userId} isPlayer={isPlayer} onVoted={() => Promise.all([load(), loadMe()])} />
       ) : null}
 
-      {/* --- Les deux équipes --------------------------------------------- */}
+      {/* --- Les deux équipes (cachées pendant le « Prêt ? », sauf pour les arbitres) ---- */}
+      {teamsHidden ? (
+        <div className="clip-tactical border border-gold/30 bg-gold/[0.04] px-6 py-8 text-center [--cut:16px]">
+          <p className="font-tech text-[10px] uppercase tracking-[0.3em] text-gold">Équipes</p>
+          <p className="mt-2 font-display text-3xl font-black uppercase leading-none">Dévoilées quand tout le monde est prêt</p>
+          <p className="mt-2 text-sm text-white/55">
+            {readyUsers.length} / {match.team_a.length + match.team_b.length} joueurs prêts
+          </p>
+        </div>
+      ) : (
       <div className="grid grid-cols-1 gap-6 pt-4 lg:grid-cols-[1fr_auto_1fr] lg:items-start">
         <TeamColumn team="A" match={match} ids={match.team_a} stakes={data.pointsAtStake} playerById={playerById} currentUserId={userId} readyUsers={readyUsers} mvpIds={mvpIds} onReport={canReport ? (target) => setDialog({ kind: "report", target }) : null} />
         <div aria-hidden className="flex items-center justify-center lg:pt-16">
@@ -566,6 +585,7 @@ export function MatchView({ matchId }) {
         </div>
         <TeamColumn team="B" match={match} ids={match.team_b} stakes={data.pointsAtStake} playerById={playerById} currentUserId={userId} readyUsers={readyUsers} mvpIds={mvpIds} onReport={canReport ? (target) => setDialog({ kind: "report", target }) : null} />
       </div>
+      )}
 
       <ConfirmDialog
         open={dialog?.kind === "confirm"}
