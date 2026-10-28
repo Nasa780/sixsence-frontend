@@ -14,7 +14,7 @@ export const MATCH_FORMATS = [
 
 /**
  * Onglets du menu « Règles du jeu » de la partie privée, dans l'ordre du jeu et avec ses libellés exacts.
- * def : valeur par défaut du mode Call of Duty League : R&D ; set : valeur à régler ; lock : réglage à ne pas toucher.
+ * def : valeur par défaut du mode CDL Recherche et destruction ; set : valeur à régler ; lock : réglage à ne pas toucher.
  */
 export function settingsTabs(bestOf) {
   const rounds = roundsToWin(bestOf);
