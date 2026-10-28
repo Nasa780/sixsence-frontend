@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { useRouter } from "next/router";
 import { useCallback, useEffect, useRef, useState } from "react";
-import { LuBellRing, LuCheck, LuClock, LuLoaderCircle, LuMap, LuPlus, LuRepeat, LuSwords, LuUserRound, LuX } from "react-icons/lu";
+import { LuBellRing, LuCheck, LuClock, LuLoaderCircle, LuMap, LuPlus, LuSwords, LuUserRound, LuX } from "react-icons/lu";
 import useCountdown from "../../hooks/useCountdown";
 import { api } from "../../lib/api";
 import { supabase } from "../../lib/supabase";
@@ -269,19 +269,9 @@ export function DivisionLobby({ team, isLeader, play, match, revealed, chosen, o
                 la page ouverte : un son et une notification te préviennent.
               </span>
             ) : phase === "idle" ? (
-              <span className="flex flex-col gap-1.5">
-                <span className="flex items-center gap-2">
-                  <LuMap aria-hidden className="h-3.5 w-3.5 shrink-0 text-gold/80" />
-                  BO3 : 3 maps tirées au sort, la 3e jouée seulement à 1-1.
-                </span>
-                <span className="flex items-center gap-2">
-                  <LuSwords aria-hidden className="h-3.5 w-3.5 shrink-0 text-gold/80" />
-                  Chaque map se gagne en 6 manches.
-                </span>
-                <span className="flex items-center gap-2">
-                  <LuRepeat aria-hidden className="h-3.5 w-3.5 shrink-0 text-gold/80" />
-                  Pas de revanche contre la même équipe avant 2 h.
-                </span>
+              <span className="flex items-center gap-2">
+                <LuMap aria-hidden className="h-3.5 w-3.5 shrink-0 text-gold/80" />
+                BO3 · maps tirées au sort
               </span>
             ) : phase === "found" ? (
               <span>Ouverture de la feuille de match…</span>
@@ -475,7 +465,7 @@ function RosterPicker({ members, chosen, size, onToggle }) {
         })}
       </ul>
       <p className="mt-2 text-xs text-white/40">
-        Il manque quelqu&apos;un ? Invite-le depuis{" "}
+        Invite des joueurs depuis{" "}
         <Link href="/cod/equipe" className="underline underline-offset-4 hover:text-gold">
           Mon équipe
         </Link>
