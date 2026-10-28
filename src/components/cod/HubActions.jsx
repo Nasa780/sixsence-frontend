@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { FaDiscord } from "react-icons/fa6";
-import { LuArrowRight, LuCheck, LuCrosshair, LuLoaderCircle, LuShield, LuSwords, LuTrophy, LuUser, LuUsers } from "react-icons/lu";
+import { LuArrowRight, LuCheck, LuCrosshair, LuShield, LuSwords, LuTrophy, LuUser, LuUsers } from "react-icons/lu";
 import { api } from "../../lib/api";
 import { signInWithDiscord } from "../../lib/auth";
 import { MATCH_TEAM_ENABLED } from "../../lib/config";
@@ -14,6 +14,34 @@ const day = (iso) => {
 };
 
 /**
+ * Dernier état connu par joueur (mémoire de la page + navigateur) : les boutons s'affichent tout de suite à chaque
+ * visite, puis se mettent à jour en arrière-plan ; première visite : « Jouer en Classé » et « Mon profil ».
+ */
+const STORAGE_KEY = "sixsence:hub-actions";
+const memory = new Map();
+const DEFAULT_STATE = { queue: null, play: null, cup: null, team: null, lastMode: "classe" };
+
+function remembered(userId) {
+  if (memory.has(userId)) return memory.get(userId);
+  try {
+    const saved = JSON.parse(localStorage.getItem(STORAGE_KEY) || "null");
+    if (saved?.userId === userId) return saved.state;
+  } catch {
+    // Stockage indisponible : état par défaut.
+  }
+  return null;
+}
+
+function remember(userId, state) {
+  memory.set(userId, state);
+  try {
+    localStorage.setItem(STORAGE_KEY, JSON.stringify({ userId, state }));
+  } catch {
+    // Stockage indisponible : gardé en mémoire seulement.
+  }
+}
+
+/**
  * Boutons de l'en-tête de la page MW4 : l'action la plus utile du moment, dans cet ordre : match en cours (Classé ou
  * Division), recherche lancée, check-in de la Coupe Horus ouvert pour son équipe, inscription à la prochaine Coupe
  * Horus, sinon « Jouer » dans le dernier mode joué. À côté : Mon équipe (si le joueur en a une) ou Mon profil.
@@ -25,6 +53,7 @@ export function HubActions({ user, activeMatchId = null }) {
   useEffect(() => {
     if (!user?.id) return undefined;
     let alive = true;
+    setState(remembered(user.id) ?? DEFAULT_STATE);
     Promise.all([
       api("/cod/queue").catch(() => null),
       MATCH_TEAM_ENABLED ? api("/teams/me/play").catch(() => null) : null,
@@ -36,7 +65,9 @@ export function HubActions({ user, activeMatchId = null }) {
       if (!alive) return;
       const lastCod = codMatches[0] ? new Date(codMatches[0].completed_at ?? codMatches[0].created_at).getTime() : 0;
       const lastTeam = teamMatches?.matches?.[0] ? new Date(teamMatches.matches[0].date).getTime() : 0;
-      setState({ queue, play, cup: horus?.tournament ?? null, team: me?.team ?? null, lastMode: lastTeam > lastCod ? "division" : "classe" });
+      const next = { queue, play, cup: horus?.tournament ?? null, team: me?.team ?? null, lastMode: lastTeam > lastCod ? "division" : "classe" };
+      remember(user.id, next);
+      setState(next);
     });
     return () => {
       alive = false;
@@ -51,15 +82,7 @@ export function HubActions({ user, activeMatchId = null }) {
       </Button>
     );
   }
-  if (!state) {
-    return (
-      <span className="inline-flex items-center gap-2 text-sm text-white/40">
-        <LuLoaderCircle aria-hidden className="h-4 w-4 animate-spin" />
-      </span>
-    );
-  }
-
-  const { queue, play, cup, team, lastMode } = state;
+  const { queue, play, cup, team, lastMode } = state ?? remembered(user.id) ?? DEFAULT_STATE;
   const viewer = cup?.viewer;
   let main;
   if (activeMatchId) main = { href: `/cod/match/${activeMatchId}`, label: "Retour au match", icon: LuSwords, univers: "classe" };
