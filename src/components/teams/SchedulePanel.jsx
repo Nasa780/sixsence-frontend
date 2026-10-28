@@ -52,10 +52,14 @@ function SlotPicker({ size, chosen, pending, blocked, onSchedule }) {
         .then((data) => alive && setTaken(data.slots ?? {}))
         .catch(() => {});
     load();
-    const timer = setInterval(load, 60_000);
+    // Onglet caché : pas de relecture ; relu dès qu'il redevient visible.
+    const timer = setInterval(() => document.visibilityState === "visible" && load(), 60_000);
+    const onShow = () => document.visibilityState === "visible" && load();
+    document.addEventListener("visibilitychange", onShow);
     return () => {
       alive = false;
       clearInterval(timer);
+      document.removeEventListener("visibilitychange", onShow);
     };
   }, []);
 

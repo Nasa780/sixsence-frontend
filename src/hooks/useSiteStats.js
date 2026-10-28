@@ -21,10 +21,14 @@ export default function useSiteStats() {
       }
     };
     load();
-    const timer = setInterval(load, 30_000);
+    // Onglet caché : pas de relecture ; relu dès qu'il redevient visible.
+    const timer = setInterval(() => document.visibilityState === "visible" && load(), 30_000);
+    const onShow = () => document.visibilityState === "visible" && load();
+    document.addEventListener("visibilitychange", onShow);
     return () => {
       active = false;
       clearInterval(timer);
+      document.removeEventListener("visibilitychange", onShow);
     };
   }, []);
 

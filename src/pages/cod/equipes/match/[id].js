@@ -50,9 +50,13 @@ export default function TeamMatchPage() {
       .channel(`team-match-${id}-${Math.random().toString(36).slice(2)}`)
       .on("postgres_changes", { event: "UPDATE", schema: "public", table: "team_matches", filter: `id=eq.${id}` }, load)
       .subscribe();
-    const timer = setInterval(load, 30000);
+    // Onglet caché : pas de relecture ; relu dès qu'il redevient visible.
+    const timer = setInterval(() => document.visibilityState === "visible" && load(), 30000);
+    const onShow = () => document.visibilityState === "visible" && load();
+    document.addEventListener("visibilitychange", onShow);
     return () => {
       clearInterval(timer);
+      document.removeEventListener("visibilitychange", onShow);
       supabase.removeChannel(channel);
     };
   }, [load, userId, id]);

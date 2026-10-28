@@ -43,7 +43,10 @@ export function PlayPanel({ team, isLeader }) {
   // Match créé ou terminé pour l'équipe : mis à jour aussitôt (temps réel) ; la recherche toutes les 10 s.
   useEffect(() => {
     load();
-    const timer = setInterval(load, 10000);
+    // Onglet caché : pas de relecture ; relu dès qu'il redevient visible.
+    const timer = setInterval(() => document.visibilityState === "visible" && load(), 10000);
+    const onShow = () => document.visibilityState === "visible" && load();
+    document.addEventListener("visibilitychange", onShow);
     const channel = supabase
       .channel(`team-play-${team.id}-${Math.random().toString(36).slice(2)}`)
       .on("postgres_changes", { event: "*", schema: "public", table: "team_matches", filter: `team_a=eq.${team.id}` }, load)
@@ -51,6 +54,7 @@ export function PlayPanel({ team, isLeader }) {
       .subscribe();
     return () => {
       clearInterval(timer);
+      document.removeEventListener("visibilitychange", onShow);
       supabase.removeChannel(channel);
     };
   }, [load, team.id]);

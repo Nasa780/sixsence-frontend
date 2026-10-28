@@ -327,7 +327,7 @@ export function MatchView({ matchId }) {
         <div
           aria-hidden
           className={cn("absolute inset-0 bg-cover bg-center", mapImage(match.map) ? "opacity-40" : "opacity-15")}
-          style={{ backgroundImage: `url('${mapImage(match.map) ?? "/images/call-of-duty-black-3840x2160-22670.jpg"}')` }}
+          style={{ backgroundImage: `url('${mapImage(match.map) ?? "/images/mw4.webp"}')` }}
         />
         {mapImage(match.map) ? <div aria-hidden className="absolute inset-0 bg-linear-to-r from-ink via-ink/70 to-ink/20" /> : null}
         <div aria-hidden className="absolute -right-10 top-0 h-full w-40 -skew-x-[24deg] bg-linear-to-b from-gold/14 to-transparent" />

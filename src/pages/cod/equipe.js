@@ -869,7 +869,7 @@ function ImageField({ label, kind, url, uploading, onFile, onClear }) {
       <div className="flex items-center gap-3">
         <label className="flex flex-1 cursor-pointer items-center justify-center gap-2 border border-dashed border-white/15 px-4 py-5 text-sm text-white/55 transition hover:border-gold hover:text-gold">
           {uploading ? <LuLoaderCircle aria-hidden className="h-4 w-4 animate-spin" /> : <LuImagePlus aria-hidden className="h-4 w-4" />}
-          {url ? "Remplacer" : "Ajouter"} (PNG, JPEG, WebP · GIF animé 5 Mo)
+          {url ? "Remplacer" : "Ajouter"} (PNG, JPEG, WebP · GIF animé {kind === "logo" ? "1 Mo" : "2 Mo"})
           <input type="file" accept="image/png,image/jpeg,image/webp,image/gif" className="sr-only" onChange={(event) => onFile(event.target.files?.[0])} data-kind={kind} />
         </label>
         {url ? (
