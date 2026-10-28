@@ -729,7 +729,7 @@ function KickoffBlock({ data, userId, myTeam, hostName, playerById, onDone }) {
               )}
             </p>
             <p className="mt-1.5 text-sm text-white/60">
-              {isHost ? "Crée la partie privée et partage le code de la partie privée ci-dessous." : <>« {hostName} » crée la partie privée et partage le code de la partie privée.</>}
+              {isHost ? "Crée la partie privée et partage le code de la partie privée ci-dessous." : `${hostName} crée la partie privée et partage le code de la partie privée.`}
             </p>
           </div>
         </div>
