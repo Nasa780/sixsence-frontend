@@ -507,7 +507,7 @@ function CupForm({ mode, initial = null, lockFormat = false, testTeamSize = fals
                   Joueurs / équipe
                 </label>
                 <select id={`f-team-${mode}`} className={fieldClass} value={form.teamSize} onChange={(event) => set({ teamSize: Number(event.target.value) })}>
-                  {(testTeamSize ? [1, 2, 3, 4] : [2, 3, 4]).map((size) => (
+                  {(testTeamSize ? [1, 2, 3, 4, 5] : [2, 3, 4, 5]).map((size) => (
                     <option key={size} value={size}>
                       {size}v{size}
                     </option>
