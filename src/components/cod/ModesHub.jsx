@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { LuCrosshair, LuCrown, LuShield, LuTrophy } from "react-icons/lu";
 import { LeaderboardView } from "./LeaderboardView";
 import { ActiveMatchBanner } from "./ActiveMatchBanner";
+import { HubActions } from "./HubActions";
 import { MySeason } from "./MySeason";
 import { OnboardingPanel } from "./OnboardingPanel";
 import { Reveal } from "../effects/Reveal";
@@ -22,6 +23,9 @@ import { supabase } from "../../lib/supabase";
 import { api } from "../../lib/api";
 import { cn } from "../../lib/cn";
 import { HubHighlights, SHOW_WEEK_HIGHLIGHTS } from "./HubHighlights";
+
+/** Barre « Ma saison » (Classé et Division du joueur) retirée le 2026-10-28, gardée de côté : true pour la remettre. */
+const SHOW_MY_SEASON = false;
 
 /** Les deux modes de jeu, présentés séparément sur le hub. */
 const MODES = [
@@ -108,7 +112,6 @@ export function ModesHub() {
         <title>Call of Duty — SixSence</title>
       </Head>
       <PageHeader
-
         image="/images/mw4.webp"
         eyebrow="Call of Duty"
         title={
@@ -119,18 +122,7 @@ export function ModesHub() {
         description={
           user ? `Content de te revoir, ${user.username}. Classé, Division et Tournoi t'attendent.` : "Recherche & Destruction Hardcore : le classé en solo (2v2 à 5v5), la Division pour les équipes (BO3 4v4) et le tournoi de fin de saison."
         }
-        actions={
-          <>
-            <ButtonLink href="/cod/ranked" size="lg">
-              <LuCrosshair aria-hidden className="h-5 w-5" />
-              Classé
-            </ButtonLink>
-            <ButtonLink href="/cod/division" size="lg" variant="outline">
-              <LuShield aria-hidden className="h-5 w-5" />
-              Division
-            </ButtonLink>
-          </>
-        }
+        actions={<HubActions user={user} activeMatchId={extra.activeMatchId} />}
       />
 
       <Container className="space-y-16 py-12">
@@ -145,7 +137,7 @@ export function ModesHub() {
         {session && extra.activeMatchId ? <ActiveMatchBanner matchId={extra.activeMatchId} /> : null}
 
         {/* Ma saison : Classé et Division du joueur connecté, en une ligne. */}
-        {profile ? <MySeason profile={profile} position={extra.position} /> : null}
+        {SHOW_MY_SEASON && profile ? <MySeason profile={profile} position={extra.position} /> : null}
 
         <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
           {MODES.map((mode, index) => (
