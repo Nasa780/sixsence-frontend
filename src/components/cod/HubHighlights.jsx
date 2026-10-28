@@ -1,6 +1,6 @@
-import { motion } from "framer-motion";
+import { motion, useInView, useReducedMotion } from "framer-motion";
 import Link from "next/link";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { LuCrown, LuFlame, LuRadio, LuShield, LuSwords, LuTrophy, LuUserPlus } from "react-icons/lu";
 import { api } from "../../lib/api";
 import { cn } from "../../lib/cn";
@@ -70,45 +70,135 @@ export function HubHighlights() {
   );
 }
 
-/** Carte « Joueur de la semaine » (aussi sur la page Renommée). */
+/** Nombre qui défile de 0 à `value` quand il apparaît (désactivé si l'utilisateur réduit les animations). */
+function CountUpInView({ value, delay = 0 }) {
+  const reduce = useReducedMotion();
+  const ref = useRef(null);
+  const seen = useInView(ref, { once: true, margin: "-60px" });
+  const [shown, setShown] = useState(reduce ? value : 0);
+  useEffect(() => {
+    if (reduce || !seen) return undefined;
+    let frame;
+    const timer = setTimeout(() => {
+      const t0 = performance.now();
+      const tick = (now) => {
+        const k = Math.min(1, (now - t0) / 1200);
+        setShown(Math.round(value * (1 - (1 - k) ** 3)));
+        if (k < 1) frame = requestAnimationFrame(tick);
+      };
+      frame = requestAnimationFrame(tick);
+    }, delay);
+    return () => {
+      clearTimeout(timer);
+      cancelAnimationFrame(frame);
+    };
+  }, [seen, value, delay, reduce]);
+  return <span ref={ref}>{shown.toLocaleString("fr-FR")}</span>;
+}
+
+/**
+ * Carte « Joueur de la semaine » (aussi sur la page Renommée). Entrée en scène à l'apparition : reflet doré qui balaie la
+ * carte (puis revient de temps en temps), « MVP » qui glisse en fond, avatar dans un cadre doré qui respire et couronne,
+ * points qui défilent, barre victoires / défaites qui se remplit. Sobre si l'utilisateur réduit les animations.
+ */
 export function PlayerOfWeek({ player }) {
   const rank = rankFor(player.points ?? 0);
+  const reduce = useReducedMotion();
+  const games = (player.wins ?? 0) + (player.losses ?? 0);
+  const winShare = games ? Math.round((player.wins / games) * 100) : 0;
+  const appear = (delay, from = { opacity: 0, y: 16 }) =>
+    reduce ? {} : { initial: from, whileInView: { opacity: 1, x: 0, y: 0, scale: 1 }, viewport: { once: true, margin: "-60px" }, transition: { duration: 0.6, delay, ease: [0.22, 1, 0.36, 1] } };
+
   return (
     <TacticalCard highlight cut={26} innerClassName="relative overflow-hidden">
-      <div aria-hidden className="pointer-events-none absolute -left-16 top-1/2 h-72 w-72 -translate-y-1/2 rounded-full bg-gold/15 blur-3xl" />
-      <div aria-hidden className="pointer-events-none absolute right-4 top-2 select-none font-display text-[7rem] font-black uppercase leading-none text-outline opacity-20">
+      {/* Lueur dorée qui respire et grille fine */}
+      <motion.div
+        aria-hidden
+        className="pointer-events-none absolute -left-24 top-1/2 h-96 w-96 -translate-y-1/2 rounded-full bg-gold/20 blur-3xl"
+        animate={reduce ? undefined : { opacity: [0.45, 0.9, 0.45], scale: [0.95, 1.05, 0.95] }}
+        transition={{ duration: 5, repeat: Infinity, ease: "easeInOut" }}
+      />
+      <div aria-hidden className="pointer-events-none absolute inset-0 bg-grid opacity-[0.05]" />
+      {/* « MVP » qui glisse depuis la droite */}
+      <motion.div
+        aria-hidden
+        {...appear(0.1, { opacity: 0, x: 80 })}
+        className="pointer-events-none absolute -right-2 top-0 select-none font-display text-[8rem] font-black uppercase leading-none text-outline opacity-20 sm:text-[10rem]"
+      >
         MVP
-      </div>
-      <Link href={`/cod/profile/${player.id}`} className="relative flex flex-col gap-6 p-6 sm:flex-row sm:items-center sm:p-8">
-        <motion.span
-          initial={{ scale: 0.85, opacity: 0 }}
-          whileInView={{ scale: 1, opacity: 1 }}
+      </motion.div>
+      {/* Reflet doré : un passage à l'apparition, puis toutes les 7 s */}
+      {reduce ? null : (
+        <motion.div
+          aria-hidden
+          className="pointer-events-none absolute inset-y-0 -left-1/3 w-1/3 -skew-x-12 bg-linear-to-r from-transparent via-gold/25 to-transparent"
+          initial={{ x: "0%" }}
+          whileInView={{ x: "450%" }}
           viewport={{ once: true }}
-          transition={{ type: "spring", stiffness: 140, damping: 14 }}
-          className="relative shrink-0"
-        >
-          <span
+          transition={{ duration: 1.4, delay: 0.35, ease: "easeInOut", repeat: Infinity, repeatDelay: 7 }}
+        />
+      )}
+
+      <Link href={`/cod/profile/${player.id}`} className="group relative flex flex-col gap-6 p-6 sm:flex-row sm:items-center sm:p-8">
+        <motion.span {...appear(0, { opacity: 0, scale: 0.8 })} className="relative shrink-0">
+          {/* Cadre doré qui respire */}
+          <motion.span
             aria-hidden
-            className="absolute -inset-2 rounded-xl bg-[conic-gradient(from_0deg,transparent,rgba(231,192,90,0.6),transparent_40%)] opacity-70 blur-[2px] animate-[spin_6s_linear_infinite]"
+            className="absolute -inset-1.5 rounded-xl border-2 border-gold"
+            animate={reduce ? undefined : { boxShadow: ["0 0 0px rgba(231,192,90,0.0)", "0 0 28px rgba(231,192,90,0.55)", "0 0 0px rgba(231,192,90,0.0)"] }}
+            transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
           />
-          <Avatar full src={player.avatarUrl} name={player.username} size={104} className="relative" />
+          <Avatar full src={player.avatarUrl} name={player.username} size={104} className="relative transition-transform duration-500 group-hover:scale-105" />
+          {/* Couronne */}
+          <motion.span
+            aria-hidden
+            initial={reduce ? false : { scale: 0, rotate: -30 }}
+            whileInView={{ scale: 1, rotate: 0 }}
+            viewport={{ once: true }}
+            transition={{ type: "spring", stiffness: 260, damping: 12, delay: 0.55 }}
+            className="absolute -right-3 -top-3 grid h-9 w-9 place-items-center rounded-full border-2 border-ink bg-gold text-ink shadow-lg shadow-gold/30"
+          >
+            <LuCrown className="h-5 w-5" />
+          </motion.span>
         </motion.span>
+
         <div className="min-w-0 flex-1">
-          <Eyebrow>
-            <LuFlame aria-hidden className="mr-1 inline h-3.5 w-3.5" />
-            Joueur de la semaine
-          </Eyebrow>
-          <p className="mt-2 truncate font-display text-5xl font-black uppercase leading-none">{player.username}</p>
-          <div className="mt-4 flex flex-wrap items-center gap-x-6 gap-y-2">
-            <span className="font-display text-3xl font-black text-gold tabular-nums">+{player.net} pts</span>
-            <span className="text-sm text-white/60">
-              {player.wins} V · {player.losses} D cette semaine
+          <motion.div {...appear(0.1)}>
+            <Eyebrow>
+              <LuFlame aria-hidden className="mr-1 inline h-3.5 w-3.5" />
+              Joueur de la semaine
+            </Eyebrow>
+          </motion.div>
+          <motion.p {...appear(0.2)} className="mt-2 truncate font-display text-5xl font-black uppercase leading-none group-hover:text-gold">
+            {player.username}
+          </motion.p>
+          <motion.div {...appear(0.3)} className="mt-4 flex flex-wrap items-center gap-x-6 gap-y-3">
+            <span className="font-display text-4xl font-black text-gold tabular-nums">
+              +<CountUpInView value={player.net} delay={400} /> pts
             </span>
-            <span className="inline-flex items-center gap-2 text-sm text-white/60">
-              <RankEmblem rank={rank} size={22} animated={false} />
+            <span className="inline-flex items-center gap-2 text-sm text-white/70">
+              <RankEmblem rank={rank} size={26} />
               {rank.name}
             </span>
-          </div>
+          </motion.div>
+          {/* Victoires / défaites de la semaine */}
+          <motion.div {...appear(0.4)} className="mt-4 max-w-sm">
+            <div className="flex justify-between font-tech text-[10px] uppercase tracking-[0.2em]">
+              <span className="text-win">{player.wins} V</span>
+              <span className="text-white/45">cette semaine</span>
+              <span className="text-loss">{player.losses} D</span>
+            </div>
+            <div className="mt-1.5 flex h-1.5 overflow-hidden bg-loss/40">
+              <motion.span
+                className="block h-full bg-win"
+                initial={reduce ? false : { width: 0 }}
+                whileInView={{ width: `${winShare}%` }}
+                viewport={{ once: true }}
+                transition={{ duration: 1, delay: 0.6, ease: [0.22, 1, 0.36, 1] }}
+                style={reduce ? { width: `${winShare}%` } : undefined}
+              />
+            </div>
+          </motion.div>
         </div>
       </Link>
     </TacticalCard>
