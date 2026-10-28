@@ -15,6 +15,7 @@ import { TacticalCard } from "../ui/TacticalCard";
 import { Eyebrow, PageHeader, SectionHeading } from "../ui/Typography";
 import { TeamCrest } from "../teams/TeamParts";
 import useDisputedMatch from "../../hooks/useDisputedMatch";
+import useActiveMatch from "../../hooks/useActiveMatch";
 import useLive from "../../hooks/useLive";
 import useSeasons from "../../hooks/useSeasons";
 import useSession from "../../hooks/useSession";
@@ -91,6 +92,8 @@ export function ModesHub() {
   const profile = user?.profile;
   const { label: seasonLabel } = useSeasons();
   const [extra, setExtra] = useState({ position: null, activeMatchId: null });
+  // Match en cours, Classé ou Division (carte du hub ; bandeau fin sur les autres pages).
+  const activeMatch = useActiveMatch();
 
   useEffect(() => {
     if (!user?.id || !profile) return;
@@ -122,7 +125,7 @@ export function ModesHub() {
         description={
           user ? `Content de te revoir, ${user.username}. Classé, Division et Tournoi t'attendent.` : "Recherche & Destruction Hardcore : le classé en solo (2v2 à 5v5), la Division pour les équipes (BO3 4v4) et le tournoi de fin de saison."
         }
-        actions={<HubActions user={user} activeMatchId={extra.activeMatchId} />}
+        actions={<HubActions user={user} hasActiveMatch={Boolean(activeMatch)} />}
       />
 
       <Container className="space-y-16 py-12">
@@ -134,7 +137,7 @@ export function ModesHub() {
             </Link>
           </Notice>
         ) : null}
-        {session && extra.activeMatchId ? <ActiveMatchBanner matchId={extra.activeMatchId} /> : null}
+        {session && activeMatch ? <ActiveMatchBanner kind={activeMatch.kind} matchId={activeMatch.id} /> : null}
 
         {/* Ma saison : Classé et Division du joueur connecté, en une ligne. */}
         {SHOW_MY_SEASON && profile ? <MySeason profile={profile} position={extra.position} /> : null}

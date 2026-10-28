@@ -1,100 +1,94 @@
 import { motion } from "framer-motion";
 import Link from "next/link";
 import { useEffect, useState } from "react";
-import { LuChevronRight, LuMap, LuSwords } from "react-icons/lu";
+import { LuArrowRight, LuMap } from "react-icons/lu";
+import { mapImage } from "../../lib/maps";
 import { supabase } from "../../lib/supabase";
 
-const STATUS = {
-  ready_check: "En attente des joueurs",
+export const MATCH_STEPS = {
+  ready_check: "Match trouvé",
   in_progress: "Partie en cours",
   awaiting_confirmation: "Résultat à confirmer",
+  forfeit_claimed: "Forfait déclaré",
   disputed: "Arbitrage en cours",
 };
 
-/**
- * Bandeau « Match en cours » (hub MW4, page de la file) : impossible à rater, carte animée (point « en direct »,
- * lueur), map, format et étape du match, gros bouton « Retour au combat » (chevrons animés) vers le salon de match.
- */
-export function ActiveMatchBanner({ matchId, text = "Ton salon de match t'attend." }) {
-  const [match, setMatch] = useState(null);
-
+/** Map, format et étape d'un match en cours (Classé : cod_matches ; Division : team_matches, map en cours). */
+export function useMatchSummary(kind, matchId) {
+  const [summary, setSummary] = useState(null);
   useEffect(() => {
     if (!matchId) return undefined;
     let alive = true;
-    supabase
-      .from("cod_matches")
-      .select("id, map, mode, format, status")
-      .eq("id", matchId)
-      .maybeSingle()
-      .then(({ data }) => alive && setMatch(data));
+    const query =
+      kind === "division"
+        ? supabase.from("team_matches").select("id, status, maps, scores, best_of, roster_a").eq("id", matchId).maybeSingle()
+        : supabase.from("cod_matches").select("id, status, map, format").eq("id", matchId).maybeSingle();
+    query.then(({ data }) => {
+      if (!alive || !data) return;
+      if (kind === "division") {
+        const maps = data.maps ?? [];
+        const current = maps[Math.min((data.scores ?? []).length, Math.max(0, maps.length - 1))];
+        const size = (data.roster_a ?? []).length;
+        setSummary({ map: current?.map ?? null, format: `Division${size ? ` ${size}v${size}` : ""} · BO${data.best_of ?? 3}`, status: data.status });
+      } else {
+        setSummary({ map: data.map, format: `Classé${data.format ? ` ${data.format}` : ""}`, status: data.status });
+      }
+    });
     return () => {
       alive = false;
     };
-  }, [matchId]);
+  }, [kind, matchId]);
+  return summary;
+}
 
+export const matchHref = (kind, matchId) => (kind === "division" ? `/cod/equipes/match/${matchId}` : `/cod/match/${matchId}`);
+
+export function LiveDot({ className = "" }) {
+  return (
+    <span className={`relative flex h-2.5 w-2.5 shrink-0 ${className}`}>
+      <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-win opacity-75" />
+      <span className="relative inline-flex h-2.5 w-2.5 rounded-full bg-win" />
+    </span>
+  );
+}
+
+/**
+ * Carte « Match en cours » (hub MW4, page de la file) aux couleurs du mode (vert Classé, cyan Division) : image de la
+ * map en fond, format, map, étape du match et un seul bouton « Retour au match ». `text` : note facultative.
+ */
+export function ActiveMatchBanner({ matchId, kind = "classe", text = null }) {
+  const summary = useMatchSummary(kind, matchId);
   if (!matchId) return null;
-  const href = `/cod/match/${matchId}`;
+  const image = summary?.map ? mapImage(summary.map) : null;
 
   return (
-    <motion.div initial={{ opacity: 0, y: 14 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.45, ease: [0.22, 1, 0.36, 1] }} className="relative">
-      {/* Lueur qui respire derrière la carte */}
-      <motion.div
-        aria-hidden
-        className="pointer-events-none absolute -inset-2 bg-gold/20 blur-2xl"
-        animate={{ opacity: [0.35, 0.8, 0.35] }}
-        transition={{ duration: 2.6, repeat: Infinity, ease: "easeInOut" }}
-      />
-      <Link
-        href={href}
-        className="group relative block overflow-hidden border border-gold/50 bg-linear-to-br from-gold/[0.16] via-ink-800 to-ink clip-tactical [--cut:18px] transition-colors hover:border-gold"
-      >
-        <div aria-hidden className="absolute inset-0 bg-grid opacity-[0.06]" />
-        <div className="relative flex flex-col gap-5 p-5 sm:flex-row sm:items-center sm:justify-between sm:p-6">
-          <div className="flex min-w-0 items-center gap-4">
-            <span className="relative grid h-14 w-14 shrink-0 place-items-center border border-gold/60 bg-ink text-gold">
-              <LuSwords aria-hidden className="h-7 w-7" />
-              <span className="absolute -right-1 -top-1 flex h-3.5 w-3.5">
-                <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-win opacity-75" />
-                <span className="relative inline-flex h-3.5 w-3.5 rounded-full bg-win" />
-              </span>
-            </span>
-            <div className="min-w-0">
-              <p className="flex items-center gap-2 font-tech text-[10px] uppercase tracking-[0.28em] text-win">
-                <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-win" />
-                {match ? STATUS[match.status] ?? "En direct" : "En direct"}
-              </p>
-              <p className="mt-1 font-display text-3xl font-black uppercase leading-none sm:text-4xl">
-                Match <span className="text-gold-gradient">en cours</span>
-              </p>
-              <p className="mt-2 flex flex-wrap items-center gap-x-3 gap-y-1 text-sm text-white/65">
-                {match ? (
-                  <>
-                    <span className="inline-flex items-center gap-1.5 font-semibold text-white/85">
-                      <LuMap aria-hidden className="h-4 w-4 text-gold" />
-                      {match.map}
-                    </span>
-                    {match.format ? <span className="border border-gold/40 px-1.5 py-0.5 font-tech text-[10px] uppercase tracking-[0.2em] text-gold">{match.format}</span> : null}
-                  </>
-                ) : null}
-                <span>{text}</span>
-              </p>
-            </div>
+    <motion.div data-univers={kind === "division" ? "division" : "classe"} initial={{ opacity: 0, y: 14 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.45, ease: [0.22, 1, 0.36, 1] }}>
+      <Link href={matchHref(kind, matchId)} className="group relative block overflow-hidden border border-gold/50 bg-ink-800 clip-tactical [--cut:18px] transition-colors hover:border-gold">
+        {image ? (
+          <div aria-hidden className="absolute inset-0 bg-cover bg-center opacity-35 transition-transform duration-700 group-hover:scale-105" style={{ backgroundImage: `url('${image}')` }} />
+        ) : null}
+        <div aria-hidden className="absolute inset-0 bg-linear-to-r from-ink via-ink/85 to-ink/40" />
+        <div aria-hidden className="absolute inset-y-0 left-0 w-1 bg-gold" />
+        <div className="relative flex flex-col gap-5 p-5 sm:flex-row sm:items-center sm:justify-between sm:p-7">
+          <div className="min-w-0">
+            <p className="flex items-center gap-2 font-tech text-[10px] uppercase tracking-[0.28em] text-gold">
+              <LiveDot />
+              En direct{summary ? ` · ${summary.format}` : ""}
+            </p>
+            <p className="mt-2 flex items-center gap-2 font-display text-4xl font-black uppercase leading-none sm:text-5xl">
+              <LuMap aria-hidden className="h-7 w-7 shrink-0 text-gold" />
+              <span className="truncate">{summary?.map ?? "Match en cours"}</span>
+            </p>
+            <p className="mt-3 flex flex-wrap items-center gap-x-3 gap-y-1 text-sm">
+              {summary ? (
+                <span className="border border-gold/40 bg-gold/10 px-2 py-0.5 font-tech text-[10px] uppercase tracking-[0.2em] text-gold">{MATCH_STEPS[summary.status] ?? "En cours"}</span>
+              ) : null}
+              {text ? <span className="text-white/70">{text}</span> : null}
+            </p>
           </div>
-          <span className="inline-flex shrink-0 items-center justify-center gap-2.5 bg-gold-sheen px-6 py-3.5 font-display text-lg font-black uppercase tracking-[0.12em] text-ink clip-slant">
-            Retour au combat
-            {/* Trois chevrons qui s'allument tour à tour. */}
-            <span aria-hidden className="inline-flex">
-              {[0, 1, 2].map((index) => (
-                <motion.span
-                  key={index}
-                  className={index ? "-ml-2 inline-flex" : "inline-flex"}
-                  animate={{ opacity: [0.2, 1, 0.2] }}
-                  transition={{ duration: 1.2, repeat: Infinity, delay: index * 0.2 }}
-                >
-                  <LuChevronRight className="h-5 w-5" />
-                </motion.span>
-              ))}
-            </span>
+          <span className="inline-flex shrink-0 items-center justify-center gap-2.5 bg-gold px-6 py-3.5 font-display text-lg font-black uppercase tracking-[0.12em] text-ink clip-slant">
+            Retour au match
+            <LuArrowRight aria-hidden className="h-5 w-5 transition-transform group-hover:translate-x-1" />
           </span>
         </div>
       </Link>

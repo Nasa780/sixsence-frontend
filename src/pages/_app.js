@@ -4,6 +4,7 @@ import { useEffect } from "react";
 import { Inter, Orbitron, Saira_Condensed } from "next/font/google";
 import { Footer } from "../components/layout/Footer";
 import { Navbar } from "../components/layout/Navbar";
+import { ActiveMatchBar } from "../components/layout/ActiveMatchBar";
 import { RouteLoader } from "../components/layout/RouteLoader";
 import { ErrorBoundary } from "../components/ui/ErrorBoundary";
 import { GROUPS_ENABLED, MATCH_TEAM_ENABLED, SITE_URL } from "../lib/config";
@@ -98,6 +99,7 @@ export default function App({ Component, pageProps }) {
             Aller au contenu
           </a>
           <Navbar />
+          <ActiveMatchBar />
           <main id="contenu" className="flex-1">
             <ErrorBoundary resetKey={asPath}>
               {teamPaused ? <NotFound /> : <Component {...pageProps} />}

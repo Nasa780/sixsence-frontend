@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { FaDiscord } from "react-icons/fa6";
-import { LuArrowRight, LuCheck, LuCrosshair, LuShield, LuSwords, LuTrophy, LuUser, LuUsers } from "react-icons/lu";
+import { LuArrowRight, LuCheck, LuCrosshair, LuShield, LuTrophy, LuUser, LuUsers } from "react-icons/lu";
 import { api } from "../../lib/api";
 import { signInWithDiscord } from "../../lib/auth";
 import { MATCH_TEAM_ENABLED } from "../../lib/config";
@@ -45,9 +45,10 @@ function remember(userId, state) {
  * Boutons de l'en-tête de la page MW4 : l'action la plus utile du moment, dans cet ordre : match en cours (Classé ou
  * Division), recherche lancée, check-in de la Coupe Horus ouvert pour son équipe, inscription à la prochaine Coupe
  * Horus, sinon « Jouer » dans le dernier mode joué. À côté : Mon équipe (si le joueur en a une) ou Mon profil.
+ * Match en cours (Classé ou Division) : pas de bouton principal, la carte « Match en cours » du hub s'en charge.
  * Visiteur : connexion Discord. Bouton principal à la couleur du mode concerné.
  */
-export function HubActions({ user, activeMatchId = null }) {
+export function HubActions({ user, hasActiveMatch = false }) {
   const [state, setState] = useState(null);
 
   useEffect(() => {
@@ -84,9 +85,8 @@ export function HubActions({ user, activeMatchId = null }) {
   }
   const { queue, play, cup, team, lastMode } = state ?? remembered(user.id) ?? DEFAULT_STATE;
   const viewer = cup?.viewer;
-  let main;
-  if (activeMatchId) main = { href: `/cod/match/${activeMatchId}`, label: "Retour au match", icon: LuSwords, univers: "classe" };
-  else if (play?.activeMatchId) main = { href: `/cod/equipes/match/${play.activeMatchId}`, label: "Retour au match", icon: LuSwords, univers: "division" };
+  let main = null;
+  if (hasActiveMatch || play?.activeMatchId) main = null;
   else if (queue?.inQueue) main = { href: "/cod/ranked", label: `Ma recherche${queue.format ? ` · ${queue.format}` : ""}`, short: "Ma recherche", icon: LuCrosshair, univers: "classe" };
   else if (play?.queued) main = { href: "/cod/division", label: "Recherche en cours", icon: LuShield, univers: "division" };
   else if (viewer?.canCheckIn && !viewer.checkedIn) main = { href: "/cod/tournoi", label: "Faire le check-in", icon: LuCheck, univers: "tournoi" };
@@ -94,23 +94,25 @@ export function HubActions({ user, activeMatchId = null }) {
   else if (MATCH_TEAM_ENABLED && lastMode === "division" && team) main = { href: "/cod/division", label: "Jouer en Division", icon: LuShield, univers: "division" };
   else main = { href: "/cod/ranked", label: "Jouer en Classé", icon: LuCrosshair, univers: "classe" };
 
-  const Icon = main.icon;
+  const Icon = main?.icon;
   return (
     <>
-      <span data-univers={main.univers} className="contents">
-        <ButtonLink href={main.href} size="lg">
-          <Icon aria-hidden className="h-5 w-5" />
-          {main.short ? (
-            <>
-              <span className="sm:hidden">{main.short}</span>
-              <span className="hidden sm:inline">{main.label}</span>
-            </>
-          ) : (
-            main.label
-          )}
-          <LuArrowRight aria-hidden className="h-5 w-5" />
-        </ButtonLink>
-      </span>
+      {main ? (
+        <span data-univers={main.univers} className="contents">
+          <ButtonLink href={main.href} size="lg">
+            <Icon aria-hidden className="h-5 w-5" />
+            {main.short ? (
+              <>
+                <span className="sm:hidden">{main.short}</span>
+                <span className="hidden sm:inline">{main.label}</span>
+              </>
+            ) : (
+              main.label
+            )}
+            <LuArrowRight aria-hidden className="h-5 w-5" />
+          </ButtonLink>
+        </span>
+      ) : null}
       {team ? (
         <ButtonLink href="/cod/equipe" size="lg" variant="outline">
           <LuUsers aria-hidden className="h-5 w-5" />
