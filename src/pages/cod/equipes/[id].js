@@ -7,6 +7,7 @@ import { TeamHero, useTeamInsights } from "../../../components/teams/TeamOvervie
 import { MemberRow, RosterHeading } from "../../../components/teams/TeamParts";
 import { TeamTrophyCase } from "../../../components/teams/TeamTrophyCase";
 import { RecruitingBanner, TeamStrength } from "../../../components/teams/TeamExtras";
+import { cn } from "../../../lib/cn";
 import { TeamMatchHistory } from "../../../components/teams/TeamMatchHistory";
 import { TeamStats } from "../../../components/teams/TeamStats";
 import { ChallengeButton } from "../../../components/teams/Challenges";
@@ -190,12 +191,13 @@ function TeamSheet() {
       <Container className="space-y-10 py-12">
         {message ? <Notice tone={message.tone}>{message.text}</Notice> : null}
 
-        {/* À propos d'abord, puis l'effectif. */}
+        {/* À propos d'abord (seulement avec une description ou des réseaux), puis l'effectif. */}
+        {team.description || socials.length > 0 ? (
         <TacticalCard innerClassName="p-6">
           <Eyebrow>À propos</Eyebrow>
-          <p className="mt-4 whitespace-pre-line text-sm leading-relaxed text-white/65">{team.description || "Cette équipe n'a pas encore de description."}</p>
+          {team.description ? <p className="mt-4 whitespace-pre-line text-sm leading-relaxed text-white/65">{team.description}</p> : null}
           {socials.length > 0 ? (
-            <ul className="mt-5 flex flex-wrap gap-2">
+            <ul className={cn("flex flex-wrap gap-2", team.description ? "mt-5" : "mt-4")}>
               {socials.map((social) => (
                 <li key={social.key}>
                   <a
@@ -211,6 +213,7 @@ function TeamSheet() {
             </ul>
           ) : null}
         </TacticalCard>
+        ) : null}
 
         {/* Force de l'équipe, et recrutement ouvert avec le message des Leaders. */}
         {team.disbanded ? null : (
