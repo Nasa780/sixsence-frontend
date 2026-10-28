@@ -1,3 +1,4 @@
+import { READY_REQUIRED } from "./config";
 /**
  * Questions fréquentes (page /faq) : thème, question, réponse courte. `id` sert de lien direct (/faq#id) ;
  * `guide` affiche la marche à suivre d'installation (InstallGuide) sous la réponse. Garder les chiffres alignés
@@ -32,7 +33,8 @@ export const FAQ = [
   { id: "mvp", theme: "classe", q: "Comment est choisi le MVP ?", a: "Chaque joueur vote dans les 24 h pour un joueur de l'équipe gagnante. Le plus élu du mois reçoit le badge MVP du mois." },
   { id: "xp", theme: "classe", q: "À quoi sert l'XP ?", a: "+500 XP par victoire, +150 par défaite. Elle ne change pas ton rang et reste d'une saison à l'autre." },
   { id: "fin-saison", theme: "classe", q: "Que se passe-t-il à la fin de la saison ?", a: "Le classement est archivé, les points repartent à zéro et l'XP est gardée. Cartes de saison : Participant, Top 10 et Champion." },
-  { id: "avertissements", theme: "classe", q: "Que valent les avertissements ?", a: "Sur 24 h glissantes : le 1er ne fait rien, le 2e bloque la file 15 minutes, le 3e 1 heure, puis 24 heures." },
+  // Avertissements de la file (match non accepté) : seulement avec le « Prêt ? » obligatoire (READY_REQUIRED).
+  READY_REQUIRED && { id: "avertissements", theme: "classe", q: "Que valent les avertissements ?", a: "Sur 24 h glissantes : le 1er ne fait rien, le 2e bloque la file 15 minutes, le 3e 1 heure, puis 24 heures." },
 
   // --- Division ---
   { id: "creer-equipe", theme: "division", q: "Comment créer ou rejoindre une équipe ?", a: "Avec ton Discord et ton identifiant Activision liés, crée la tienne ou candidate depuis la fiche d'une équipe. Un Leader peut aussi t'inviter par lien." },
@@ -60,4 +62,4 @@ export const FAQ = [
   { id: "contester", theme: "souci", q: "L'autre équipe a déclaré un faux résultat.", a: "Conteste depuis la feuille de match et ajoute tes captures : un arbitre tranche." },
   { id: "triche", theme: "souci", q: "Un joueur triche ou ne respecte pas les règles.", a: "Signale-le depuis la feuille de match avec une capture, ou ouvre un ticket « Signalement » sur Discord." },
   { id: "bug", theme: "souci", q: "J'ai trouvé un bug.", a: "Ouvre un ticket « Bug » sur Discord avec une capture et ce que tu faisais : on corrige vite." },
-];
+].filter(Boolean);

@@ -9,6 +9,7 @@ import { Button } from "../ui/Button";
 import { Chip, EmptyState, Loading, Notice } from "../ui/Feedback";
 import { Portal } from "../ui/Portal";
 import { SearchInput } from "./Fields";
+import { READY_REQUIRED } from "../../lib/config";
 
 /** Types de sanction proposés au staff (mêmes codes que le backend). */
 const TYPES = [
@@ -324,7 +325,8 @@ export function SanctionsPanel() {
 
   return (
     <div className="space-y-5">
-      <MissedReady />
+      {/* « Prêt ? » manqués : seulement avec le « Prêt ? » obligatoire (READY_REQUIRED), bloc gardé de côté. */}
+      {READY_REQUIRED ? <MissedReady /> : null}
       <SearchInput value={query} onChange={setQuery} label="Rechercher un joueur" placeholder="Rechercher un pseudo Discord…" />
       {players === null ? (
         <Loading />

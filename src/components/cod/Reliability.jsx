@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import { LuShieldCheck } from "react-icons/lu";
 import { api } from "../../lib/api";
 import { TacticalCard } from "../ui/TacticalCard";
+import { READY_REQUIRED } from "../../lib/config";
 
 const LEVEL = {
   excellent: { label: "Excellente", color: "#34d399" },
@@ -33,7 +34,7 @@ export function Reliability({ playerId }) {
   const circumference = 2 * Math.PI * radius;
   const items = [
     ["Matchs propres", data.details.clean, "text-win"],
-    ["Avertissements (« Prêt ? » manqué…)", data.details.warnings, data.details.warnings ? "text-loss" : "text-white/40"],
+    [READY_REQUIRED ? "Avertissements (« Prêt ? » manqué…)" : "Avertissements", data.details.warnings, data.details.warnings ? "text-loss" : "text-white/40"],
     ["Forfaits perdus", data.details.forfeits, data.details.forfeits ? "text-loss" : "text-white/40"],
     ["Résultats corrigés contre", data.details.corrected, data.details.corrected ? "text-loss" : "text-white/40"],
   ];
