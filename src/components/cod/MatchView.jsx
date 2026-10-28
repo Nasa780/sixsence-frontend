@@ -6,6 +6,7 @@ import useCountdown from "../../hooks/useCountdown";
 import useSession from "../../hooks/useSession";
 import useUser from "../../hooks/useUser";
 import { api } from "../../lib/api";
+import { READY_REQUIRED } from "../../lib/config";
 import { cn } from "../../lib/cn";
 import { ARBITRATION_REASONS, REPORT_REASONS } from "../../lib/moderation";
 import { groupLabel, rankFor, rankGradient } from "../../lib/ranks";
@@ -806,7 +807,7 @@ function TeamColumn({ team, match, ids, stakes = null, playerById, currentUserId
                       {groupLabel(groupSize)}
                     </span>
                   ) : null}
-                  {match.status === "ready_check" ? (
+                  {match.status === "ready_check" && READY_REQUIRED ? (
                     <Chip tone={readyUsers.includes(id) ? "win" : "neutral"} className="shrink-0">
                       {readyUsers.includes(id) ? "Prêt" : "En attente"}
                     </Chip>
@@ -948,6 +949,18 @@ function ReadyCheckBlock({ match, isPlayer, iAmReady, pending, onAccept, signedI
   const left = useCountdown(match.ready_deadline);
   const total = match.team_a.length + match.team_b.length;
   const accepted = (match.ready_users || []).length;
+
+  // « Prêt ? » facultatif : seulement le compte à rebours, le match démarre tout seul.
+  if (!READY_REQUIRED) {
+    return (
+      <TacticalCard highlight cut={20} innerClassName="p-6">
+        <p className="font-display text-2xl font-black uppercase tracking-wide">
+          Lancement dans <span className="font-tech tabular-nums text-gold">{Math.ceil(left)} s</span>
+        </p>
+        <p className="mt-1 text-sm text-white/60">Match trouvé : la partie démarre toute seule à la fin du compte à rebours. Prépare-toi et rejoins le vocal.</p>
+      </TacticalCard>
+    );
+  }
 
   return (
     <TacticalCard highlight cut={20} innerClassName="flex flex-col gap-5 p-6 sm:flex-row sm:items-center sm:justify-between">

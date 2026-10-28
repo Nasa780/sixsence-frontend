@@ -17,6 +17,7 @@ import useSession from "../../../../hooks/useSession";
 import { MatchRulesCard } from "../../../../components/cod/MatchRules";
 import { api } from "../../../../lib/api";
 import { cn } from "../../../../lib/cn";
+import { mapImage } from "../../../../lib/maps";
 import { rankFor, rankGradient } from "../../../../lib/ranks";
 import { supabase } from "../../../../lib/supabase";
 
@@ -245,7 +246,16 @@ function MapCard({ index, match, name }) {
 
   return (
     <TacticalCard highlight={decider && !map && !decided && match.scores.length === match.bestOf - 1} innerClassName={cn("overflow-hidden p-5", decided && "opacity-50")}>
-      {map ? <div aria-hidden className="absolute inset-0 bg-[url('/images/mw4.webp')] bg-cover bg-center opacity-15" /> : <div aria-hidden className="absolute inset-0 bg-grid opacity-40" />}
+      {/* Fond : l'image de la map (MW4 générique si la map n'a pas d'image), assombrie pour garder le score lisible. */}
+      {map ? (
+        <>
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img aria-hidden src={mapImage(map.map) ?? "/images/mw4.webp"} alt="" loading="lazy" className="absolute inset-0 h-full w-full object-cover opacity-45" />
+          <div aria-hidden className="absolute inset-0 bg-linear-to-t from-ink via-ink/70 to-ink/30" />
+        </>
+      ) : (
+        <div aria-hidden className="absolute inset-0 bg-grid opacity-40" />
+      )}
       <div className="relative">
         <p className="font-tech text-[10px] uppercase tracking-[0.24em] text-white/45">
           Map {index + 1} · {pick}

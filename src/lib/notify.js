@@ -1,3 +1,4 @@
+import { READY_REQUIRED } from "./config";
 /**
  * Alertes « Match trouvé » : son, notification du navigateur et titre d'onglet
  * qui clignote, pour prévenir le joueur même si l'onglet est en arrière-plan.
@@ -293,7 +294,7 @@ export function alertMatchFound({ map, mode, deadline }) {
   if (typeof window !== "undefined" && "Notification" in window && Notification.permission === "granted" && document.hidden) {
     try {
       const notification = new Notification("Match trouvé sur SixSence", {
-        body: `${map} · ${mode} — accepte dans la minute !`,
+        body: READY_REQUIRED ? `${map} · ${mode} — accepte dans la minute !` : `${map} · ${mode} — lancement dans 1 min !`,
         icon: "/icons/icon-192-v2.png",
         tag: "sixsence-match",
         requireInteraction: true,
