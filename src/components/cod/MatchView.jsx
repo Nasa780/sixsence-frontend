@@ -641,8 +641,8 @@ export function MatchView({ matchId }) {
         </TacticalCard>
       )}
 
-      {/* Réglages de la partie privée, en bas : seulement pour l'équipe hôte (équipe 1, l'hôte en est le premier joueur), comme en Division. */}
-      {match.status === "in_progress" && myTeam === "A" ? <MatchRulesCard bestOf={1} isHost /> : null}
+      {/* Réglages de la partie privée, en bas : seulement pour l'hôte (premier joueur de l'équipe 1). */}
+      {match.status === "in_progress" && match.team_a[0] === userId ? <MatchRulesCard bestOf={1} isHost /> : null}
     </div>
   );
 }
@@ -670,8 +670,6 @@ function KickoffBlock({ data, userId, myTeam, hostName, playerById, onDone }) {
   const votes = match.cancel_votes || [];
   const voteOpen = Boolean(myTeam && data.launchDeadline && launchLeft <= 0);
   const iVoted = votes.includes(userId);
-  const countIn = (team) => team.filter((id) => votes.includes(id)).length;
-  const needIn = (team) => Math.ceil(team.length / 2);
 
   async function run(key, path, body) {
     setPending(key);
@@ -809,20 +807,25 @@ function KickoffBlock({ data, userId, myTeam, hostName, playerById, onDone }) {
       {/* Après les 15 min : vote d'annulation et signalement d'un absent (joueurs du match). */}
       {voteOpen ? (
         <div className="space-y-4 border-t border-white/10 pt-5">
-          <div className="flex flex-wrap items-center justify-between gap-4">
-            <div className="min-w-0">
-              <p className="font-display text-xl font-black uppercase leading-none">Annuler le match ?</p>
-              <p className="mt-1.5 text-sm text-white/55">
-                Annulé (aucun point perdu) si au moins la moitié des joueurs de chaque équipe vote pour.{" "}
-                <span className="text-white/80">
-                  Équipe 1 : {countIn(match.team_a)}/{needIn(match.team_a)} · Équipe 2 : {countIn(match.team_b)}/{needIn(match.team_b)}
-                </span>
-              </p>
+          <div className="border border-loss/30 bg-loss/[0.04] p-4 sm:p-5">
+            <div className="flex flex-wrap items-start justify-between gap-3">
+              <div className="min-w-0">
+                <p className="flex items-center gap-2 font-display text-xl font-black uppercase leading-none">
+                  <LuBan aria-hidden className="h-5 w-5 text-loss" />
+                  Vote d&apos;annulation
+                </p>
+                <p className="mt-1.5 text-sm text-white/55">Le match est annulé, sans point perdu, quand les deux équipes ont atteint leur nombre de votes.</p>
+              </div>
+              <Button variant={iVoted ? "outline" : "danger"} size="sm" disabled={pending !== null} onClick={() => run("vote", "cancel-vote", { vote: !iVoted })} className="shrink-0">
+                {pending === "vote" ? <LuLoaderCircle aria-hidden className="h-4 w-4 animate-spin" /> : iVoted ? <LuX aria-hidden className="h-4 w-4" /> : <LuBan aria-hidden className="h-4 w-4" />}
+                {iVoted ? "Retirer mon vote" : "Voter l'annulation"}
+              </Button>
             </div>
-            <Button variant={iVoted ? "outline" : "danger"} size="sm" disabled={pending !== null} onClick={() => run("vote", "cancel-vote", { vote: !iVoted })}>
-              {pending === "vote" ? <LuLoaderCircle aria-hidden className="h-4 w-4 animate-spin" /> : iVoted ? <LuX aria-hidden className="h-4 w-4" /> : <LuBan aria-hidden className="h-4 w-4" />}
-              {iVoted ? "Retirer mon vote" : "Voter l'annulation"}
-            </Button>
+            <div className="mt-4 grid gap-3 sm:grid-cols-2">
+              <VoteTeam label="Équipe 1" ids={match.team_a} votes={votes} playerById={playerById} userId={userId} />
+              <VoteTeam label="Équipe 2" ids={match.team_b} votes={votes} playerById={playerById} userId={userId} />
+            </div>
+            <p className="mt-3 text-sm text-white/70">{voteStatus(match, votes)}</p>
           </div>
           <div className="flex flex-col gap-2 sm:flex-row sm:items-center">
             <p className="text-sm text-white/55 sm:mr-auto">Un joueur n&apos;a pas rejoint la partie ? Un arbitre tranche et peut le sanctionner.</p>
@@ -852,6 +855,66 @@ function KickoffBlock({ data, userId, myTeam, hostName, playerById, onDone }) {
       {error ? <Notice tone="error">{error}</Notice> : null}
       <p className="text-xs text-white/40">Une fois le match joué, n&apos;importe quel joueur déclare le vainqueur ; l&apos;équipe adverse confirme.</p>
     </TacticalCard>
+  );
+}
+
+/** Votes requis dans une équipe : au moins la moitié, arrondie au-dessus (1 sur 2, 2 sur 3, 2 sur 4, 3 sur 5). */
+const votesNeeded = (team) => Math.ceil(team.length / 2);
+
+/** Ce qu'il manque pour annuler : « Il manque 1 vote de l'Équipe 2 », etc. */
+function voteStatus(match, votes) {
+  const missing = [
+    ["Équipe 1", match.team_a],
+    ["Équipe 2", match.team_b],
+  ]
+    .map(([label, team]) => [label, votesNeeded(team) - team.filter((id) => votes.includes(id)).length])
+    .filter(([, count]) => count > 0)
+    .map(([label, count]) => `${count} vote${count > 1 ? "s" : ""} de l'${label}`);
+  return missing.length ? `Il manque ${missing.join(" et ")}.` : "Nombre de votes atteint : annulation en cours.";
+}
+
+/** Une équipe dans le vote d'annulation : jauge des votes requis, puis chaque joueur (pour, ou pas encore voté). */
+function VoteTeam({ label, ids, votes, playerById, userId }) {
+  const need = votesNeeded(ids);
+  const got = ids.filter((id) => votes.includes(id)).length;
+  const done = got >= need;
+  return (
+    <div className={cn("border p-3", done ? "border-loss/50 bg-loss/10" : "border-white/10 bg-ink/40")}>
+      <div className="flex items-baseline justify-between gap-2">
+        <p className="font-display text-lg font-black uppercase leading-none">{label}</p>
+        <p className={cn("font-tech text-xs tabular-nums", done ? "text-loss" : "text-white/60")}>
+          {got} / {need} requis{done ? " ✓" : ""}
+        </p>
+      </div>
+      <div aria-hidden className="mt-2 flex gap-1">
+        {Array.from({ length: need }, (_, index) => (
+          <span key={index} className={cn("h-1.5 flex-1 transition-colors", index < got ? "bg-loss" : "bg-white/10")} />
+        ))}
+      </div>
+      <ul className="mt-3 space-y-1.5">
+        {ids.map((id) => {
+          const player = playerById.get(id);
+          const voted = votes.includes(id);
+          return (
+            <li key={id} className="flex items-center gap-2 text-sm">
+              <Avatar src={player?.avatar_url} name={player?.username ?? "?"} size={22} />
+              <span className={cn("min-w-0 flex-1 truncate", voted ? "text-white" : "text-white/45")}>
+                {player?.username ?? "?"}
+                {id === userId ? <span className="text-white/40"> (toi)</span> : null}
+              </span>
+              {voted ? (
+                <span className="inline-flex shrink-0 items-center gap-1 font-tech text-[10px] uppercase tracking-[0.18em] text-loss">
+                  <LuCheck aria-hidden className="h-3.5 w-3.5" />
+                  Pour
+                </span>
+              ) : (
+                <span className="shrink-0 font-tech text-[10px] uppercase tracking-[0.18em] text-white/30">En attente</span>
+              )}
+            </li>
+          );
+        })}
+      </ul>
+    </div>
   );
 }
 
