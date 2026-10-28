@@ -225,7 +225,7 @@ function DIVISION_SECTIONS() {
             Check-in individuel entre <strong>2 h et 15 minutes</strong> avant le début : seuls les joueurs présents sont répartis, et les équipes sont dévoilées 15 minutes avant les premiers matchs.
           </li>
           <li>
-            Les équipes sont <strong>tirées au sort</strong> à la taille annoncée (2, 3 ou 4 joueurs). Le joueur le mieux classé de chaque
+            Les équipes sont <strong>tirées au sort</strong> à la taille annoncée (2 à 5 joueurs). Le joueur le mieux classé de chaque
             équipe est capitaine ; les joueurs en trop deviennent remplaçants (un par équipe au plus), le capitaine peut les faire entrer
             entre deux matchs. Moins de 4 équipes complètes : coupe annulée.
           </li>
