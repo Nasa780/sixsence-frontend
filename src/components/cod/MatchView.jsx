@@ -253,6 +253,9 @@ export function MatchView({ matchId }) {
     previousStatus.current = current.status;
     const mine = current.team_a.includes(userId) || current.team_b.includes(userId);
     if (!mine || current.status !== "cancelled") return;
+    // Annulé par le vote des joueurs : pas de retour automatique en file (les mêmes joueurs se retrouveraient aussitôt
+    // dans un nouveau match) ; la feuille propose « On relance ? ».
+    if (current.cancel_reason === "vote") return;
     const at = current.cancel_reason === "ready_check_failed" ? current.ready_deadline : current.completed_at;
     const recent = at && Date.now() - new Date(at).getTime() < 2 * 60_000;
     const live = before && before !== "cancelled";
