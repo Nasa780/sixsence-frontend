@@ -24,7 +24,7 @@ export const isCustomPoster = (url) => Boolean(url && url.includes("/storage/v1/
 
 /** Aperçu de l'affiche générée, pour le formulaire de l'admin (mêmes paramètres que le backend). */
 export function generatedPoster({ kind, name, size, bestOf, bracket, teamSize }) {
-  const players = kind === "anubis" ? teamSize : 4;
+  const players = teamSize ?? 4;
   const params = new URLSearchParams({
     kind,
     name: (name || "Coupe").slice(0, 60),

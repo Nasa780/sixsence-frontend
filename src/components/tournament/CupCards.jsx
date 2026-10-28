@@ -35,7 +35,7 @@ export function cupStatus(cup, now = Date.now()) {
 
 /** Format en pastilles : 4v4, élimination, BO, places. */
 function formatChips(cup) {
-  const players = cup.kind === "anubis" ? cup.teamSize : null;
+  const players = cup.teamSize ?? null;
   return [
     players ? [LuUsers, `${players}v${players}`] : null,
     [LuSwords, cup.bracket === "double" ? "Double" : "Simple"],
