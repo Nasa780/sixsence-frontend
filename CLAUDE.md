@@ -48,7 +48,7 @@ Utilitaires maison dans `globals.css` : `clip-tactical`, `clip-slant`, `clip-cor
 - Tout le site est **public** ; la connexion Discord n'est exigée que pour la file, son propre profil, le vote et le chat de match, et l'inscription aux événements.
 - Le navigateur **lit** Supabase (RLS en lecture publique) ; toutes les **écritures** passent par le backend (`lib/api.js`). Seule exception : `activision_id` et `platform` de son propre profil.
 - Barème calculé par le backend (`cod_points_preview`) : rangs tous les 300 points (Bronze 0 … Champion 2100), puis Légende à 3000 ; victoire +50 pour tous ; défaite Bronze -15, Argent -20, Or -25, Platine -30, Diamant -35, -50 dès Maître, -25 % pour un joueur seul ; placement : 10 premiers matchs de la saison, victoires doublées (+100) ; XP : +500 par victoire, +150 par défaite (`WIN_XP`, `LOSS_XP`, migration 0024). Le site affiche les points en jeu reçus du backend (`PointsAtStake`) ; garder les textes et `lib/ranks.js` alignés sur la migration 0013.
-- Match trouvé : vérification « Prêt ? » d'une minute (`COD_READY_SECONDS` côté backend). Les preuves (captures) sont envoyées dans le bucket Storage `match-proofs` puis enregistrées par `POST /cod/matches/:id/proofs`.
+- Match trouvé : vérification « Prêt ? » d'une minute (`COD_READY_SECONDS` côté backend). Option « Prêt automatique » sur la page de la file (`AutoReady` de QueuePanel, `POST /cod/auto-ready`, `cod_profiles.auto_ready`) : le serveur accepte tout seul. Les preuves (captures) sont envoyées dans le bucket Storage `match-proofs` puis enregistrées par `POST /cod/matches/:id/proofs`.
 - Ne jamais mettre la clé secrète Supabase dans le frontend.
 - Une vérification automatique (`.github/workflows/ci.yml`) construit le site à chaque PR.
 

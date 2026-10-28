@@ -6,6 +6,13 @@
 export const RELEASES = [
   {
     date: "2026-10-28",
+    title: "Prêt automatique",
+    items: [
+      { tag: "Classé", text: "Nouvelle option « Prêt automatique » sur la page de la file : ton « Prêt ? » est accepté tout seul dès qu'un match est trouvé.", href: "/cod/ranked" },
+    ],
+  },
+  {
+    date: "2026-10-28",
     title: "Bande en direct",
     items: [
       { tag: "Site", text: "Accueil : une bande défile en bas de l'écran, avec ce qui se passe en direct, sinon la fin de saison, les leaders, le dernier match et ce qui arrive." },

@@ -7,6 +7,7 @@ import useCountdown from "../../hooks/useCountdown";
 import useDisputedMatch from "../../hooks/useDisputedMatch";
 import useQueueSocket from "../../hooks/useQueueSocket";
 import { api } from "../../lib/api";
+import { supabase } from "../../lib/supabase";
 import { cn } from "../../lib/cn";
 import { isPermanentBan } from "../../lib/roles";
 import {
@@ -341,6 +342,7 @@ export function QueuePanel({ profileComplete, userId }) {
             )}
             <SoundControls />
           </div>
+          <AutoReady userId={userId} />
 
           <p className="mt-4 text-xs text-white/45">
             Une victoire rapporte <span className="text-white/70">de 40 à 60 pts</span> selon le niveau des deux équipes (le double pendant tes 10
@@ -458,6 +460,63 @@ function useElapsedSeconds(since) {
 }
 
 /** Couper / réactiver le son, et l'essayer (débloque aussi le son du navigateur). */
+/**
+ * Option « Prêt automatique » (POST /cod/auto-ready, cod_profiles.auto_ready) : quand un match est trouvé, le serveur
+ * accepte le « Prêt ? » tout seul, même site fermé. Lue dans le profil public du joueur.
+ */
+export function AutoReady({ userId }) {
+  const [on, setOn] = useState(null);
+  const [saving, setSaving] = useState(false);
+  useEffect(() => {
+    if (!userId) return undefined;
+    let alive = true;
+    supabase
+      .from("cod_profiles")
+      .select("auto_ready")
+      .eq("user_id", userId)
+      .maybeSingle()
+      .then(({ data }) => alive && setOn(Boolean(data?.auto_ready)));
+    return () => {
+      alive = false;
+    };
+  }, [userId]);
+  if (on === null) return null;
+
+  async function toggle() {
+    const next = !on;
+    setSaving(true);
+    setOn(next);
+    try {
+      await api("/cod/auto-ready", { method: "POST", body: { on: next } });
+    } catch {
+      setOn(!next);
+    } finally {
+      setSaving(false);
+    }
+  }
+
+  return (
+    <button
+      type="button"
+      role="switch"
+      aria-checked={on}
+      onClick={toggle}
+      disabled={saving}
+      className={cn("mt-4 flex w-full items-start gap-3 border px-4 py-3 text-left transition-colors sm:w-auto", on ? "border-gold/50 bg-gold/[0.07]" : "border-white/10 bg-white/[0.02] hover:border-white/25")}
+    >
+      <span aria-hidden className={cn("relative mt-0.5 h-5 w-9 shrink-0 rounded-full transition-colors", on ? "bg-gold" : "bg-white/15")}>
+        <span className={cn("absolute top-0.5 h-4 w-4 rounded-full bg-ink transition-all", on ? "left-[1.1rem]" : "left-0.5")} />
+      </span>
+      <span>
+        <span className="block font-display text-base font-black uppercase tracking-wide">Prêt automatique</span>
+        <span className="block text-xs text-white/50">
+          {on ? "Activé : quand un match est trouvé, tu es mis prêt tout seul, même si tu n'es pas devant l'écran. Rejoins vite le vocal !" : "Accepte le « Prêt ? » à ta place dès qu'un match est trouvé : plus d'oubli, plus d'avertissement."}
+        </span>
+      </span>
+    </button>
+  );
+}
+
 function SoundControls() {
   const [muted, setMuted] = useState(false);
   useEffect(() => setMuted(isSoundMuted()), []);
