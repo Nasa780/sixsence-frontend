@@ -262,7 +262,7 @@ const SECTIONS = [
     content: (
       <>
         <p>
-          L&apos;hôte crée la partie en mode <strong>Call of Duty League : R&amp;D</strong> et change uniquement les réglages en or, onglet par
+          L&apos;hôte crée la partie en mode <strong>CDL Recherche et destruction</strong> et change uniquement les réglages en or, onglet par
           onglet, comme dans le menu « Règles du jeu ». Le <strong>Mode hôte</strong>, facultatif, en fait une liste à cocher ; il est aussi
           disponible sur la feuille de match.
         </p>

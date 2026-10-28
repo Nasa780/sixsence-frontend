@@ -894,7 +894,7 @@ function KickoffBlock({ match, name, onDone }) {
             </p>
             <p className="mt-1.5 text-sm text-white/60">
               {isHost
-                ? "Crée la partie privée (Recherche & Destruction Hardcore), puis donne son code ci-dessous."
+                ? "Crée la partie privée en mode CDL Recherche et destruction, puis donne son code ci-dessous."
                 : viewer?.side
                   ? "L'équipe hôte crée la partie privée et donne son code ici : rejoins-la dès qu'il apparaît."
                   : "L'équipe hôte crée la partie privée et donne son code aux deux équipes."}

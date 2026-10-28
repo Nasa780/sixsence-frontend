@@ -20,7 +20,7 @@ const RULES = [
   { title: "30 minutes de recherche", text: "Après 25 min de recherche, tu as 5 min pour cliquer sur « Rester en file » avant d'être retiré de la file (recherche limitée à 30 min)." },
   { title: "Recherche & Destruction Hardcore", text: "Toutes les files se jouent en R&D Hardcore, en partie privée." },
   { title: "Équipes et carte au hasard", text: "Les joueurs sont répartis au hasard entre les deux équipes, et la carte est tirée au sort." },
-  { title: "L'hôte crée la partie", text: "Le premier joueur de l'équipe 1 crée la partie privée en R&D Hardcore et invite les autres." },
+  { title: "L'hôte crée la partie", text: "Le premier joueur de l'équipe 1 crée la partie privée en mode CDL Recherche et destruction et partage son code." },
   { title: "Le résultat se confirme à deux", text: "Une fois ton match déclaré, tes points s'actualisent dès la confirmation adverse. Sans réponse sous 15 minutes, le résultat est validé par défaut. En cas de litige ou de contestation, un arbitre tranche." },
   { title: "Engagement", text: "Un match non accepté dans les 60 secondes donne un avertissement. Sur 24 heures, chaque nouvel oubli t'exclut de la file : 15 minutes au 2e, 1 heure au 3e, et 24 heures au-delà." },
 ];

@@ -70,7 +70,7 @@ export function MatchSettings({ bestOf: fixedBestOf = null }) {
   return (
     <div>
       <p className="text-sm text-white/60">
-        Mode <strong className="text-white">Call of Duty League : R&amp;D</strong>, {roundsToWin(bestOf)} manches à gagner. Seuls les{" "}
+        Mode <strong className="text-white">CDL Recherche et destruction</strong>, {roundsToWin(bestOf)} manches à gagner. Seuls les{" "}
         <span className="text-gold">{toSet.length} réglages en or</span> changent : tout le reste reste par défaut.
       </p>
 
