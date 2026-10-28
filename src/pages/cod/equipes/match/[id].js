@@ -100,7 +100,8 @@ export default function TeamMatchPage() {
         </TacticalCard>
 
         <MatchNotices match={match} name={name} />
-        {match.status === "in_progress" && match.viewer?.side ? <MatchRulesCard bestOf={match.bestOf} isHost={match.viewer.side === match.hostSide} /> : null}
+        {/* Réglages de la partie privée : seulement pour l'équipe hôte. */}
+        {match.status === "in_progress" && match.viewer?.side && match.viewer.side === match.hostSide ? <MatchRulesCard bestOf={match.bestOf} isHost /> : null}
 
         {match.status === "in_progress" && match.scores.length === 0 && !match.pendingScores ? <KickoffBlock match={match} name={name} onDone={load} /> : null}
         {match.status === "forfeit_claimed" ? <ForfeitBlock match={match} name={name} onDone={load} /> : null}
