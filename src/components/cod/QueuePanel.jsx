@@ -549,8 +549,10 @@ export function ReadyCheckOverlay({ check, started, userId }) {
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
           exit={{ opacity: 0 }}
-          className="fixed inset-0 z-[80] flex items-center justify-center overflow-hidden bg-ink/95 px-4 backdrop-blur-md"
+          transition={{ duration: 0.12 }}
+          className="fixed inset-0 z-[80] flex items-center justify-center overflow-hidden bg-ink px-4"
         >
+          {/* Fond entièrement opaque : la page derrière (tableau des équipes de la feuille de match) ne doit pas transparaître. */}
           {/* Fond : l'image de la map tirée au sort (Kenburns lent), assombrie pour garder le texte lisible. */}
           {check?.map && mapImage(check.map) ? (
             <>
