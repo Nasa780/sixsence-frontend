@@ -367,12 +367,12 @@ const CUP_TEXT = {
   horus: {
     eyebrow: "Coupes d'équipe à inscription libre",
     title: "Coupe Horus",
-    rewards: "Chaque rendez-vous actif ouvre sa prochaine coupe tout seul. Or +150 · argent +100 · bronze +75 · autres présentes +50.",
+    lines: ["Si les coupes automatiques sont activées, chaque rendez-vous ouvre sa coupe tout seul, chaque semaine.", "Points de Division gagnés : 1er +150, 2e +100, 3e +75, les autres équipes présentes +50."],
   },
   anubis: {
     eyebrow: "Inscription solo, équipes tirées au sort",
     title: "Coupe Anubis",
-    rewards: "Médailles or, argent et bronze sur le profil ; pas de points.",
+    lines: ["Si les coupes automatiques sont activées, chaque rendez-vous ouvre sa coupe tout seul, chaque semaine.", "Récompenses : médailles d'or, d'argent et de bronze sur le profil des joueurs (pas de points)."],
   },
 };
 
@@ -479,12 +479,17 @@ function CupPanel({ kind }) {
           </h2>
         </div>
         {anubis ? null : <Button variant={state.auto ? "primary" : "outline"} disabled={pending !== null} onClick={() => run("auto", () => api("/admin/cups/auto", { method: "POST", body: { on: !state.auto } }), state.auto ? "Coupes automatiques désactivées." : "Coupes automatiques activées.")}>
-          {state.auto ? "Trophées automatiques : activés" : "Trophées automatiques : désactivés"}
+          {state.auto ? "Coupes automatiques : activées" : "Coupes automatiques : désactivées"}
         </Button>}
       </div>
-      <p className="text-sm text-white/55">
-        {CUP_TEXT[kind].rewards}
-      </p>
+      <ul className="space-y-1 text-sm text-white/60">
+        {CUP_TEXT[kind].lines.map((line) => (
+          <li key={line} className="flex gap-2">
+            <span aria-hidden className="mt-2 h-1 w-1 shrink-0 bg-gold" />
+            {line}
+          </li>
+        ))}
+      </ul>
       {error ? <Notice tone="error">{error}</Notice> : null}
       {message ? <Notice tone="success">{message}</Notice> : null}
 
