@@ -260,6 +260,50 @@ export function SanctionHistory({ player, refreshKey = 0, onChange }) {
 }
 
 /** Onglet « Sanctions » : rechercher un joueur, voir son historique, le sanctionner. */
+/** Derniers « Prêt ? » manqués (GET /admin/missed-ready) : joueur, match, date, nombre de manqués sur 7 jours. */
+function MissedReady() {
+  const [rows, setRows] = useState(null);
+  const [all, setAll] = useState(false);
+  useEffect(() => {
+    api("/admin/missed-ready")
+      .then((data) => setRows(data.missed))
+      .catch(() => setRows([]));
+  }, []);
+  const shown = rows && !all ? rows.slice(0, 8) : rows;
+  return (
+    <section aria-labelledby="titre-pret-manques" className="border border-white/10 bg-white/[0.02] p-4">
+      <h3 id="titre-pret-manques" className="font-display text-xl font-black uppercase leading-none">« Prêt ? » manqués</h3>
+      <p className="mt-1 text-xs text-white/45">Chaque absent reçoit déjà un avertissement automatique ; à partir du 2e en 24 h, la file est bloquée un temps.</p>
+      {rows === null ? (
+        <Loading />
+      ) : rows.length === 0 ? (
+        <p className="mt-3 text-sm text-white/50">Aucun « Prêt ? » manqué récemment.</p>
+      ) : (
+        <>
+          <ul className="mt-3 space-y-1.5">
+            {shown.map((row) => (
+              <li key={row.id} className="flex flex-wrap items-center gap-3 bg-white/[0.03] px-3 py-2">
+                <Avatar src={row.player.avatarUrl} name={row.player.username} size={28} />
+                <Link href={`/cod/profile/${row.player.id}`} className="min-w-0 flex-1 truncate font-semibold hover:text-gold">
+                  {row.player.username}
+                </Link>
+                {row.lastWeek > 1 ? <Chip tone="loss">{row.lastWeek} en 7 jours</Chip> : null}
+                <span className="text-xs text-white/50">{row.match ? `${row.match.format} · ${row.match.map}` : "Match"}</span>
+                <span className="text-xs text-white/40">{dateTime(row.at)}</span>
+              </li>
+            ))}
+          </ul>
+          {rows.length > 8 ? (
+            <button type="button" onClick={() => setAll(!all)} className="mt-2 text-xs text-gold underline underline-offset-4">
+              {all ? "Voir moins" : `Voir les ${rows.length}`}
+            </button>
+          ) : null}
+        </>
+      )}
+    </section>
+  );
+}
+
 export function SanctionsPanel() {
   const [query, setQuery] = useState("");
   const [players, setPlayers] = useState(null);
@@ -280,6 +324,7 @@ export function SanctionsPanel() {
 
   return (
     <div className="space-y-5">
+      <MissedReady />
       <SearchInput value={query} onChange={setQuery} label="Rechercher un joueur" placeholder="Rechercher un pseudo Discord…" />
       {players === null ? (
         <Loading />
