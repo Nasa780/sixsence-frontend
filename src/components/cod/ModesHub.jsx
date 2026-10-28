@@ -6,7 +6,6 @@ import { LeaderboardView } from "./LeaderboardView";
 import { ActiveMatchBanner } from "./ActiveMatchBanner";
 import { MySeason } from "./MySeason";
 import { OnboardingPanel } from "./OnboardingPanel";
-import { DivisionOnboarding } from "../teams/DivisionOnboarding";
 import { Reveal } from "../effects/Reveal";
 import { ButtonLink } from "../ui/Button";
 import { Container } from "../ui/Container";
@@ -195,10 +194,8 @@ export function ModesHub() {
           ))}
         </div>
 
-        {/* Mise en route d'un nouveau joueur (identifiant Activision, notifications, Discord, premier match). */}
+        {/* Premiers pas : compte, puis parcours Classé ou Division (onglets). */}
         <OnboardingPanel user={user} />
-        {/* Premiers pas en Division : indépendants du Classé (pas besoin d'un match classé). */}
-        <DivisionOnboarding user={user} />
 
 
         {/* Joueur et match de la semaine, fil d'activité en direct. */}
