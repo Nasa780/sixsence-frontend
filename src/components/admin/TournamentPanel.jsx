@@ -363,21 +363,16 @@ function PlayInPanel() {
 }
 
 const WEEKDAYS = ["Dimanche", "Lundi", "Mardi", "Mercredi", "Jeudi", "Vendredi", "Samedi"];
-const NAME_IDEAS = {
-  horus: ["Coupe Horus du dimanche", "Coupe Horus · Œil d'or", "Coupe Horus · Nuit des Pharaons", "Coupe Horus · Sable et Sang", "Coupe Horus · Le Faucon"],
-  anubis: ["Coupe Anubis du samedi", "Coupe Anubis · Le Jugement", "Coupe Anubis · Pesée des âmes", "Coupe Anubis · Gardien des tombes", "Coupe Anubis · Le Chacal"],
-};
 const CUP_TEXT = {
   horus: {
     eyebrow: "Coupes d'équipe à inscription libre",
     title: "Coupe Horus",
-    rewards: "Récompenses : or +150, argent +100, bronze +75, +50 aux autres équipes présentes ; rôle Discord « Vainqueur — Coupe Horus » jusqu'à la coupe suivante.",
+    rewards: "Chaque rendez-vous actif ouvre sa prochaine coupe tout seul. Or +150 · argent +100 · bronze +75 · autres présentes +50.",
   },
   anubis: {
     eyebrow: "Inscription solo, équipes tirées au sort",
     title: "Coupe Anubis",
-    rewards:
-      "Les joueurs s'inscrivent seuls ; au début, les présents sont répartis au hasard (capitaine : le mieux classé, joueurs en trop remplaçants). Médailles or, argent, bronze sur le profil, rôle Discord « Vainqueur — Coupe Anubis » jusqu'à la coupe suivante. Pas de points.",
+    rewards: "Médailles or, argent et bronze sur le profil ; pas de points.",
   },
 };
 
@@ -434,7 +429,7 @@ function CupPanel({ kind }) {
   const anubis = kind === "anubis";
   const [state, setState] = useState(null);
   const [current, setCurrent] = useState(undefined);
-  const [form, setForm] = useState({ name: NAME_IDEAS[kind][0], mode: "recurrent", weekday: anubis ? 6 : 0, time: "20:00", startsAt: "", size: 8, bestOf: anubis ? 1 : 3, finalBestOf: 3, bracket: "single", teamSize: 4, posterUrl: null });
+  const [form, setForm] = useState({ name: "", mode: "recurrent", weekday: anubis ? 6 : 0, time: "20:00", startsAt: "", size: 8, bestOf: anubis ? 1 : 3, finalBestOf: 3, bracket: "single", teamSize: 4, posterUrl: null });
   const [pending, setPending] = useState(null);
   const [error, setError] = useState(null);
   const [message, setMessage] = useState(null);
@@ -488,9 +483,6 @@ function CupPanel({ kind }) {
         </Button>}
       </div>
       <p className="text-sm text-white/55">
-        {anubis
-          ? "Rendez-vous ouverts automatiquement si l'interrupteur des trophées automatiques (au-dessus) est activé. "
-          : "Quand les trophées automatiques sont activés (Horus et Anubis), chaque rendez-vous actif ouvre sa prochaine coupe aux inscriptions (dès la précédente terminée). "}
         {CUP_TEXT[kind].rewards}
       </p>
       {error ? <Notice tone="error">{error}</Notice> : null}
@@ -541,14 +533,7 @@ function CupPanel({ kind }) {
             <label htmlFor={`c-name-${kind}`} className={labelClass}>
               Nom
             </label>
-            <input id={`c-name-${kind}`} className={fieldClass} maxLength={60} value={form.name} onChange={(event) => setForm({ ...form, name: event.target.value })} />
-            <div className="mt-2 flex flex-wrap gap-1.5">
-              {NAME_IDEAS[kind].map((idea) => (
-                <button key={idea} type="button" onClick={() => setForm({ ...form, name: idea })} className="border border-white/10 px-2 py-1 text-xs text-white/60 hover:border-gold hover:text-gold">
-                  {idea}
-                </button>
-              ))}
-            </div>
+            <input id={`c-name-${kind}`} className={fieldClass} maxLength={60} placeholder={anubis ? "Coupe Anubis · Le Jugement" : "Coupe Horus · Le Faucon"} value={form.name} onChange={(event) => setForm({ ...form, name: event.target.value })} />
           </div>
           {form.mode === "recurrent" ? (
             <div className="grid gap-4 sm:grid-cols-2">
