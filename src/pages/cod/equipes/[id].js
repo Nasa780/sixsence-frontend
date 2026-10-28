@@ -212,11 +212,11 @@ function TeamSheet() {
           ) : null}
         </TacticalCard>
 
-        {/* Recrutement (ouvert avec le message des Leaders, ou fermé) et force de l'équipe. */}
+        {/* Force de l'équipe, et recrutement ouvert avec le message des Leaders. */}
         {team.disbanded ? null : (
-          <div className="grid gap-4 sm:grid-cols-[1fr_auto] sm:items-stretch">
+          <div className="space-y-3">
+            <TeamStrength strength={team.strength} players={team.members.length} />
             <RecruitingBanner team={team} />
-            <TeamStrength strength={team.strength} />
           </div>
         )}
 

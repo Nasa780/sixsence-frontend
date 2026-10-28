@@ -11,17 +11,26 @@ import { fieldClass, labelClass } from "./TeamParts";
  * réglage du recrutement et devise des joueurs (Leaders, page Mon équipe).
  */
 
-/** Force de l'équipe : niveau moyen de ses joueurs en Classé, et sa place parmi les équipes actives. */
-export function TeamStrength({ strength }) {
+/** Force de l'équipe : moyenne des points Classé de ses joueurs, et sa place parmi les équipes actives. */
+export function TeamStrength({ strength, players }) {
   if (!strength) return null;
   return (
-    <div className="border border-gold/40 bg-gold/[0.06] px-5 py-4">
-      <p className="flex items-center gap-1.5 font-tech text-[10px] uppercase tracking-[0.22em] text-gold">
-        <LuGauge aria-hidden className="h-3.5 w-3.5" /> Force de l&apos;équipe
-      </p>
-      <p className="mt-1 font-display text-4xl font-black leading-none tabular-nums">{strength.value.toLocaleString("fr-FR")}</p>
-      <p className="mt-1 text-xs text-white/50">
-        niveau moyen en Classé · #{strength.position} sur {strength.total}
+    <div className="flex flex-wrap items-center gap-x-8 gap-y-3 border border-white/10 bg-white/[0.03] px-5 py-4">
+      <div className="flex items-center gap-4">
+        <LuGauge aria-hidden className="h-7 w-7 shrink-0 text-gold" />
+        <div>
+          <p className="font-tech text-[10px] uppercase tracking-[0.22em] text-gold">Force de l&apos;équipe</p>
+          <p className="mt-1 font-display text-3xl font-black leading-none tabular-nums">
+            {strength.value.toLocaleString("fr-FR")} <span className="text-base text-white/50">pts</span>
+          </p>
+        </div>
+      </div>
+      <p className="min-w-0 flex-1 basis-56 text-sm text-white/60">
+        Moyenne des points Classé de {players > 1 ? `ses ${players} joueurs` : "son joueur"} :{" "}
+        <span className="font-semibold text-white">
+          {strength.position === 1 ? "1re" : `${strength.position}e`} équipe la plus forte sur {strength.total}
+        </span>
+        .
       </p>
     </div>
   );
@@ -30,15 +39,8 @@ export function TeamStrength({ strength }) {
 /** Statut de recrutement (fiche publique) : ouvert avec le message des Leaders, ou fermé. */
 export function RecruitingBanner({ team }) {
   // Statut inconnu (serveur pas encore à jour) : rien.
-  if (team.disbanded || team.recruiting === undefined) return null;
-  if (!team.recruiting) {
-    return (
-      <div className="flex items-center gap-3 border border-white/10 bg-white/[0.03] px-5 py-4 text-sm text-white/55">
-        <LuDoorClosed aria-hidden className="h-5 w-5 shrink-0 text-white/40" />
-        Cette équipe ne recrute pas en ce moment.
-      </div>
-    );
-  }
+  // Fermé : rien (le bouton de l'en-tête indique déjà « Recrutement fermé »).
+  if (team.disbanded || !team.recruiting) return null;
   return (
     <div className="flex items-start gap-3 border border-win/30 bg-win/[0.05] px-5 py-4">
       <LuDoorOpen aria-hidden className="mt-0.5 h-5 w-5 shrink-0 text-win" />
