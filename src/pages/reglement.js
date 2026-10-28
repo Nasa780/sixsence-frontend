@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { MatchSettings, RulesConduct, RulesEssentials, RulesLoadout } from "../components/cod/MatchRules";
 import { LegalPage } from "../components/ui/LegalPage";
-import { MATCH_TEAM_ENABLED } from "../lib/config";
+import { MATCH_TEAM_ENABLED, READY_REQUIRED } from "../lib/config";
 import { LOSS_ADJUST, LOSS_XP, PLACEMENT_MATCHES, RANKS, WIN_POINTS, WIN_POINTS_MAX, WIN_POINTS_MIN, WIN_XP } from "../lib/ranks";
 
 /** Règles de la Division (matchs d'équipe) et du tournoi : affichées quand le mode est ouvert. */
@@ -180,8 +180,8 @@ function DIVISION_SECTIONS() {
             commence en Ligue 2.
           </li>
           <li>
-            Le <strong>score de fiabilité</strong> (sur 100, sur le profil) baisse avec les « Prêt ? » manqués, les forfaits et les résultats
-            corrigés, et remonte avec chaque match joué jusqu&apos;au bout. Il est indicatif.
+            Le <strong>score de fiabilité</strong> (sur 100, sur le profil) baisse avec {READY_REQUIRED ? "les « Prêt ? » manqués, " : ""}les forfaits et les
+            résultats corrigés, et remonte avec chaque match joué jusqu&apos;au bout. Il est indicatif.
           </li>
         </ul>
       ),
@@ -522,7 +522,8 @@ const SECTIONS = [
 ];
 
 const GROUP_ORDER = ["Général", "Règles de match", "Classé", "Division", "Tournoi", "GTA 6"];
-const ORDERED = [...SECTIONS].sort((a, b) => GROUP_ORDER.indexOf(a.group) - GROUP_ORDER.indexOf(b.group));
+// « Prêt ? » facultatif (READY_REQUIRED) : pas d'avertissement pour un match non accepté, section gardée de côté.
+const ORDERED = SECTIONS.filter((section) => READY_REQUIRED || section.id !== "avertissements").sort((a, b) => GROUP_ORDER.indexOf(a.group) - GROUP_ORDER.indexOf(b.group));
 
 /** Règlement de la plateforme, par catégories : général, classé, Division, tournoi, GTA 6. */
 export default function RulesPage() {
