@@ -651,8 +651,8 @@ const mmss = (seconds) => `${Math.floor(seconds / 60)}:${String(Math.floor(secon
 
 /**
  * Lancement du match, comme en Division : l'hôte (premier joueur de l'équipe 1) crée la partie privée et donne son code
- * (10 min indiquées, modifiable), 15 min pour lancer la partie. Ensuite seulement : vote d'annulation (au moins la moitié
- * des joueurs de chaque équipe, points rendus) et signalement d'un absent (demande d'arbitrage « Joueur absent »).
+ * (10 min indiquées, modifiable), 15 min pour lancer la partie. Ensuite seulement : vote d'annulation (tous les joueurs
+ * de chaque équipe sauf un, points rendus) et signalement d'un absent (demande d'arbitrage « Joueur absent »).
  */
 function KickoffBlock({ data, userId, myTeam, hostName, playerById, onDone }) {
   const { match } = data;
@@ -814,7 +814,7 @@ function KickoffBlock({ data, userId, myTeam, hostName, playerById, onDone }) {
                   <LuBan aria-hidden className="h-5 w-5 text-loss" />
                   Vote d&apos;annulation
                 </p>
-                <p className="mt-1.5 text-sm text-white/55">Le match est annulé, sans point perdu, quand les deux équipes ont atteint leur nombre de votes.</p>
+                <p className="mt-1.5 text-sm text-white/55">Le match est annulé, sans point perdu, quand tous les joueurs de chaque équipe sauf un ont voté pour.</p>
               </div>
               <Button variant={iVoted ? "outline" : "danger"} size="sm" disabled={pending !== null} onClick={() => run("vote", "cancel-vote", { vote: !iVoted })} className="shrink-0">
                 {pending === "vote" ? <LuLoaderCircle aria-hidden className="h-4 w-4 animate-spin" /> : iVoted ? <LuX aria-hidden className="h-4 w-4" /> : <LuBan aria-hidden className="h-4 w-4" />}
@@ -858,8 +858,8 @@ function KickoffBlock({ data, userId, myTeam, hostName, playerById, onDone }) {
   );
 }
 
-/** Votes requis dans une équipe : au moins la moitié, arrondie au-dessus (1 sur 2, 2 sur 3, 2 sur 4, 3 sur 5). */
-const votesNeeded = (team) => Math.ceil(team.length / 2);
+/** Votes requis dans une équipe : tous les joueurs sauf un (1 sur 2, 2 sur 3, 3 sur 4, 4 sur 5), comme cod_vote_cancel. */
+const votesNeeded = (team) => Math.max(1, team.length - 1);
 
 /** Ce qu'il manque pour annuler : « Il manque 1 vote de l'Équipe 2 », etc. */
 function voteStatus(match, votes) {

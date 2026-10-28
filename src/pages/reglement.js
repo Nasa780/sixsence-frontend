@@ -412,7 +412,7 @@ const SECTIONS = [
         </li>
         <li>
           Passé ces 15 minutes, les joueurs peuvent <strong>voter l&apos;annulation</strong> du match : il est annulé, sans point perdu, dès
-          qu&apos;au moins la moitié des joueurs de chaque équipe a voté pour. Un joueur absent se signale depuis la feuille de match : un
+          que tous les joueurs de chaque équipe sauf un ont voté pour (1 sur 2, 2 sur 3, 3 sur 4, 4 sur 5). Un joueur absent se signale depuis la feuille de match : un
           arbitre tranche et peut le sanctionner.
         </li>
         <li>Les équipes tirées au sort doivent être respectées : personne ne prend la place d&apos;un joueur du match.</li>
