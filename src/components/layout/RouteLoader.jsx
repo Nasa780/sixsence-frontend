@@ -1,7 +1,6 @@
 import { useRouter } from "next/router";
 import { useEffect, useRef, useState } from "react";
 import { cn } from "../../lib/cn";
-import { randomTip } from "../../lib/tips";
 import { LoaderEmblem } from "../ui/LoaderEmblem";
 
 /** Délai avant d'afficher l'écran : une page qui s'ouvre vite ne le montre jamais. */
@@ -9,11 +8,11 @@ const SHOW_AFTER_MS = 350;
 
 /**
  * Écran de chargement plein écran pendant un changement de page lent : emblème SixSence, pourcentage, barre
- * dorée et une astuce. Le pourcentage avance vite puis ralentit jusqu'à la fin réelle du chargement, puis 100 % et fondu.
+ * dorée. Le pourcentage avance vite puis ralentit jusqu'à la fin réelle du chargement, puis 100 % et fondu.
  */
 export function RouteLoader() {
   const router = useRouter();
-  const [state, setState] = useState({ visible: false, done: false, progress: 0, tip: "" });
+  const [state, setState] = useState({ visible: false, done: false, progress: 0 });
   const timers = useRef({ show: null, tick: null, hide: null });
 
   useEffect(() => {
@@ -26,7 +25,7 @@ export function RouteLoader() {
       if (shallow || url === router.asPath) return;
       clear();
       timers.current.show = setTimeout(() => {
-        setState({ visible: true, done: false, progress: 8, tip: randomTip() });
+        setState({ visible: true, done: false, progress: 8 });
         timers.current.tick = setInterval(() => setState((s) => ({ ...s, progress: Math.min(94, s.progress + (95 - s.progress) * 0.08) })), 120);
       }, SHOW_AFTER_MS);
     };
@@ -66,10 +65,6 @@ export function RouteLoader() {
             </div>
           </div>
         </div>
-        <p className="mt-6 max-w-xs text-center text-sm text-white/60">
-          <span className="font-tech text-[10px] uppercase tracking-[0.24em] text-gold">Astuce · </span>
-          {state.tip}
-        </p>
       </div>
     </div>
   );
