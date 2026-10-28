@@ -2,7 +2,6 @@ import Head from "next/head";
 import Link from "next/link";
 import { Fragment, useEffect, useState } from "react";
 import { LuCalendarClock, LuChevronRight, LuCrown, LuShield, LuSwords, LuTrophy } from "react-icons/lu";
-import { CodModeNav } from "../../components/cod/CodModeNav";
 import { TeamCrest } from "../../components/teams/TeamParts";
 import { Container } from "../../components/ui/Container";
 import { EmptyState, Loading } from "../../components/ui/Feedback";
@@ -52,21 +51,20 @@ export function CircuitView({ data, error = null }) {
         description="Toute la saison mène à la grande finale : chaque Coupe Horus compte, la Division offre une seconde chance."
       />
       <Container className="space-y-12 py-10">
-        <CodModeNav />
         {error ? <EmptyState title="Circuit indisponible">{error}</EmptyState> : null}
         {!data && !error ? <Loading label="Chargement du circuit" /> : null}
 
         {data ? (
           <>
             {/* Repères de la saison */}
-            <div className="flex flex-wrap gap-3">
+            <div className="grid grid-cols-2 gap-3 sm:flex sm:flex-wrap">
               {[
                 ["Coupes Horus jouées", String(played)],
                 ["Prochaine coupe", next ? dateFr(next.startsAt) : "—"],
                 ["Équipes classées", String(data.standings.length)],
                 ["Grande finale", data.final ? dateFr(data.final.startsAt) : "fin de saison"],
               ].map(([label, value]) => (
-                <div key={label} className="border border-white/10 bg-white/[0.03] px-4 py-2">
+                <div key={label} className="min-w-0 border border-white/10 bg-white/[0.03] px-4 py-2">
                   <p className="font-tech text-[10px] uppercase tracking-[0.2em] text-white/45">{label}</p>
                   <p className="font-display text-2xl font-black first-letter:uppercase">{value}</p>
                 </div>
