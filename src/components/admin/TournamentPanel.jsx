@@ -1,7 +1,8 @@
 import Link from "next/link";
 import { useCallback, useEffect, useState } from "react";
-import { LuExternalLink, LuLoaderCircle } from "react-icons/lu";
+import { LuExternalLink, LuImagePlus, LuLoaderCircle, LuRotateCcw } from "react-icons/lu";
 import { api } from "../../lib/api";
+import { generatedPoster, isCustomPoster, uploadCupPoster } from "../../lib/cups";
 import { cn } from "../../lib/cn";
 import { TeamCrest, fieldClass, labelClass } from "../teams/TeamParts";
 import { Button } from "../ui/Button";
@@ -68,6 +69,19 @@ export function TournamentPanel() {
       {current === undefined ? <Loading /> : null}
 
       {current ? <ActiveTournamentCard current={current} pending={pending} run={run} onCancel={() => setCancelling(true)} /> : null}
+      {current && current.status !== "completed" && current.status !== "cancelled" ? (
+        <TacticalCard innerClassName="p-5">
+          <p className={labelClass}>Affiche de la coupe en cours</p>
+          <div className="mt-3">
+            <PosterField
+              poster={current.posterUrl}
+              custom={isCustomPoster(current.posterUrl)}
+              disabled={pending !== null}
+              onChange={(url) => run("poster", () => api(`/admin/cups/${current.id}/poster`, { method: "POST", body: { posterUrl: url } }), url ? "Affiche enregistrée." : "Affiche générée rétablie.")}
+            />
+          </div>
+        </TacticalCard>
+      ) : null}
 
       {!active && current !== undefined ? (
         <section aria-labelledby="titre-nouveau-tournoi" className="grid gap-8 lg:grid-cols-[1fr_1fr]">
@@ -368,6 +382,51 @@ const CUP_TEXT = {
 };
 
 /**
+ * Affiche d'une coupe ou d'un rendez-vous : aperçu, envoi d'une image (compressée en WebP), retour à l'affiche générée.
+ * onChange(url | null) enregistre le choix.
+ */
+function PosterField({ poster, custom, onChange, disabled = false, compact = false }) {
+  const [busy, setBusy] = useState(false);
+  const [error, setError] = useState(null);
+
+  async function pick(file) {
+    if (!file) return;
+    setBusy(true);
+    setError(null);
+    try {
+      await onChange(await uploadCupPoster(file));
+    } catch (caught) {
+      setError(caught.message);
+    } finally {
+      setBusy(false);
+    }
+  }
+
+  return (
+    <div className={cn("flex gap-3", compact ? "items-center" : "items-start")}>
+      <img src={poster} alt="Affiche" className={cn("shrink-0 border border-white/10 bg-ink-800 object-cover", compact ? "h-20 w-[60px]" : "h-40 w-[120px]")} />
+      <div className="min-w-0 space-y-2">
+        {compact ? null : <p className="text-xs text-white/50">{custom ? "Affiche envoyée." : "Affiche générée avec le nom, la date et le format. Tu peux envoyer la tienne (format portrait 3:4 conseillé)."}</p>}
+        <div className="flex flex-wrap gap-2">
+          <label className={cn("inline-flex cursor-pointer items-center gap-1.5 border border-white/15 px-3 py-1.5 text-xs font-semibold uppercase tracking-wide text-white/75 hover:border-gold hover:text-gold", (busy || disabled) && "pointer-events-none opacity-50")}>
+            {busy ? <LuLoaderCircle aria-hidden className="h-3.5 w-3.5 animate-spin" /> : <LuImagePlus aria-hidden className="h-3.5 w-3.5" />}
+            {custom ? "Changer l'affiche" : "Envoyer une affiche"}
+            <input type="file" accept="image/png,image/jpeg,image/webp" className="sr-only" onChange={(event) => pick(event.target.files?.[0])} />
+          </label>
+          {custom ? (
+            <button type="button" disabled={busy || disabled} onClick={() => onChange(null)} className="inline-flex items-center gap-1.5 px-2 py-1.5 text-xs text-white/50 hover:text-gold disabled:opacity-50">
+              <LuRotateCcw aria-hidden className="h-3.5 w-3.5" />
+              Affiche générée
+            </button>
+          ) : null}
+        </div>
+        {error ? <p className="text-xs text-loss">{error}</p> : null}
+      </div>
+    </div>
+  );
+}
+
+/**
  * Coupe Horus ou Anubis (admin) : interrupteur des coupes automatiques (commun), rendez-vous récurrents (jour,
  * heure, format, taille des équipes pour l'Anubis), coupe ponctuelle, suivi de la coupe en cours.
  */
@@ -375,7 +434,7 @@ function CupPanel({ kind }) {
   const anubis = kind === "anubis";
   const [state, setState] = useState(null);
   const [current, setCurrent] = useState(undefined);
-  const [form, setForm] = useState({ name: NAME_IDEAS[kind][0], mode: "recurrent", weekday: anubis ? 6 : 0, time: "20:00", startsAt: "", size: 8, bestOf: anubis ? 1 : 3, finalBestOf: 3, bracket: "single", teamSize: 4 });
+  const [form, setForm] = useState({ name: NAME_IDEAS[kind][0], mode: "recurrent", weekday: anubis ? 6 : 0, time: "20:00", startsAt: "", size: 8, bestOf: anubis ? 1 : 3, finalBestOf: 3, bracket: "single", teamSize: 4, posterUrl: null });
   const [pending, setPending] = useState(null);
   const [error, setError] = useState(null);
   const [message, setMessage] = useState(null);
@@ -407,7 +466,7 @@ function CupPanel({ kind }) {
     }
   }
 
-  const body = { kind, name: form.name, size: form.size, bestOf: form.bestOf, finalBestOf: form.finalBestOf, bracket: form.bracket, ...(anubis ? { teamSize: form.teamSize } : {}) };
+  const body = { kind, name: form.name, size: form.size, bestOf: form.bestOf, finalBestOf: form.finalBestOf, bracket: form.bracket, posterUrl: form.posterUrl, ...(anubis ? { teamSize: form.teamSize } : {}) };
   const schedules = state ? state.schedules.filter((schedule) => (schedule.kind ?? "horus") === kind) : [];
   const submit = () =>
     form.mode === "recurrent"
@@ -446,6 +505,13 @@ function CupPanel({ kind }) {
           {schedules.map((schedule) => (
             <div key={schedule.id} className={cn("space-y-2 border-l-2 bg-white/[0.03] px-3 py-3", schedule.active ? "border-gold" : "border-white/10 opacity-60")}>
               <p className="font-display text-lg font-bold uppercase leading-none">{schedule.name}</p>
+              <PosterField
+                compact
+                poster={schedule.poster}
+                custom={Boolean(schedule.posterUrl)}
+                disabled={pending !== null}
+                onChange={(url) => run(`p-${schedule.id}`, () => api(`/admin/cups/schedules/${schedule.id}/poster`, { method: "POST", body: { posterUrl: url } }), url ? "Affiche du rendez-vous enregistrée : elle sera reprise par ses prochaines coupes." : "Affiche générée rétablie.")}
+              />
               <p className="text-xs text-white/55">
                 {WEEKDAYS[schedule.weekday]} {schedule.time} · {schedule.size} équipes{anubis ? ` de ${schedule.teamSize}` : ""} · {schedule.bracket === "double" ? "double élimination" : "élimination directe"} · BO{schedule.bestOf}, finale BO{schedule.finalBestOf}
                 {schedule.active && state.auto ? ` · prochaine : ${dateFr(schedule.next)}` : ""}
@@ -574,6 +640,16 @@ function CupPanel({ kind }) {
               ? `Jusqu'à ${form.size * (form.teamSize + 1)} inscrits (un remplaçant par équipe). Moins de 4 équipes complètes au check-in : coupe annulée.`
               : "Tableau tiré au sort. Moins de 4 équipes présentes au check-in : coupe annulée."}
           </p>
+          <div>
+            <p className={labelClass}>Affiche</p>
+            <div className="mt-2">
+              <PosterField
+                poster={form.posterUrl ?? generatedPoster({ kind, name: form.name, size: form.size, bestOf: form.bestOf, bracket: form.bracket, teamSize: form.teamSize })}
+                custom={Boolean(form.posterUrl)}
+                onChange={(url) => setForm({ ...form, posterUrl: url })}
+              />
+            </div>
+          </div>
           <Button disabled={pending !== null || form.name.trim().length < 3 || (form.mode === "once" && !form.startsAt)} onClick={submit}>
             {pending === "create" ? <LuLoaderCircle aria-hidden className="h-5 w-5 animate-spin" /> : null}
             {form.mode === "recurrent" ? "Créer le rendez-vous" : "Créer la coupe"}

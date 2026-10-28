@@ -6,6 +6,7 @@ import { LuCheck, LuCrown, LuDices, LuFlag, LuListOrdered, LuLoaderCircle, LuShi
 import { MatchRulesCard } from "../../components/cod/MatchRules";
 import { SlantTab, TeamCrest } from "../../components/teams/TeamParts";
 import { AnubisCup, AnubisTeaser, HorusTeaser } from "../../components/tournament/AnubisCup";
+import { CupHero, CupList } from "../../components/tournament/CupCards";
 import { Avatar } from "../../components/ui/Avatar";
 import { Button, ButtonLink } from "../../components/ui/Button";
 import { Container } from "../../components/ui/Container";
@@ -45,34 +46,44 @@ const PODIUM = [
 ];
 
 /**
- * Tournois : Coupe Horus (coupes d'équipe à inscription libre), Coupe Anubis (?coupe=anubis : inscription
- * solo, équipes tirées au sort, médailles) et tournoi de fin de saison (?coupe=saison : qualification par le
- * classement). Inscription, check-in, tableau en direct (petite finale comprise), podium. Public.
+ * Tournois, façon Sked : sans paramètre, la liste des coupes (prochaines et passées, avec leur affiche) ; ?id= la fiche
+ * d'une coupe ; ?coupe=horus|anubis|saison|playin la coupe du moment de ce type (anciens liens). Coupe Horus (équipes,
+ * inscription libre), Coupe Anubis (inscription solo, équipes tirées au sort, médailles), tournoi de fin de saison
+ * (qualification par le classement). Inscription, check-in, tableau en direct (petite finale comprise), podium. Public.
  */
 export default function TournamentPage() {
   const router = useRouter();
-  const kind = router.query.coupe === "saison" || router.query.coupe === "anubis" || router.query.coupe === "playin" ? router.query.coupe : "horus";
-  const playin = kind === "playin";
-  const horus = kind === "horus";
-  const anubis = kind === "anubis";
+  const cupId = typeof router.query.id === "string" ? router.query.id : null;
+  // Sans paramètre : liste des coupes (même rendu côté serveur et au premier rendu du navigateur).
+  const listView = !cupId && !router.query.coupe;
+  const asked = router.query.coupe === "saison" || router.query.coupe === "anubis" || router.query.coupe === "playin" ? router.query.coupe : "horus";
   const tab = (coupe) => router.replace({ pathname: router.pathname, query: coupe ? { coupe } : {} }, undefined, { shallow: true });
   const { userId } = useSession();
   const [tournament, setTournament] = useState(undefined);
+  const [cups, setCups] = useState(null);
   const [error, setError] = useState(null);
+  // Type de la coupe affichée : celui de la coupe ouverte par ?id=, sinon celui demandé.
+  const kind = cupId && tournament ? tournament.kind : asked;
+  const playin = kind === "playin";
+  const horus = kind === "horus";
+  const anubis = kind === "anubis";
   const [now, setNow] = useState(Date.now());
   const [view, setView] = useState(null);
 
   const load = useCallback(async () => {
+    if (!router.isReady) return;
     try {
-      setTournament((await api(`/teams/tournament?kind=${kind}`)).tournament);
+      if (listView) setCups(await api("/teams/cups"));
+      else if (cupId) setTournament(await api(`/teams/tournaments/${cupId}`));
+      else setTournament((await api(`/teams/tournament?kind=${asked}`)).tournament);
       setError(null);
     } catch (caught) {
       setError(caught.message);
     }
-  }, [kind]);
+  }, [router.isReady, listView, cupId, asked]);
 
-  // Changement d'onglet : on repart d'un chargement.
-  useEffect(() => setTournament(undefined), [kind]);
+  // Changement d'onglet ou de coupe : on repart d'un chargement.
+  useEffect(() => setTournament(undefined), [asked, cupId, listView]);
   useEffect(() => setView(null), [tournament?.id]);
 
   useEffect(() => {
@@ -110,7 +121,7 @@ export default function TournamentPage() {
   return (
     <>
       <Head>
-        <title>{tournament ? `${tournament.name} — SixSence` : horus ? "Coupe Horus — SixSence" : anubis ? "Coupe Anubis — SixSence" : "Tournoi — SixSence"}</title>
+        <title>{listView ? "Tournois — SixSence" : tournament ? `${tournament.name} — SixSence` : horus ? "Coupe Horus — SixSence" : anubis ? "Coupe Anubis — SixSence" : "Tournoi — SixSence"}</title>
         <meta
           name="description"
           content={
@@ -124,10 +135,12 @@ export default function TournamentPage() {
       </Head>
       <PageHeader
         image="/images/mw4.webp"
-        eyebrow={horus ? "Tournoi · Coupe Horus" : anubis ? "Tournoi · Coupe Anubis" : playin ? "Tournoi · Play-in de la grande finale" : "Tournoi · Fin de saison"}
+        eyebrow={listView ? "Coupes et tournois" : horus ? "Tournoi · Coupe Horus" : anubis ? "Tournoi · Coupe Anubis" : playin ? "Tournoi · Play-in de la grande finale" : "Tournoi · Fin de saison"}
         title={
-          tournament ? (
-            tournament.name
+          listView || tournament ? (
+            <>
+              Les <span className="text-gold-gradient">tournois</span>
+            </>
           ) : horus ? (
             <>
               Coupe <span className="text-gold-gradient">Horus</span>
@@ -147,7 +160,9 @@ export default function TournamentPage() {
           )
         }
         description={
-          tournament?.kind === "anubis"
+          listView || tournament
+            ? "Coupes Horus en équipe, Coupes Anubis en solo et tournoi de fin de saison : inscris-toi, fais le check-in et vise le podium."
+            : tournament?.kind === "anubis"
             ? `Inscription solo · équipes de ${tournament.teamSize} tirées au sort · ${tournament.status === "completed" ? "terminée" : dateFr(tournament.startsAt)}`
             : tournament
             ? `${tournament.teams.length} équipe${tournament.teams.length > 1 ? "s" : ""} · BO${tournament.bestOf}, finale en BO${tournament.finalBestOf} · ${tournament.status === "completed" ? "terminé" : dateFr(tournament.startsAt)}`
@@ -165,22 +180,27 @@ export default function TournamentPage() {
       />
       <Container className="space-y-10 py-12">
         <div role="tablist" aria-label="Tournois" className="flex gap-2 overflow-x-auto pb-1">
-          <SlantTab active={horus} onClick={() => tab(null)}>
+          <SlantTab active={listView} onClick={() => tab(null)}>
+            Toutes les coupes
+          </SlantTab>
+          <SlantTab active={!listView && horus && !cupId} onClick={() => tab("horus")}>
             Coupe Horus
           </SlantTab>
-          <SlantTab active={anubis} onClick={() => tab("anubis")}>
+          <SlantTab active={!listView && anubis && !cupId} onClick={() => tab("anubis")}>
             Coupe Anubis
           </SlantTab>
-          <SlantTab active={kind === "saison"} onClick={() => tab("saison")}>
+          <SlantTab active={!listView && kind === "saison" && !cupId} onClick={() => tab("saison")}>
             Fin de saison
           </SlantTab>
           {playin ? <SlantTab active>Play-in</SlantTab> : null}
         </div>
         {error ? <Notice tone="error">{error}</Notice> : null}
-        {tournament === undefined && !error ? <Loading /> : null}
-        {tournament === null ? anubis ? <AnubisTeaser /> : horus ? <HorusTeaser /> : <TournamentTeaser /> : null}
+        {listView ? cups ? <CupList cups={cups} now={now} /> : !error ? <Loading /> : null : null}
+        {!listView && tournament === undefined && !error ? <Loading /> : null}
+        {!listView && tournament === null ? anubis ? <AnubisTeaser /> : horus ? <HorusTeaser /> : <TournamentTeaser /> : null}
+        {!listView && tournament ? <CupHero tournament={tournament} now={now} /> : null}
 
-        {tournament?.kind === "anubis" ? (
+        {!listView && tournament?.kind === "anubis" ? (
           <AnubisCup
             tournament={tournament}
             userId={userId}
@@ -191,7 +211,7 @@ export default function TournamentPage() {
           />
         ) : null}
 
-        {tournament && tournament.kind !== "anubis" ? (
+        {!listView && tournament && tournament.kind !== "anubis" ? (
           <>
             <div role="tablist" aria-label="Fiche du tournoi" className="flex gap-1 overflow-x-auto border-b border-white/10">
               {VIEWS.filter(([id]) => id !== "recompenses" || tournament.kind !== "playin").map(([id, label]) => (

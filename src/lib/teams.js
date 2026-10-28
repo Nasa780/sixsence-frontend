@@ -42,7 +42,7 @@ export function logoMiniUrl(url) {
 }
 
 /** Redimensionne une image (première image pour un GIF) et la compresse en WebP. */
-async function toWebp(file, maxWidth) {
+export async function toWebp(file, maxWidth) {
   const bitmap = await createImageBitmap(file);
   const scale = Math.min(1, maxWidth / bitmap.width);
   const canvas = document.createElement("canvas");
