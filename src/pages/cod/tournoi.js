@@ -318,7 +318,7 @@ export default function TournamentPage() {
                 </h2>
                 <p className="text-sm text-white/60">
                   {tournament.kind === "horus"
-                    ? `Matchs en BO${tournament.bestOf}, finale en BO${tournament.finalBestOf}${tournament.bracket === "double" ? ", double élimination" : ", petite finale pour le bronze"}. Hôte tiré au sort, code de la partie dans le chat de la feuille de match. Pas d'annulation : un match bloqué est tranché par l'équipe SixSence.`
+                    ? `Matchs en BO${tournament.bestOf}, finale en BO${tournament.finalBestOf}${tournament.bracket === "double" ? ", double élimination" : ", petite finale pour le bronze"}. Hôte tiré au sort, code de la partie dans le tchat de la feuille de match. Pas d'annulation : un match bloqué est tranché par l'équipe SixSence.`
                     : `Matchs en BO${tournament.bestOf}, finale en BO${tournament.finalBestOf}. Effectifs figés à la qualification, check-in d'un joueur de l'équipe. Pas de points en jeu ; un match bloqué est tranché par l'équipe SixSence.`}{" "}
                   <Link href="/reglement" className="text-gold underline underline-offset-4">
                     Règlement complet

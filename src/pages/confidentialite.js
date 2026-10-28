@@ -35,7 +35,7 @@ const SECTIONS = [
             pour match non accepté, inscriptions aux événements.
           </li>
           <li>
-            <strong>Contenus que tu publies</strong> : messages du chat de match et captures d&apos;écran envoyées comme preuves.
+            <strong>Contenus que tu publies</strong> : messages du tchat de match et captures d&apos;écran envoyées comme preuves.
           </li>
           <li>
             <strong>Données techniques</strong> : journaux des serveurs (adresse IP, date, requête), conservés brièvement par les
@@ -70,7 +70,7 @@ const SECTIONS = [
           statistiques et ton historique de matchs</strong> sont visibles par tous les visiteurs, comme sur un classement e-sport.
         </p>
         <p>
-          Les <strong>messages du chat de match</strong> et les <strong>captures de preuve</strong> ne sont visibles que par les
+          Les <strong>messages du tchat de match</strong> et les <strong>captures de preuve</strong> ne sont visibles que par les
           joueurs du match et les administrateurs. Tes <strong>avertissements</strong> ne sont pas publics.
         </p>
       </>

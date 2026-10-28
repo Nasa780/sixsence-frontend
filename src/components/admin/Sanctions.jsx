@@ -163,7 +163,7 @@ export function SanctionDialog({ player, reportId = null, onClose, onDone }) {
               }}
               maxLength={500}
               rows={3}
-              placeholder="Ex. : propos insultants dans le chat du match"
+              placeholder="Ex. : propos insultants dans le tchat du match"
               className={cn(INPUT, "mt-2 resize-none")}
             />
           </label>
