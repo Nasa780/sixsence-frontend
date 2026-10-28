@@ -8,6 +8,8 @@ import { nextRank, rankFor } from "../../lib/ranks";
 import { TeamCrest } from "../teams/TeamParts";
 import { RankEmblem } from "./RankEmblem";
 
+/** Nombre à la française avec une espace insécable normale (l’espace fine n’existe pas dans la police des titres). */
+const num = (n) => n.toLocaleString("fr-FR").replace(/ /g, " ");
 const rateOf = (wins, losses) => (wins + losses > 0 ? `${Math.round((wins / (wins + losses)) * 100)} %` : "—");
 
 /** Un chiffre de la barre : valeur en grand, libellé discret. */
@@ -60,7 +62,7 @@ export function MySeason({ profile, position }) {
           </span>
         </span>
         <span className="grid basis-full grid-cols-4 gap-3 sm:flex-1 sm:basis-auto sm:gap-4">
-          <Figure label="Points" value={profile.points} accent />
+          <Figure label="Points" value={num(profile.points)} accent />
           <Figure label="Place" value={position ? `#${position}` : "—"} />
           <Figure label="V / D" value={`${profile.wins} / ${profile.losses}`} />
           <Figure label="Taux" value={rateOf(profile.wins, profile.losses)} />
@@ -82,7 +84,7 @@ export function MySeason({ profile, position }) {
             </span>
             <span className="grid basis-full grid-cols-3 gap-3 sm:flex-1 sm:basis-auto sm:gap-4">
               <Figure label="Place" value={team.position ? `#${team.position}` : "—"} />
-              <Figure label="Points" value={team.points} accent />
+              <Figure label="Points" value={num(team.points)} accent />
               <Figure label="V / D" value={`${team.wins} / ${team.losses}`} />
             </span>
             <LuChevronRight aria-hidden className="hidden h-4 w-4 shrink-0 text-white/25 transition-transform group-hover:translate-x-0.5 group-hover:text-gold sm:block" />
