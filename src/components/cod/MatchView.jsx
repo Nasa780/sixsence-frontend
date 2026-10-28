@@ -253,6 +253,9 @@ export function MatchView({ matchId }) {
     previousStatus.current = current.status;
     const mine = current.team_a.includes(userId) || current.team_b.includes(userId);
     if (!mine || current.status !== "cancelled") return;
+    // Annulé par le vote des joueurs : pas de retour automatique en file (les mêmes joueurs se retrouveraient aussitôt
+    // dans un nouveau match) ; la feuille propose « On relance ? ».
+    if (current.cancel_reason === "vote") return;
     const at = current.cancel_reason === "ready_check_failed" ? current.ready_deadline : current.completed_at;
     const recent = at && Date.now() - new Date(at).getTime() < 2 * 60_000;
     const live = before && before !== "cancelled";
@@ -726,7 +729,7 @@ function KickoffBlock({ data, userId, myTeam, hostName, playerById, onDone }) {
               )}
             </p>
             <p className="mt-1.5 text-sm text-white/60">
-              {isHost ? "Crée la partie privée en mode CDL Recherche et destruction, puis partage son code ci-dessous." : <>« {hostName} » crée la partie privée et partage le code de la partie privée.</>}
+              {isHost ? "Crée la partie privée en mode CDL Recherche et destruction, puis partage son code ci-dessous." : `${hostName} crée la partie privée et partage le code de la partie privée.`}
             </p>
           </div>
         </div>
@@ -799,7 +802,7 @@ function KickoffBlock({ data, userId, myTeam, hostName, playerById, onDone }) {
       <div className="flex items-center justify-between gap-4 border-l-2 border-gold/60 bg-white/[0.03] px-4 py-3">
         <div className="min-w-0">
           <p className="font-tech text-[10px] uppercase tracking-[0.24em] text-white/45">Lancement de la partie</p>
-          <p className="mt-1 text-xs text-white/45">Tous les joueurs ont 15 min pour rejoindre la partie et commencer.</p>
+          <p className="mt-1 text-xs text-white/45">Tous les joueurs ont 15 minutes max pour rejoindre la partie.</p>
         </div>
         <p className={cn("font-display text-3xl font-black leading-none tabular-nums", launchLeft > 0 ? "text-white" : "text-loss")}>{launchLeft > 0 ? mmss(launchLeft) : "Temps écoulé"}</p>
       </div>
@@ -853,7 +856,6 @@ function KickoffBlock({ data, userId, myTeam, hostName, playerById, onDone }) {
         </div>
       ) : null}
       {error ? <Notice tone="error">{error}</Notice> : null}
-      <p className="text-xs text-white/40">Une fois le match joué, n&apos;importe quel joueur déclare le vainqueur ; l&apos;équipe adverse confirme.</p>
     </TacticalCard>
   );
 }
