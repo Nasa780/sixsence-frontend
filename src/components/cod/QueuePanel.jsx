@@ -30,7 +30,7 @@ import { PointsAtStake } from "./PointsAtStake";
 import { ActiveMatchBanner } from "./ActiveMatchBanner";
 import { mapImage } from "../../lib/maps";
 import { PartyPanel } from "./PartyPanel";
-import { GROUPS_ENABLED } from "../../lib/config";
+import { GROUPS_ENABLED, READY_REQUIRED } from "../../lib/config";
 
 const FORMAT_KEY = "sixsence:format";
 
@@ -587,7 +587,7 @@ export function ReadyCheckOverlay({ check, started, userId }) {
           >
             {started ? (
               <>
-                <p className="font-tech text-xs uppercase tracking-[0.4em] text-gold">Tout le monde est prêt</p>
+                <p className="font-tech text-xs uppercase tracking-[0.4em] text-gold">{READY_REQUIRED ? "Tout le monde est prêt" : "Lancement"}</p>
                 <p className="mt-4 font-display text-7xl font-black uppercase leading-[0.85] sm:text-9xl">
                   C&apos;est <span className="text-gold-gradient">parti</span>
                 </p>
@@ -613,6 +613,7 @@ export function ReadyCheckOverlay({ check, started, userId }) {
 
                 {/* Compte à rebours */}
                 <div className="mx-auto mt-8 max-w-md">
+                  {READY_REQUIRED ? null : <p className="mb-2 font-tech text-[11px] uppercase tracking-[0.3em] text-white/50">Lancement dans</p>}
                   <p className="font-display text-6xl font-black tabular-nums leading-none" aria-live="polite">
                     {Math.ceil(left)}
                     <span className="ml-1 text-2xl text-white/40">s</span>
@@ -622,6 +623,8 @@ export function ReadyCheckOverlay({ check, started, userId }) {
                   </div>
                 </div>
 
+                {READY_REQUIRED ? (
+                  <>
                 {/* Joueurs prêts */}
                 <div aria-hidden className="mx-auto mt-6 flex max-w-md justify-center gap-1.5">
                   {Array.from({ length: total }, (_, index) => (
@@ -658,6 +661,8 @@ export function ReadyCheckOverlay({ check, started, userId }) {
                     Règlement
                   </ButtonLink>
                 </p>
+                  </>
+                ) : null}
               </>
             ) : null}
           </motion.div>

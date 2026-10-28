@@ -357,7 +357,7 @@ const SECTIONS = [
   {
     id: "file",
     group: "Classé",
-    title: "File d'attente et « Prêt ? »",
+    title: "File d'attente et match trouvé",
     content: (
       <>
         <p>
@@ -365,16 +365,13 @@ const SECTIONS = [
           <strong> en solo</strong> : chacun rejoint la file seul.
         </p>
         <p>
-          Quand assez de joueurs attendent, les premiers arrivés sont retenus, puis les équipes et la carte sont tirées au sort. Tu as alors{" "}
-          <strong>1 minute</strong> pour cliquer sur « Accepter le match » (un son et une notification te préviennent).
+          Quand assez de joueurs attendent, les premiers arrivés sont retenus, puis les équipes et la carte sont tirées au sort. Une
+          alarme et une notification te préviennent, puis un compte à rebours d&apos;<strong>1 minute</strong> : prépare-toi et rejoins le
+          vocal, le match démarre tout seul (rien à cliquer).
         </p>
         <p>
           Une recherche dure <strong>30 minutes</strong>, même si tu fermes la page ou verrouilles ton téléphone. 5 minutes avant la fin,
           « Toujours là ? » : clique sur « Rester en file » pour repartir pour 30 minutes <strong>sans perdre ta place</strong>.
-        </p>
-        <p>
-          Si un joueur n&apos;accepte pas à temps, le match est annulé : ceux qui avaient accepté repartent <strong>en tête de file</strong>,
-          ceux qui n&apos;ont pas répondu reçoivent un avertissement.
         </p>
       </>
     ),

@@ -28,6 +28,13 @@ export const SITE_URL = (process.env.NEXT_PUBLIC_SITE_URL || "https://www.sixsen
 export const MATCH_TEAM_ENABLED = process.env.NEXT_PUBLIC_MATCH_TEAM !== "off";
 
 /**
+ * Clic « Prêt » obligatoire : NEXT_PUBLIC_READY_REQUIRED=on (avec COD_READY_REQUIRED=on côté backend). Sinon (défaut
+ * depuis le 2026-10-28), un match trouvé démarre tout seul à la fin du compte à rebours d'une minute ; le code du
+ * « Prêt ? » obligatoire est conservé.
+ */
+export const READY_REQUIRED = process.env.NEXT_PUBLIC_READY_REQUIRED === "on";
+
+/**
  * Groupes du classé (jouer à plusieurs dans la même équipe) : coupés, le classé se joue en solo.
  * NEXT_PUBLIC_GROUPS=on les remet (avec COD_GROUPS=on sur Render) ; les textes du site décrivent le solo.
  */
