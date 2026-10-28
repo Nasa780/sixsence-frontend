@@ -802,7 +802,7 @@ function KickoffBlock({ data, userId, myTeam, hostName, playerById, onDone }) {
       <div className="flex items-center justify-between gap-4 border-l-2 border-gold/60 bg-white/[0.03] px-4 py-3">
         <div className="min-w-0">
           <p className="font-tech text-[10px] uppercase tracking-[0.24em] text-white/45">Lancement de la partie</p>
-          <p className="mt-1 text-xs text-white/45">Tous les joueurs ont 15 min pour rejoindre la partie et commencer.</p>
+          <p className="mt-1 text-xs text-white/45">Tous les joueurs ont 15 minutes max pour rejoindre la partie.</p>
         </div>
         <p className={cn("font-display text-3xl font-black leading-none tabular-nums", launchLeft > 0 ? "text-white" : "text-loss")}>{launchLeft > 0 ? mmss(launchLeft) : "Temps écoulé"}</p>
       </div>
@@ -856,7 +856,6 @@ function KickoffBlock({ data, userId, myTeam, hostName, playerById, onDone }) {
         </div>
       ) : null}
       {error ? <Notice tone="error">{error}</Notice> : null}
-      <p className="text-xs text-white/40">Une fois le match joué, n&apos;importe quel joueur déclare le vainqueur ; l&apos;équipe adverse confirme.</p>
     </TacticalCard>
   );
 }
