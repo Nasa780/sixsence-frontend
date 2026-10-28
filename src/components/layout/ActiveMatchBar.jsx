@@ -6,8 +6,8 @@ import { LiveDot, MATCH_STEPS, matchHref, useMatchSummary } from "../cod/ActiveM
 import useActiveMatch from "../../hooks/useActiveMatch";
 import { Container } from "../ui/Container";
 
-/** Pages qui montrent déjà le match : hub MW4 (carte), files, feuilles de match. */
-const HIDDEN = ["/cod", "/cod/ranked", "/cod/division", "/cod/match/[id]", "/cod/equipes/match/[id]", "/auth/callback"];
+/** Pages qui montrent déjà le match : hub MW4 (carte) et feuilles de match. */
+const HIDDEN = ["/cod", "/cod/match/[id]", "/cod/equipes/match/[id]", "/auth/callback"];
 
 /**
  * Bandeau fin « Match en cours » collé sous le menu, sur toutes les autres pages tant que le joueur a un match en
