@@ -233,10 +233,6 @@ function TeamSheet() {
           </section>
 
           <aside className="space-y-6">
-            <TacticalCard innerClassName="p-6">
-              <Eyebrow>Derniers matchs</Eyebrow>
-              <TeamMatchHistory history={history} />
-            </TacticalCard>
             {userId && !isMember ? (
               <button type="button" onClick={() => setReporting(true)} className="inline-flex items-center gap-2 text-xs text-white/45 hover:text-loss">
                 <LuFlag aria-hidden className="h-3.5 w-3.5" />
@@ -253,6 +249,12 @@ function TeamSheet() {
         </div>
 
         <TeamStats teamId={team.id} points={team.points} position={team.position} />
+
+        {/* Derniers matchs, tout en bas de la fiche. */}
+        <TacticalCard innerClassName="p-6">
+          <Eyebrow>Derniers matchs</Eyebrow>
+          <TeamMatchHistory history={history} />
+        </TacticalCard>
       </Container>
 
       <ReasonDialog
