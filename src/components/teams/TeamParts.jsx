@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { LuCrown, LuQuote, LuShield } from "react-icons/lu";
+import { LuCrown, LuShield } from "react-icons/lu";
 import { cn } from "../../lib/cn";
 import { rankFor, rankGradient } from "../../lib/ranks";
 import { RankEmblem } from "../cod/RankEmblem";
@@ -84,14 +84,8 @@ export function MemberRow({ member, children = null, isMe = false }) {
           <RoleChip member={member} />
           {isMe ? <Chip className="shrink-0">Toi</Chip> : null}
         </p>
-        <p className="mt-1.5 truncate text-xs text-white/50">{rank.name} en classé</p>
-        {/* Devise choisie par un Leader ; rien s'il n'en a pas. */}
-        {member.motto ? (
-          <p className="mt-1.5 flex items-start gap-1.5 text-xs italic text-white/70">
-            <LuQuote aria-hidden className="mt-0.5 h-3 w-3 shrink-0 text-gold" />
-            <span className="truncate">{member.motto}</span>
-          </p>
-        ) : null}
+        {/* Surnom choisi par un Leader (champ motto) ; rien s'il n'en a pas. */}
+        {member.motto ? <p className="mt-1.5 truncate text-xs font-semibold text-gold">« {member.motto} »</p> : null}
       </div>
       {children}
     </li>
