@@ -405,8 +405,6 @@ export function MatchView({ matchId }) {
               avec les identifiants Activision ci-dessous. Une fois le match joué, n&apos;importe quel joueur déclare le vainqueur ;
               l&apos;équipe adverse confirme.
             </Notice>
-            {/* Réglages de la partie privée : seulement pour l'équipe de l'hôte (équipe A, l'hôte en est le premier joueur). */}
-            {myTeam === "A" ? <MatchRulesCard bestOf={1} isHost={match.team_a[0] === userId} /> : null}
             {myTeam ? (
               <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
                 <p className="font-display text-xl font-bold uppercase tracking-[0.12em] text-white/80 sm:mr-2">Qui a gagné ?</p>
@@ -643,6 +641,9 @@ export function MatchView({ matchId }) {
           </div>
         </TacticalCard>
       )}
+
+      {/* --- Réglages de la partie privée, en bas : seulement pour l'équipe de l'hôte (équipe A, l'hôte en est le premier joueur). */}
+      {match.status === "in_progress" && myTeam === "A" ? <MatchRulesCard bestOf={1} isHost={match.team_a[0] === userId} /> : null}
     </div>
   );
 }

@@ -100,8 +100,6 @@ export default function TeamMatchPage() {
         </TacticalCard>
 
         <MatchNotices match={match} name={name} />
-        {/* Réglages de la partie privée : seulement pour l'équipe hôte. */}
-        {match.status === "in_progress" && match.viewer?.side && match.viewer.side === match.hostSide ? <MatchRulesCard bestOf={match.bestOf} isHost /> : null}
 
         {match.status === "in_progress" && match.scores.length === 0 && !match.pendingScores ? <KickoffBlock match={match} name={name} onDone={load} /> : null}
         {match.status === "forfeit_claimed" ? <ForfeitBlock match={match} name={name} onDone={load} /> : null}
@@ -145,6 +143,9 @@ export default function TeamMatchPage() {
             </div>
           </TacticalCard>
         ) : null}
+
+        {/* Réglages de la partie privée, en bas : seulement pour l'équipe hôte. */}
+        {match.status === "in_progress" && match.viewer?.side && match.viewer.side === match.hostSide ? <MatchRulesCard bestOf={match.bestOf} isHost /> : null}
 
         <p>
           <Link href="/cod/equipes" className="group/l inline-flex items-center gap-3 font-display text-sm font-bold uppercase tracking-[0.14em] text-gold transition-colors hover:text-gold-light">
