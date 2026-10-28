@@ -26,22 +26,58 @@ export const REPORT_REASONS = {
   other: "Autre",
 };
 
-const MAX_IMAGE = 2 * 1024 * 1024;
-/** Les GIF animés peuvent peser plus lourd : 5 Mo (limite du bucket team-media, migration 0035). */
-const MAX_GIF = 5 * 1024 * 1024;
+/** Image choisie (avant compression) : 8 Mo au plus. */
+const MAX_IMAGE = 8 * 1024 * 1024;
+/** GIF animés envoyés tels quels (pas de compression possible dans le navigateur) : 1 Mo le logo, 2 Mo la bannière. */
+const MAX_GIF = { logo: 1024 * 1024, banner: 2 * 1024 * 1024 };
+/** Largeur maximale une fois compressée en WebP. */
+const MAX_WIDTH = { logo: 512, banner: 1920 };
+/** Miniature fixe d'un logo GIF (première image), affichée dans les listes à la place du GIF. */
+const MINI_WIDTH = 160;
 const TYPES = { "image/png": "png", "image/jpeg": "jpg", "image/webp": "webp", "image/gif": "gif" };
+
+/** Adresse de la miniature fixe d'un logo GIF (même nom, suffixe .mini.webp). */
+export function logoMiniUrl(url) {
+  return url && /.gif$/i.test(url) ? `${url}.mini.webp` : null;
+}
+
+/** Redimensionne une image (première image pour un GIF) et la compresse en WebP. */
+async function toWebp(file, maxWidth) {
+  const bitmap = await createImageBitmap(file);
+  const scale = Math.min(1, maxWidth / bitmap.width);
+  const canvas = document.createElement("canvas");
+  canvas.width = Math.round(bitmap.width * scale);
+  canvas.height = Math.round(bitmap.height * scale);
+  canvas.getContext("2d").drawImage(bitmap, 0, 0, canvas.width, canvas.height);
+  bitmap.close?.();
+  const blob = await new Promise((resolve) => canvas.toBlob(resolve, "image/webp", 0.85));
+  if (!blob) throw new Error("Image illisible. Essaie un autre fichier.");
+  return blob;
+}
+
+async function put(path, body, contentType) {
+  const { error } = await supabase.storage.from("team-media").upload(path, body, { contentType });
+  if (error) throw new Error("Envoi de l'image impossible. Réessaie dans un instant.");
+}
 
 /**
  * Envoie un logo ou une bannière dans le bucket public team-media (dossier du joueur) et
- * renvoie son adresse publique, à enregistrer ensuite par PATCH /teams/:id.
+ * renvoie son adresse publique, à enregistrer ensuite par PATCH /teams/:id. Les images fixes sont
+ * redimensionnées et compressées en WebP ; un logo GIF part tel quel avec sa miniature fixe.
  */
 export async function uploadTeamImage(file, userId, kind) {
   if (!TYPES[file.type]) throw new Error("Image PNG, JPEG, WebP ou GIF uniquement.");
-  const gif = file.type === "image/gif";
-  if (file.size > (gif ? MAX_GIF : MAX_IMAGE)) throw new Error(gif ? "GIF trop lourd (5 Mo au plus)." : "Image trop lourde (2 Mo au plus).");
-  const path = `${userId}/${kind}-${Date.now()}.${TYPES[file.type]}`;
-  const { error } = await supabase.storage.from("team-media").upload(path, file, { contentType: file.type });
-  if (error) throw new Error("Envoi de l'image impossible. Réessaie dans un instant.");
+  const stamp = `${userId}/${kind}-${Date.now()}`;
+  if (file.type === "image/gif") {
+    if (file.size > MAX_GIF[kind]) throw new Error(`GIF trop lourd (${kind === "logo" ? "1 Mo" : "2 Mo"} au plus).`);
+    const path = `${stamp}.gif`;
+    await put(path, file, "image/gif");
+    if (kind === "logo") await put(`${path}.mini.webp`, await toWebp(file, MINI_WIDTH), "image/webp").catch(() => {});
+    return supabase.storage.from("team-media").getPublicUrl(path).data.publicUrl;
+  }
+  if (file.size > MAX_IMAGE) throw new Error("Image trop lourde (8 Mo au plus).");
+  const path = `${stamp}.webp`;
+  await put(path, await toWebp(file, MAX_WIDTH[kind]), "image/webp");
   return supabase.storage.from("team-media").getPublicUrl(path).data.publicUrl;
 }
 

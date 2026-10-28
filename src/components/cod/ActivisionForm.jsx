@@ -4,7 +4,6 @@ import { cn } from "../../lib/cn";
 import { supabase } from "../../lib/supabase";
 import { Button } from "../ui/Button";
 import { Notice } from "../ui/Feedback";
-import { ScreenshotReader } from "./ScreenshotReader";
 
 const PLATFORMS = [
   { value: "pc", label: "PC" },
@@ -66,9 +65,6 @@ export function ActivisionForm({ user, onSaved = null }) {
           autoComplete="off"
           className="mt-2 h-12 w-full border border-white/12 bg-ink px-4 text-base text-white placeholder:text-white/30 focus:border-gold focus:outline-none"
         />
-        <div className="mt-3">
-          <ScreenshotReader onRead={setActivisionId} />
-        </div>
       </div>
 
       <fieldset>

@@ -115,7 +115,7 @@ export default function EventPage() {
             {state.cancelled ? <Notice tone="error">Cet événement a été annulé.</Notice> : null}
 
             <img
-              src={event.cover_url && event.cover_url.startsWith("https://") ? event.cover_url : "/images/grand-theft-auto-vi-3840x2160-22311.jpg"}
+              src={event.cover_url && event.cover_url.startsWith("https://") ? event.cover_url : "/images/gta6.webp"}
               alt=""
               loading="lazy"
               referrerPolicy="no-referrer"

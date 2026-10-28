@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { LuCrown, LuShield } from "react-icons/lu";
 import { cn } from "../../lib/cn";
+import { logoMiniUrl } from "../../lib/teams";
 import { rankFor, rankGradient } from "../../lib/ranks";
 import { RankEmblem } from "../cod/RankEmblem";
 import { Avatar } from "../ui/Avatar";
@@ -8,7 +9,8 @@ import { Chip } from "../ui/Feedback";
 
 /**
  * Blason d'équipe : logo envoyé par l'équipe (GIF animé possible), sinon son tag, dans un cadre néon
- * à la couleur de l'équipe (liseré lumineux, halo proportionnel à la taille).
+ * à la couleur de l'équipe (liseré lumineux, halo proportionnel à la taille). En petit (listes), un logo GIF
+ * est remplacé par sa miniature fixe (logoMiniUrl), bien plus légère ; le GIF s'il n'en a pas.
  */
 export function TeamCrest({ team, size = 56, className = "" }) {
   const color = team?.color ?? "#d4af37";
@@ -26,7 +28,17 @@ export function TeamCrest({ team, size = 56, className = "" }) {
       }}
     >
       {team?.logoUrl ? (
-        <img src={team.logoUrl} alt="" width={size - 4} height={size - 4} loading="lazy" className="h-full w-full bg-ink-800 object-cover" />
+        <img
+          src={(size < 72 && logoMiniUrl(team.logoUrl)) || team.logoUrl}
+          onError={(event) => {
+            if (event.currentTarget.src !== team.logoUrl) event.currentTarget.src = team.logoUrl;
+          }}
+          alt=""
+          width={size - 4}
+          height={size - 4}
+          loading="lazy"
+          className="h-full w-full bg-ink-800 object-cover"
+        />
       ) : (
         <span
           aria-hidden

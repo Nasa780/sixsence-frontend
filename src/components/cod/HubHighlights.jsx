@@ -47,10 +47,14 @@ export function HubHighlights() {
         .then((d) => alive && setData(d))
         .catch(() => {});
     load();
-    const timer = setInterval(load, 60000);
+    // Onglet caché : pas de relecture ; relu dès qu'il redevient visible.
+    const timer = setInterval(() => document.visibilityState === "visible" && load(), 60000);
+    const onShow = () => document.visibilityState === "visible" && load();
+    document.addEventListener("visibilitychange", onShow);
     return () => {
       alive = false;
       clearInterval(timer);
+      document.removeEventListener("visibilitychange", onShow);
     };
   }, []);
 
@@ -159,10 +163,14 @@ export function LiveFeed() {
         .then((d) => alive && setFeed(d.feed ?? []))
         .catch(() => alive && setFeed([]));
     load();
-    const timer = setInterval(load, 60000);
+    // Onglet caché : pas de relecture ; relu dès qu'il redevient visible.
+    const timer = setInterval(() => document.visibilityState === "visible" && load(), 60000);
+    const onShow = () => document.visibilityState === "visible" && load();
+    document.addEventListener("visibilitychange", onShow);
     return () => {
       alive = false;
       clearInterval(timer);
+      document.removeEventListener("visibilitychange", onShow);
     };
   }, []);
   return (
