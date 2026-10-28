@@ -16,6 +16,8 @@ import { FEED, ago } from "../cod/HubHighlights";
 const COLORS = { classe: "#34d399", division: "#22d3ee", tournoi: "#e5484d", gta: "#ff6a3d", or: "#d4af37" };
 const CUP_PAGE = { horus: "/cod/tournoi", anubis: "/cod/tournoi?coupe=anubis", saison: "/cod/tournoi?coupe=saison", playin: "/cod/tournoi?coupe=playin" };
 const DAY = 86_400_000;
+/** Nombre à la française avec une espace insécable normale : l’espace fine du format fr-FR n’existe pas dans la police des titres. */
+const num = (n) => n.toLocaleString("fr-FR").replace(/ /g, " ");
 const plural = (n, word) => `${n} ${word}${n > 1 ? "s" : ""}`;
 const hour = (iso) => new Date(iso).toLocaleTimeString("fr-FR", { hour: "2-digit", minute: "2-digit" });
 const day = (iso) => {
@@ -66,11 +68,11 @@ function itemsOf(live) {
   }
   if (live.leaders?.classe) {
     const p = live.leaders.classe;
-    calm.push({ key: "leader-classe", icon: LuCrown, color: COLORS.classe, label: "Leader du Classé", value: `${p.username} · ${p.points.toLocaleString("fr-FR")} pts`, sub: `${p.wins} V / ${p.losses} D`, href: `/cod/profile/${p.id}` });
+    calm.push({ key: "leader-classe", icon: LuCrown, color: COLORS.classe, label: "Leader du Classé", value: `${p.username} · ${num(p.points)} pts`, sub: `${p.wins} V / ${p.losses} D`, href: `/cod/profile/${p.id}` });
   }
   if (MATCH_TEAM_ENABLED && live.leaders?.division) {
     const t = live.leaders.division;
-    calm.push({ key: "leader-division", icon: LuCrown, color: COLORS.division, label: "Leader de la Division", value: `[${t.tag}] ${t.name}`, sub: `${t.points.toLocaleString("fr-FR")} pts`, href: `/cod/equipes/${t.id}` });
+    calm.push({ key: "leader-division", icon: LuCrown, color: COLORS.division, label: "Leader de la Division", value: `[${t.tag}] ${t.name}`, sub: `${num(t.points)} pts`, href: `/cod/equipes/${t.id}` });
   }
   if (live.lastMatch) {
     const m = live.lastMatch;
