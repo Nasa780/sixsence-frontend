@@ -12,7 +12,7 @@ import { fieldClass, labelClass } from "./TeamParts";
  */
 
 /** Force de l'équipe : moyenne des points Classé de ses joueurs, et sa place parmi les équipes actives. */
-export function TeamStrength({ strength, players }) {
+export function TeamStrength({ strength }) {
   if (!strength) return null;
   return (
     <div className="flex flex-wrap items-center gap-x-8 gap-y-3 border border-white/10 bg-white/[0.03] px-5 py-4">
@@ -26,11 +26,7 @@ export function TeamStrength({ strength, players }) {
         </div>
       </div>
       <p className="min-w-0 flex-1 basis-56 text-sm text-white/60">
-        Moyenne des points Classé de {players > 1 ? `ses ${players} joueurs` : "son joueur"} :{" "}
-        <span className="font-semibold text-white">
-          {strength.position === 1 ? "1re" : `${strength.position}e`} équipe la plus forte sur {strength.total}
-        </span>
-        .
+        niveau moyen de l&apos;équipe en Classé · <span className="font-semibold text-white">#{strength.position} sur {strength.total}</span>
       </p>
     </div>
   );

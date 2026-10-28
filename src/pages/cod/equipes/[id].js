@@ -215,7 +215,7 @@ function TeamSheet() {
         {/* Force de l'équipe, et recrutement ouvert avec le message des Leaders. */}
         {team.disbanded ? null : (
           <div className="space-y-3">
-            <TeamStrength strength={team.strength} players={team.members.length} />
+            <TeamStrength strength={team.strength} />
             <RecruitingBanner team={team} />
           </div>
         )}
