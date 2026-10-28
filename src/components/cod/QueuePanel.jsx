@@ -662,12 +662,7 @@ export function ReadyCheckOverlay({ check, started, userId }) {
                   </ButtonLink>
                 </p>
                   </>
-                ) : (
-                  // « Prêt ? » facultatif : rien à cliquer, le match démarre tout seul à la fin du compte à rebours.
-                  <p className="mt-8 font-display text-xl font-bold uppercase tracking-[0.12em] text-white/80">
-                    Prépare-toi et rejoins le vocal : la feuille de match s&apos;ouvre toute seule.
-                  </p>
-                )}
+                ) : null}
               </>
             ) : null}
           </motion.div>
