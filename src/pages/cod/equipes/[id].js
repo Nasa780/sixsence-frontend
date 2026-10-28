@@ -214,35 +214,31 @@ function TeamSheet() {
         </TacticalCard>
         ) : null}
 
-        {/* Force de l'équipe, et recrutement ouvert avec le message des Leaders. */}
+        {/* Recrutement ouvert avec le message des Leaders, puis force de l'équipe. */}
         {team.disbanded ? null : (
           <div className="space-y-3">
-            <TeamStrength strength={team.strength} />
             <RecruitingBanner team={team} />
+            <TeamStrength strength={team.strength} />
           </div>
         )}
 
         <TeamTrophyCase trophies={team.trophies} />
 
-        <div className="grid gap-10 lg:grid-cols-[2fr_1fr]">
-          <section aria-label="Effectif">
-            <RosterHeading title="Effectif" count={team.members.length} max={TEAM_LIMITS.maxMembers} gold />
-            <ul className="mt-3 space-y-2">
-              {team.members.map((member) => (
-                <MemberRow key={member.id} member={member} isMe={member.id === userId} />
-              ))}
-            </ul>
-          </section>
-
-          <aside className="space-y-6">
-            {userId && !isMember ? (
-              <button type="button" onClick={() => setReporting(true)} className="inline-flex items-center gap-2 text-xs text-white/45 hover:text-loss">
-                <LuFlag aria-hidden className="h-3.5 w-3.5" />
-                Signaler cette équipe
-              </button>
-            ) : null}
-          </aside>
-        </div>
+        {/* Effectif sur toute la largeur (deux colonnes sur ordinateur). */}
+        <section aria-label="Effectif">
+          <RosterHeading title="Effectif" count={team.members.length} max={TEAM_LIMITS.maxMembers} gold />
+          <ul className="mt-3 grid gap-2 lg:grid-cols-2">
+            {team.members.map((member) => (
+              <MemberRow key={member.id} member={member} isMe={member.id === userId} />
+            ))}
+          </ul>
+          {userId && !isMember ? (
+            <button type="button" onClick={() => setReporting(true)} className="mt-3 inline-flex items-center gap-2 text-xs text-white/45 hover:text-loss">
+              <LuFlag aria-hidden className="h-3.5 w-3.5" />
+              Signaler cette équipe
+            </button>
+          ) : null}
+        </section>
 
         <TeamStats teamId={team.id} points={team.points} position={team.position} />
 
