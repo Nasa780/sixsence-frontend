@@ -2,7 +2,7 @@ import Link from "next/link";
 import { useCallback, useEffect, useState } from "react";
 import { LuExternalLink, LuImagePlus, LuLoaderCircle, LuRotateCcw } from "react-icons/lu";
 import { api } from "../../lib/api";
-import { generatedPoster, isCustomPoster, uploadCupPoster } from "../../lib/cups";
+import { generatedPoster, uploadCupPoster } from "../../lib/cups";
 import { cn } from "../../lib/cn";
 import { TeamCrest, fieldClass, labelClass } from "../teams/TeamParts";
 import { Button } from "../ui/Button";
@@ -15,11 +15,10 @@ const VIA = { circuit: "Circuit", playin: "Play-in", division: "Division" };
 const dateFr = (iso) => new Date(iso).toLocaleString("fr-FR", { weekday: "short", day: "numeric", month: "short", hour: "2-digit", minute: "2-digit" });
 
 /**
- * Onglet admin « Tournoi » : Coupe Horus et Coupe Anubis (coupes automatiques, rendez-vous, coupe ponctuelle), play-in
- * puis tournoi de fin de saison (aperçu des qualifiés, création), suivi (rencontres bloquées, vainqueur désigné à la
- * main), annulation.
+ * Tournoi de fin de saison (sous-onglet Fin de saison) : aperçu des qualifiés, création, suivi (rencontres bloquées,
+ * vainqueur désigné à la main), annulation.
  */
-export function TournamentPanel() {
+function SeasonTab() {
   const [current, setCurrent] = useState(undefined);
   const [form, setForm] = useState({ name: "", startsAt: "", size: 16 });
   const [preview, setPreview] = useState(null);
@@ -60,28 +59,12 @@ export function TournamentPanel() {
 
   return (
     <div className="space-y-10">
-      <CupPanel kind="horus" />
-      <CupPanel kind="anubis" />
-      <PlayInPanel />
       <h2 className="border-t border-white/10 pt-8 font-display text-3xl font-black uppercase leading-none">Tournoi de fin de saison</h2>
       {error ? <Notice tone="error">{error}</Notice> : null}
       {message ? <Notice tone="success">{message}</Notice> : null}
       {current === undefined ? <Loading /> : null}
 
       {current ? <ActiveTournamentCard current={current} pending={pending} run={run} onCancel={() => setCancelling(true)} /> : null}
-      {current && current.status !== "completed" && current.status !== "cancelled" ? (
-        <TacticalCard innerClassName="p-5">
-          <p className={labelClass}>Affiche de la coupe en cours</p>
-          <div className="mt-3">
-            <PosterField
-              poster={current.posterUrl}
-              custom={isCustomPoster(current.posterUrl)}
-              disabled={pending !== null}
-              onChange={(url) => run("poster", () => api(`/admin/cups/${current.id}/poster`, { method: "POST", body: { posterUrl: url } }), url ? "Affiche enregistrée." : "Affiche générée rétablie.")}
-            />
-          </div>
-        </TacticalCard>
-      ) : null}
 
       {!active && current !== undefined ? (
         <section aria-labelledby="titre-nouveau-tournoi" className="grid gap-8 lg:grid-cols-[1fr_1fr]">
@@ -191,7 +174,7 @@ function ActiveTournamentCard({ current, pending, run, onCancel }) {
           <Chip tone={current.status === "running" ? "win" : current.status === "cancelled" ? "loss" : current.status === "completed" ? "neutral" : "gold"}>{STATUS[current.status]}</Chip>
         </div>
         <div className="flex flex-wrap gap-3">
-          <Link href={current.kind === "horus" ? "/cod/tournoi" : current.kind === "anubis" ? "/cod/tournoi?coupe=anubis" : current.kind === "playin" ? "/cod/tournoi?coupe=playin" : "/cod/tournoi?coupe=saison"} className="inline-flex items-center gap-1.5 text-sm font-semibold text-gold underline underline-offset-4">
+          <Link href={`/cod/tournoi?id=${current.id}`} className="inline-flex items-center gap-1.5 text-sm font-semibold text-gold underline underline-offset-4">
             Voir le tableau
             <LuExternalLink aria-hidden className="h-3.5 w-3.5" />
           </Link>
@@ -363,18 +346,6 @@ function PlayInPanel() {
 }
 
 const WEEKDAYS = ["Dimanche", "Lundi", "Mardi", "Mercredi", "Jeudi", "Vendredi", "Samedi"];
-const CUP_TEXT = {
-  horus: {
-    eyebrow: "Coupes d'équipe à inscription libre",
-    title: "Coupe Horus",
-    lines: ["Si les coupes automatiques sont activées, chaque rendez-vous ouvre sa coupe tout seul, chaque semaine.", "Points de Division gagnés : 1er +150, 2e +100, 3e +75, les autres équipes présentes +50."],
-  },
-  anubis: {
-    eyebrow: "Inscription solo, équipes tirées au sort",
-    title: "Coupe Anubis",
-    lines: ["Si les coupes automatiques sont activées, chaque rendez-vous ouvre sa coupe tout seul, chaque semaine.", "Récompenses : médailles d'or, d'argent et de bronze sur le profil des joueurs (pas de points)."],
-  },
-};
 
 /**
  * Affiche d'une coupe ou d'un rendez-vous : aperçu, envoi d'une image (compressée en WebP), retour à l'affiche générée.
@@ -421,25 +392,223 @@ function PosterField({ poster, custom, onChange, disabled = false, compact = fal
   );
 }
 
+/** Heure locale du navigateur pour un champ datetime-local : « 2026-11-01T20:30 ». */
+const toLocalInput = (iso) => {
+  if (!iso) return "";
+  const date = new Date(iso);
+  const pad = (value) => String(value).padStart(2, "0");
+  return `${date.getFullYear()}-${pad(date.getMonth() + 1)}-${pad(date.getDate())}T${pad(date.getHours())}:${pad(date.getMinutes())}`;
+};
+
+const KIND_NAME = { horus: "Coupe Horus", anubis: "Coupe Anubis" };
+const CUP_STATUS = {
+  scheduled: ["Prévue", "gold"],
+  running: ["En cours", "win"],
+  completed: ["Terminée", "neutral"],
+  cancelled: ["Annulée", "loss"],
+};
+
 /**
- * Coupe Horus ou Anubis (admin) : interrupteur des coupes automatiques (commun), rendez-vous récurrents (jour,
- * heure, format, taille des équipes pour l'Anubis), coupe ponctuelle, suivi de la coupe en cours.
+ * Formulaire d'une coupe (date et heure) ou d'un rendez-vous (jour et heure chaque semaine), en création ou en
+ * modification : type (Horus / Anubis), nom, date, format, affiche. `lockFormat` : check-in ouvert, seuls le nom et
+ * l'affiche changent. onSubmit(body) envoie au backend.
  */
-function CupPanel({ kind }) {
-  const anubis = kind === "anubis";
+function CupForm({ mode, initial = null, lockFormat = false, testTeamSize = false, onSubmit, onCancel }) {
+  const editing = Boolean(initial);
+  const [form, setForm] = useState(() => ({
+    kind: initial?.kind ?? "horus",
+    name: initial?.name ?? "",
+    startsAt: toLocalInput(initial?.startsAt),
+    weekday: initial?.weekday ?? 0,
+    time: initial?.time ?? "20:00",
+    size: initial?.size ?? 8,
+    bestOf: initial?.bestOf ?? 3,
+    finalBestOf: initial?.finalBestOf ?? 3,
+    bracket: initial?.bracket ?? "single",
+    teamSize: initial?.teamSize ?? 4,
+    posterUrl: initial?.posterUrl ?? null,
+  }));
+  const [pending, setPending] = useState(false);
+  const [error, setError] = useState(null);
+  const anubis = form.kind === "anubis";
+  const set = (patch) => setForm((current) => ({ ...current, ...patch }));
+
+  async function submit(event) {
+    event.preventDefault();
+    setPending(true);
+    setError(null);
+    try {
+      const body = { kind: form.kind, name: form.name.trim(), size: form.size, bestOf: form.bestOf, finalBestOf: form.finalBestOf, bracket: form.bracket, posterUrl: form.posterUrl, ...(anubis ? { teamSize: form.teamSize } : {}) };
+      await onSubmit(mode === "schedule" ? { ...body, weekday: form.weekday, time: form.time } : { ...body, startsAt: new Date(form.startsAt).toISOString() });
+    } catch (caught) {
+      setError(caught.message);
+    } finally {
+      setPending(false);
+    }
+  }
+
+  const ready = form.name.trim().length >= 3 && (mode === "schedule" || form.startsAt);
+  return (
+    <form onSubmit={submit} className="space-y-4 border border-gold/30 bg-gold/[0.03] p-5">
+      <div className="flex flex-wrap items-center justify-between gap-3">
+        <p className="font-display text-xl font-black uppercase leading-none">
+          {editing ? (mode === "schedule" ? "Modifier le rendez-vous" : "Modifier la coupe") : mode === "schedule" ? "Nouveau rendez-vous" : "Nouvelle coupe"}
+        </p>
+        {editing ? (
+          <Chip>{KIND_NAME[form.kind]}</Chip>
+        ) : (
+          <div className="flex gap-2">
+            {["horus", "anubis"].map((kind) => (
+              <Button key={kind} type="button" size="sm" variant={form.kind === kind ? "primary" : "outline"} onClick={() => set({ kind, bestOf: kind === "anubis" ? 1 : 3, finalBestOf: 3 })}>
+                {KIND_NAME[kind]}
+              </Button>
+            ))}
+          </div>
+        )}
+      </div>
+      {lockFormat ? <Notice>Le check-in est ouvert : seuls le nom et l&apos;affiche se modifient encore.</Notice> : null}
+
+      <div className="grid gap-5 lg:grid-cols-[minmax(0,1fr)_20rem]">
+        <div className="min-w-0 space-y-4">
+          <div>
+            <label htmlFor={`f-name-${mode}`} className={labelClass}>
+              Nom
+            </label>
+            <input id={`f-name-${mode}`} className={fieldClass} maxLength={60} placeholder={anubis ? "Coupe Anubis · Le Jugement" : "Coupe Horus · Le Faucon"} value={form.name} onChange={(event) => set({ name: event.target.value })} />
+          </div>
+          {mode === "schedule" ? (
+            <div className="grid gap-4 sm:grid-cols-2">
+              <div>
+                <label htmlFor="f-day" className={labelClass}>
+                  Jour
+                </label>
+                <select id="f-day" className={fieldClass} value={form.weekday} onChange={(event) => set({ weekday: Number(event.target.value) })}>
+                  {WEEKDAYS.map((day, index) => (
+                    <option key={day} value={index}>
+                      {day}
+                    </option>
+                  ))}
+                </select>
+              </div>
+              <div>
+                <label htmlFor="f-time" className={labelClass}>
+                  Heure (Paris)
+                </label>
+                <input id="f-time" type="time" className={fieldClass} value={form.time} onChange={(event) => set({ time: event.target.value })} />
+              </div>
+            </div>
+          ) : (
+            <div>
+              <label htmlFor="f-start" className={labelClass}>
+                Début (heure de Paris)
+              </label>
+              <input id="f-start" type="datetime-local" disabled={lockFormat} className={cn(fieldClass, "disabled:opacity-50")} value={form.startsAt} onChange={(event) => set({ startsAt: event.target.value })} />
+            </div>
+          )}
+          <fieldset disabled={lockFormat} className={cn("min-w-0 space-y-4", lockFormat && "opacity-50")}>
+            <div className={cn("grid gap-4", anubis ? "sm:grid-cols-4" : "sm:grid-cols-3")}>
+              {anubis ? (
+                <div>
+                  <label htmlFor={`f-team-${mode}`} className={labelClass}>
+                    Joueurs / équipe
+                  </label>
+                  <select id={`f-team-${mode}`} className={fieldClass} value={form.teamSize} onChange={(event) => set({ teamSize: Number(event.target.value) })}>
+                    {(testTeamSize ? [1, 2, 3, 4] : [2, 3, 4]).map((size) => (
+                      <option key={size} value={size}>
+                        {size}v{size}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+              ) : null}
+              <div>
+                <label htmlFor={`f-size-${mode}`} className={labelClass}>
+                  Équipes max
+                </label>
+                <select id={`f-size-${mode}`} className={fieldClass} value={form.size} onChange={(event) => set({ size: Number(event.target.value) })}>
+                  {[4, 8, 16].map((size) => (
+                    <option key={size} value={size}>
+                      {size}
+                    </option>
+                  ))}
+                </select>
+              </div>
+              <div>
+                <label htmlFor={`f-bo-${mode}`} className={labelClass}>
+                  Matchs
+                </label>
+                <select id={`f-bo-${mode}`} className={fieldClass} value={form.bestOf} onChange={(event) => set({ bestOf: Number(event.target.value), finalBestOf: 3 })}>
+                  <option value={1}>BO1</option>
+                  <option value={3}>BO3</option>
+                </select>
+              </div>
+              <div>
+                <label htmlFor={`f-final-${mode}`} className={labelClass}>
+                  Finale
+                </label>
+                <select id={`f-final-${mode}`} className={fieldClass} value={form.finalBestOf} onChange={(event) => set({ finalBestOf: Number(event.target.value) })}>
+                  <option value={3}>BO3</option>
+                  {form.bestOf === 3 ? <option value={5}>BO5</option> : null}
+                </select>
+              </div>
+            </div>
+            <div className="flex flex-wrap gap-2">
+              {[
+                ["single", "Élimination directe"],
+                ["double", "Double élimination"],
+              ].map(([bracket, label]) => (
+                <Button key={bracket} type="button" size="sm" variant={form.bracket === bracket ? "primary" : "outline"} onClick={() => set({ bracket })}>
+                  {label}
+                </Button>
+              ))}
+            </div>
+          </fieldset>
+        </div>
+        <div>
+          <p className={labelClass}>Affiche</p>
+          <div className="mt-2">
+            <PosterField
+              poster={form.posterUrl ?? generatedPoster({ kind: form.kind, name: form.name, size: form.size, bestOf: form.bestOf, bracket: form.bracket, teamSize: form.teamSize })}
+              custom={Boolean(form.posterUrl)}
+              onChange={(url) => set({ posterUrl: url })}
+            />
+          </div>
+        </div>
+      </div>
+
+      {error ? <Notice tone="error">{error}</Notice> : null}
+      <div className="flex flex-wrap gap-2">
+        <Button type="submit" disabled={pending || !ready}>
+          {pending ? <LuLoaderCircle aria-hidden className="h-5 w-5 animate-spin" /> : null}
+          {editing ? "Enregistrer" : mode === "schedule" ? "Créer le rendez-vous" : "Créer la coupe"}
+        </Button>
+        <Button type="button" variant="ghost" onClick={onCancel}>
+          Annuler
+        </Button>
+      </div>
+    </form>
+  );
+}
+
+/** Miniature d'affiche d'une ligne de liste. */
+function PosterThumb({ src }) {
+  return <img src={src} alt="" loading="lazy" className="h-16 w-12 shrink-0 border border-white/10 bg-ink object-contain" />;
+}
+
+/**
+ * Onglet « Coupes » : toutes les Coupes Horus et Anubis (à venir et en cours, puis terminées) avec affiche, statut,
+ * places et check-ins ; actions par coupe (voir, modifier, gérer le tableau, annuler) ; « Nouvelle coupe ».
+ */
+function CupsTab() {
   const [state, setState] = useState(null);
-  const [current, setCurrent] = useState(undefined);
-  const [form, setForm] = useState({ name: "", mode: "recurrent", weekday: anubis ? 6 : 0, time: "20:00", startsAt: "", size: 8, bestOf: anubis ? 1 : 3, finalBestOf: 3, bracket: "single", teamSize: 4, posterUrl: null });
+  const [editing, setEditing] = useState(null);
+  const [managed, setManaged] = useState(null);
+  const [cancelling, setCancelling] = useState(null);
   const [pending, setPending] = useState(null);
   const [error, setError] = useState(null);
   const [message, setMessage] = useState(null);
-  const [cancelling, setCancelling] = useState(false);
 
-  const load = useCallback(async () => {
-    const [admin, cup] = await Promise.all([api("/admin/cups"), api(`/teams/tournament?kind=${kind}`)]);
-    setState(admin);
-    setCurrent(cup.tournament);
-  }, [kind]);
+  const load = useCallback(() => api("/admin/cups").then(setState), []);
   useEffect(() => {
     load().catch((caught) => setError(caught.message));
   }, [load]);
@@ -452,6 +621,7 @@ function CupPanel({ kind }) {
       await action();
       if (done) setMessage(done);
       await load();
+      if (managed) setManaged(await api(`/teams/tournaments/${managed.id}`));
       return true;
     } catch (caught) {
       setError(caught.message);
@@ -461,206 +631,312 @@ function CupPanel({ kind }) {
     }
   }
 
-  const body = { kind, name: form.name, size: form.size, bestOf: form.bestOf, finalBestOf: form.finalBestOf, bracket: form.bracket, posterUrl: form.posterUrl, ...(anubis ? { teamSize: form.teamSize } : {}) };
-  const schedules = state ? state.schedules.filter((schedule) => (schedule.kind ?? "horus") === kind) : [];
-  const submit = () =>
-    form.mode === "recurrent"
-      ? run("create", () => api("/admin/cups/schedules", { method: "POST", body: { ...body, weekday: form.weekday, time: form.time } }), "Rendez-vous créé.")
-      : run("create", () => api("/admin/cups", { method: "POST", body: { ...body, startsAt: new Date(form.startsAt).toISOString() } }), "Coupe créée : les inscriptions sont ouvertes.");
+  async function manage(cup) {
+    if (managed?.id === cup.id) return setManaged(null);
+    setError(null);
+    try {
+      setManaged(await api(`/teams/tournaments/${cup.id}`));
+    } catch (caught) {
+      setError(caught.message);
+    }
+  }
 
   if (!state) return error ? <Notice tone="error">{error}</Notice> : <Loading />;
-  return (
-    <section aria-labelledby={`titre-coupe-${kind}`} className={cn("space-y-6", anubis && "border-t border-white/10 pt-8")}>
-      <div className="flex flex-wrap items-end justify-between gap-4">
-        <div>
-          <p className={labelClass}>{CUP_TEXT[kind].eyebrow}</p>
-          <h2 id={`titre-coupe-${kind}`} className="font-display text-3xl font-black uppercase leading-none">
-            {CUP_TEXT[kind].title}
-          </h2>
-        </div>
-        {anubis ? null : <Button variant={state.auto ? "primary" : "outline"} disabled={pending !== null} onClick={() => run("auto", () => api("/admin/cups/auto", { method: "POST", body: { on: !state.auto } }), state.auto ? "Coupes automatiques désactivées." : "Coupes automatiques activées.")}>
-          {state.auto ? "Coupes automatiques : activées" : "Coupes automatiques : désactivées"}
-        </Button>}
-      </div>
-      <ul className="space-y-1 text-sm text-white/60">
-        {CUP_TEXT[kind].lines.map((line) => (
-          <li key={line} className="flex gap-2">
-            <span aria-hidden className="mt-2 h-1 w-1 shrink-0 bg-gold" />
-            {line}
-          </li>
-        ))}
-      </ul>
-      {error ? <Notice tone="error">{error}</Notice> : null}
-      {message ? <Notice tone="success">{message}</Notice> : null}
+  const open = state.cups.filter((cup) => cup.status === "scheduled" || cup.status === "running");
+  const done = state.cups.filter((cup) => cup.status === "completed" || cup.status === "cancelled");
+  const now = Date.now();
 
-      {current ? <ActiveTournamentCard current={current} pending={pending} run={run} onCancel={() => setCancelling(true)} /> : null}
-
-      <div className="grid gap-6 lg:grid-cols-2">
-        <TacticalCard innerClassName="space-y-3 p-6">
-          <p className={labelClass}>Rendez-vous</p>
-          {schedules.length === 0 ? <p className="text-sm text-white/50">Aucun rendez-vous pour l&apos;instant.</p> : null}
-          {schedules.map((schedule) => (
-            <div key={schedule.id} className={cn("space-y-2 border-l-2 bg-white/[0.03] px-3 py-3", schedule.active ? "border-gold" : "border-white/10 opacity-60")}>
-              <p className="font-display text-lg font-bold uppercase leading-none">{schedule.name}</p>
-              <PosterField
-                compact
-                poster={schedule.poster}
-                custom={Boolean(schedule.posterUrl)}
-                disabled={pending !== null}
-                onChange={(url) => run(`p-${schedule.id}`, () => api(`/admin/cups/schedules/${schedule.id}/poster`, { method: "POST", body: { posterUrl: url } }), url ? "Affiche du rendez-vous enregistrée : elle sera reprise par ses prochaines coupes." : "Affiche générée rétablie.")}
-              />
-              <p className="text-xs text-white/55">
-                {WEEKDAYS[schedule.weekday]} {schedule.time} · {schedule.size} équipes{anubis ? ` de ${schedule.teamSize}` : ""} · {schedule.bracket === "double" ? "double élimination" : "élimination directe"} · BO{schedule.bestOf}, finale BO{schedule.finalBestOf}
-                {schedule.active && state.auto ? ` · prochaine : ${dateFr(schedule.next)}` : ""}
-              </p>
-              <div className="flex flex-wrap gap-2">
-                <Button size="sm" variant="outline" disabled={pending !== null} onClick={() => run(`a-${schedule.id}`, () => api(`/admin/cups/schedules/${schedule.id}`, { method: "PATCH", body: { active: !schedule.active } }))}>
-                  {schedule.active ? "Mettre en pause" : "Réactiver"}
-                </Button>
-                <Button size="sm" variant="ghost" disabled={pending !== null} onClick={() => run(`d-${schedule.id}`, () => api(`/admin/cups/schedules/${schedule.id}`, { method: "DELETE" }), "Rendez-vous supprimé.")}>
-                  Supprimer
-                </Button>
-              </div>
-            </div>
-          ))}
-        </TacticalCard>
-
-        <TacticalCard innerClassName="space-y-4 p-6">
-          <p className={labelClass}>Nouvelle coupe</p>
-          <div className="flex gap-2">
-            {[["recurrent", "Chaque semaine"], ["once", "Une seule fois"]].map(([mode, label]) => (
-              <Button key={mode} size="sm" variant={form.mode === mode ? "primary" : "outline"} onClick={() => setForm({ ...form, mode })}>
-                {label}
-              </Button>
-            ))}
-          </div>
-          <div>
-            <label htmlFor={`c-name-${kind}`} className={labelClass}>
-              Nom
-            </label>
-            <input id={`c-name-${kind}`} className={fieldClass} maxLength={60} placeholder={anubis ? "Coupe Anubis · Le Jugement" : "Coupe Horus · Le Faucon"} value={form.name} onChange={(event) => setForm({ ...form, name: event.target.value })} />
-          </div>
-          {form.mode === "recurrent" ? (
-            <div className="grid gap-4 sm:grid-cols-2">
-              <div>
-                <label htmlFor={`c-day-${kind}`} className={labelClass}>
-                  Jour
-                </label>
-                <select id={`c-day-${kind}`} className={fieldClass} value={form.weekday} onChange={(event) => setForm({ ...form, weekday: Number(event.target.value) })}>
-                  {WEEKDAYS.map((day, index) => (
-                    <option key={day} value={index}>
-                      {day}
-                    </option>
-                  ))}
-                </select>
-              </div>
-              <div>
-                <label htmlFor={`c-time-${kind}`} className={labelClass}>
-                  Heure (Paris)
-                </label>
-                <input id={`c-time-${kind}`} type="time" className={fieldClass} value={form.time} onChange={(event) => setForm({ ...form, time: event.target.value })} />
-              </div>
-            </div>
-          ) : (
-            <div>
-              <label htmlFor={`c-start-${kind}`} className={labelClass}>
-                Début (heure de Paris)
-              </label>
-              <input id={`c-start-${kind}`} type="datetime-local" className={fieldClass} value={form.startsAt} onChange={(event) => setForm({ ...form, startsAt: event.target.value })} />
-            </div>
-          )}
-          <div className={cn("grid gap-4", anubis ? "sm:grid-cols-4" : "sm:grid-cols-3")}>
-            {anubis ? (
-              <div>
-                <label htmlFor={`c-team-${kind}`} className={labelClass}>
-                  Joueurs / équipe
-                </label>
-                <select id={`c-team-${kind}`} className={fieldClass} value={form.teamSize} onChange={(event) => setForm({ ...form, teamSize: Number(event.target.value) })}>
-                  {(state.testTeamSize ? [1, 2, 3, 4] : [2, 3, 4]).map((size) => (
-                    <option key={size} value={size}>
-                      {size}v{size}
-                    </option>
-                  ))}
-                </select>
-              </div>
-            ) : null}
-            <div>
-              <label htmlFor={`c-size-${kind}`} className={labelClass}>
-                Équipes max
-              </label>
-              <select id={`c-size-${kind}`} className={fieldClass} value={form.size} onChange={(event) => setForm({ ...form, size: Number(event.target.value) })}>
-                {[4, 8, 16].map((size) => (
-                  <option key={size} value={size}>
-                    {size}
-                  </option>
-                ))}
-              </select>
-            </div>
-            <div>
-              <label htmlFor={`c-bo-${kind}`} className={labelClass}>
-                Matchs
-              </label>
-              <select id={`c-bo-${kind}`} className={fieldClass} value={form.bestOf} onChange={(event) => setForm({ ...form, bestOf: Number(event.target.value), finalBestOf: 3 })}>
-                <option value={1}>BO1</option>
-                <option value={3}>BO3</option>
-              </select>
-            </div>
-            <div>
-              <label htmlFor={`c-final-${kind}`} className={labelClass}>
-                Finale
-              </label>
-              <select id={`c-final-${kind}`} className={fieldClass} value={form.finalBestOf} onChange={(event) => setForm({ ...form, finalBestOf: Number(event.target.value) })}>
-                <option value={3}>BO3</option>
-                {form.bestOf === 3 ? <option value={5}>BO5</option> : null}
-              </select>
-            </div>
+  const row = (cup) => {
+    const [label, tone] = CUP_STATUS[cup.status] ?? ["?", "neutral"];
+    const checkInOpen = cup.status === "scheduled" && now >= new Date(cup.checkInOpensAt).getTime();
+    return (
+      <li key={cup.id} className="space-y-3">
+        <div className="flex flex-wrap items-center gap-4 border-l-2 border-white/10 bg-white/[0.03] px-3 py-3">
+          <PosterThumb src={cup.poster} />
+          <div className="min-w-0 flex-1">
+            <p className="flex flex-wrap items-center gap-2">
+              <span className="truncate font-display text-lg font-black uppercase leading-none">{cup.name}</span>
+              <Chip tone={tone}>{label}</Chip>
+              {checkInOpen ? <Chip tone="gold">Check-in ouvert</Chip> : null}
+            </p>
+            <p className="mt-1 text-xs text-white/55">
+              {KIND_NAME[cup.kind]} · {dateFr(cup.startsAt)} · {cup.kind === "anubis" ? `${cup.teamSize}v${cup.teamSize}, ` : ""}BO{cup.bestOf}, finale BO{cup.finalBestOf} · {cup.bracket === "double" ? "double élimination" : "élimination directe"}
+              {cup.scheduleId ? " · rendez-vous" : ""}
+            </p>
+            <p className="mt-1 text-xs text-white/70">
+              {cup.registered}/{cup.capacity} {cup.kind === "anubis" ? "joueurs" : "équipes"}
+              {cup.status === "scheduled" && checkInOpen ? ` · check-in ${cup.checkedIn}/${cup.registered}` : ""}
+            </p>
           </div>
           <div className="flex flex-wrap gap-2">
-            {[["single", "Élimination directe"], ["double", "Double élimination"]].map(([bracket, label]) => (
-              <Button key={bracket} size="sm" variant={form.bracket === bracket ? "primary" : "outline"} onClick={() => setForm({ ...form, bracket })}>
-                {label}
+            <Link href={`/cod/tournoi?id=${cup.id}`} className="inline-flex items-center gap-1 px-2 py-1.5 text-xs font-semibold text-gold underline underline-offset-4">
+              Voir
+              <LuExternalLink aria-hidden className="h-3 w-3" />
+            </Link>
+            {cup.status === "scheduled" ? (
+              <Button size="sm" variant="outline" disabled={pending !== null} onClick={() => setEditing(editing === cup.id ? null : cup.id)}>
+                Modifier
               </Button>
-            ))}
+            ) : null}
+            {cup.status === "running" ? (
+              <Button size="sm" variant="outline" disabled={pending !== null} onClick={() => manage(cup)}>
+                {managed?.id === cup.id ? "Fermer" : "Gérer le tableau"}
+              </Button>
+            ) : null}
+            {cup.status === "scheduled" || cup.status === "running" ? (
+              <Button size="sm" variant="ghost" disabled={pending !== null} onClick={() => setCancelling(cup)}>
+                Annuler
+              </Button>
+            ) : null}
           </div>
-          <p className="text-xs text-white/45">
-            {form.bracket === "double"
-              ? "Double élimination : une 2e défaite élimine ; grande finale en un seul match, bronze au perdant de la finale des perdants."
-              : "Élimination directe avec petite finale (bronze)."}{" "}
-            {anubis
-              ? `Jusqu'à ${form.size * (form.teamSize + 1)} inscrits (un remplaçant par équipe). Moins de 4 équipes complètes au check-in : coupe annulée.`
-              : "Tableau tiré au sort. Moins de 4 équipes présentes au check-in : coupe annulée."}
-          </p>
-          <div>
-            <p className={labelClass}>Affiche</p>
-            <div className="mt-2">
-              <PosterField
-                poster={form.posterUrl ?? generatedPoster({ kind, name: form.name, size: form.size, bestOf: form.bestOf, bracket: form.bracket, teamSize: form.teamSize })}
-                custom={Boolean(form.posterUrl)}
-                onChange={(url) => setForm({ ...form, posterUrl: url })}
-              />
-            </div>
-          </div>
-          <Button disabled={pending !== null || form.name.trim().length < 3 || (form.mode === "once" && !form.startsAt)} onClick={submit}>
-            {pending === "create" ? <LuLoaderCircle aria-hidden className="h-5 w-5 animate-spin" /> : null}
-            {form.mode === "recurrent" ? "Créer le rendez-vous" : "Créer la coupe"}
-          </Button>
-        </TacticalCard>
+        </div>
+        {editing === cup.id ? (
+          <CupForm
+            mode="cup"
+            initial={cup}
+            lockFormat={checkInOpen}
+            testTeamSize={state.testTeamSize}
+            onCancel={() => setEditing(null)}
+            onSubmit={async (body) => {
+              setState(await api(`/admin/cups/${cup.id}`, { method: "PATCH", body }));
+              setEditing(null);
+              setMessage("Coupe modifiée.");
+            }}
+          />
+        ) : null}
+        {managed?.id === cup.id ? <ActiveTournamentCard current={managed} pending={pending} run={run} onCancel={() => setCancelling(cup)} /> : null}
+      </li>
+    );
+  };
+
+  return (
+    <div className="space-y-6">
+      <div className="flex flex-wrap items-center justify-between gap-3">
+        <p className="text-sm text-white/60">Toutes les Coupes Horus et Anubis. Une coupe se modifie jusqu&apos;au check-in (2 h avant), son nom et son affiche jusqu&apos;au début.</p>
+        {editing === "new" ? null : <Button onClick={() => setEditing("new")}>Nouvelle coupe</Button>}
       </div>
+      {error ? <Notice tone="error">{error}</Notice> : null}
+      {message ? <Notice tone="success">{message}</Notice> : null}
+      {editing === "new" ? (
+        <CupForm
+          mode="cup"
+          testTeamSize={state.testTeamSize}
+          onCancel={() => setEditing(null)}
+          onSubmit={async (body) => {
+            setState(await api("/admin/cups", { method: "POST", body }));
+            setEditing(null);
+            setMessage("Coupe créée : les inscriptions sont ouvertes.");
+          }}
+        />
+      ) : null}
+
+      <section aria-labelledby="titre-coupes-ouvertes" className="space-y-3">
+        <p id="titre-coupes-ouvertes" className={labelClass}>
+          À venir et en cours ({open.length})
+        </p>
+        {open.length === 0 ? <p className="text-sm text-white/50">Aucune coupe prévue.</p> : <ul className="space-y-2">{open.map(row)}</ul>}
+      </section>
+      {done.length ? (
+        <section aria-labelledby="titre-coupes-finies" className="space-y-3">
+          <p id="titre-coupes-finies" className={labelClass}>
+            Terminées et annulées
+          </p>
+          <ul className="space-y-2 opacity-80">{done.map(row)}</ul>
+        </section>
+      ) : null}
 
       <ConfirmDialog
-        open={cancelling}
-        onClose={() => setCancelling(false)}
-        title="Annuler la coupe ?"
+        open={Boolean(cancelling)}
+        onClose={() => setCancelling(null)}
+        title={`Annuler « ${cancelling?.name ?? ""} » ?`}
         confirmLabel="Annuler la coupe"
         tone="danger"
         pending={pending !== null}
         onConfirm={async () => {
-          const ok = await run("cancel", () => api(`/admin/tournaments/${current.id}`, { method: "DELETE" }), "Coupe annulée.");
-          if (ok) setCancelling(false);
+          const ok = await run("cancel", () => api(`/admin/tournaments/${cancelling.id}`, { method: "DELETE" }), "Coupe annulée.");
+          if (ok) {
+            setCancelling(null);
+            setManaged(null);
+          }
         }}
       >
-        Les matchs en cours sont annulés et aucune récompense n&apos;est attribuée. Action définitive.
+        Les inscrits sont prévenus, les matchs en cours sont annulés et aucune récompense n&apos;est attribuée. Action définitive.
       </ConfirmDialog>
-    </section>
+    </div>
+  );
+}
+
+/**
+ * Onglet « Rendez-vous » : coupes automatiques (interrupteur commun Horus et Anubis) et rendez-vous de chaque semaine,
+ * modifiables (jour, heure, nom, format, affiche reprise par les prochaines coupes), en pause ou supprimés.
+ */
+function SchedulesTab() {
+  const [state, setState] = useState(null);
+  const [editing, setEditing] = useState(null);
+  const [deleting, setDeleting] = useState(null);
+  const [pending, setPending] = useState(null);
+  const [error, setError] = useState(null);
+  const [message, setMessage] = useState(null);
+
+  const load = useCallback(() => api("/admin/cups").then(setState), []);
+  useEffect(() => {
+    load().catch((caught) => setError(caught.message));
+  }, [load]);
+
+  async function run(key, action, done) {
+    setPending(key);
+    setError(null);
+    setMessage(null);
+    try {
+      setState(await action());
+      if (done) setMessage(done);
+      return true;
+    } catch (caught) {
+      setError(caught.message);
+      return false;
+    } finally {
+      setPending(null);
+    }
+  }
+
+  if (!state) return error ? <Notice tone="error">{error}</Notice> : <Loading />;
+  return (
+    <div className="space-y-6">
+      <TacticalCard innerClassName="flex flex-wrap items-center justify-between gap-4 p-5">
+        <div className="max-w-xl">
+          <p className="font-display text-xl font-black uppercase leading-none">Coupes automatiques</p>
+          <p className="mt-1.5 text-sm text-white/60">
+            Activées : chaque rendez-vous actif ouvre sa coupe tout seul, chaque semaine, dès la précédente terminée.
+          </p>
+        </div>
+        <Button
+          variant={state.auto ? "primary" : "outline"}
+          disabled={pending !== null}
+          onClick={() => run("auto", () => api("/admin/cups/auto", { method: "POST", body: { on: !state.auto } }), state.auto ? "Coupes automatiques désactivées." : "Coupes automatiques activées.")}
+        >
+          {state.auto ? "Activées" : "Désactivées"}
+        </Button>
+      </TacticalCard>
+
+      <div className="flex flex-wrap items-center justify-between gap-3">
+        <p className="text-sm text-white/60">Récompenses : Coupe Horus 1er +150, 2e +100, 3e +75, autres présentes +50 (points de Division) ; Coupe Anubis médailles sur le profil.</p>
+        {editing === "new" ? null : <Button onClick={() => setEditing("new")}>Nouveau rendez-vous</Button>}
+      </div>
+      {error ? <Notice tone="error">{error}</Notice> : null}
+      {message ? <Notice tone="success">{message}</Notice> : null}
+      {editing === "new" ? (
+        <CupForm
+          mode="schedule"
+          testTeamSize={state.testTeamSize}
+          onCancel={() => setEditing(null)}
+          onSubmit={async (body) => {
+            setState(await api("/admin/cups/schedules", { method: "POST", body }));
+            setEditing(null);
+            setMessage("Rendez-vous créé.");
+          }}
+        />
+      ) : null}
+
+      {state.schedules.length === 0 ? <p className="text-sm text-white/50">Aucun rendez-vous pour l&apos;instant.</p> : null}
+      <ul className="space-y-2">
+        {state.schedules.map((schedule) => (
+          <li key={schedule.id} className="space-y-3">
+            <div className={cn("flex flex-wrap items-center gap-4 border-l-2 bg-white/[0.03] px-3 py-3", schedule.active ? "border-gold" : "border-white/10 opacity-60")}>
+              <PosterThumb src={schedule.poster} />
+              <div className="min-w-0 flex-1">
+                <p className="flex flex-wrap items-center gap-2">
+                  <span className="truncate font-display text-lg font-black uppercase leading-none">{schedule.name}</span>
+                  <Chip tone={schedule.active ? "win" : "neutral"}>{schedule.active ? "Actif" : "En pause"}</Chip>
+                </p>
+                <p className="mt-1 text-xs text-white/55">
+                  {KIND_NAME[schedule.kind ?? "horus"]} · chaque {WEEKDAYS[schedule.weekday].toLowerCase()} à {schedule.time} · {schedule.size} équipes
+                  {schedule.kind === "anubis" ? ` de ${schedule.teamSize}` : ""} · BO{schedule.bestOf}, finale BO{schedule.finalBestOf} · {schedule.bracket === "double" ? "double élimination" : "élimination directe"}
+                </p>
+                {schedule.active && state.auto ? <p className="mt-1 text-xs text-white/70">Prochaine coupe : {dateFr(schedule.next)}</p> : null}
+              </div>
+              <div className="flex flex-wrap gap-2">
+                <Button size="sm" variant="outline" disabled={pending !== null} onClick={() => setEditing(editing === schedule.id ? null : schedule.id)}>
+                  Modifier
+                </Button>
+                <Button size="sm" variant="ghost" disabled={pending !== null} onClick={() => run(`a-${schedule.id}`, () => api(`/admin/cups/schedules/${schedule.id}`, { method: "PATCH", body: { active: !schedule.active } }))}>
+                  {schedule.active ? "Mettre en pause" : "Réactiver"}
+                </Button>
+                <Button size="sm" variant="ghost" disabled={pending !== null} onClick={() => setDeleting(schedule)}>
+                  Supprimer
+                </Button>
+              </div>
+            </div>
+            {editing === schedule.id ? (
+              <CupForm
+                mode="schedule"
+                initial={schedule}
+                testTeamSize={state.testTeamSize}
+                onCancel={() => setEditing(null)}
+                onSubmit={async (body) => {
+                  setState(await api(`/admin/cups/schedules/${schedule.id}`, { method: "PATCH", body }));
+                  setEditing(null);
+                  setMessage("Rendez-vous modifié : ses prochaines coupes reprennent ces réglages.");
+                }}
+              />
+            ) : null}
+          </li>
+        ))}
+      </ul>
+
+      <ConfirmDialog
+        open={Boolean(deleting)}
+        onClose={() => setDeleting(null)}
+        title={`Supprimer « ${deleting?.name ?? ""} » ?`}
+        confirmLabel="Supprimer"
+        tone="danger"
+        pending={pending !== null}
+        onConfirm={async () => {
+          const ok = await run("delete", () => api(`/admin/cups/schedules/${deleting.id}`, { method: "DELETE" }), "Rendez-vous supprimé.");
+          if (ok) setDeleting(null);
+        }}
+      >
+        Plus aucune coupe ne s&apos;ouvrira pour ce rendez-vous. Une coupe déjà ouverte continue normalement.
+      </ConfirmDialog>
+    </div>
+  );
+}
+
+const SUBTABS = [
+  ["coupes", "Coupes"],
+  ["rendez-vous", "Rendez-vous"],
+  ["saison", "Fin de saison"],
+];
+
+/** Onglet admin « Tournoi » : sous-onglets Coupes, Rendez-vous et Fin de saison (play-in compris). */
+export function TournamentPanel() {
+  const [tab, setTab] = useState("coupes");
+  return (
+    <div className="space-y-8">
+      <div role="tablist" aria-label="Tournois" className="flex gap-1 overflow-x-auto border-b border-white/10">
+        {SUBTABS.map(([id, label]) => (
+          <button
+            key={id}
+            type="button"
+            role="tab"
+            aria-selected={tab === id}
+            onClick={() => setTab(id)}
+            className={cn(
+              "-mb-px shrink-0 border-b-2 px-4 py-3 font-display text-sm font-black uppercase tracking-[0.14em] transition-colors",
+              tab === id ? "border-gold text-gold" : "border-transparent text-white/50 hover:text-white",
+            )}
+          >
+            {label}
+          </button>
+        ))}
+      </div>
+      {tab === "coupes" ? <CupsTab /> : null}
+      {tab === "rendez-vous" ? <SchedulesTab /> : null}
+      {tab === "saison" ? (
+        <div className="space-y-10">
+          <PlayInPanel />
+          <SeasonTab />
+        </div>
+      ) : null}
+    </div>
   );
 }
