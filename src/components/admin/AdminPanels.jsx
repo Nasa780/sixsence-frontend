@@ -219,7 +219,7 @@ export function DisputesPanel() {
                 {new Date(match.reported_at || match.created_at).toLocaleString("fr-FR", { day: "numeric", month: "short", hour: "2-digit", minute: "2-digit" })}
               </p>
               <Link href={`/cod/match/${match.id}`} className="mt-2 inline-flex items-center gap-1.5 text-sm text-gold underline underline-offset-4">
-                Voir le match, le chat et les preuves
+                Voir le match, le tchat et les preuves
                 <LuExternalLink aria-hidden className="h-3.5 w-3.5" />
               </Link>
             </div>
@@ -615,7 +615,7 @@ export function CasesPanel({ kind }) {
                     {item.details ? <p className="mt-2 whitespace-pre-wrap text-sm text-white/80">« {item.details} »</p> : null}
                     {item.match_id ? (
                       <Link href={`/cod/match/${item.match_id}`} className="mt-2 inline-flex items-center gap-1.5 text-sm text-gold underline underline-offset-4">
-                        Voir le match, le chat et les preuves
+                        Voir le match, le tchat et les preuves
                         <LuExternalLink aria-hidden className="h-3.5 w-3.5" />
                       </Link>
                     ) : null}

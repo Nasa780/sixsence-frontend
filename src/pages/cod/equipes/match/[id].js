@@ -1047,7 +1047,7 @@ function ForfeitBlock({ match, name, onDone }) {
         pending={pending}
         onConfirm={() => answer(ask === "accept")}
       >
-        {ask === "accept" ? "Ton équipe perd le match (points et XP d'une défaite)." : "Un arbitre SixSence tranchera : explique la situation dans le chat."}
+        {ask === "accept" ? "Ton équipe perd le match (points et XP d'une défaite)." : "Un arbitre SixSence tranchera : explique la situation dans le tchat."}
       </ConfirmDialog>
     </TacticalCard>
   );
@@ -1084,7 +1084,7 @@ function MatchChat({ match, name, userId, onDone }) {
   return (
     <TacticalCard innerClassName="space-y-4 p-6">
       <div className="flex flex-wrap items-end justify-between gap-2">
-        <Eyebrow>Chat du match</Eyebrow>
+        <Eyebrow>Tchat du match</Eyebrow>
         <p className="text-xs text-white/40">Joueurs du match, Leaders et arbitres seulement</p>
       </div>
       <ul ref={listRef} className="max-h-80 space-y-2 overflow-y-auto pr-1">

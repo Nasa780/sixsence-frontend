@@ -75,7 +75,7 @@ function DIVISION_SECTIONS() {
             kill, une bombe posée ou toute autre action). La partie reprend au même score dans les <strong>5 minutes</strong>, même si le joueur
           n&apos;a pas réussi à se reconnecter.
           </li>
-          <li>Le chat du match est réservé aux joueurs du match, aux Leaders des deux équipes et aux arbitres.</li>
+          <li>Le tchat du match est réservé aux joueurs du match, aux Leaders des deux équipes et aux arbitres.</li>
         </ul>
       ),
     },
@@ -148,7 +148,7 @@ function DIVISION_SECTIONS() {
             inscrit ; sans check-in, l&apos;équipe est déclarée forfait.
           </li>
           <li>
-            Les matchs suivent le même déroulé que la Division (hôte, code de la partie, chat, forfait) : BO3, finale en BO5, sans points
+            Les matchs suivent le même déroulé que la Division (hôte, code de la partie, tchat, forfait) : BO3, finale en BO5, sans points
             d&apos;équipe en jeu.
           </li>
           <li>
@@ -407,7 +407,13 @@ const SECTIONS = [
         </li>
         <li>
           L&apos;<strong>hôte</strong> est tiré au sort et indiqué dans le salon de match : il crée la partie privée sur la carte tirée au
-          sort et invite les autres joueurs grâce aux identifiants Activision affichés dans le salon.
+          sort et donne son code dans le champ « Code de la partie » de la feuille de match dans les <strong>10 minutes</strong>. Tous les
+          joueurs ont ensuite <strong>15 minutes</strong> pour rejoindre la partie et commencer.
+        </li>
+        <li>
+          Passé ces 15 minutes, les joueurs peuvent <strong>voter l&apos;annulation</strong> du match : il est annulé, sans point perdu, dès
+          qu&apos;au moins la moitié des joueurs de chaque équipe a voté pour. Un joueur absent se signale depuis la feuille de match : un
+          arbitre tranche et peut le sanctionner.
         </li>
         <li>Les équipes tirées au sort doivent être respectées : personne ne prend la place d&apos;un joueur du match.</li>
         <li>
@@ -416,7 +422,7 @@ const SECTIONS = [
           kill, une bombe posée ou toute autre action). La partie reprend au même score dans les <strong>5 minutes</strong>, même si le joueur
           n&apos;a pas réussi à se reconnecter.
         </li>
-        <li>Le chat du salon et, s&apos;il est actif, le salon vocal Discord servent à s&apos;organiser.</li>
+        <li>Le tchat du salon et, s&apos;il est actif, le salon vocal Discord servent à s&apos;organiser.</li>
       </ul>
     ),
   },

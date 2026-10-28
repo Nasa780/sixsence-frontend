@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { useRouter } from "next/router";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { LuCheck, LuCrown, LuFlag, LuImagePlus, LuLoaderCircle, LuLock, LuMap, LuRotateCcw, LuSend, LuShieldAlert, LuStar, LuSwords, LuX } from "react-icons/lu";
+import { LuBan, LuCheck, LuCopy, LuCrown, LuFlag, LuHouse, LuImagePlus, LuLoaderCircle, LuLock, LuMap, LuPencil, LuRotateCcw, LuSend, LuShieldAlert, LuStar, LuSwords, LuUserX, LuX } from "react-icons/lu";
 import useCountdown from "../../hooks/useCountdown";
 import useSession from "../../hooks/useSession";
 import useUser from "../../hooks/useUser";
@@ -13,7 +13,7 @@ import { groupLabel, rankFor, rankGradient } from "../../lib/ranks";
 import { isReferee } from "../../lib/roles";
 import { supabase } from "../../lib/supabase";
 import useTeamTags from "../../hooks/useTeamTags";
-import { TeamTag } from "../teams/TeamParts";
+import { TeamTag, fieldClass } from "../teams/TeamParts";
 import { Avatar } from "../ui/Avatar";
 import { Button } from "../ui/Button";
 import { Chip, EmptyState, Loading, Notice } from "../ui/Feedback";
@@ -401,11 +401,7 @@ export function MatchView({ matchId }) {
 
         {match.status === "in_progress" ? (
           <>
-            <Notice>
-              <strong className="font-semibold text-white">{hostName}</strong> crée la partie privée et invite les autres joueurs
-              avec les identifiants Activision ci-dessous. Une fois le match joué, n&apos;importe quel joueur déclare le vainqueur ;
-              l&apos;équipe adverse confirme.
-            </Notice>
+            <KickoffBlock data={data} userId={userId} myTeam={myTeam} hostName={hostName} playerById={playerById} onDone={load} />
             {myTeam ? (
               <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
                 <p className="font-display text-xl font-bold uppercase tracking-[0.12em] text-white/80 sm:mr-2">Qui a gagné ?</p>
@@ -494,7 +490,9 @@ export function MatchView({ matchId }) {
           <Notice>
             {match.cancel_reason === "ready_check_failed"
               ? "Match annulé : tous les joueurs n'ont pas accepté à temps. Les joueurs prêts ont été remis automatiquement en tête de file."
-              : "Ce match a été annulé : aucun point n'a été modifié."}
+              : match.cancel_reason === "vote"
+                ? "Match annulé par le vote des joueurs : aucun point n'a été modifié."
+                : "Ce match a été annulé : aucun point n'a été modifié."}
           </Notice>
         ) : null}
 
@@ -600,7 +598,7 @@ export function MatchView({ matchId }) {
         open={dialog?.kind === "arbitration"}
         onClose={() => setDialog(null)}
         title="Demander un arbitrage"
-        intro="Un admin est prévenu et peut consulter le chat et les captures du match. Ajoute une capture si tu en as une."
+        intro="Un admin est prévenu et peut consulter le tchat et les captures du match. Ajoute une capture si tu en as une."
         reasons={ARBITRATION_REASONS}
         submitLabel="Envoyer la demande"
         onSubmit={async ({ reason, details }) => {
@@ -636,16 +634,224 @@ export function MatchView({ matchId }) {
           <div>
             <p className="font-display text-xl font-black uppercase leading-none">Salon privé</p>
             <p className="mt-2 text-sm text-white/55">
-              Le chat et les captures de ce match sont réservés à ses joueurs et aux admins.
+              Le tchat et les captures de ce match sont réservés à ses joueurs et aux admins.
               {userId ? null : " Joueur de ce match ? Connecte-toi pour y accéder."}
             </p>
           </div>
         </TacticalCard>
       )}
 
-      {/* --- Réglages de la partie privée, en bas : seulement pour l'équipe de l'hôte (équipe A, l'hôte en est le premier joueur). */}
-      {match.status === "in_progress" && myTeam === "A" ? <MatchRulesCard bestOf={1} isHost={match.team_a[0] === userId} /> : null}
+      {/* Réglages de la partie privée, en bas : seulement pour l'équipe hôte (équipe 1, l'hôte en est le premier joueur), comme en Division. */}
+      {match.status === "in_progress" && myTeam === "A" ? <MatchRulesCard bestOf={1} isHost /> : null}
     </div>
+  );
+}
+
+const mmss = (seconds) => `${Math.floor(seconds / 60)}:${String(Math.floor(seconds % 60)).padStart(2, "0")}`;
+
+/**
+ * Lancement du match, comme en Division : l'hôte (premier joueur de l'équipe 1) crée la partie privée et donne son code
+ * (10 min indiquées, modifiable), 15 min pour lancer la partie. Ensuite seulement : vote d'annulation (au moins la moitié
+ * des joueurs de chaque équipe, points rendus) et signalement d'un absent (demande d'arbitrage « Joueur absent »).
+ */
+function KickoffBlock({ data, userId, myTeam, hostName, playerById, onDone }) {
+  const { match } = data;
+  const [pending, setPending] = useState(null);
+  const [error, setError] = useState(null);
+  const [code, setCode] = useState("");
+  const [editing, setEditing] = useState(false);
+  const [copied, setCopied] = useState(false);
+  const [absent, setAbsent] = useState("");
+  const [absentSent, setAbsentSent] = useState(false);
+  const hostLeft = useCountdown(data.hostDeadline);
+  const launchLeft = useCountdown(data.launchDeadline);
+  const isHost = match.team_a[0] === userId;
+  const given = Boolean(match.game_code_at);
+  const votes = match.cancel_votes || [];
+  const voteOpen = Boolean(myTeam && data.launchDeadline && launchLeft <= 0);
+  const iVoted = votes.includes(userId);
+  const countIn = (team) => team.filter((id) => votes.includes(id)).length;
+  const needIn = (team) => Math.ceil(team.length / 2);
+
+  async function run(key, path, body) {
+    setPending(key);
+    setError(null);
+    try {
+      await api(`/cod/matches/${match.id}/${path}`, { method: "POST", body });
+      await onDone();
+      return true;
+    } catch (caught) {
+      setError(caught.message);
+      return false;
+    } finally {
+      setPending(null);
+    }
+  }
+
+  async function saveCode(event) {
+    event.preventDefault();
+    if (await run("code", "code", { code: code.trim() })) {
+      setEditing(false);
+      setCode("");
+    }
+  }
+
+  async function copy() {
+    try {
+      await navigator.clipboard.writeText(data.gameCode);
+      setCopied(true);
+      setTimeout(() => setCopied(false), 1500);
+    } catch {
+      // Presse-papiers indisponible : le code reste affiché.
+    }
+  }
+
+  async function reportAbsent() {
+    const player = playerById.get(absent);
+    if (await run("absent", "arbitration", { reason: "afk", details: `Joueur absent après 15 min : ${player?.username ?? "?"}` })) setAbsentSent(true);
+  }
+
+  return (
+    <TacticalCard highlight innerClassName="space-y-5 p-6">
+      <div>
+        <Eyebrow>Lancement du match</Eyebrow>
+        <div className={cn("mt-3 flex flex-wrap items-center gap-3 border-l-2 px-4 py-3", isHost ? "border-gold bg-gold/10" : "border-white/30 bg-white/[0.04]")}>
+          <LuHouse aria-hidden className={cn("h-6 w-6 shrink-0", isHost ? "text-gold" : "text-white/60")} />
+          <div className="min-w-0 flex-1">
+            <p className="font-display text-2xl font-black uppercase leading-none">
+              {isHost ? (
+                <span className="text-gold">Tu es l&apos;hôte</span>
+              ) : (
+                <>
+                  Hôte : <span className="text-gold">{hostName}</span>
+                </>
+              )}
+            </p>
+            <p className="mt-1.5 text-sm text-white/60">
+              {isHost ? "Crée la partie privée et partage le code de la partie privée ci-dessous." : <>« {hostName} » crée la partie privée et partage le code de la partie privée.</>}
+            </p>
+          </div>
+        </div>
+      </div>
+
+      {/* Code de la partie : délai tant qu'il n'est pas donné, puis le code (joueurs du match et arbitres), modifiable par l'hôte. */}
+      <div className="border border-white/10 bg-white/[0.03] p-5">
+        <div className="flex flex-wrap items-start justify-between gap-4">
+          <div className="min-w-0">
+            <p className="font-tech text-[10px] uppercase tracking-[0.24em] text-white/45">Code de la partie privée</p>
+            {given ? (
+              data.gameCode ? (
+                <p className="mt-2 break-all font-tech text-3xl font-bold tracking-[0.12em] text-gold sm:text-4xl">{data.gameCode}</p>
+              ) : (
+                <p className="mt-2 font-display text-3xl font-black uppercase leading-none text-win">Donné</p>
+              )
+            ) : (
+              <p className={cn("mt-2 font-display text-4xl font-black leading-none tabular-nums", hostLeft > 0 ? "text-white" : "text-loss")}>{hostLeft > 0 ? mmss(hostLeft) : "En retard"}</p>
+            )}
+            <p className="mt-2 text-xs text-white/45">
+              {given ? `Donné à ${new Date(match.game_code_at).toLocaleTimeString("fr-FR", { hour: "2-digit", minute: "2-digit" })}` : `${hostName} a 10 min pour le donner.`}
+            </p>
+          </div>
+          {given && data.gameCode ? (
+            <div className="flex flex-wrap gap-2">
+              <Button variant="outline" size="sm" onClick={copy}>
+                {copied ? <LuCheck aria-hidden className="h-4 w-4" /> : <LuCopy aria-hidden className="h-4 w-4" />}
+                {copied ? "Copié" : "Copier"}
+              </Button>
+              {isHost && !editing ? (
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => {
+                    setCode(data.gameCode);
+                    setEditing(true);
+                  }}
+                >
+                  <LuPencil aria-hidden className="h-4 w-4" />
+                  Modifier
+                </Button>
+              ) : null}
+            </div>
+          ) : null}
+        </div>
+        {isHost && (!given || editing) ? (
+          <form onSubmit={saveCode} className="mt-4 flex flex-col gap-2 sm:flex-row">
+            <input
+              className={fieldClass}
+              maxLength={40}
+              autoFocus={editing}
+              placeholder="Code de la partie privée"
+              aria-label="Code de la partie privée"
+              value={code}
+              onChange={(event) => setCode(event.target.value)}
+            />
+            <Button type="submit" disabled={pending !== null || !code.trim()} className="shrink-0">
+              {pending === "code" ? <LuLoaderCircle aria-hidden className="h-5 w-5 animate-spin" /> : <LuCheck aria-hidden className="h-5 w-5" />}
+              {given ? "Modifier" : "Valider le code"}
+            </Button>
+            {editing ? (
+              <Button type="button" variant="ghost" onClick={() => setEditing(false)} className="shrink-0">
+                Annuler
+              </Button>
+            ) : null}
+          </form>
+        ) : null}
+      </div>
+
+      <div className="flex items-center justify-between gap-4 border-l-2 border-gold/60 bg-white/[0.03] px-4 py-3">
+        <div className="min-w-0">
+          <p className="font-tech text-[10px] uppercase tracking-[0.24em] text-white/45">Lancement de la partie</p>
+          <p className="mt-1 text-xs text-white/45">Tous les joueurs ont 15 min pour rejoindre la partie et commencer.</p>
+        </div>
+        <p className={cn("font-display text-3xl font-black leading-none tabular-nums", launchLeft > 0 ? "text-white" : "text-loss")}>{launchLeft > 0 ? mmss(launchLeft) : "Temps écoulé"}</p>
+      </div>
+
+      {/* Après les 15 min : vote d'annulation et signalement d'un absent (joueurs du match). */}
+      {voteOpen ? (
+        <div className="space-y-4 border-t border-white/10 pt-5">
+          <div className="flex flex-wrap items-center justify-between gap-4">
+            <div className="min-w-0">
+              <p className="font-display text-xl font-black uppercase leading-none">Annuler le match ?</p>
+              <p className="mt-1.5 text-sm text-white/55">
+                Annulé (aucun point perdu) si au moins la moitié des joueurs de chaque équipe vote pour.{" "}
+                <span className="text-white/80">
+                  Équipe 1 : {countIn(match.team_a)}/{needIn(match.team_a)} · Équipe 2 : {countIn(match.team_b)}/{needIn(match.team_b)}
+                </span>
+              </p>
+            </div>
+            <Button variant={iVoted ? "outline" : "danger"} size="sm" disabled={pending !== null} onClick={() => run("vote", "cancel-vote", { vote: !iVoted })}>
+              {pending === "vote" ? <LuLoaderCircle aria-hidden className="h-4 w-4 animate-spin" /> : iVoted ? <LuX aria-hidden className="h-4 w-4" /> : <LuBan aria-hidden className="h-4 w-4" />}
+              {iVoted ? "Retirer mon vote" : "Voter l'annulation"}
+            </Button>
+          </div>
+          <div className="flex flex-col gap-2 sm:flex-row sm:items-center">
+            <p className="text-sm text-white/55 sm:mr-auto">Un joueur n&apos;a pas rejoint la partie ? Un arbitre tranche et peut le sanctionner.</p>
+            {absentSent ? (
+              <p className="text-sm font-semibold text-win">Demande envoyée à un arbitre.</p>
+            ) : (
+              <>
+                <select className={cn(fieldClass, "py-2 sm:w-48")} aria-label="Joueur absent" value={absent} onChange={(event) => setAbsent(event.target.value)}>
+                  <option value="">Joueur absent…</option>
+                  {[...match.team_a, ...match.team_b]
+                    .filter((id) => id !== userId)
+                    .map((id) => (
+                      <option key={id} value={id}>
+                        {playerById.get(id)?.username ?? "?"}
+                      </option>
+                    ))}
+                </select>
+                <Button variant="outline" size="sm" disabled={!absent || pending !== null} onClick={reportAbsent} className="shrink-0">
+                  {pending === "absent" ? <LuLoaderCircle aria-hidden className="h-4 w-4 animate-spin" /> : <LuUserX aria-hidden className="h-4 w-4" />}
+                  Signaler un absent
+                </Button>
+              </>
+            )}
+          </div>
+        </div>
+      ) : null}
+      {error ? <Notice tone="error">{error}</Notice> : null}
+      <p className="text-xs text-white/40">Une fois le match joué, n&apos;importe quel joueur déclare le vainqueur ; l&apos;équipe adverse confirme.</p>
+    </TacticalCard>
   );
 }
 
@@ -894,7 +1100,7 @@ function MatchChat({ matchId, messages, canWrite, currentUserId }) {
     <section aria-labelledby="titre-chat">
       <Eyebrow>Salon</Eyebrow>
       <h2 id="titre-chat" className="mt-3 font-display text-4xl font-black uppercase leading-none">
-        Chat du match
+        Tchat du match
       </h2>
 
       <TacticalCard cut={20} className="mt-6" innerClassName="flex flex-col">
