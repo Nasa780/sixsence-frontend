@@ -27,7 +27,6 @@ import { Chip, Notice } from "../ui/Feedback";
 import { TacticalCard } from "../ui/TacticalCard";
 import { AppPanel } from "./AppPanel";
 import { PointsAtStake } from "./PointsAtStake";
-import { ActiveMatchBanner } from "./ActiveMatchBanner";
 import { mapImage } from "../../lib/maps";
 import { PartyPanel } from "./PartyPanel";
 import { GROUPS_ENABLED, READY_REQUIRED } from "../../lib/config";
@@ -387,7 +386,14 @@ export function QueuePanel({ profileComplete, userId }) {
 
             {tooBig ? <Notice tone="error">Ton groupe compte {groupSize} joueurs : trop pour du {selected?.label}. Choisis une autre file.</Notice> : null}
 
-            {hasActiveMatch ? <ActiveMatchBanner matchId={queue.activeMatchId} text="Termine-le avant de relancer une recherche." /> : null}
+            {hasActiveMatch ? (
+              <Notice>
+                Tu as un match en cours : termine-le avant de relancer une recherche.{" "}
+                <Link href={`/cod/match/${queue.activeMatchId}`} className="font-semibold text-gold underline underline-offset-4 hover:text-gold-light">
+                  Retour au match
+                </Link>
+              </Notice>
+            ) : null}
 
             {disputed && disputed.id !== queue.activeMatchId ? (
               <Notice>
