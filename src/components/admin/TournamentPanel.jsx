@@ -433,7 +433,7 @@ function CupForm({ mode, initial = null, lockFormat = false, testTeamSize = fals
     setPending(true);
     setError(null);
     try {
-      const body = { kind: form.kind, name: form.name.trim(), size: form.size, bestOf: form.bestOf, finalBestOf: form.finalBestOf, bracket: form.bracket, posterUrl: form.posterUrl, ...(anubis ? { teamSize: form.teamSize } : {}) };
+      const body = { kind: form.kind, name: form.name.trim(), size: form.size, bestOf: form.bestOf, finalBestOf: form.finalBestOf, bracket: form.bracket, posterUrl: form.posterUrl, teamSize: form.teamSize };
       await onSubmit(mode === "schedule" ? { ...body, weekday: form.weekday, time: form.time } : { ...body, startsAt: new Date(form.startsAt).toISOString() });
     } catch (caught) {
       setError(caught.message);
@@ -501,21 +501,19 @@ function CupForm({ mode, initial = null, lockFormat = false, testTeamSize = fals
             </div>
           )}
           <fieldset disabled={lockFormat} className={cn("min-w-0 space-y-4", lockFormat && "opacity-50")}>
-            <div className={cn("grid gap-4", anubis ? "sm:grid-cols-4" : "sm:grid-cols-3")}>
-              {anubis ? (
-                <div>
-                  <label htmlFor={`f-team-${mode}`} className={labelClass}>
-                    Joueurs / équipe
-                  </label>
-                  <select id={`f-team-${mode}`} className={fieldClass} value={form.teamSize} onChange={(event) => set({ teamSize: Number(event.target.value) })}>
-                    {(testTeamSize ? [1, 2, 3, 4] : [2, 3, 4]).map((size) => (
-                      <option key={size} value={size}>
-                        {size}v{size}
-                      </option>
-                    ))}
-                  </select>
-                </div>
-              ) : null}
+            <div className="grid gap-4 sm:grid-cols-4">
+              <div>
+                <label htmlFor={`f-team-${mode}`} className={labelClass}>
+                  Joueurs / équipe
+                </label>
+                <select id={`f-team-${mode}`} className={fieldClass} value={form.teamSize} onChange={(event) => set({ teamSize: Number(event.target.value) })}>
+                  {(testTeamSize ? [1, 2, 3, 4] : [2, 3, 4]).map((size) => (
+                    <option key={size} value={size}>
+                      {size}v{size}
+                    </option>
+                  ))}
+                </select>
+              </div>
               <div>
                 <label htmlFor={`f-size-${mode}`} className={labelClass}>
                   Équipes max
@@ -775,7 +773,7 @@ function CupsTab() {
               {checkInOpen ? <Chip tone="gold">Check-in ouvert</Chip> : null}
             </p>
             <p className="mt-1 text-xs text-white/55">
-              {KIND_NAME[cup.kind]} · {dateFr(cup.startsAt)} · {cup.kind === "anubis" ? `${cup.teamSize}v${cup.teamSize}, ` : ""}BO{cup.bestOf}, finale BO{cup.finalBestOf} · {cup.bracket === "double" ? "double élimination" : "élimination directe"}
+              {KIND_NAME[cup.kind]} · {dateFr(cup.startsAt)} · {cup.teamSize ? `${cup.teamSize}v${cup.teamSize}, ` : ""}BO{cup.bestOf}, finale BO{cup.finalBestOf} · {cup.bracket === "double" ? "double élimination" : "élimination directe"}
               {cup.scheduleId ? " · rendez-vous" : ""}
             </p>
             <p className="mt-1 text-xs text-white/70">
@@ -957,7 +955,7 @@ function SchedulesTab() {
                 </p>
                 <p className="mt-1 text-xs text-white/55">
                   {KIND_NAME[schedule.kind ?? "horus"]} · chaque {WEEKDAYS[schedule.weekday].toLowerCase()} à {schedule.time} · {schedule.size} équipes
-                  {schedule.kind === "anubis" ? ` de ${schedule.teamSize}` : ""} · BO{schedule.bestOf}, finale BO{schedule.finalBestOf} · {schedule.bracket === "double" ? "double élimination" : "élimination directe"}
+                  {schedule.teamSize ? ` en ${schedule.teamSize}v${schedule.teamSize}` : ""} · BO{schedule.bestOf}, finale BO{schedule.finalBestOf} · {schedule.bracket === "double" ? "double élimination" : "élimination directe"}
                 </p>
                 {schedule.active && state.auto ? <p className="mt-1 text-xs text-white/70">Prochaine coupe : {dateFr(schedule.next)}</p> : null}
               </div>
