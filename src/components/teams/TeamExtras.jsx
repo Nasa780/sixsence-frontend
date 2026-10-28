@@ -8,7 +8,7 @@ import { fieldClass, labelClass } from "./TeamParts";
 
 /**
  * Compléments de la fiche d'équipe : force (niveau moyen en Classé), statut de recrutement et son message,
- * réglage du recrutement et devise des joueurs (Leaders, page Mon équipe).
+ * réglage du recrutement et surnom des joueurs (Leaders, page Mon équipe).
  */
 
 /** Force de l'équipe : moyenne des points Classé de ses joueurs, et sa place parmi les équipes actives. */
@@ -110,7 +110,7 @@ export function RecruitingSettings({ team, reload }) {
   );
 }
 
-/** Modifier la devise d'un joueur (Leaders) : 40 caractères, vide pour l'effacer. */
+/** Modifier le surnom d'un joueur (Leaders, champ motto du serveur) : 24 caractères, vide pour l'effacer. */
 export function MottoEditor({ team, member, reload }) {
   const [editing, setEditing] = useState(false);
   const [value, setValue] = useState(member.motto ?? "");
@@ -136,7 +136,7 @@ export function MottoEditor({ team, member, reload }) {
     return (
       <button type="button" onClick={() => setEditing(true)} className="inline-flex items-center gap-1.5 text-xs text-white/45 hover:text-gold">
         <LuPencil aria-hidden className="h-3.5 w-3.5" />
-        {member.motto ? "Devise" : "Ajouter une devise"}
+        {member.motto ? "Surnom" : "Ajouter un surnom"}
       </button>
     );
   }
@@ -144,10 +144,9 @@ export function MottoEditor({ team, member, reload }) {
     <form onSubmit={save} className="flex w-full items-center gap-2 sm:w-auto">
       <input
         className={cn(fieldClass, "py-1.5 text-sm")}
-        maxLength={40}
+        maxLength={24}
         autoFocus
-        aria-label={`Devise de ${member.username}`}
-        placeholder="Le clutch, c'est un état d'esprit"
+        aria-label={`Surnom de ${member.username}`}
         value={value}
         onChange={(event) => setValue(event.target.value)}
       />
