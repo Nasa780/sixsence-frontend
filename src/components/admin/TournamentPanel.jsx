@@ -351,7 +351,7 @@ const WEEKDAYS = ["Dimanche", "Lundi", "Mardi", "Mercredi", "Jeudi", "Vendredi",
  * Affiche d'une coupe ou d'un rendez-vous : aperçu, envoi d'une image (compressée en WebP), retour à l'affiche générée.
  * onChange(url | null) enregistre le choix.
  */
-function PosterField({ poster, custom, onChange, disabled = false, compact = false }) {
+function PosterField({ poster, custom, onChange, disabled = false }) {
   const [busy, setBusy] = useState(false);
   const [error, setError] = useState(null);
 
@@ -369,25 +369,20 @@ function PosterField({ poster, custom, onChange, disabled = false, compact = fal
   }
 
   return (
-    <div className={cn("flex gap-3", compact ? "items-center" : "items-start")}>
-      <img src={poster} alt="Affiche" className={cn("shrink-0 border border-white/10 bg-ink-800 object-cover", compact ? "h-20 w-[60px]" : "h-40 w-[120px]")} />
-      <div className="min-w-0 space-y-2">
-        {compact ? null : <p className="text-xs text-white/50">{custom ? "Affiche envoyée." : "Affiche générée avec le nom, la date et le format. Tu peux envoyer la tienne (format portrait 3:4 conseillé)."}</p>}
-        <div className="flex flex-wrap gap-2">
-          <label className={cn("inline-flex cursor-pointer items-center gap-1.5 border border-white/15 px-3 py-1.5 text-xs font-semibold uppercase tracking-wide text-white/75 hover:border-gold hover:text-gold", (busy || disabled) && "pointer-events-none opacity-50")}>
-            {busy ? <LuLoaderCircle aria-hidden className="h-3.5 w-3.5 animate-spin" /> : <LuImagePlus aria-hidden className="h-3.5 w-3.5" />}
-            {custom ? "Changer l'affiche" : "Envoyer une affiche"}
-            <input type="file" accept="image/png,image/jpeg,image/webp" className="sr-only" onChange={(event) => pick(event.target.files?.[0])} />
-          </label>
-          {custom ? (
-            <button type="button" disabled={busy || disabled} onClick={() => onChange(null)} className="inline-flex items-center gap-1.5 px-2 py-1.5 text-xs text-white/50 hover:text-gold disabled:opacity-50">
-              <LuRotateCcw aria-hidden className="h-3.5 w-3.5" />
-              Affiche générée
-            </button>
-          ) : null}
-        </div>
-        {error ? <p className="text-xs text-loss">{error}</p> : null}
-      </div>
+    <div className="w-full max-w-[15rem] space-y-2">
+      <img src={poster} alt="Affiche" className="aspect-[3/4] w-full border border-white/10 bg-ink object-contain" />
+      <label className={cn("flex cursor-pointer items-center justify-center gap-2 border border-white/15 px-3 py-2 text-xs font-semibold uppercase tracking-wide text-white/75 hover:border-gold hover:text-gold", (busy || disabled) && "pointer-events-none opacity-50")}>
+        {busy ? <LuLoaderCircle aria-hidden className="h-4 w-4 animate-spin" /> : <LuImagePlus aria-hidden className="h-4 w-4" />}
+        {custom ? "Changer l'affiche" : "Envoyer une affiche"}
+        <input type="file" accept="image/png,image/jpeg,image/webp" className="sr-only" onChange={(event) => pick(event.target.files?.[0])} />
+      </label>
+      {custom ? (
+        <button type="button" disabled={busy || disabled} onClick={() => onChange(null)} className="flex w-full items-center justify-center gap-1.5 py-1 text-xs text-white/50 hover:text-gold disabled:opacity-50">
+          <LuRotateCcw aria-hidden className="h-3.5 w-3.5" />
+          Revenir à l&apos;affiche générée
+        </button>
+      ) : null}
+      {error ? <p className="text-xs text-loss">{error}</p> : null}
     </div>
   );
 }
@@ -468,7 +463,7 @@ function CupForm({ mode, initial = null, lockFormat = false, testTeamSize = fals
       </div>
       {lockFormat ? <Notice>Le check-in est ouvert : seuls le nom et l&apos;affiche se modifient encore.</Notice> : null}
 
-      <div className="grid gap-5 lg:grid-cols-[minmax(0,1fr)_20rem]">
+      <div className="grid gap-5 lg:grid-cols-[minmax(0,1fr)_15rem]">
         <div className="min-w-0 space-y-4">
           <div>
             <label htmlFor={`f-name-${mode}`} className={labelClass}>
@@ -590,6 +585,138 @@ function CupForm({ mode, initial = null, lockFormat = false, testTeamSize = fals
   );
 }
 
+/**
+ * Coupe en direct (onglet Coupes, dès l'ouverture du check-in) : étape, chiffres clés, check-in de chaque équipe ou
+ * joueur, puis rencontres en cours et bloquées avec leur score, la feuille de match et « … gagne » pour trancher.
+ * Relu toutes les 20 s (onglet visible).
+ */
+function LiveCupPanel({ cup, onChanged }) {
+  const [data, setData] = useState(null);
+  const [pending, setPending] = useState(null);
+  const [error, setError] = useState(null);
+  const [message, setMessage] = useState(null);
+
+  const load = useCallback(() => api(`/teams/tournaments/${cup.id}`).then(setData), [cup.id]);
+  useEffect(() => {
+    load().catch((caught) => setError(caught.message));
+    const timer = setInterval(() => document.visibilityState === "visible" && load().catch(() => {}), 20_000);
+    return () => clearInterval(timer);
+  }, [load]);
+
+  async function decide(entry, side) {
+    setPending(`${entry.id}-${side}`);
+    setError(null);
+    setMessage(null);
+    try {
+      await api(`/admin/tournaments/${cup.id}/entries/${entry.id}/winner`, { method: "POST", body: { side } });
+      setMessage(`Victoire de [${(side === "A" ? entry.teamA : entry.teamB).tag}] : le tableau avance.`);
+      await load();
+      onChanged?.();
+    } catch (caught) {
+      setError(caught.message);
+    } finally {
+      setPending(null);
+    }
+  }
+
+  if (!data) return error ? <Notice tone="error">{error}</Notice> : <Loading />;
+  const anubis = data.kind === "anubis";
+  const entries = (data.rounds ?? []).flatMap((round) => round.entries.map((entry) => ({ ...entry, roundName: round.name })));
+  if (data.thirdPlace) entries.push({ ...data.thirdPlace.entry, roundName: data.thirdPlace.name });
+  const real = entries.filter((entry) => entry.teamA && entry.teamB);
+  const blocked = real.filter((entry) => entry.status === "blocked");
+  const playing = real.filter((entry) => entry.status === "playing");
+  const finished = real.filter((entry) => entry.status === "done").length;
+  const people = anubis ? data.players ?? [] : data.teams ?? [];
+  const checked = anubis ? data.checkedInCount ?? 0 : people.filter((item) => item.checkedIn).length;
+  const started = data.status === "running" && Date.now() >= new Date(data.startsAt).getTime();
+  const phase = data.status === "scheduled" ? "Check-in en cours" : started ? "Coupe en cours" : `Tirage effectué · début à ${new Date(data.startsAt).toLocaleTimeString("fr-FR", { hour: "2-digit", minute: "2-digit" })}`;
+  const stats =
+    data.status === "scheduled"
+      ? [["Check-in", `${checked}/${people.length}`], [anubis ? "Joueurs inscrits" : "Équipes inscrites", people.length], ["Minimum", `${data.minTeams ?? 4} équipes`]]
+      : [["Matchs en cours", playing.length], ["À trancher", blocked.length], ["Terminés", finished]];
+
+  const matchRow = (entry) => (
+    <li key={entry.id} className={cn("flex flex-wrap items-center gap-3 border-l-2 bg-white/[0.03] px-3 py-2.5", entry.status === "blocked" ? "border-loss" : "border-gold/60")}>
+      <span className="w-28 shrink-0 font-tech text-[10px] uppercase tracking-[0.18em] text-white/45">{entry.roundName}</span>
+      <span className="min-w-0 flex-1 font-display text-lg font-bold uppercase leading-none">
+        {entry.teamA.name} <span className="text-white/35">vs</span> {entry.teamB.name}
+      </span>
+      {entry.score ? <span className="font-tech text-sm tabular-nums text-white/80">{entry.score[0]} - {entry.score[1]}</span> : null}
+      {entry.status === "blocked" ? <Chip tone="loss">Match annulé : à trancher</Chip> : <Chip tone="win">En cours</Chip>}
+      {entry.matchId ? (
+        <Link href={`/cod/equipes/match/${entry.matchId}`} className="inline-flex items-center gap-1 text-xs font-semibold text-gold underline underline-offset-4">
+          Feuille
+          <LuExternalLink aria-hidden className="h-3 w-3" />
+        </Link>
+      ) : null}
+      <span className="flex gap-1.5">
+        {["A", "B"].map((side) => (
+          <Button key={side} size="sm" variant={entry.status === "blocked" ? "primary" : "outline"} disabled={pending !== null} onClick={() => decide(entry, side)}>
+            {pending === `${entry.id}-${side}` ? <LuLoaderCircle aria-hidden className="h-3.5 w-3.5 animate-spin" /> : null}
+            <span className="normal-case">[{(side === "A" ? entry.teamA : entry.teamB).tag}]</span> gagne
+          </Button>
+        ))}
+      </span>
+    </li>
+  );
+
+  return (
+    <div className="space-y-4 border border-loss/40 bg-loss/[0.04] p-5">
+      <div className="flex flex-wrap items-center justify-between gap-3">
+        <p className="flex items-center gap-2 font-display text-xl font-black uppercase leading-none">
+          <span aria-hidden className="h-2.5 w-2.5 animate-pulse rounded-full bg-loss" />
+          En direct · {phase}
+        </p>
+        <Link href={`/cod/tournoi?id=${cup.id}`} className="inline-flex items-center gap-1 text-xs font-semibold text-gold underline underline-offset-4">
+          Tableau public
+          <LuExternalLink aria-hidden className="h-3 w-3" />
+        </Link>
+      </div>
+      <div className="grid grid-cols-3 gap-2">
+        {stats.map(([label, value]) => (
+          <div key={label} className="border border-white/10 bg-ink/60 px-3 py-2">
+            <p className="font-tech text-[10px] uppercase tracking-[0.18em] text-white/45">{label}</p>
+            <p className="mt-1 font-display text-2xl font-black leading-none">{value}</p>
+          </div>
+        ))}
+      </div>
+      {error ? <Notice tone="error">{error}</Notice> : null}
+      {message ? <Notice tone="success">{message}</Notice> : null}
+
+      {data.status === "scheduled" ? (
+        <div>
+          <p className={labelClass}>Check-in {anubis ? "des joueurs" : "des équipes"}</p>
+          {people.length === 0 ? <p className="mt-2 text-sm text-white/50">Aucun inscrit.</p> : null}
+          <ul className="mt-2 flex flex-wrap gap-2">
+            {people.map((item) => (
+              <li key={item.id} className={cn("flex items-center gap-2 border px-2.5 py-1.5 text-sm", item.checkedIn ? "border-win/50 bg-win/10 text-white" : "border-white/10 text-white/50")}>
+                {anubis ? null : <TeamCrest team={item} size={20} />}
+                <span className="font-semibold">{anubis ? item.username : item.name}</span>
+                <span className={cn("font-tech text-[10px] uppercase tracking-[0.15em]", item.checkedIn ? "text-win" : "text-white/35")}>{item.checkedIn ? "Prête" : "En attente"}</span>
+              </li>
+            ))}
+          </ul>
+        </div>
+      ) : null}
+
+      {blocked.length ? (
+        <div className="space-y-2">
+          <p className={labelClass}>À trancher ({blocked.length})</p>
+          <ul className="space-y-2">{blocked.map(matchRow)}</ul>
+        </div>
+      ) : null}
+      {playing.length ? (
+        <div className="space-y-2">
+          <p className={labelClass}>Matchs en cours ({playing.length})</p>
+          <ul className="space-y-2">{playing.map(matchRow)}</ul>
+        </div>
+      ) : null}
+      {started && !blocked.length && !playing.length ? <p className="text-sm text-white/55">Aucun match en cours : le tour suivant se lance dès que les équipes sont prêtes.</p> : null}
+    </div>
+  );
+}
+
 /** Miniature d'affiche d'une ligne de liste. */
 function PosterThumb({ src }) {
   return <img src={src} alt="" loading="lazy" className="h-16 w-12 shrink-0 border border-white/10 bg-ink object-contain" />;
@@ -602,7 +729,6 @@ function PosterThumb({ src }) {
 function CupsTab() {
   const [state, setState] = useState(null);
   const [editing, setEditing] = useState(null);
-  const [managed, setManaged] = useState(null);
   const [cancelling, setCancelling] = useState(null);
   const [pending, setPending] = useState(null);
   const [error, setError] = useState(null);
@@ -621,23 +747,12 @@ function CupsTab() {
       await action();
       if (done) setMessage(done);
       await load();
-      if (managed) setManaged(await api(`/teams/tournaments/${managed.id}`));
       return true;
     } catch (caught) {
       setError(caught.message);
       return false;
     } finally {
       setPending(null);
-    }
-  }
-
-  async function manage(cup) {
-    if (managed?.id === cup.id) return setManaged(null);
-    setError(null);
-    try {
-      setManaged(await api(`/teams/tournaments/${cup.id}`));
-    } catch (caught) {
-      setError(caught.message);
     }
   }
 
@@ -678,11 +793,6 @@ function CupsTab() {
                 Modifier
               </Button>
             ) : null}
-            {cup.status === "running" ? (
-              <Button size="sm" variant="outline" disabled={pending !== null} onClick={() => manage(cup)}>
-                {managed?.id === cup.id ? "Fermer" : "Gérer le tableau"}
-              </Button>
-            ) : null}
             {cup.status === "scheduled" || cup.status === "running" ? (
               <Button size="sm" variant="ghost" disabled={pending !== null} onClick={() => setCancelling(cup)}>
                 Annuler
@@ -704,7 +814,7 @@ function CupsTab() {
             }}
           />
         ) : null}
-        {managed?.id === cup.id ? <ActiveTournamentCard current={managed} pending={pending} run={run} onCancel={() => setCancelling(cup)} /> : null}
+        {cup.status === "running" || checkInOpen ? <LiveCupPanel cup={cup} onChanged={load} /> : null}
       </li>
     );
   };
@@ -754,10 +864,7 @@ function CupsTab() {
         pending={pending !== null}
         onConfirm={async () => {
           const ok = await run("cancel", () => api(`/admin/tournaments/${cancelling.id}`, { method: "DELETE" }), "Coupe annulée.");
-          if (ok) {
-            setCancelling(null);
-            setManaged(null);
-          }
+          if (ok) setCancelling(null);
         }}
       >
         Les inscrits sont prévenus, les matchs en cours sont annulés et aucune récompense n&apos;est attribuée. Action définitive.
