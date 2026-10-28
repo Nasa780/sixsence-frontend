@@ -3,8 +3,9 @@ import Link from "next/link";
 import { useRouter } from "next/router";
 import { useEffect, useRef, useState } from "react";
 import { FaDiscord } from "react-icons/fa6";
-import { LuCalendarDays, LuCircleHelp, LuCrosshair, LuLogOut, LuMenu, LuScrollText, LuShield, LuShieldCheck, LuSwords, LuTrophy, LuUser, LuX } from "react-icons/lu";
+import { LuCalendarDays, LuCircleHelp, LuCrosshair, LuLogOut, LuMenu, LuScrollText, LuShield, LuShieldCheck, LuSwords, LuTrophy, LuUser, LuUsers, LuX } from "react-icons/lu";
 import useSession from "../../hooks/useSession";
+import useTeamTags from "../../hooks/useTeamTags";
 import useUser from "../../hooks/useUser";
 import { signInWithDiscord, signOut } from "../../lib/auth";
 import { cn } from "../../lib/cn";
@@ -23,6 +24,8 @@ const MOBILE_ITEM = "flex items-center gap-2.5 px-4 py-3 text-sm text-white/75 t
 
 /** Sous-menu de MW4 (Classé, Division, Tournoi), réactivé le 2026-10-28 : false pour le masquer. */
 const SHOW_MW4_SUBMENU = true;
+/** Sous-menu des modes affiché : les raccourcis Classé et Division du menu du compte feraient doublon. */
+const MODE_SUBMENU = SHOW_MW4_SUBMENU && MATCH_TEAM_ENABLED;
 
 const LINKS = [
   { href: "/", label: "Accueil" },
@@ -50,6 +53,8 @@ export function Navbar() {
   const { pathname } = useRouter();
   const { loading } = useSession();
   const user = useUser();
+  // Raccourci « Mon équipe » seulement pour les joueurs qui ont une équipe.
+  const myTeam = useTeamTags(user ? [user.id] : []).get(user?.id);
   const [scrolled, setScrolled] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
 
@@ -239,6 +244,12 @@ export function Navbar() {
                       <LuUser aria-hidden className="h-4 w-4" />
                       Mon profil
                     </Link>
+                    {myTeam ? (
+                      <Link href="/cod/equipe" className={MOBILE_ITEM}>
+                        <LuUsers aria-hidden className="h-4 w-4" />
+                        Mon équipe
+                      </Link>
+                    ) : null}
                     {MY_MATCHES_ENABLED ? (
                       <Link href="/cod/matchs" className={MOBILE_ITEM}>
                         <LuSwords aria-hidden className="h-4 w-4" />
@@ -257,16 +268,12 @@ export function Navbar() {
                       <LuCircleHelp aria-hidden className="h-4 w-4" />
                       FAQ
                     </Link>
-                    <Link href="/cod/ranked" className={MOBILE_ITEM}>
-                      <LuCrosshair aria-hidden className="h-4 w-4" />
-                      Classé
-                    </Link>
-                    {MATCH_TEAM_ENABLED ? (
-                      <Link href="/cod/division" className={MOBILE_ITEM}>
-                        <LuShield aria-hidden className="h-4 w-4" />
-                        Division
+                    {MODE_SUBMENU ? null : (
+                      <Link href="/cod/ranked" className={MOBILE_ITEM}>
+                        <LuCrosshair aria-hidden className="h-4 w-4" />
+                        Classé
                       </Link>
-                    ) : null}
+                    )}
                     {isReferee(user.role) ? (
                       <Link href="/admin" className={MOBILE_ITEM}>
                         <LuShieldCheck aria-hidden className="h-4 w-4" />
@@ -299,6 +306,7 @@ export function Navbar() {
 
 /** Avatar + pseudo, avec un menu déroulant (profil, file classée, déconnexion). */
 function UserMenu({ user }) {
+  const myTeam = useTeamTags([user.id]).get(user.id);
   const [open, setOpen] = useState(false);
   const container = useRef(null);
   const { pathname } = useRouter();
@@ -355,6 +363,16 @@ function UserMenu({ user }) {
               <LuUser aria-hidden className="h-4 w-4" />
               Mon profil
             </Link>
+            {myTeam ? (
+              <Link
+                role="menuitem"
+                href="/cod/equipe"
+                className="flex items-center gap-2.5 px-4 py-2.5 text-sm text-white/75 transition-colors hover:bg-white/5 hover:text-gold"
+              >
+                <LuUsers aria-hidden className="h-4 w-4" />
+                Mon équipe
+              </Link>
+            ) : null}
             {MY_MATCHES_ENABLED ? (
               <Link
                 role="menuitem"
@@ -365,24 +383,16 @@ function UserMenu({ user }) {
                 Mes matchs
               </Link>
             ) : null}
-            <Link
-              role="menuitem"
-              href="/cod/ranked"
-              className="flex items-center gap-2.5 px-4 py-2.5 text-sm text-white/75 transition-colors hover:bg-white/5 hover:text-gold"
-            >
-              <LuCrosshair aria-hidden className="h-4 w-4" />
-              Classé
-            </Link>
-            {MATCH_TEAM_ENABLED ? (
+            {MODE_SUBMENU ? null : (
               <Link
                 role="menuitem"
-                href="/cod/division"
+                href="/cod/ranked"
                 className="flex items-center gap-2.5 px-4 py-2.5 text-sm text-white/75 transition-colors hover:bg-white/5 hover:text-gold"
               >
-                <LuShield aria-hidden className="h-4 w-4" />
-                Division
+                <LuCrosshair aria-hidden className="h-4 w-4" />
+                Classé
               </Link>
-            ) : null}
+            )}
             {isReferee(user.role) ? (
               <Link
                 role="menuitem"
