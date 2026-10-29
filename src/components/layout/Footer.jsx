@@ -32,10 +32,12 @@ export function Footer() {
       <Container className="grid gap-12 py-14 md:grid-cols-[1.4fr_1fr_1fr]">
         <div>
           <Logo />
-          <p className="mt-4 max-w-sm text-sm leading-relaxed text-white/55">
+          <p className="mt-5 font-display text-xl font-black uppercase leading-none tracking-wide text-white">Prêt à faire tes preuves ?</p>
+          <p className="mt-2 max-w-sm text-sm leading-relaxed text-white/55">
             {MATCH_TEAM_ENABLED
-              ? "La plateforme gaming de la communauté : classé Call of Duty en solo, Division en équipe et tournoi de fin de saison, événements GTA 6. Un seul accès : ton compte Discord."
-              : "La plateforme gaming de la communauté : classé Call of Duty en solo et événements GTA 6. Un seul accès : ton compte Discord."}
+              ? "Matchs classés en solo sur Call of Duty, championnats Division en équipe, tournois réguliers et événements exclusifs sur GTA 6."
+              : "Matchs classés en solo sur Call of Duty et événements exclusifs sur GTA 6."}{" "}
+            Connecte simplement ton compte Discord pour rejoindre l&apos;action instantanément.
           </p>
           {DISCORD_INVITE_URL ? (
             <a
