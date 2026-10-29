@@ -1,8 +1,8 @@
-import { FaDiscord } from "react-icons/fa6";
+import { FaDiscord, FaTiktok } from "react-icons/fa6";
 import { LuArrowRight } from "react-icons/lu";
 import useSession from "../../hooks/useSession";
 import { signInWithDiscord } from "../../lib/auth";
-import { DISCORD_INVITE_URL } from "../../lib/config";
+import { DISCORD_INVITE_URL, TIKTOK_URL } from "../../lib/config";
 import { Reveal } from "../effects/Reveal";
 import { Button, ButtonLink } from "../ui/Button";
 import { Container } from "../ui/Container";
@@ -42,6 +42,12 @@ export function CallToAction() {
                   <ButtonLink href={DISCORD_INVITE_URL} external variant="outline" size="lg">
                     <FaDiscord aria-hidden className="h-5 w-5" />
                     Rejoindre le serveur
+                  </ButtonLink>
+                ) : null}
+                {TIKTOK_URL ? (
+                  <ButtonLink href={TIKTOK_URL} external variant="outline" size="lg">
+                    <FaTiktok aria-hidden className="h-5 w-5" />
+                    Suivre sur TikTok
                   </ButtonLink>
                 ) : null}
               </div>

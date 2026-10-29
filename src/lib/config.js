@@ -15,6 +15,8 @@ export const SUPABASE_PUBLISHABLE_KEY =
   process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY || "sb_publishable_b9GLgoUc1BbOaUo1EoKh8w_Nu1FfIcr";
 
 /** Lien d'invitation vers le serveur Discord (facultatif : affiche les boutons « Rejoindre le Discord »). */
+/** Compte TikTok du site (pied de page, appel à rejoindre de l'accueil). */
+export const TIKTOK_URL = process.env.NEXT_PUBLIC_TIKTOK_URL || "https://www.tiktok.com/@sixsence.tv";
 export const DISCORD_INVITE_URL = process.env.NEXT_PUBLIC_DISCORD_INVITE_URL || "https://discord.gg/Crynp3C5ru";
 
 /** Adresse publique du site (liens absolus : aperçus de partage, plan du site). */

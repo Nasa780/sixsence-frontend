@@ -1,6 +1,6 @@
 import Link from "next/link";
-import { FaDiscord } from "react-icons/fa6";
-import { DISCORD_INVITE_URL, MATCH_TEAM_ENABLED } from "../../lib/config";
+import { FaDiscord, FaTiktok } from "react-icons/fa6";
+import { DISCORD_INVITE_URL, MATCH_TEAM_ENABLED, TIKTOK_URL } from "../../lib/config";
 import { Container } from "../ui/Container";
 import { Logo } from "../ui/Logo";
 
@@ -46,6 +46,17 @@ export function Footer() {
             >
               <FaDiscord aria-hidden className="h-4 w-4" />
               Rejoindre le Discord
+            </a>
+          ) : null}
+          {TIKTOK_URL ? (
+            <a
+              href={TIKTOK_URL}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="ml-6 mt-5 inline-flex items-center gap-2 text-sm font-medium text-gold transition-colors hover:text-gold-light"
+            >
+              <FaTiktok aria-hidden className="h-4 w-4" />
+              Suivre sur TikTok
             </a>
           ) : null}
         </div>

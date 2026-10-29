@@ -11,6 +11,9 @@ import { Universes } from "../components/home/Universes";
 const SHOW_HOW_IT_WORKS = true;
 
 /** Page d'accueil publique. Chaque section vit dans src/components/home. */
+/** Bloc « Qui mène la danse » (En ce moment) retiré de l'accueil le 2026-10-29, gardé de côté : true pour le remettre. */
+const SHOW_RIGHT_NOW = false;
+
 export default function HomePage() {
   return (
     <>
@@ -18,7 +21,7 @@ export default function HomePage() {
       <Universes />
       {SHOW_HOW_IT_WORKS ? <HowItWorks /> : null}
       <LiveBoard />
-      <RightNow />
+      {SHOW_RIGHT_NOW ? <RightNow /> : null}
       <HomeCalendar />
       <Features />
       <CallToAction />
