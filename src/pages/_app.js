@@ -7,6 +7,7 @@ import { Navbar } from "../components/layout/Navbar";
 import { ActiveMatchBar } from "../components/layout/ActiveMatchBar";
 import { RouteLoader } from "../components/layout/RouteLoader";
 import { ErrorBoundary } from "../components/ui/ErrorBoundary";
+import { PageFade } from "../components/effects/PageFade";
 import { GROUPS_ENABLED, MATCH_TEAM_ENABLED, SITE_URL } from "../lib/config";
 import NotFound from "./404";
 import { installErrorReporting } from "../lib/monitoring";
@@ -46,6 +47,8 @@ export default function App({ Component, pageProps }) {
   useEffect(() => {
     registerServiceWorker();
     installErrorReporting();
+    // Polices aussi sur <body> : les fenêtres plein écran (Portal) y sont placées, hors de la page.
+    document.body.classList.add(saira.variable, orbitron.variable, inter.variable);
   }, []);
 
   return (
@@ -102,7 +105,8 @@ export default function App({ Component, pageProps }) {
           <ActiveMatchBar />
           <main id="contenu" className="flex-1">
             <ErrorBoundary resetKey={asPath}>
-              {teamPaused ? <NotFound /> : <Component {...pageProps} />}
+              {/* Fondu court à chaque changement de page. */}
+              <PageFade pageKey={asPath.split(/[?#]/)[0]}>{teamPaused ? <NotFound /> : <Component {...pageProps} />}</PageFade>
             </ErrorBoundary>
           </main>
           <Footer />

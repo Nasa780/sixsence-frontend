@@ -28,6 +28,7 @@ import { mapImage } from "../../lib/maps";
 import { signInWithDiscord } from "../../lib/auth";
 import { RankEmblem } from "./RankEmblem";
 import { RankUpOverlay } from "./RankUpOverlay";
+import { MatchResultOverlay } from "./MatchResultOverlay";
 import { Eyebrow } from "../ui/Typography";
 
 const STATUS_LABEL = {
@@ -197,6 +198,8 @@ export function MatchView({ matchId }) {
   const [notFound, setNotFound] = useState(false);
   const [pending, setPending] = useState(null);
   const [error, setError] = useState(null);
+  // Écran « Victoire » / « Défaite » fermé (ou rien à montrer) : l'écran « Promotion » peut suivre.
+  const [resultDone, setResultDone] = useState(false);
   const [me, setMe] = useState({ myVote: null, arbitrations: [] });
   const [dialog, setDialog] = useState(null); // { kind: "arbitration" } | { kind: "report", target } | { kind: "confirm", … }
 
@@ -355,8 +358,19 @@ export function MatchView({ matchId }) {
         </div>
       </TacticalCard>
 
-      {/* --- Promotion : écran de montée de rang, une fois par match ------- */}
+      {/* --- Fin du match : « Victoire » ou « Défaite », puis « Promotion » s'il y a lieu, une fois par match --- */}
       {match.status === "completed" && myTeam && playerById.get(userId) ? (
+        <MatchResultOverlay
+          matchId={match.id}
+          won={match.winner === myTeam}
+          delta={match.points_changes?.[userId]}
+          points={playerById.get(userId).points}
+          map={match.map}
+          completedAt={match.completed_at}
+          onDone={() => setResultDone(true)}
+        />
+      ) : null}
+      {match.status === "completed" && myTeam && playerById.get(userId) && resultDone ? (
         <RankUpOverlay matchId={match.id} points={playerById.get(userId).points} delta={match.points_changes?.[userId]} completedAt={match.completed_at} />
       ) : null}
 

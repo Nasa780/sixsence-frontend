@@ -8,6 +8,7 @@ import { HubActions } from "./HubActions";
 import { MySeason } from "./MySeason";
 import { OnboardingPanel } from "./OnboardingPanel";
 import { Reveal } from "../effects/Reveal";
+import { TiltCard } from "../effects/TiltCard";
 import { ButtonLink } from "../ui/Button";
 import { Container } from "../ui/Container";
 import { Chip, Notice } from "../ui/Feedback";
@@ -145,7 +146,8 @@ export function ModesHub() {
         <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
           {MODES.map((mode, index) => (
             <Reveal key={mode.key} delay={index * 0.08} className="h-full">
-              <div data-univers={mode.univers} className="group/card h-full transition duration-300 hover:-translate-y-1">
+              {/* Inclinaison vers la souris et lueur de la couleur du mode. */}
+              <TiltCard data-univers={mode.univers} className="group/card h-full">
               <TacticalCard highlight cut={28} className="h-full" innerClassName="flex h-full flex-col overflow-hidden p-7 sm:p-9">
                 {/* Visuel du mode en haut de la carte, fondu vers le bas, teinté de la couleur du mode. */}
                 <div aria-hidden className="pointer-events-none absolute inset-x-0 top-0 h-60 overflow-hidden">
@@ -184,7 +186,7 @@ export function ModesHub() {
                   </div>
                 </div>
               </TacticalCard>
-              </div>
+              </TiltCard>
             </Reveal>
           ))}
         </div>

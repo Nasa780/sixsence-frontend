@@ -5,6 +5,15 @@
  */
 export const RELEASES = [
   {
+    date: "2026-10-29",
+    title: "Un site plus animé",
+    items: [
+      { tag: "Site", text: "Fin de match : un écran « Victoire » ou « Défaite » avec les points gagnés ou perdus." },
+      { tag: "Site", text: "Classement des joueurs : podium et lignes animés, places gagnées ou perdues en 24 h.", href: "/cod/leaderboard" },
+      { tag: "Site", text: "Profil : progression de rang, chiffres et courbe de la saison animés ; nouvelle carte « Joueur de la semaine » sur la Renommée." },
+    ],
+  },
+  {
     date: "2026-10-28",
     title: "Bande en direct",
     items: [

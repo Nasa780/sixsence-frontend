@@ -1,5 +1,6 @@
+import { motion, useReducedMotion } from "framer-motion";
 import Link from "next/link";
-import { useEffect, useId, useRef, useState } from "react";
+import { useEffect, useId, useMemo, useRef, useState } from "react";
 import { LuCrown, LuFlame } from "react-icons/lu";
 import { cn } from "../../lib/cn";
 import { rankFor, rankGradient } from "../../lib/ranks";
@@ -10,11 +11,77 @@ import { Avatar } from "../ui/Avatar";
 import { EmptyState, Loading } from "../ui/Feedback";
 import { TacticalCard } from "../ui/TacticalCard";
 import { RankEmblem } from "./RankEmblem";
+import { CountUp } from "../effects/CountUp";
+
+const DAY_MS = 24 * 60 * 60_000;
+const EASE = [0.22, 1, 0.36, 1];
+// Podium : le 3e, puis le 2e, puis le 1er entrent en scène.
+const PODIUM_DELAY = [0.45, 0.25, 0.1];
 
 const winRate = (wins, losses) => (wins + losses > 0 ? Math.round((wins / (wins + losses)) * 100) : null);
 
 /**
- * Classement COD : podium des trois premiers, puis tableau.
+ * Places gagnées ou perdues en 24 h : classement reconstruit sans les points des matchs classés des dernières 24 h
+ * (cod_matches.points_changes), comparé au classement actuel.
+ */
+function useMoves(rows) {
+  const [recent, setRecent] = useState(null);
+  const signature = (rows ?? []).map((row) => `${row.user_id}:${row.points}`).join(",");
+
+  useEffect(() => {
+    if (!rows?.length) return;
+    supabase
+      .from("cod_matches")
+      .select("points_changes")
+      .eq("status", "completed")
+      .gte("completed_at", new Date(Date.now() - DAY_MS).toISOString())
+      .not("points_changes", "is", null)
+      .limit(500)
+      .then(({ data }) => {
+        const sums = {};
+        for (const match of data ?? []) {
+          for (const [id, delta] of Object.entries(match.points_changes ?? {})) if (typeof delta === "number") sums[id] = (sums[id] ?? 0) + delta;
+        }
+        setRecent(sums);
+      });
+    // Rechargé quand les points changent (match validé).
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [signature]);
+
+  return useMemo(() => {
+    if (!rows || !recent) return {};
+    const before = rows
+      .map((row, index) => ({ id: row.user_id, points: row.points - (recent[row.user_id] ?? 0), index }))
+      .sort((a, b) => b.points - a.points || a.index - b.index);
+    const move = {};
+    before.forEach((entry, place) => {
+      move[entry.id] = place - entry.index;
+    });
+    return move;
+  }, [rows, recent]);
+}
+
+/** Flèche des places gagnées (vert) ou perdues (rouge) en 24 h. */
+function Move({ value }) {
+  if (!value) return null;
+  const up = value > 0;
+  return (
+    <motion.span
+      initial={{ scale: 1.9, opacity: 0 }}
+      animate={{ scale: 1, opacity: 1 }}
+      transition={{ type: "spring", stiffness: 420, damping: 18, delay: 0.5 }}
+      title={`${up ? "+" : "-"}${Math.abs(value)} place${Math.abs(value) > 1 ? "s" : ""} en 24 h`}
+      className={cn("inline-flex items-center gap-0.5 font-tech text-[10px] font-bold tabular-nums", up ? "text-win drop-shadow-[0_0_6px_rgba(52,211,153,0.6)]" : "text-loss drop-shadow-[0_0_6px_rgba(248,113,113,0.6)]")}
+    >
+      <span aria-hidden className="text-[9px] leading-none">{up ? "▲" : "▼"}</span>
+      {Math.abs(value)}
+    </motion.span>
+  );
+}
+
+/**
+ * Classement COD : podium des trois premiers (entrée en scène du 3e au 1er), puis tableau (lignes en cascade,
+ * points qui défilent, places gagnées ou perdues en 24 h, lignes qui glissent quand le classement change).
  *
  * Dynamique : la page écoute la table cod_leaderboard (Supabase Realtime).
  * Dès qu'un match est clôturé, elle recharge le classement, sans action du visiteur.
@@ -27,6 +94,8 @@ export function LeaderboardView({ limit = 100, currentUserId = null, compact = f
   const [rows, setRows] = useState(null);
   const teamTags = useTeamTags((rows || []).map((row) => row.user_id));
   const [live, setLive] = useState(false);
+  const moves = useMoves(rows);
+  const reduce = useReducedMotion();
   const refreshTimer = useRef(null);
   const instanceId = useId();
 
@@ -87,15 +156,32 @@ export function LeaderboardView({ limit = 100, currentUserId = null, compact = f
             const rate = winRate(row.wins, row.losses);
             const rank = rankFor(row.points);
             return (
-              <li key={row.user_id} className={cn(index === 0 && "md:-mt-4")}>
+              <motion.li
+                key={row.user_id}
+                className={cn(index === 0 && "md:-mt-4")}
+                initial={reduce ? false : { opacity: 0, y: 48, scale: 0.96 }}
+                animate={{ opacity: 1, y: 0, scale: 1 }}
+                transition={index === 0 ? { type: "spring", stiffness: 170, damping: 17, delay: PODIUM_DELAY[0] } : { duration: 0.6, delay: PODIUM_DELAY[index], ease: EASE }}
+              >
                 <TacticalCard highlight={index === 0} interactive className="h-full" innerClassName={cn("overflow-hidden p-6", index === 0 && "holo")}>
                   <span aria-hidden className="absolute -right-2 -top-5 select-none font-display text-[8rem] font-black leading-none text-outline opacity-60">
                     {index + 1}
                   </span>
                   <div className="relative">
                     <p className="flex items-center gap-2 font-tech text-[11px] uppercase tracking-[0.3em] text-gold">
-                      {index === 0 ? <LuCrown aria-hidden className="h-4 w-4" /> : null}
+                      {index === 0 ? (
+                        <motion.span
+                          aria-hidden
+                          className="inline-flex"
+                          initial={reduce ? false : { scale: 0, rotate: -35 }}
+                          animate={{ scale: 1, rotate: 0 }}
+                          transition={{ type: "spring", stiffness: 300, damping: 11, delay: 0.85 }}
+                        >
+                          <LuCrown className="h-4 w-4" />
+                        </motion.span>
+                      ) : null}
                       <span className="sr-only">Position </span>#{index + 1}
+                      <Move value={moves[row.user_id]} />
                     </p>
                     <div className="mt-4 flex items-center gap-3.5">
                       <Avatar src={row.avatar_url} name={row.username} size={56} ring={rankGradient(rank, 160)} />
@@ -112,13 +198,13 @@ export function LeaderboardView({ limit = 100, currentUserId = null, compact = f
                       </div>
                     </div>
                     <dl className="mt-6 grid grid-cols-3 gap-px bg-white/10">
-                      <PodiumStat label="Points" value={row.points} accent />
+                      <PodiumStat label="Points" value={<CountUp value={row.points} delay={PODIUM_DELAY[index] * 1000 + 250} />} accent />
                       <PodiumStat label="V / D" value={`${row.wins} / ${row.losses}`} />
                       <PodiumStat label="Victoires" value={rate === null ? "—" : `${rate}%`} />
                     </dl>
                   </div>
                 </TacticalCard>
-              </li>
+              </motion.li>
             );
           })}
         </ol>
@@ -145,9 +231,19 @@ export function LeaderboardView({ limit = 100, currentUserId = null, compact = f
                 const rank = rankFor(row.points);
                 const rate = winRate(row.wins, row.losses);
                 return (
-                  <tr key={row.user_id} className={cn("transition-colors", isMe ? "bg-gold/10" : "bg-white/[0.03] hover:bg-white/[0.06]")}>
+                  <motion.tr
+                    key={row.user_id}
+                    layout={reduce ? false : "position"}
+                    initial={reduce ? false : { opacity: 0, x: -24 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    transition={{ duration: 0.45, delay: (compact ? 0.05 : 0.6) + Math.min(index, 20) * 0.04, ease: EASE }}
+                    className={cn("transition-colors", isMe ? "bg-gold/10" : "bg-white/[0.03] hover:bg-white/[0.06]")}
+                  >
                     <td className={cn("border-l-2 px-4 py-3 font-tech text-sm font-bold tabular-nums", isMe ? "border-gold text-gold" : "border-transparent text-white/50")}>
-                      {index + offset}
+                      <span className="flex items-center gap-1.5">
+                        {index + offset}
+                        <Move value={moves[row.user_id]} />
+                      </span>
                     </td>
                     <td className="px-4 py-3">
                       <Link href={`/cod/profile/${row.user_id}`} className="group flex items-center gap-3">
@@ -168,7 +264,9 @@ export function LeaderboardView({ limit = 100, currentUserId = null, compact = f
                         </span>
                       </Link>
                     </td>
-                    <td className="px-4 py-3 text-right font-tech text-base font-bold tabular-nums text-gold">{row.points}</td>
+                    <td className="px-4 py-3 text-right font-tech text-base font-bold tabular-nums text-gold">
+                      <CountUp value={row.points} delay={(compact ? 50 : 600) + Math.min(index, 20) * 40} />
+                    </td>
                     <td className="whitespace-nowrap px-4 py-3 text-right text-sm tabular-nums text-white/70">
                       {row.wins} / {row.losses}
                     </td>
@@ -183,7 +281,7 @@ export function LeaderboardView({ limit = 100, currentUserId = null, compact = f
                         row.win_streak
                       )}
                     </td>
-                  </tr>
+                  </motion.tr>
                 );
               })}
             </tbody>
