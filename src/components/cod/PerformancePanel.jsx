@@ -1,9 +1,11 @@
+import { motion, useReducedMotion } from "framer-motion";
 import { useMemo, useRef, useState } from "react";
 import { LuTrendingDown, LuTrendingUp } from "react-icons/lu";
 import { cn } from "../../lib/cn";
 import { buildSeries, summarize } from "../../lib/performance";
 import { RANKS, rankFor } from "../../lib/ranks";
 import { TacticalCard } from "../ui/TacticalCard";
+import { CountUp } from "../effects/CountUp";
 
 const RANGES = [
   { id: 10, label: "10 matchs" },
@@ -17,7 +19,8 @@ const shortDate = (date) => new Date(date).toLocaleDateString("fr-FR", { day: "n
 /**
  * Panneau « Performance » façon diffusion e-sport : chiffres clés de la période,
  * courbe des points avec les paliers de rang, détail de chaque match au survol
- * (ou au toucher) et forme récente.
+ * (ou au toucher) et forme récente. Animé à l'apparition : chiffres qui défilent, courbe qui se dessine de gauche
+ * à droite (et à chaque changement de période), forme qui s'allume match par match.
  *
  * Pour une équipe (Division) : series déjà construite, eyebrow « Saison · Division », sans paliers de rang
  * (ranks=false), pointsHint sous les points, emptyText si aucun match.
@@ -26,6 +29,7 @@ export function PerformancePanel({ history, userId, points, seasonId, seasonLabe
   const [range, setRange] = useState(10);
   const [hover, setHover] = useState(null);
   const chartRef = useRef(null);
+  const reduce = useReducedMotion();
 
   const series = useMemo(() => given ?? buildSeries({ history, userId, points, seasonId }), [given, history, userId, points, seasonId]);
 
@@ -110,22 +114,27 @@ export function PerformancePanel({ history, userId, points, seasonId, seasonLabe
 
       {/* --- Chiffres clés ------------------------------------------------- */}
       <dl className="relative grid grid-cols-2 border-b border-white/10 sm:grid-cols-4 [&>div]:border-white/10 [&>div:nth-child(even)]:border-l [&>div:nth-child(n+3)]:border-t sm:[&>div:nth-child(n+2)]:border-l sm:[&>div:nth-child(n+3)]:border-t-0">
-        <Kpi label="Points" value={values[lastIndex]} hint={pointsHint ?? current.name} hintColor={ranks ? current.color : undefined} accent />
+        <Kpi label="Points" value={<CountUp value={values[lastIndex]} />} hint={pointsHint ?? current.name} hintColor={ranks ? current.color : undefined} accent />
         <Kpi
           label="Variation"
-          value={signed(stats.change)}
+          value={<CountUp value={stats.change} format={signed} delay={150} />}
           tone={stats.change > 0 ? "win" : stats.change < 0 ? "loss" : null}
           icon={stats.change >= 0 ? LuTrendingUp : LuTrendingDown}
           hint={`sur ${entries.length} match${entries.length > 1 ? "s" : ""}`}
         />
-        <Kpi label="Pic" value={stats.peak} hint={`creux ${stats.low}`} />
+        <Kpi label="Pic" value={<CountUp value={stats.peak} delay={300} />} hint={`creux ${stats.low}`} />
         <Kpi label="Bilan" value={`${stats.wins}V – ${stats.losses}D`} hint={stats.ratio === null ? "invaincu" : `ratio ${stats.ratio.toFixed(2)}`} />
       </dl>
 
       {/* --- Courbe ---------------------------------------------------------- */}
       <div className="relative px-6 pb-3 pt-8 sm:px-8">
-        <div
+        <motion.div
+          key={range}
           ref={chartRef}
+          initial={reduce ? false : { clipPath: "inset(-40% 100% -40% -5%)" }}
+          whileInView={{ clipPath: "inset(-40% -5% -40% -5%)", transitionEnd: { clipPath: "none" } }}
+          viewport={{ once: true, margin: "-60px" }}
+          transition={{ duration: 1.3, ease: [0.65, 0, 0.35, 1], delay: 0.2 }}
           className="relative h-56 touch-none select-none sm:h-64"
           onPointerMove={pick}
           onPointerDown={pick}
@@ -228,7 +237,7 @@ export function PerformancePanel({ history, userId, points, seasonId, seasonLabe
               <p className="mt-2 font-tech text-xs font-bold tabular-nums text-white">{activeEntry.points} pts</p>
             </div>
           ) : null}
-        </div>
+        </motion.div>
 
         <div className="mt-3 flex justify-between font-tech text-[10px] uppercase tracking-[0.2em] text-white/35">
           <span>{entries.length > 0 ? shortDate(entries[0].date) : ""}</span>
@@ -242,8 +251,12 @@ export function PerformancePanel({ history, userId, points, seasonId, seasonLabe
         <p className="font-tech text-[10px] uppercase tracking-[0.3em] text-white/45">Forme · {stats.form.length} derniers</p>
         <ol className="flex gap-1.5">
           {stats.form.map((won, index) => (
-            <li
-              key={index}
+            <motion.li
+              key={`${range}-${index}`}
+              initial={reduce ? false : { opacity: 0, scale: 0.4, y: 6 }}
+              whileInView={{ opacity: 1, scale: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ type: "spring", stiffness: 380, damping: 16, delay: 0.3 + index * 0.07 }}
               aria-label={won ? "Victoire" : "Défaite"}
               className={cn(
                 "clip-slant flex h-7 w-8 items-center justify-center font-display text-sm font-black text-ink",
@@ -252,7 +265,7 @@ export function PerformancePanel({ history, userId, points, seasonId, seasonLabe
               )}
             >
               <span aria-hidden>{won ? "V" : "D"}</span>
-            </li>
+            </motion.li>
           ))}
         </ol>
       </div>
