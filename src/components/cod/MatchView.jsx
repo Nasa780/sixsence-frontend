@@ -745,7 +745,7 @@ function KickoffBlock({ data, userId, myTeam, hostName, playerById, onDone }) {
             <p className="mt-1.5 text-sm text-white/60">
               {isHost ? "Crée la partie privée en mode CDL Recherche et destruction, puis partage son code ci-dessous." : `${hostName} crée la partie privée et partage le code de la partie privée.`}
             </p>
-            {isHost ? <RulesLink className="mt-2" /> : null}
+            {isHost ? <RulesLink className="mt-3" /> : null}
           </div>
         </div>
       </div>

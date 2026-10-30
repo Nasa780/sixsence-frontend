@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
 import {
+  LuArrowDown,
   LuBan,
   LuCheck,
   LuChevronDown,
@@ -10,7 +11,6 @@ import {
   LuHeartPulse,
   LuListChecks,
   LuServerCrash,
-  LuScrollText,
   LuSettings2,
   LuShield,
   LuSwords,
@@ -241,11 +241,14 @@ export function RulesLink({ className }) {
     <button
       type="button"
       onClick={() => window.dispatchEvent(new Event(OPEN_RULES))}
-      className={cn("inline-flex items-center gap-1.5 font-tech text-[11px] uppercase tracking-[0.2em] text-gold underline-offset-4 hover:underline", className)}
+      className={cn(
+        "group/regles clip-slant inline-flex items-center gap-2 bg-gold/15 px-4 py-2 font-display text-sm font-bold uppercase tracking-[0.12em] text-gold transition-colors hover:bg-gold hover:text-ink",
+        className,
+      )}
     >
-      <LuScrollText aria-hidden className="h-3.5 w-3.5" />
+      <LuSettings2 aria-hidden className="h-4 w-4" />
       Voir les réglages
-      <LuChevronDown aria-hidden className="h-3.5 w-3.5" />
+      <LuArrowDown aria-hidden className="h-4 w-4 transition-transform group-hover/regles:translate-y-0.5" />
     </button>
   );
 }
@@ -275,7 +278,7 @@ export function MatchRulesCard({ bestOf = 1, isHost = false }) {
         className="group flex w-full items-center gap-4 bg-linear-to-r from-gold/[0.14] via-gold/[0.04] to-transparent px-4 py-4 text-left sm:px-5"
       >
         <span aria-hidden className="clip-tactical grid h-12 w-12 shrink-0 place-items-center bg-gold text-ink [--cut:8px]">
-          <LuScrollText className="h-6 w-6" />
+          <LuSettings2 className="h-6 w-6" />
         </span>
         <span className="min-w-0 flex-1">
           <span className="block font-tech text-[10px] uppercase tracking-[0.3em] text-gold">Règles du match</span>

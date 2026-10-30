@@ -900,7 +900,7 @@ function KickoffBlock({ match, name, onDone }) {
                   ? "L'équipe hôte crée la partie privée et donne son code ici : rejoins-la dès qu'il apparaît."
                   : "L'équipe hôte crée la partie privée et donne son code aux deux équipes."}
             </p>
-            {isHost ? <RulesLink className="mt-2" /> : null}
+            {isHost ? <RulesLink className="mt-3" /> : null}
           </div>
         </div>
       </div>
