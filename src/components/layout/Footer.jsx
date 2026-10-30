@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { FaDiscord, FaTiktok } from "react-icons/fa6";
-import { DISCORD_INVITE_URL, MATCH_TEAM_ENABLED, TIKTOK_URL } from "../../lib/config";
+import { DISCORD_INVITE_URL, TIKTOK_URL } from "../../lib/config";
 import { Container } from "../ui/Container";
 import { Logo } from "../ui/Logo";
 
@@ -34,10 +34,8 @@ export function Footer() {
           <Logo />
           <p className="mt-5 font-display text-xl font-black uppercase leading-none tracking-wide text-white">Prêt à faire tes preuves ?</p>
           <p className="mt-2 max-w-sm text-sm leading-relaxed text-white/55">
-            {MATCH_TEAM_ENABLED
-              ? "La compétition Call of Duty en Hardcore, en Recherche & Destruction : classé solo, Division en équipe et tournois réguliers. Les événements GTA 6 arrivent aussi."
-              : "La compétition Call of Duty en Hardcore, en Recherche & Destruction, en classé solo. Les événements GTA 6 arrivent aussi."}{" "}
-            Connecte ton compte Discord et entre dans l&apos;arène.
+            L&apos;arène de la compétition Call of Duty Hardcore, où une seule balle fait la différence. À sa sortie, GTA 6 devient ton prochain
+            terrain de jeu. Une seule règle : écrire ton nom dans la légende.
           </p>
           {DISCORD_INVITE_URL ? (
             <a
