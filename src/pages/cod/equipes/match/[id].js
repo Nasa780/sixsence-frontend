@@ -14,7 +14,7 @@ import { TacticalCard } from "../../../../components/ui/TacticalCard";
 import { Eyebrow } from "../../../../components/ui/Typography";
 import useCountdown from "../../../../hooks/useCountdown";
 import useSession from "../../../../hooks/useSession";
-import { MatchRulesCard } from "../../../../components/cod/MatchRules";
+import { MatchRulesCard, RulesLink } from "../../../../components/cod/MatchRules";
 import { api } from "../../../../lib/api";
 import { cn } from "../../../../lib/cn";
 import { mapImage } from "../../../../lib/maps";
@@ -150,7 +150,7 @@ export default function TeamMatchPage() {
           </TacticalCard>
         ) : null}
 
-        {/* Réglages de la partie privée, en bas : seulement pour l'équipe hôte. */}
+        {/* Réglages de la partie privée, en bas (le lien du lancement y descend) : toute l'équipe hôte. */}
         {match.status === "in_progress" && match.viewer?.side && match.viewer.side === match.hostSide ? <MatchRulesCard bestOf={match.bestOf} isHost /> : null}
 
         <p>
@@ -900,6 +900,7 @@ function KickoffBlock({ match, name, onDone }) {
                   ? "L'équipe hôte crée la partie privée et donne son code ici : rejoins-la dès qu'il apparaît."
                   : "L'équipe hôte crée la partie privée et donne son code aux deux équipes."}
             </p>
+            {isHost ? <RulesLink className="mt-3" /> : null}
           </div>
         </div>
       </div>
