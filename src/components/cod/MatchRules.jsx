@@ -10,6 +10,7 @@ import {
   LuHeartPulse,
   LuListChecks,
   LuServerCrash,
+  LuScrollText,
   LuSettings2,
   LuShield,
   LuSwords,
@@ -233,22 +234,34 @@ export function RulesConduct() {
 }
 
 /**
- * Bloc repliable « Paramètres de la partie » d'une feuille de match : ouvert d'office pour l'hôte (le Mode hôte reste
- * facultatif), replié pour les autres avec le rappel des interdits.
+ * Bloc repliable « Règles du match » d'une feuille de match : en-tête bien visible (pastille, titre, Voir / Masquer),
+ * ouvert d'office pour l'hôte (le Mode hôte reste facultatif), replié pour les autres avec le rappel des interdits.
  */
 export function MatchRulesCard({ bestOf = 1, isHost = false }) {
   const [open, setOpen] = useState(isHost);
   return (
-    <div className={cn("border bg-ink/60", isHost ? "border-gold/50" : "border-white/10")}>
-      <button type="button" aria-expanded={open} onClick={() => setOpen((value) => !value)} className="flex w-full items-center gap-3 px-4 py-4 text-left sm:px-5">
-        <LuSettings2 aria-hidden className="h-5 w-5 shrink-0 text-gold" />
+    <div className="border border-l-4 border-gold/40 border-l-gold bg-ink/60">
+      <button
+        type="button"
+        aria-expanded={open}
+        onClick={() => setOpen((value) => !value)}
+        className="group flex w-full items-center gap-4 bg-linear-to-r from-gold/[0.14] via-gold/[0.04] to-transparent px-4 py-4 text-left sm:px-5"
+      >
+        <span aria-hidden className="clip-tactical grid h-12 w-12 shrink-0 place-items-center bg-gold text-ink [--cut:8px]">
+          <LuScrollText className="h-6 w-6" />
+        </span>
         <span className="min-w-0 flex-1">
-          <span className="block font-display text-lg font-black uppercase leading-none">{isHost ? "Ta partie privée à régler" : "Paramètres de la partie"}</span>
-          <span className="mt-1 block text-xs text-white/50">
+          <span className="block font-tech text-[10px] uppercase tracking-[0.3em] text-gold">Règles du match</span>
+          <span className="mt-1 block font-display text-2xl font-black uppercase leading-none sm:text-3xl">{isHost ? "Ta partie privée à régler" : "Paramètres de la partie"}</span>
+          <span className="mt-1.5 block text-xs text-white/55">
             {settingsToChange(bestOf).length} réglages · {roundsToWin(bestOf)} manches à gagner · classe et atouts imposés
           </span>
         </span>
-        <LuChevronDown aria-hidden className={cn("h-5 w-5 shrink-0 text-white/50 transition-transform", open && "rotate-180")} />
+        <span className="hidden shrink-0 items-center gap-1.5 border border-gold/50 px-3 py-2 font-tech text-[11px] uppercase tracking-[0.2em] text-gold transition-colors group-hover:bg-gold/10 sm:inline-flex">
+          {open ? "Masquer" : "Voir les règles"}
+          <LuChevronDown aria-hidden className={cn("h-4 w-4 transition-transform", open && "rotate-180")} />
+        </span>
+        <LuChevronDown aria-hidden className={cn("h-5 w-5 shrink-0 text-gold transition-transform sm:hidden", open && "rotate-180")} />
       </button>
       <div className="flex flex-wrap items-center gap-1.5 border-t border-white/[0.06] px-4 py-3 sm:px-5">
         <span className="mr-1 font-tech text-[10px] uppercase tracking-[0.2em] text-loss">Interdit</span>

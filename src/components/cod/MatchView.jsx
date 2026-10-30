@@ -419,6 +419,8 @@ export function MatchView({ matchId }) {
         {match.status === "in_progress" ? (
           <>
             <KickoffBlock data={data} userId={userId} myTeam={myTeam} hostName={hostName} playerById={playerById} onDone={load} />
+            {/* Règles et réglages de la partie privée, juste sous le lancement : seulement pour l'hôte (premier joueur de l'équipe 1). */}
+            {match.team_a[0] === userId ? <MatchRulesCard bestOf={1} isHost /> : null}
             {myTeam ? (
               <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
                 <p className="font-display text-xl font-bold uppercase tracking-[0.12em] text-white/80 sm:mr-2">Qui a gagné ?</p>
@@ -658,8 +660,6 @@ export function MatchView({ matchId }) {
         </TacticalCard>
       )}
 
-      {/* Réglages de la partie privée, en bas : seulement pour l'hôte (premier joueur de l'équipe 1). */}
-      {match.status === "in_progress" && match.team_a[0] === userId ? <MatchRulesCard bestOf={1} isHost /> : null}
     </div>
   );
 }
