@@ -6,6 +6,13 @@
  */
 export const ROLE_LABELS = { member: "Membre", arbitre: "Arbitre", staff: "Staff", admin: "Admin" };
 
+/** Couleur et étiquette des messages de l'équipe dans les tchats de match (rôle envoyé par le backend). */
+export const STAFF_CHAT = {
+  admin: { label: "Admin", color: "#f472b6" },
+  staff: { label: "Staff", color: "#a78bfa" },
+  arbitre: { label: "Arbitre", color: "#fb923c" },
+};
+
 /** Tranche les matchs (contestations, demandes d'arbitrage). */
 export const isReferee = (role) => ["admin", "staff", "arbitre"].includes(role);
 /** Modère les joueurs (signalements, sanctions). */

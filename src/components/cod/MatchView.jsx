@@ -10,7 +10,7 @@ import { READY_REQUIRED } from "../../lib/config";
 import { cn } from "../../lib/cn";
 import { ARBITRATION_REASONS, REPORT_REASONS } from "../../lib/moderation";
 import { groupLabel, rankFor, rankGradient } from "../../lib/ranks";
-import { isReferee } from "../../lib/roles";
+import { STAFF_CHAT, isReferee } from "../../lib/roles";
 import { supabase } from "../../lib/supabase";
 import useTeamTags from "../../hooks/useTeamTags";
 import { TeamTag, fieldClass } from "../teams/TeamParts";
@@ -643,7 +643,7 @@ export function MatchView({ matchId }) {
           ) : null}
 
           {/* --- Chat ----------------------------------------------------------- */}
-          <MatchChat matchId={match.id} messages={messages || []} canWrite={Boolean(myTeam)} currentUserId={userId} />
+          <MatchChat matchId={match.id} messages={messages || []} canWrite={Boolean(myTeam) || isReferee(user?.role)} currentUserId={userId} />
         </>
       ) : (
         <TacticalCard cut={16} innerClassName="flex items-start gap-4 p-5 sm:p-6">
@@ -1187,19 +1187,33 @@ function MatchChat({ matchId, messages, canWrite, currentUserId }) {
           {messages.length === 0 ? (
             <p className="text-sm italic text-white/40">Le match a démarré — bonne chance à tous !</p>
           ) : (
-            messages.map((message) => (
-              <div key={message.id}>
-                <p className="flex items-baseline gap-2">
-                  <span className={cn("font-display text-base font-bold uppercase tracking-wide", message.user_id === currentUserId ? "text-gold" : "text-white")}>
-                    {message.username}
-                  </span>
-                  <span className="font-tech text-[10px] text-white/35">
-                    {new Date(message.created_at).toLocaleTimeString("fr-FR", { hour: "2-digit", minute: "2-digit" })}
-                  </span>
-                </p>
-                <p className="mt-0.5 break-words text-sm text-white/75">{message.body}</p>
-              </div>
-            ))
+            messages.map((message) => {
+              // Message de l'équipe SixSence (admin, staff, arbitre) : pseudo, rôle et texte dans sa couleur.
+              const staff = STAFF_CHAT[message.role];
+              return (
+                <div key={message.id} className={cn(staff && "border-l-2 pl-3")} style={staff ? { borderColor: staff.color } : undefined}>
+                  <p className="flex items-baseline gap-2">
+                    <span
+                      className={cn("font-display text-base font-bold uppercase tracking-wide", !staff && (message.user_id === currentUserId ? "text-gold" : "text-white"))}
+                      style={staff ? { color: staff.color } : undefined}
+                    >
+                      {message.username}
+                    </span>
+                    {staff ? (
+                      <span className="border px-1.5 py-px font-tech text-[9px] font-bold uppercase tracking-[0.2em]" style={{ color: staff.color, borderColor: staff.color }}>
+                        {staff.label}
+                      </span>
+                    ) : null}
+                    <span className="font-tech text-[10px] text-white/35">
+                      {new Date(message.created_at).toLocaleTimeString("fr-FR", { hour: "2-digit", minute: "2-digit" })}
+                    </span>
+                  </p>
+                  <p className={cn("mt-0.5 break-words text-sm", !staff && "text-white/75")} style={staff ? { color: staff.color } : undefined}>
+                    {message.body}
+                  </p>
+                </div>
+              );
+            })
           )}
         </div>
 
