@@ -35,9 +35,9 @@ export function Footer() {
           <p className="mt-5 font-display text-xl font-black uppercase leading-none tracking-wide text-white">Prêt à faire tes preuves ?</p>
           <p className="mt-2 max-w-sm text-sm leading-relaxed text-white/55">
             {MATCH_TEAM_ENABLED
-              ? "Matchs classés en solo sur Call of Duty, championnats Division en équipe, tournois réguliers et événements exclusifs sur GTA 6."
-              : "Matchs classés en solo sur Call of Duty et événements exclusifs sur GTA 6."}{" "}
-            Connecte simplement ton compte Discord pour rejoindre l&apos;action instantanément.
+              ? "La compétition Call of Duty en Hardcore, en Recherche & Destruction : classé solo, Division en équipe et tournois réguliers. Les événements GTA 6 arrivent aussi."
+              : "La compétition Call of Duty en Hardcore, en Recherche & Destruction, en classé solo. Les événements GTA 6 arrivent aussi."}{" "}
+            Connecte ton compte Discord et entre dans l&apos;arène.
           </p>
           {DISCORD_INVITE_URL ? (
             <a
