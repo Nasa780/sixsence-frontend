@@ -94,7 +94,17 @@ export function AnubisCup({ tournament, userId, now, countdown, onDone, bracket 
               <>
                 <div className="mt-7 grid grid-cols-2 gap-3 sm:grid-cols-4">
                   <HudStat label={checkInOpen ? "Tirage dans" : "Check-in dans"} value={countdown(checkInOpen ? closesAt : tournament.checkInOpensAt)} gold />
-                  <HudStat label="Inscrits" value={`${tournament.registered} / ${tournament.capacity}`} />
+                  <HudStat
+                    label="Inscrits"
+                    value={`${Math.min(tournament.registered, tournament.capacity)} / ${tournament.capacity}`}
+                    hint={
+                      tournament.registered > tournament.capacity
+                        ? `+ ${tournament.registered - tournament.capacity} remplaçant${tournament.registered - tournament.capacity > 1 ? "s" : ""}`
+                        : tournament.reserveSlots
+                          ? `+ ${tournament.reserveSlots} places de remplaçant`
+                          : null
+                    }
+                  />
                   <HudStat label="Équipes prévues" value={plannedTeams} hint={plannedTeams < 4 ? `4 minimum (${4 * tournament.teamSize} joueurs)` : `${tournament.size} au plus`} />
                   <HudStat label="Check-in" value={`${tournament.checkedInCount} / ${tournament.registered}`} />
                 </div>
@@ -184,9 +194,10 @@ function SoloRegistration({ tournament, userId, checkInOpen, onDone }) {
       <div className="flex flex-wrap items-center gap-3">
         <Chip tone={viewer.checkedIn ? "win" : "gold"}>
           <LuCheck aria-hidden className="h-3 w-3" />
-          {viewer.checkedIn ? "Présent" : "Inscrit"}
+          {viewer.checkedIn ? "Présent" : viewer.reserveRank ? `Remplaçant n°${viewer.reserveRank}` : "Inscrit"}
         </Chip>
         <p className="min-w-0 flex-1 text-sm text-white/65">
+          {viewer.reserveRank ? "Tu prends la place d'un inscrit qui ne fait pas son check-in. " : ""}
           {viewer.checkedIn ? "Check-in validé : ton équipe sera tirée au sort 15 min avant le début." : checkInOpen ? "Le check-in est ouvert : confirme ta présence." : "Le check-in ouvre 2 h avant le début."}
         </p>
         {viewer.canCheckIn ? (
@@ -208,13 +219,15 @@ function SoloRegistration({ tournament, userId, checkInOpen, onDone }) {
       <div className="flex flex-wrap items-center gap-4">
         <Button size="lg" disabled={Boolean(pending)} onClick={() => run("join")}>
           {spin("join", LuUserPlus)}
-          M&apos;inscrire
+          {viewer.asReserve ? "M'inscrire comme remplaçant" : "M'inscrire"}
         </Button>
-        <p className="text-sm text-white/55">Seul, sans équipe : identifiant Activision requis.</p>
+        <p className="text-sm text-white/55">
+          {viewer.asReserve ? "Coupe complète : tu joueras si un inscrit ne fait pas son check-in. " : ""}Seul, sans équipe : identifiant Activision requis.
+        </p>
       </div>
     );
   } else {
-    content = <p className="text-sm text-white/55">La coupe est complète.</p>;
+    content = <p className="text-sm text-white/55">La coupe est complète, places de remplaçant comprises.</p>;
   }
   return (
     <div className="space-y-3">
@@ -259,6 +272,7 @@ function RegisteredPlayers({ tournament, userId }) {
               <Link href={`/cod/profile/${player.id}`} className="mt-2 w-full truncate text-xs font-semibold text-white/80 hover:text-white">
                 {player.username}
               </Link>
+              {player.reserve ? <span className="font-tech text-[9px] uppercase tracking-[0.2em] text-[#e7c05a]">Remplaçant</span> : null}
             </motion.li>
           ))}
         </ul>
