@@ -377,7 +377,7 @@ export function QueuePanel({ profileComplete, userId }) {
                     </>
                   )}
                 </span>{" "}
-                {bannedForever ? "par l'équipe SixSence : le motif t'a été envoyé sur Discord." : "après des matchs non acceptés ou une sanction de l'équipe."}{" "}
+                {bannedForever ? "par l'équipe SixSence : le motif t'a été envoyé sur Discord." : READY_REQUIRED ? "après des matchs non acceptés ou une sanction de l'équipe." : "après une sanction de l'équipe."}{" "}
                 <Link href="/reglement" className="underline underline-offset-4">
                   Voir le règlement
                 </Link>

@@ -1,4 +1,3 @@
-import { motion, useReducedMotion } from "framer-motion";
 import { FaDiscord } from "react-icons/fa6";
 import { LuArrowRight, LuChevronRight } from "react-icons/lu";
 import useSession from "../../hooks/useSession";
@@ -14,18 +13,11 @@ import { LiveBand } from "./LiveBand";
  * qui défile (activité du moment, sinon ce qui arrive).
  */
 export function Hero() {
-  const reduceMotion = useReducedMotion();
   const { session, loading } = useSession();
 
-  // Apparition en cascade : chaque enfant arrive 90 ms après le précédent.
-  const container = {
-    hidden: {},
-    show: { transition: { staggerChildren: 0.09, delayChildren: 0.15 } },
-  };
-  const item = {
-    hidden: reduceMotion ? { opacity: 1 } : { opacity: 0, y: 28 },
-    show: { opacity: 1, y: 0, transition: { duration: 0.7, ease: [0.22, 1, 0.36, 1] } },
-  };
+  // Apparition en cascade, en CSS (classe hero-in de globals.css) : elle démarre dès l'affichage, sans attendre le
+  // JavaScript ; chaque élément arrive 90 ms après le précédent.
+  const step = (index) => ({ style: { animationDelay: `${150 + index * 90}ms` } });
 
   return (
     <section className="relative isolate flex min-h-svh items-center overflow-hidden pt-28 pb-32">
@@ -55,32 +47,32 @@ export function Hero() {
 
       {/* --- Contenu ------------------------------------------------------- */}
       <Container>
-        <motion.div variants={container} initial="hidden" animate="show" className="max-w-4xl">
-          <motion.div variants={item} className="inline-flex items-center gap-3 border border-gold/30 bg-gold/8 px-4 py-2">
+        <div className="max-w-4xl">
+          <div style={step(0).style} className="hero-in inline-flex items-center gap-3 border border-gold/30 bg-gold/8 px-4 py-2">
             <span aria-hidden className="h-1.5 w-1.5 animate-pulse-gold bg-gold shadow-[0_0_10px_var(--color-gold)]" />
             <span className="font-tech text-[10px] font-medium uppercase tracking-[0.3em] text-gold sm:text-[11px]">
               Plateforme gaming
             </span>
-          </motion.div>
+          </div>
 
-          <motion.h1
-            variants={item}
-            className="mt-6 font-display text-[clamp(4.25rem,17vw,12.5rem)] font-black uppercase leading-[0.8] tracking-tight"
+          <h1
+            style={step(1).style}
+            className="hero-in mt-6 font-display text-[clamp(4.25rem,17vw,12.5rem)] font-black uppercase leading-[0.8] tracking-tight"
           >
             Six<span className="text-gold-gradient">Sence</span>
-          </motion.h1>
+          </h1>
 
-          <motion.p variants={item} className="mt-6 font-display text-2xl font-bold uppercase tracking-[0.12em] text-white/90 sm:text-3xl">
+          <p style={step(2).style} className="hero-in mt-6 font-display text-2xl font-bold uppercase tracking-[0.12em] text-white/90 sm:text-3xl">
             Le sixième sens du jeu compétitif
-          </motion.p>
+          </p>
 
-          <motion.p variants={item} className="mt-4 max-w-xl text-base leading-relaxed text-white/60 sm:text-lg">
+          <p style={step(3).style} className="hero-in mt-4 max-w-xl text-base leading-relaxed text-white/60 sm:text-lg">
             {MATCH_TEAM_ENABLED
               ? "Grimpe seul au classement de Call of Duty en partie classée, monte ton équipe en Division et vise le tournoi de fin de saison. Côté GTA 6, rejoins les événements à venir de la communauté."
               : "Files classées Call of Duty du 2v2 au 5v5 en solo, matchmaking automatique, classement en direct et événements GTA 6. Un seul accès : ton compte Discord."}
-          </motion.p>
+          </p>
 
-          <motion.div variants={item} className="mt-9 flex flex-col gap-4 sm:flex-row sm:items-center">
+          <div style={step(4).style} className="hero-in mt-9 flex flex-col gap-4 sm:flex-row sm:items-center">
             {/* Tant que la session n'est pas lue, on montre le bouton de connexion (cas le plus fréquent). */}
             {!loading && session ? (
               <ButtonLink href="/cod" size="lg">
@@ -97,8 +89,8 @@ export function Hero() {
               Découvrir
               <LuChevronRight aria-hidden className="h-5 w-5" />
             </ButtonLink>
-          </motion.div>
-        </motion.div>
+          </div>
+        </div>
       </Container>
 
       <LiveBand />

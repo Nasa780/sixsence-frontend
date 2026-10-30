@@ -10,7 +10,8 @@ const USE_PNG_LOGO = true;
 export function LogoMark({ className = "" }) {
   if (!USE_PNG_LOGO) return <LegacyLogoMark className={className} />;
   // eslint-disable-next-line @next/next/no-img-element
-  return <img src="/images/logo.png" alt="" aria-hidden width={512} height={512} className={cn("object-contain", className)} />;
+  // WebP léger (4 et 13 Ko) ; le PNG 512 px reste pour les images d'aperçu (api/og) et les grands formats.
+  return <img src="/images/logo-128.webp" srcSet="/images/logo-64.webp 64w, /images/logo-128.webp 128w, /images/logo-256.webp 256w" sizes="(min-width: 640px) 128px, 64px" alt="" aria-hidden width={128} height={128} className={cn("object-contain", className)} />;
 }
 
 /**

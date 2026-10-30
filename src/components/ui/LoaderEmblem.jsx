@@ -16,7 +16,7 @@ export function LoaderEmblem({ size = 48, hexagon = false, className = "" }) {
           <polygon points="24,2 43,13 43,35 24,46 5,35 5,13" fill="none" stroke="currentColor" strokeOpacity="0.35" strokeWidth="0.6" />
         </svg>
       ) : null}
-      <img src="/images/logo.png" alt="" className="relative object-contain drop-shadow-[0_0_14px_rgba(212,175,55,0.5)]" style={{ width: size * 0.46, height: size * 0.46 }} />
+      <img src="/images/logo-256.webp" alt="" className="relative object-contain drop-shadow-[0_0_14px_rgba(212,175,55,0.5)]" style={{ width: size * 0.46, height: size * 0.46 }} />
     </span>
   );
 }
