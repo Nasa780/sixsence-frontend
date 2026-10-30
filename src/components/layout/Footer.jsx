@@ -32,7 +32,7 @@ export function Footer() {
       <Container className="grid gap-12 py-14 md:grid-cols-[1.4fr_1fr_1fr]">
         <div>
           <Logo />
-          <p className="mt-5 font-display text-xl font-black uppercase leading-none tracking-wide text-white">Prêt à faire tes preuves ?</p>
+          <p className="mt-5 font-display text-base font-black uppercase leading-none tracking-wide text-white">Prêt à faire tes preuves ?</p>
           <p className="mt-2 max-w-sm text-sm leading-relaxed text-white/55">
             L&apos;arène de la compétition Call of Duty Hardcore, où une seule balle fait la différence. À sa sortie, GTA 6 devient ton prochain
             terrain de jeu. Une seule règle : écrire ton nom dans la légende.
