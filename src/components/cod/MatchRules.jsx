@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import {
   LuBan,
   LuCheck,
@@ -233,14 +233,41 @@ export function RulesConduct() {
   );
 }
 
+const OPEN_RULES = "sixsence:ouvrir-regles";
+
+/** Lien « Réglages de la partie » du lancement du match : descend jusqu'au bloc des règles (en bas) et l'ouvre. */
+export function RulesLink({ className }) {
+  return (
+    <button
+      type="button"
+      onClick={() => window.dispatchEvent(new Event(OPEN_RULES))}
+      className={cn("inline-flex items-center gap-1.5 font-tech text-[11px] uppercase tracking-[0.2em] text-gold underline-offset-4 hover:underline", className)}
+    >
+      <LuScrollText aria-hidden className="h-3.5 w-3.5" />
+      Voir les réglages
+      <LuChevronDown aria-hidden className="h-3.5 w-3.5" />
+    </button>
+  );
+}
+
 /**
- * Bloc repliable « Règles du match » d'une feuille de match : en-tête bien visible (pastille, titre, Voir / Masquer),
- * ouvert d'office pour l'hôte (le Mode hôte reste facultatif), replié pour les autres avec le rappel des interdits.
+ * Bloc repliable « Règles du match » d'une feuille de match, placé en bas pour ne pas cacher la feuille sur téléphone :
+ * en-tête bien visible (pastille, titre, Voir / Masquer), replié d'office avec le rappel des interdits ; RulesLink (lancement
+ * du match) y descend et l'ouvre. Le Mode hôte reste facultatif.
  */
 export function MatchRulesCard({ bestOf = 1, isHost = false }) {
-  const [open, setOpen] = useState(isHost);
+  const [open, setOpen] = useState(false);
+  const ref = useRef(null);
+  useEffect(() => {
+    const show = () => {
+      setOpen(true);
+      requestAnimationFrame(() => ref.current?.scrollIntoView({ behavior: "smooth", block: "start" }));
+    };
+    window.addEventListener(OPEN_RULES, show);
+    return () => window.removeEventListener(OPEN_RULES, show);
+  }, []);
   return (
-    <div className="border border-l-4 border-gold/40 border-l-gold bg-ink/60">
+    <div ref={ref} className="scroll-mt-24 border border-l-4 border-gold/40 border-l-gold bg-ink/60">
       <button
         type="button"
         aria-expanded={open}

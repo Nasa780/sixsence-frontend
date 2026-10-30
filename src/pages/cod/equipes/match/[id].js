@@ -14,7 +14,7 @@ import { TacticalCard } from "../../../../components/ui/TacticalCard";
 import { Eyebrow } from "../../../../components/ui/Typography";
 import useCountdown from "../../../../hooks/useCountdown";
 import useSession from "../../../../hooks/useSession";
-import { MatchRulesCard } from "../../../../components/cod/MatchRules";
+import { MatchRulesCard, RulesLink } from "../../../../components/cod/MatchRules";
 import { api } from "../../../../lib/api";
 import { cn } from "../../../../lib/cn";
 import { mapImage } from "../../../../lib/maps";
@@ -108,8 +108,6 @@ export default function TeamMatchPage() {
         <MatchNotices match={match} name={name} />
 
         {match.status === "in_progress" && match.scores.length === 0 && !match.pendingScores ? <KickoffBlock match={match} name={name} onDone={load} /> : null}
-        {/* Règles et réglages de la partie privée, sous le lancement : seulement pour l'équipe hôte. */}
-        {match.status === "in_progress" && match.viewer?.side && match.viewer.side === match.hostSide ? <MatchRulesCard bestOf={match.bestOf} isHost /> : null}
         {match.status === "forfeit_claimed" ? <ForfeitBlock match={match} name={name} onDone={load} /> : null}
         {match.messages ? <MatchChat match={match} name={name} userId={userId} onDone={load} /> : null}
 
@@ -152,6 +150,8 @@ export default function TeamMatchPage() {
           </TacticalCard>
         ) : null}
 
+        {/* Réglages de la partie privée, en bas (le lien du lancement y descend) : toute l'équipe hôte. */}
+        {match.status === "in_progress" && match.viewer?.side && match.viewer.side === match.hostSide ? <MatchRulesCard bestOf={match.bestOf} isHost /> : null}
 
         <p>
           <Link href="/cod/equipes" className="group/l inline-flex items-center gap-3 font-display text-sm font-bold uppercase tracking-[0.14em] text-gold transition-colors hover:text-gold-light">
@@ -900,6 +900,7 @@ function KickoffBlock({ match, name, onDone }) {
                   ? "L'équipe hôte crée la partie privée et donne son code ici : rejoins-la dès qu'il apparaît."
                   : "L'équipe hôte crée la partie privée et donne son code aux deux équipes."}
             </p>
+            {isHost ? <RulesLink className="mt-2" /> : null}
           </div>
         </div>
       </div>

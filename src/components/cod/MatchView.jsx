@@ -20,7 +20,7 @@ import { Chip, EmptyState, Loading, Notice } from "../ui/Feedback";
 import { TacticalCard } from "../ui/TacticalCard";
 import { ConfirmDialog } from "../ui/ConfirmDialog";
 import { ReasonDialog } from "../ui/ReasonDialog";
-import { MatchRulesCard } from "./MatchRules";
+import { MatchRulesCard, RulesLink } from "./MatchRules";
 import { PointsAtStake } from "./PointsAtStake";
 import { ReadyCheckOverlay } from "./QueuePanel";
 import { RequeueCard } from "./RequeueCard";
@@ -419,8 +419,6 @@ export function MatchView({ matchId }) {
         {match.status === "in_progress" ? (
           <>
             <KickoffBlock data={data} userId={userId} myTeam={myTeam} hostName={hostName} playerById={playerById} onDone={load} />
-            {/* Règles et réglages de la partie privée, juste sous le lancement : seulement pour l'hôte (premier joueur de l'équipe 1). */}
-            {match.team_a[0] === userId ? <MatchRulesCard bestOf={1} isHost /> : null}
             {myTeam ? (
               <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
                 <p className="font-display text-xl font-bold uppercase tracking-[0.12em] text-white/80 sm:mr-2">Qui a gagné ?</p>
@@ -660,6 +658,8 @@ export function MatchView({ matchId }) {
         </TacticalCard>
       )}
 
+      {/* Réglages de la partie privée, en bas (le lien du lancement y descend) : seulement pour l'hôte (premier joueur de l'équipe 1). */}
+      {match.status === "in_progress" && match.team_a[0] === userId ? <MatchRulesCard bestOf={1} isHost /> : null}
     </div>
   );
 }
@@ -745,6 +745,7 @@ function KickoffBlock({ data, userId, myTeam, hostName, playerById, onDone }) {
             <p className="mt-1.5 text-sm text-white/60">
               {isHost ? "Crée la partie privée en mode CDL Recherche et destruction, puis partage son code ci-dessous." : `${hostName} crée la partie privée et partage le code de la partie privée.`}
             </p>
+            {isHost ? <RulesLink className="mt-2" /> : null}
           </div>
         </div>
       </div>
