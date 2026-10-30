@@ -63,13 +63,14 @@ export default function PlayerProfilePage({ meta }) {
         {image ? <meta key="og:image" property="og:image" content={image} /> : null}
         {image ? <meta key="og:image:alt" property="og:image:alt" content={`Carte de joueur de ${meta.username}`} /> : null}
       </Head>
-      <div className="relative isolate overflow-hidden">
+      {/* Hauteur d'un écran au moins : le pied de page ne saute pas quand le profil se charge. */}
+      <div className="relative isolate min-h-svh overflow-hidden">
         <div aria-hidden className="absolute inset-x-0 top-0 -z-10 h-96 bg-grid mask-fade opacity-70" />
         <Container className="pt-28 pb-12 sm:pt-32">
           <CodModeNav className="mb-8" />
           <Eyebrow className="mb-6">Profil joueur</Eyebrow>
           {isReady && !UUID.test(id) ? <EmptyState title="Joueur introuvable">Ce profil n&apos;existe pas.</EmptyState> : null}
-          {isReady && UUID.test(id) ? <ProfileView key={id} userId={id} editable={isOwn} ownUser={isOwn ? user : null} /> : null}
+          {isReady && UUID.test(id) ? <ProfileView key={id} nameAsTitle userId={id} editable={isOwn} ownUser={isOwn ? user : null} /> : null}
         </Container>
       </div>
     </>

@@ -83,7 +83,7 @@ export function Footer() {
       </Container>
 
       <div className="border-t border-white/8">
-        <Container className="flex flex-col gap-3 py-6 text-xs leading-relaxed text-white/40 md:flex-row md:items-start md:justify-between">
+        <Container className="flex flex-col gap-3 py-6 text-xs leading-relaxed text-white/60 md:flex-row md:items-start md:justify-between">
           <div className="space-y-2">
             <p>© {new Date().getFullYear()} SixSence. Tous droits réservés.</p>
             <nav aria-label="Informations légales" className="flex flex-wrap gap-x-4 gap-y-1">

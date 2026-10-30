@@ -31,6 +31,7 @@ import { TwitchForm, TwitchPanel } from "./TwitchPanel";
 import { RankBadge } from "./RankBadge";
 import { RankCard } from "./RankCard";
 import { SeasonRecap } from "./SeasonRecap";
+import { READY_REQUIRED } from "../../lib/config";
 
 const PLATFORM_LABEL = { pc: "PC", playstation: "PlayStation", xbox: "Xbox" };
 const signed = (value) => (value > 0 ? `+${value}` : value === 0 ? "±0" : `${value}`);
@@ -71,7 +72,9 @@ function badgesFor(profile, seasons) {
  * Profil COD : identité et rang, statistiques, progression, historique, distinctions.
  * Public ; seul le propriétaire voit le formulaire de ses identifiants.
  */
-export function ProfileView({ userId, editable = false, ownUser = null }) {
+export function ProfileView({ userId, editable = false, ownUser = null, nameAsTitle = false }) {
+  // Profil public : le pseudo est le titre principal de la page (h1, pour les moteurs de recherche).
+  const NameTag = nameAsTitle ? "h1" : "h2";
   const [historyTab, setHistoryTab] = useState("classe");
   const team = useTeamTags([userId]).get(userId);
   const [data, setData] = useState(null);
@@ -167,7 +170,7 @@ export function ProfileView({ userId, editable = false, ownUser = null }) {
               {bannedUntil.getTime() - Date.now() < 20 * 3600 * 1000
                 ? bannedUntil.toLocaleTimeString("fr-FR", { hour: "2-digit", minute: "2-digit" })
                 : bannedUntil.toLocaleString("fr-FR", { day: "numeric", month: "long", hour: "2-digit", minute: "2-digit" })}{" "}
-              après des matchs non acceptés ou une sanction de l&apos;équipe.
+              {READY_REQUIRED ? "après des matchs non acceptés ou une sanction de l'équipe." : "après une sanction de l'équipe."}
             </>
           )}{" "}
           <Link href="/reglement" className="underline underline-offset-4">
@@ -203,7 +206,7 @@ export function ProfileView({ userId, editable = false, ownUser = null }) {
             </div>
             <div className="min-w-0">
               <div className="flex min-w-0 items-baseline gap-3">
-                <h2 className="truncate font-display text-5xl font-black uppercase leading-[0.9] sm:text-6xl">{player.username}</h2>
+                <NameTag className="truncate font-display text-5xl font-black uppercase leading-[0.9] sm:text-6xl">{player.username}</NameTag>
                 {/* Équipe : seulement son tag, à côté du pseudo sur ordinateur, dans la couleur de l'équipe (lien vers sa fiche). */}
                 {team ? (
                   <Link
