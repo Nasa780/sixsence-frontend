@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { useCallback, useEffect, useState } from "react";
-import { LuExternalLink, LuGavel, LuLoaderCircle, LuLockOpen } from "react-icons/lu";
+import { LuExternalLink, LuGavel, LuLoaderCircle, LuLockOpen, LuSend } from "react-icons/lu";
+import { FaDiscord } from "react-icons/fa6";
 import { api } from "../../lib/api";
 import { cn } from "../../lib/cn";
 import { MATCH_TEAM_ENABLED } from "../../lib/config";
@@ -249,8 +250,10 @@ export function DisputesPanel() {
 
 const BADGE_LABEL = { founder: "Fondateur", beta: "Bêta-testeur", partner: "Partenaire", staff: "Staff", mvp: "MVP" };
 
-export function PlayersPanel({ currentUserId }) {
+export function PlayersPanel({ currentUserId, isAdmin = false }) {
   const [query, setQuery] = useState("");
+  // Message privé Discord (admin) : joueur dont le formulaire est ouvert.
+  const [messageTo, setMessageTo] = useState(null);
   const [players, setPlayers] = useState(null);
   const { pending, error, run } = useAction();
 
@@ -323,6 +326,12 @@ export function PlayersPanel({ currentUserId }) {
                     </p>
                   </div>
                   <div className="flex flex-wrap gap-2">
+                    {isAdmin ? (
+                      <Button size="sm" variant="outline" onClick={() => setMessageTo(messageTo === player.id ? null : player.id)} aria-expanded={messageTo === player.id}>
+                        <FaDiscord aria-hidden className="h-4 w-4" />
+                        Message
+                      </Button>
+                    ) : null}
                     {banned ? (
                       <Button size="sm" variant="outline" disabled={pending !== null} onClick={() => update(player, "unban", () => api(`/admin/players/${player.id}/unban`, { method: "POST" }))}>
                         <LuLockOpen aria-hidden className="h-4 w-4" />
@@ -354,6 +363,7 @@ export function PlayersPanel({ currentUserId }) {
                     ) : null}
                   </div>
                 </div>
+                {messageTo === player.id ? <DiscordMessageForm player={player} onClose={() => setMessageTo(null)} /> : null}
                 {player.profile ? (
                   <div className="mt-3 flex flex-wrap gap-2" aria-label={`Badges de ${player.username}`}>
                     {Object.entries(BADGE_LABEL).map(([badge, label]) => {
@@ -673,5 +683,62 @@ export function CasesPanel({ kind }) {
         />
       ) : null}
     </div>
+  );
+}
+
+const DM_MAX = 1500;
+
+/** Message privé Discord d'un admin à un joueur : envoyé par le bot SixSence, signé « l'équipe SixSence ». */
+function DiscordMessageForm({ player, onClose }) {
+  const [text, setText] = useState("");
+  const [state, setState] = useState({ pending: false, error: null, sent: false });
+
+  async function send(event) {
+    event.preventDefault();
+    if (!text.trim()) return;
+    setState({ pending: true, error: null, sent: false });
+    try {
+      await api(`/admin/players/${player.id}/message`, { method: "POST", body: { text: text.trim() } });
+      setText("");
+      setState({ pending: false, error: null, sent: true });
+    } catch (caught) {
+      setState({ pending: false, error: caught.message, sent: false });
+    }
+  }
+
+  return (
+    <form onSubmit={send} className="mt-3 space-y-2 border border-white/10 bg-ink/60 p-3">
+      <label htmlFor={`dm-${player.id}`} className="font-tech text-[10px] uppercase tracking-[0.2em] text-white/55">
+        Message privé à {player.username} · envoyé par le bot SixSence
+      </label>
+      <textarea
+        id={`dm-${player.id}`}
+        value={text}
+        maxLength={DM_MAX}
+        rows={4}
+        onChange={(event) => {
+          setText(event.target.value);
+          if (state.sent || state.error) setState({ pending: false, error: null, sent: false });
+        }}
+        placeholder="Ton message…"
+        className="w-full resize-y border border-white/12 bg-ink px-3 py-2 text-sm text-white placeholder:text-white/35 focus:border-gold focus:outline-none"
+      />
+      <div className="flex flex-wrap items-center justify-between gap-2">
+        <span className="text-xs text-white/45">
+          {text.length}/{DM_MAX} · signé « l&apos;équipe SixSence », copie dans le salon des journaux
+        </span>
+        <div className="flex gap-2">
+          <Button type="button" size="sm" variant="outline" onClick={onClose}>
+            Fermer
+          </Button>
+          <Button type="submit" size="sm" disabled={state.pending || !text.trim()}>
+            {state.pending ? <LuLoaderCircle aria-hidden className="h-4 w-4 animate-spin" /> : <LuSend aria-hidden className="h-4 w-4" />}
+            Envoyer
+          </Button>
+        </div>
+      </div>
+      {state.error ? <Notice tone="error">{state.error}</Notice> : null}
+      {state.sent ? <Notice tone="success">Message envoyé sur Discord.</Notice> : null}
+    </form>
   );
 }

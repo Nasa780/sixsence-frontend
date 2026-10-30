@@ -20,6 +20,7 @@ import { cn } from "../../../../lib/cn";
 import { mapImage } from "../../../../lib/maps";
 import { rankFor, rankGradient } from "../../../../lib/ranks";
 import { supabase } from "../../../../lib/supabase";
+import { STAFF_CHAT } from "../../../../lib/roles";
 
 const ROUNDS = 6;
 const mapsWon = (scores, side) => scores.filter(([a, b]) => (side === "A" ? a > b : b > a)).length;
@@ -1093,19 +1094,31 @@ function MatchChat({ match, name, userId, onDone }) {
       </div>
       <ul ref={listRef} className="max-h-80 space-y-2 overflow-y-auto pr-1">
         {count === 0 ? <li className="text-sm text-white/45">Aucun message pour l&apos;instant.</li> : null}
-        {match.messages.map((message) => (
-          <li key={message.id} className={cn("border-l-2 bg-white/[0.03] px-3 py-2", message.side === "A" ? "border-gold" : message.side === "B" ? "border-white/70" : "border-loss")}>
-            <p className="font-tech text-[10px] uppercase tracking-[0.2em] text-white/45">
-              <span className={cn(message.userId === userId ? "text-gold" : "text-white/70")}>{message.username}</span>
-              {" · "}
-              {message.side ? name(message.side) : "Arbitre"}
-              {message.side && message.side === match.hostSide ? " (hôte)" : ""}
-              {" · "}
-              {new Date(message.createdAt).toLocaleTimeString("fr-FR", { hour: "2-digit", minute: "2-digit" })}
-            </p>
-            <p className="mt-1 whitespace-pre-wrap break-words text-sm text-white/85">{message.body}</p>
-          </li>
-        ))}
+        {match.messages.map((message) => {
+          // Message de l'équipe SixSence (admin, staff, arbitre) : pseudo, rôle et texte dans sa couleur.
+          const staff = STAFF_CHAT[message.role];
+          return (
+            <li
+              key={message.id}
+              className={cn("border-l-2 bg-white/[0.03] px-3 py-2", message.side === "A" ? "border-gold" : message.side === "B" ? "border-white/70" : !staff && "border-loss")}
+              style={staff ? { borderColor: staff.color } : undefined}
+            >
+              <p className="font-tech text-[10px] uppercase tracking-[0.2em] text-white/45">
+                <span className={cn(!staff && (message.userId === userId ? "text-gold" : "text-white/70"))} style={staff ? { color: staff.color } : undefined}>
+                  {message.username}
+                </span>
+                {" · "}
+                {message.side ? name(message.side) : <span style={staff ? { color: staff.color } : undefined}>{staff?.label ?? "Arbitre"}</span>}
+                {message.side && message.side === match.hostSide ? " (hôte)" : ""}
+                {" · "}
+                {new Date(message.createdAt).toLocaleTimeString("fr-FR", { hour: "2-digit", minute: "2-digit" })}
+              </p>
+              <p className={cn("mt-1 whitespace-pre-wrap break-words text-sm", !staff && "text-white/85")} style={staff ? { color: staff.color } : undefined}>
+                {message.body}
+              </p>
+            </li>
+          );
+        })}
       </ul>
       {match.viewer?.canChat && !["cancelled"].includes(match.status) ? (
         <form onSubmit={send} className="flex gap-2">

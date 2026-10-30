@@ -89,7 +89,7 @@ export default function AdminPage() {
           {tab === "signalements" ? <CasesPanel key="reports" kind="reports" /> : null}
           {tab === "sanctions" ? <SanctionsPanel /> : null}
           {tab === "equipes" ? <TeamsPanel /> : null}
-          {tab === "players" ? <PlayersPanel currentUserId={user.id} /> : null}
+          {tab === "players" ? <PlayersPanel currentUserId={user.id} isAdmin={user.role === "admin"} /> : null}
           {tab === "events" ? <CrudPanel key="events" config={EVENTS} /> : null}
           {tab === "founders" ? <CrudPanel key="founders" config={FOUNDERS} /> : null}
           {tab === "partners" ? <CrudPanel key="partners" config={PARTNERS} /> : null}
