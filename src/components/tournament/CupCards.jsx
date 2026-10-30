@@ -29,9 +29,17 @@ export function cupStatus(cup, now = Date.now()) {
   if (cup.status === "running") return { label: "En cours", tone: "text-loss", dot: "bg-loss animate-pulse" };
   if (now >= new Date(cup.checkInOpensAt).getTime()) return { label: "Check-in ouvert", tone: "text-gold", dot: "bg-gold animate-pulse" };
   if (cup.kind === "saison") return { label: "Équipes qualifiées", tone: "text-win", dot: "bg-win" };
-  if (cup.capacity && cup.registered >= cup.capacity) return { label: "Complet", tone: "text-loss", dot: "bg-loss" };
+  if (cup.capacity && cup.registered >= cup.capacity) {
+    // Places prises : il reste peut-être des places de remplaçant.
+    if (cup.reserveSlots && cup.registered < cup.capacity + cup.reserveSlots) return { label: "Places de remplaçant", tone: "text-gold", dot: "bg-gold" };
+    return { label: "Complet", tone: "text-loss", dot: "bg-loss" };
+  }
   return { label: "Inscriptions ouvertes", tone: "text-win", dot: "bg-win" };
 }
+
+/** Inscrits sur les places, et remplaçants (inscrits au-delà des places). */
+const placesTaken = (cup) => Math.min(cup.registered ?? 0, cup.capacity ?? cup.size);
+const reservesTaken = (cup) => Math.max(0, (cup.registered ?? 0) - (cup.capacity ?? cup.size));
 
 /** Format en pastilles : 4v4, élimination, BO, places. */
 function formatChips(cup) {
@@ -40,7 +48,7 @@ function formatChips(cup) {
     players ? [LuUsers, `${players}v${players}`] : null,
     [LuSwords, cup.bracket === "double" ? "Double" : "Simple"],
     [LuDices, `BO${cup.bestOf} · finale BO${cup.finalBestOf}`],
-    [LuListOrdered, cup.kind === "anubis" ? `${cup.registered}/${cup.capacity} joueurs` : `${cup.registered}/${cup.capacity ?? cup.size}`],
+    [LuListOrdered, `${placesTaken(cup)}/${cup.capacity ?? cup.size}${cup.kind === "anubis" ? " joueurs" : ""}${reservesTaken(cup) ? ` + ${reservesTaken(cup)} rempl.` : ""}`],
   ].filter(Boolean);
 }
 
@@ -150,6 +158,7 @@ export function CupHero({ tournament, now }) {
     ...tournament,
     registered: tournament.kind === "anubis" ? tournament.registered ?? 0 : tournament.teams?.length ?? 0,
     capacity: tournament.kind === "anubis" ? tournament.capacity ?? null : tournament.size,
+    reserveSlots: tournament.reserveSlots ?? 0,
   };
   const status = cupStatus(cup, now);
   const rewards = rewardLines(cup);
@@ -184,7 +193,8 @@ export function CupHero({ tournament, now }) {
           {fill !== null && tournament.status === "scheduled" ? (
             <div className="mt-4 flex max-w-sm items-center gap-3 text-xs text-white/55">
               <span className="font-semibold text-white/80">
-                {cup.registered}/{cup.capacity} {tournament.kind === "anubis" ? "joueurs" : "places"}
+                {placesTaken(cup)}/{cup.capacity} {tournament.kind === "anubis" ? "joueurs" : "places"}
+                {reservesTaken(cup) ? ` + ${reservesTaken(cup)} remplaçant${reservesTaken(cup) > 1 ? "s" : ""}` : ""}
               </span>
               <span className="h-1.5 flex-1 bg-white/10">
                 <span className="block h-full bg-gold" style={{ width: `${fill}%` }} />

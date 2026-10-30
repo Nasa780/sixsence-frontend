@@ -323,7 +323,14 @@ export default function TournamentPage() {
                           {tournament.kind !== "horus" || !scheduled ? <span className="w-6 font-tech text-xs text-white/45">#{team.seed}</span> : null}
                           <TeamCrest team={team} size={32} />
                           <span className="min-w-0 flex-1 truncate font-display text-lg font-bold uppercase leading-none">{team.name}</span>
-                          {team.forfeit ? <Chip tone="loss">Forfait</Chip> : scheduled ? <Chip tone={team.checkedIn ? "win" : "neutral"}>{team.checkedIn ? "Prête" : "En attente"}</Chip> : null}
+                          {team.reserve ? <Chip>Remplaçante</Chip> : null}
+                          {team.forfeit ? (
+                            <Chip tone="loss">Forfait</Chip>
+                          ) : team.bench ? (
+                            <Chip tone="neutral">Non retenue</Chip>
+                          ) : scheduled ? (
+                            <Chip tone={team.checkedIn ? "win" : "neutral"}>{team.checkedIn ? "Prête" : "En attente"}</Chip>
+                          ) : null}
                         </Link>
                       </li>
                     ))}
@@ -389,7 +396,11 @@ function RegistrationPanel({ tournament, userId, onDone }) {
   else if (viewer.registered)
     content = (
       <div className="flex flex-wrap items-center justify-between gap-3">
-        <p className="text-sm text-white/65">Ton équipe est inscrite. Le check-in est ouvert de 2 h à 15 min avant le début.</p>
+        <p className="text-sm text-white/65">
+          {viewer.reserveRank
+            ? `Ton équipe est remplaçante n°${viewer.reserveRank} : elle prend la place d'une équipe titulaire qui ne fait pas son check-in. Faites quand même le check-in (2 h à 15 min avant le début).`
+            : "Ton équipe est inscrite. Le check-in est ouvert de 2 h à 15 min avant le début."}
+        </p>
         {viewer.canUnregister ? (
           <Button variant="outline" size="sm" disabled={pending} onClick={() => run("DELETE")}>
             <LuUserMinus aria-hidden className="h-4 w-4" />
@@ -402,16 +413,18 @@ function RegistrationPanel({ tournament, userId, onDone }) {
     content = (
       <div className="flex flex-wrap items-center justify-between gap-3">
         <p className="text-sm text-white/65">
-          {tournament.size - tournament.teams.length} place{tournament.size - tournament.teams.length > 1 ? "s" : ""} libre{tournament.size - tournament.teams.length > 1 ? "s" : ""}. Il faut au moins{" "}
-          {viewer.rosterSize} joueur{viewer.rosterSize > 1 ? "s" : ""} dans l&apos;équipe.
+          {viewer.asReserve
+            ? "Coupe complète : inscris ton équipe comme remplaçante. Elle jouera si une équipe titulaire ne fait pas son check-in (dans l'ordre d'inscription)."
+            : `${tournament.size - tournament.teams.length} place${tournament.size - tournament.teams.length > 1 ? "s" : ""} libre${tournament.size - tournament.teams.length > 1 ? "s" : ""}.`}{" "}
+          Il faut au moins {viewer.rosterSize} joueur{viewer.rosterSize > 1 ? "s" : ""} dans l&apos;équipe.
         </p>
         <Button disabled={pending} onClick={() => run("POST")}>
           {pending ? <LuLoaderCircle aria-hidden className="h-5 w-5 animate-spin" /> : <LuUserPlus aria-hidden className="h-5 w-5" />}
-          Inscrire mon équipe
+          {viewer.asReserve ? "Inscrire comme remplaçante" : "Inscrire mon équipe"}
         </Button>
       </div>
     );
-  else content = <p className="text-sm text-white/55">{full ? "La coupe est complète." : "Un Leader de ton équipe peut l'inscrire."}</p>;
+  else content = <p className="text-sm text-white/55">{viewer.isLeader || tournament.teams.length >= tournament.size + (tournament.reserveSlots ?? 0) ? "La coupe est complète, places de remplaçant comprises." : full ? "Coupe complète : un Leader de ton équipe peut l'inscrire comme remplaçante." : "Un Leader de ton équipe peut l'inscrire."}</p>;
 
   return (
     <TacticalCard cut={20} innerClassName="space-y-3 p-6">
@@ -594,6 +607,7 @@ function BracketEntry({ entry, myTeamId, final }) {
       {row(entry.teamB, 1)}
       {entry.status === "playing" ? <p className="bg-gold/10 px-3 py-1 font-tech text-[9px] uppercase tracking-[0.24em] text-gold">En cours</p> : null}
       {entry.status === "blocked" ? <p className="bg-loss/10 px-3 py-1 font-tech text-[9px] uppercase tracking-[0.24em] text-loss">Décision de l&apos;équipe SixSence</p> : null}
+      {entry.decided ? <p className="bg-white/[0.04] px-3 py-1 font-tech text-[9px] uppercase tracking-[0.24em] text-white/50">Victoire sur décision de l&apos;équipe</p> : null}
     </TacticalCard>
   );
   return entry.matchId ? (
