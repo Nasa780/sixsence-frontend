@@ -4,6 +4,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { LuCrown, LuExpand, LuMinus, LuPlus, LuScan, LuShrink } from "react-icons/lu";
 import { cn } from "../../lib/cn";
 import { TeamCrest } from "../teams/TeamParts";
+import { DEFAULT_THEME, THEMES } from "./bracketThemes";
 
 /*
  * Tableau d'un tournoi d'un seul tenant (inspiré de Sked, à l'identité SixSence) : tableau des gagnants en haut,
@@ -11,6 +12,7 @@ import { TeamCrest } from "../teams/TeamParts";
  * d'après les règles du serveur (advanceBracket / advanceDouble de tournamentPolicy.ts), parcours du champion en
  * or animé, survol d'une équipe = tout son chemin, numéros de match dans l'ordre de jeu, cases vides annoncées
  * (« Vainqueur #13 », « Perdant #5 »), zoom (boutons, Ctrl + molette), déplacement à la souris, plein écran.
+ * Habillage : thèmes de bracketThemes.js (prop `theme`).
  */
 
 const CARD_W = 236;
@@ -23,14 +25,6 @@ const HEAD = 46; // titre de section + bandeau des tours
 const SECTION_GAP = 64;
 const PAD = 24;
 const CHAMP_W = 210;
-const GOLD = "#e7c05a";
-// Palette du tableau : noir du site, panneaux à peine plus clairs avec un liseré or ; l'or du site pour les accents
-// (titres, tours, survol, scores), même sur la page Tournoi rouge (data-univers="or"). BRIGHT : réglages d'un fond clair.
-const STAGE = "#0a0a0a";
-const PANEL = "#1b1b1e";
-const EDGE = "rgba(212,175,55,0.28)";
-const BRIGHT = false;
-const line = (alpha) => (BRIGHT ? `rgba(20,16,6,${Math.min(0.85, alpha * 2.2)})` : `rgba(255,255,255,${alpha})`);
 const LIVE = "#34d399";
 const LATE = "#e879f9";
 const DISPUTE = "#fbbf24";
@@ -166,7 +160,8 @@ const shortName = (name) => name.replace(/^(Gagnants|Perdants) · /, "").replace
 
 const teamsOf = (entry) => [entry.teamA?.id, entry.teamB?.id].filter(Boolean);
 
-export function BracketBoard({ tournament, myTeamId = null }) {
+export function BracketBoard({ tournament, myTeamId = null, theme = DEFAULT_THEME }) {
+  const T = THEMES[theme] ?? THEMES[DEFAULT_THEME];
   const reduce = useReducedMotion();
   const map = useMemo(() => layout(tournament), [tournament]);
   const { nodes, edges, width, height } = map;
@@ -194,7 +189,6 @@ export function BracketBoard({ tournament, myTeamId = null }) {
   const focus = hover ?? null;
   const involved = (entry, teamId) => Boolean(teamId && teamsOf(entry).includes(teamId));
 
-  // Zoom de départ : voir plus bas (téléphone ou ordinateur).
   const fit = useCallback(() => {
     const box = viewport.current;
     if (!box) return;
@@ -244,7 +238,6 @@ export function BracketBoard({ tournament, myTeamId = null }) {
       event.stopPropagation();
     }
   };
-
   const toggleFull = () => {
     if (document.fullscreenElement) document.exitFullscreen?.();
     else frame.current?.requestFullscreen?.();
@@ -252,27 +245,41 @@ export function BracketBoard({ tournament, myTeamId = null }) {
 
   const colDelay = (node) => (reduce ? 0 : 0.05 + (node.x / COL) * 0.07);
   const sectionLabel = (y, text, color) => (
-    <p className="absolute font-display text-lg font-black uppercase tracking-wide" style={{ left: PAD, top: y - HEAD, color }}>
+    <p className={cn("absolute font-display text-lg font-black uppercase tracking-wide", T.section.gradient && "text-gold-gradient")} style={{ left: PAD, top: y - HEAD, color: T.section.gradient ? undefined : color }}>
       {text}
     </p>
   );
-  const roundPills = (rounds, bracket, top) =>
-    rounds.map((r, i) => (
-      <div
-        key={`${bracket}${r.round}`}
-        className="clip-slant absolute flex items-center justify-between px-3 py-1 [--slant:8px]"
-        style={{ left: PAD + i * COL, top: top - 22, width: CARD_W, background: "rgba(212,175,55,0.12)" }}
-      >
-        <span className="truncate font-tech text-[9px] font-bold uppercase tracking-[0.2em] text-gold/80">{shortName(r.name)}</span>
-        <span className="font-tech text-[9px] font-bold tracking-[0.2em] text-gold">BO{r.bestOf}</span>
-      </div>
-    ));
+  const pill = (key, left, top, name, bo, final = false) => (
+    <div
+      key={key}
+      className={cn("absolute flex items-center justify-between px-3 py-1", T.pill.className)}
+      style={{ left, top: top - 22, width: CARD_W, ...(final ? T.final.style : T.pill.style) }}
+    >
+      {T.pill.line ? (
+        <motion.span
+          aria-hidden
+          className="absolute inset-x-0 bottom-0 h-px origin-left"
+          style={{ background: T.pill.line }}
+          initial={reduce ? false : { scaleX: 0 }}
+          animate={{ scaleX: 1 }}
+          transition={{ duration: reduce ? 0 : 0.9, delay: reduce ? 0 : 0.15 + (left / COL) * 0.08, ease: [0.22, 1, 0.36, 1] }}
+        />
+      ) : null}
+      <span className="truncate font-tech text-[9px] font-bold uppercase tracking-[0.2em]" style={{ color: final ? T.final.color : T.pill.name }}>
+        {name}
+      </span>
+      <span className="font-tech text-[9px] font-bold tracking-[0.2em]" style={{ color: final ? T.final.color : T.pill.bo }}>
+        BO{bo}
+      </span>
+    </div>
+  );
+  const flow = T.champ.flow;
 
   return (
-    <div ref={frame} data-univers="or" className={cn("relative border border-gold/20 bg-ink/80", full && "flex h-full flex-col bg-ink")}>
+    <div ref={frame} data-univers={T.univers ?? undefined} className={cn("relative border", T.frame, full && "flex h-full flex-col")}>
       {/* Légende et commandes */}
-      <div className="flex flex-wrap items-center justify-between gap-3 border-b border-white/10 px-4 py-3">
-        <ul className="flex flex-wrap items-center gap-x-4 gap-y-1 font-tech text-[10px] uppercase tracking-[0.18em] text-white/55">
+      <div className="flex flex-wrap items-center justify-between gap-3 border-b border-white/10 bg-black/40 px-4 py-3">
+        <ul className="flex flex-wrap items-center gap-x-4 gap-y-1 font-tech text-[10px] uppercase tracking-[0.18em] text-white/60">
           <li className="flex items-center gap-1.5">
             <span className="relative flex h-2 w-2">
               <span className="absolute inline-flex h-full w-full animate-ping rounded-full opacity-60" style={{ background: LIVE }} />
@@ -289,12 +296,12 @@ export function BracketBoard({ tournament, myTeamId = null }) {
             Litige · arbitrage
           </li>
           <li className="flex items-center gap-1.5">
-            <span className="h-0.5 w-5 rounded" style={{ background: GOLD, boxShadow: `0 0 6px ${GOLD}` }} />
+            <span className="h-0.5 w-5 rounded" style={{ background: T.champ.color, boxShadow: `0 0 6px ${T.champ.color}` }} />
             Parcours du champion
           </li>
           {myTeamId ? (
             <li className="flex items-center gap-1.5">
-              <span className="h-2 w-2 bg-gold" />
+              <span className="h-2 w-2" style={{ background: T.focus }} />
               Ton équipe
             </li>
           ) : null}
@@ -319,7 +326,7 @@ export function BracketBoard({ tournament, myTeamId = null }) {
 
       <div
         ref={viewport}
-        style={{ background: STAGE }}
+        style={T.stage}
         className={cn("relative cursor-grab overflow-auto active:cursor-grabbing", full ? "flex-1" : "max-h-[78vh]")}
         onPointerDown={onPointerDown}
         onPointerMove={onPointerMove}
@@ -329,42 +336,21 @@ export function BracketBoard({ tournament, myTeamId = null }) {
       >
         <div style={{ width: width * scale, height: height * scale }}>
           <div className="relative origin-top-left" style={{ width, height, transform: `scale(${scale})` }}>
-            {sectionLabel(map.wbTop, map.double ? "Tableau des gagnants" : "Tableau", BRIGHT ? "#141006" : "var(--color-gold)")}
-            {roundPills(map.wb, "W", map.wbTop)}
+            {T.decor === "luxe" ? <LuxeDecor /> : null}
+            {sectionLabel(map.wbTop, map.double ? "Tableau des gagnants" : "Tableau", T.section.wb)}
+            {map.wb.map((r, i) => pill(`W${r.round}`, PAD + i * COL, map.wbTop, shortName(r.name), r.bestOf))}
             {map.lbTop ? (
               <>
-                {sectionLabel(map.lbTop, "Tableau des perdants", BRIGHT ? "rgba(20,16,6,0.8)" : "color-mix(in srgb, var(--color-gold) 70%, white)")}
-                {roundPills(map.lb, "L", map.lbTop)}
+                {sectionLabel(map.lbTop, "Tableau des perdants", T.section.lb)}
+                {map.lb.map((r, i) => pill(`L${r.round}`, PAD + i * COL, map.lbTop, shortName(r.name), r.bestOf))}
               </>
             ) : null}
-            {map.double && tournament.grandFinal ? (
-              <div
-                className="clip-slant absolute flex items-center justify-between px-3 py-1 [--slant:8px]"
-                style={{ left: nodes.get(keyOf("G", 0, 0)).x, top: map.wbTop - 22, width: CARD_W, background: BRIGHT ? PANEL : `${GOLD}22` }}
-              >
-                <span className="font-tech text-[9px] font-bold uppercase tracking-[0.2em]" style={{ color: GOLD }}>
-                  Grande finale
-                </span>
-                <span className="font-tech text-[9px] font-bold tracking-[0.2em]" style={{ color: GOLD }}>
-                  BO{tournament.grandFinal.bestOf}
-                </span>
-              </div>
-            ) : null}
+            {map.double && tournament.grandFinal ? pill("G", nodes.get(keyOf("G", 0, 0)).x, map.wbTop, "Grande finale", tournament.grandFinal.bestOf, true) : null}
 
             {/* Liaisons */}
             <svg className="pointer-events-none absolute inset-0" width={width} height={height} aria-hidden>
               <defs>
                 {/* Zone du filtre en coordonnées du tableau : une liaison horizontale (sans hauteur) garde sa lueur. */}
-                {/* Fond clair : halo sombre sous le parcours du champion. */}
-                <filter id="ombre" filterUnits="userSpaceOnUse" x="0" y="0" width={width} height={height}>
-                  <feGaussianBlur in="SourceAlpha" stdDeviation="3" result="b" />
-                  <feFlood floodColor="#000" floodOpacity="0.45" />
-                  <feComposite in2="b" operator="in" result="o" />
-                  <feMerge>
-                    <feMergeNode in="o" />
-                    <feMergeNode in="SourceGraphic" />
-                  </feMerge>
-                </filter>
                 <filter id="lueur-or" filterUnits="userSpaceOnUse" x="0" y="0" width={width} height={height}>
                   <feGaussianBlur stdDeviation="3" result="b" />
                   <feMerge>
@@ -382,30 +368,23 @@ export function BracketBoard({ tournament, myTeamId = null }) {
                 const hovered = focus && travelled(edge, focus);
                 const mine = myTeamId && travelled(edge, myTeamId);
                 const advanced = a.entry.status === "done" && a.entry.winner && teamsOf(b.entry).includes(a.entry.winner);
-                const stroke = hovered ? "var(--color-gold)" : champ ? (BRIGHT ? "#1a1408" : GOLD) : mine ? "var(--color-gold)" : advanced ? line(0.45) : line(0.22);
+                const stroke = hovered ? T.focus : champ ? T.champ.color : mine ? T.focus : advanced ? T.line.adv : T.line.idle;
                 return (
                   <g key={index}>
+                    {champ && T.champ.halo && !reduce ? <path d={d} fill="none" stroke={T.champ.color} strokeWidth={10} strokeLinecap="round" className="lux-halo" /> : null}
                     <motion.path
                       d={d}
                       fill="none"
                       stroke={stroke}
-                      strokeWidth={champ ? (BRIGHT ? 3.5 : 2.5) : hovered ? 2.5 : 1.5}
-                      filter={champ || hovered ? (BRIGHT ? "url(#ombre)" : "url(#lueur-or)") : undefined}
+                      strokeWidth={champ ? T.champ.width : hovered ? 2.5 : 1.5}
+                      filter={(champ && T.champ.glow) || hovered ? "url(#lueur-or)" : undefined}
                       initial={reduce ? false : { pathLength: 0, opacity: 0 }}
-                      animate={{ pathLength: 1, opacity: focus && !hovered ? 0.5 : 1 }}
+                      animate={{ pathLength: 1, opacity: focus && !hovered ? T.dim.line : 1 }}
                       transition={{ duration: reduce ? 0 : 0.5, delay: reduce ? 0 : 0.35 + (a.x / COL) * 0.08 }}
                     />
                     {champ && !reduce ? (
-                      // Flux lumineux qui coule le long du parcours du champion.
-                      BRIGHT ? (
-                        // Fond clair : comète blanche bordée de sombre, plus longue (période de 64 px, comme l'animation).
-                        <>
-                          <path d={d} fill="none" stroke="#0d0b06" strokeWidth={5.5} strokeLinecap="round" strokeDasharray="18 46" className="bracket-flow" />
-                          <path d={d} fill="none" stroke="#ffffff" strokeWidth={3} strokeLinecap="round" strokeDasharray="18 46" className="bracket-flow" />
-                        </>
-                      ) : (
-                        <path d={d} fill="none" stroke="#fff6d5" strokeWidth={2} strokeLinecap="round" strokeDasharray="6 26" className="bracket-flow" opacity={0.9} />
-                      )
+                      // Flux lumineux qui coule le long du parcours du champion (période de 32 ou 64 px, comme l'animation).
+                      <path d={d} fill="none" stroke={flow.color} strokeWidth={flow.width} strokeLinecap="round" strokeDasharray={flow.dash} className="bracket-flow" opacity={0.9} />
                     ) : null}
                   </g>
                 );
@@ -415,9 +394,9 @@ export function BracketBoard({ tournament, myTeamId = null }) {
                 <motion.path
                   d={elbow(nodes.get(map.last).x + CARD_W, map.champion.y, map.champion.x, map.champion.y)}
                   fill="none"
-                  stroke={championTeam ? (BRIGHT ? "#1a1408" : GOLD) : line(0.22)}
-                  strokeWidth={championTeam ? 2.5 : 1.5}
-                  filter={championTeam ? "url(#lueur-or)" : undefined}
+                  stroke={championTeam ? T.champ.color : T.line.idle}
+                  strokeWidth={championTeam ? T.champ.width : 1.5}
+                  filter={championTeam && T.champ.glow ? "url(#lueur-or)" : undefined}
                   initial={reduce ? false : { pathLength: 0 }}
                   animate={{ pathLength: 1 }}
                   transition={{ duration: reduce ? 0 : 0.5, delay: reduce ? 0 : 0.9 }}
@@ -432,15 +411,15 @@ export function BracketBoard({ tournament, myTeamId = null }) {
                 className="absolute"
                 style={{ left: node.x, top: node.y, width: CARD_W }}
                 initial={reduce ? false : { opacity: 0, x: -14 }}
-                animate={{ opacity: focus && !involved(node.entry, focus) && !BRIGHT ? 0.7 : 1, x: 0 }}
+                animate={{ opacity: focus && !involved(node.entry, focus) ? T.dim.card : 1, x: 0 }}
                 transition={{ duration: reduce ? 0 : 0.35, delay: colDelay(node) }}
               >
                 {node.bracket === "T" ? (
-                  <p className={cn("absolute -top-6 left-0 font-tech text-[9px] font-bold uppercase tracking-[0.2em]", BRIGHT ? "text-black/70" : "text-white/55")}>
+                  <p className="absolute -top-6 left-0 font-tech text-[9px] font-bold uppercase tracking-[0.2em]" style={{ color: T.section.lb }}>
                     {tournament.thirdPlace?.name ?? "Petite finale"} · BO{tournament.thirdPlace?.bestOf}
                   </p>
                 ) : null}
-                <MatchCard node={node} nodes={nodes} myTeamId={myTeamId} championId={championTeam?.id} focus={focus} onHover={setHover} grand={node.bracket === "G" || (!map.double && node.key === map.last)} />
+                <MatchCard T={T} node={node} nodes={nodes} myTeamId={myTeamId} championId={championTeam?.id} focus={focus} onHover={setHover} grand={node.bracket === "G" || (!map.double && node.key === map.last)} />
               </motion.div>
             ))}
 
@@ -453,14 +432,14 @@ export function BracketBoard({ tournament, myTeamId = null }) {
                 animate={{ opacity: 1, scale: 1 }}
                 transition={{ duration: reduce ? 0 : 0.5, delay: reduce ? 0 : 1.1 }}
               >
-                <ChampionCard team={championTeam} kind={tournament.kind} />
+                <ChampionCard T={T} team={championTeam} kind={tournament.kind} />
               </motion.div>
             ) : null}
           </div>
         </div>
       </div>
-      <p className="border-t border-white/10 px-4 py-2 text-right font-tech text-[9px] uppercase tracking-[0.18em] text-white/35">
-        <span className="md:hidden">Fais glisser pour te déplacer · touche un match pour l'ouvrir</span>
+      <p className="border-t border-white/10 bg-black/40 px-4 py-2 text-right font-tech text-[9px] uppercase tracking-[0.18em] text-white/40">
+        <span className="md:hidden">Fais glisser pour te déplacer · touche un match pour l&apos;ouvrir</span>
         <span className="hidden md:inline">Ctrl + molette pour zoomer · cliquer-glisser pour se déplacer · survole une équipe pour voir son parcours</span>
       </p>
     </div>
@@ -477,7 +456,32 @@ function placeholder(node, nodes, side) {
   return `${kind === "winner" ? "Vainqueur" : "Perdant"} #${from.number ?? "?"}`;
 }
 
-function MatchCard({ node, nodes, myTeamId, championId, focus, onHover, grand }) {
+// Poussière d'or : positions et rythmes fixes (même rendu côté serveur et navigateur).
+const DUST = Array.from({ length: 34 }, (_, i) => ({
+  left: (i * 37.7) % 100,
+  top: 20 + ((i * 53.3) % 80),
+  size: 1.5 + ((i * 7) % 3),
+  delay: (i * 0.83) % 9,
+  duration: 7 + ((i * 1.9) % 6),
+}));
+
+/** Décor du thème Luxe : projecteur doré qui respire en haut et poussière d'or qui monte lentement. */
+function LuxeDecor() {
+  return (
+    <div aria-hidden className="pointer-events-none absolute inset-0 overflow-hidden">
+      <div className="lux-spot absolute -top-[30%] left-[10%] h-[80%] w-[80%] rounded-full" style={{ background: "radial-gradient(closest-side, rgba(231,192,90,0.18), rgba(231,192,90,0.05) 55%, transparent)" }} />
+      {DUST.map((p, i) => (
+        <span
+          key={i}
+          className="lux-dust absolute rounded-full"
+          style={{ left: `${p.left}%`, top: `${p.top}%`, width: p.size, height: p.size, background: "#ffd970", boxShadow: "0 0 6px #ffd970", animationDelay: `${p.delay}s`, animationDuration: `${p.duration}s` }}
+        />
+      ))}
+    </div>
+  );
+}
+
+function MatchCard({ T, node, nodes, myTeamId, championId, focus, onHover, grand }) {
   const { entry } = node;
   const live = entry.status === "playing";
   const blocked = entry.status === "blocked";
@@ -491,42 +495,53 @@ function MatchCard({ node, nodes, myTeamId, championId, focus, onHover, grand })
     const won = done && team && entry.winner === team.id;
     const lost = done && team && !won;
     const mine = team && team.id === myTeamId;
-    // Équipe survolée : sa ligne ressort (fond et nom de la couleur du mode) dans chacun de ses matchs.
+    // Équipe survolée : sa ligne ressort dans chacun de ses matchs.
     const picked = team && focus === team.id;
+    const score = entry.score ? entry.score[index] : bye && team ? "✓" : "";
     return (
       <div
-        className={cn("relative flex items-center gap-2 pl-3 pr-2.5 transition-colors", index === 0 && "border-b border-white/[0.07]", mine && "bg-gold/[0.12]", picked && "bg-gold/20")}
-        style={{ height: ROW_H }}
+        className="relative flex items-center gap-2 pl-3 pr-2 transition-colors"
+        style={{
+          height: ROW_H,
+          borderBottom: index === 0 ? `1px solid ${T.card.divider}` : undefined,
+          background: picked ? `color-mix(in srgb, ${T.focus} 20%, transparent)` : mine ? `color-mix(in srgb, ${T.focus} 12%, transparent)` : undefined,
+        }}
         onMouseEnter={() => team && onHover(team.id)}
         onMouseLeave={() => onHover(null)}
       >
-        {mine || picked ? <span className="absolute inset-y-0 left-0 w-0.5 bg-gold" /> : null}
-        {team ? <TeamCrest team={team} size={20} /> : <span className="h-5 w-5 shrink-0 border border-dashed border-white/25" />}
-        <span className={cn("min-w-0 flex-1 truncate text-[13px] font-semibold leading-none", team ? (lost ? "text-white/60" : "text-white") : "text-white/45 italic", won && "text-white", picked && "text-gold")}>
+        {mine || picked ? <span className="absolute inset-y-0 left-0 w-0.5" style={{ background: T.focus }} /> : null}
+        {team ? <TeamCrest team={team} size={20} /> : <span className="h-5 w-5 shrink-0 border border-dashed" style={{ borderColor: T.text.empty }} />}
+        <span
+          className={cn("min-w-0 flex-1 truncate text-[13px] leading-none", won ? "font-bold" : "font-semibold", !team && "italic")}
+          style={{ color: picked ? T.focus : !team ? T.text.empty : lost ? T.text.lost : won && T.text.winName ? T.text.winName : T.text.name }}
+        >
           {team ? team.name : placeholder(node, nodes, index)}
         </span>
-        {team && team.id === championId && grand ? <LuCrown aria-label="Champion" className="h-3.5 w-3.5 shrink-0" style={{ color: GOLD }} /> : null}
-        <span className={cn("w-5 text-right font-tech text-sm font-bold tabular-nums", won ? "text-gold" : "text-white/55")}>
-          {entry.score ? entry.score[index] : bye && team ? "✓" : ""}
+        {team && team.id === championId && grand ? <LuCrown aria-label="Champion" className="h-3.5 w-3.5 shrink-0" style={{ color: T.champ.color }} /> : null}
+        <span className="w-5 text-right font-tech text-sm font-bold tabular-nums" style={{ color: won ? T.text.win : T.text.score }}>
+          {score}
         </span>
       </div>
     );
   };
-  const border = dispute ? DISPUTE : late ? LATE : live ? LIVE : grand ? `${GOLD}aa` : null;
+  const status = dispute ? DISPUTE : late ? LATE : live ? LIVE : null;
   const body = (
     <div
-      className={cn("clip-tactical relative [--cut:10px]", entry.matchId && "transition-transform duration-200 hover:-translate-y-0.5")}
+      className={cn("relative", T.card.className, entry.matchId && "transition-transform duration-200 hover:-translate-y-0.5")}
       style={{
         height: CARD_H,
+        background: T.card.background,
         boxShadow: hovered
-          ? "inset 0 0 0 1.5px var(--color-gold), 0 0 22px color-mix(in srgb, var(--color-gold) 45%, transparent)"
-          : border
-            ? `inset 0 0 0 1px ${border}, 0 0 18px ${border}33`
-            : `inset 0 0 0 1px ${EDGE}`,
-        background: PANEL,
+          ? `inset 0 0 0 1.5px ${T.focus}, 0 0 22px color-mix(in srgb, ${T.focus} 45%, transparent)`
+          : status
+            ? `inset 0 0 0 1.5px ${status}, 0 0 18px ${status}44`
+            : grand
+              ? `inset 0 0 0 1px ${T.champ.color}, 0 0 20px color-mix(in srgb, ${T.champ.color} 25%, transparent)`
+              : T.card.edge,
       }}
     >
       {live ? <span className="bracket-sheen pointer-events-none absolute inset-0" aria-hidden /> : null}
+      {T.card.shimmer && !live ? <span className="lux-foil pointer-events-none absolute inset-0" style={{ animationDelay: `${((node.number ?? 1) * 1.37) % 7}s` }} aria-hidden /> : null}
       {row(entry.teamA, 0)}
       {row(entry.teamB, 1)}
     </div>
@@ -535,8 +550,8 @@ function MatchCard({ node, nodes, myTeamId, championId, focus, onHover, grand })
     <div className="relative">
       {node.number ? (
         <span
-          className="absolute -left-3 top-1/2 z-10 grid h-6 min-w-6 -translate-y-1/2 place-items-center border px-1 font-tech text-[9px] font-bold text-white/70"
-          style={{ borderColor: live ? LIVE : "rgba(255,255,255,0.18)", background: BRIGHT ? PANEL : STAGE }}
+          className={cn("absolute -left-3 top-1/2 z-10 grid h-6 min-w-6 -translate-y-1/2 place-items-center border px-1 font-tech text-[9px] font-bold", T.badge.className)}
+          style={{ ...T.badge.style, borderColor: live ? LIVE : T.badge.style.borderColor }}
         >
           {node.number}
         </span>
@@ -544,7 +559,7 @@ function MatchCard({ node, nodes, myTeamId, championId, focus, onHover, grand })
       {live || late || dispute || entry.decided ? (
         <span
           className="absolute -top-2 right-2 z-10 flex items-center gap-1 px-1.5 font-tech text-[8px] font-bold uppercase tracking-[0.2em]"
-          style={{ background: BRIGHT ? PANEL : STAGE, color: dispute || entry.decided ? DISPUTE : late ? LATE : LIVE }}
+          style={{ background: T.badge.style.background, color: dispute || entry.decided ? DISPUTE : late ? LATE : LIVE }}
         >
           {live && !late && !dispute ? <span className="h-1.5 w-1.5 animate-pulse rounded-full" style={{ background: LIVE }} /> : null}
           {blocked || entry.decided ? "Décision" : dispute ? "Litige" : late ? "Retard" : "Live"}
@@ -563,22 +578,30 @@ function MatchCard({ node, nodes, myTeamId, championId, focus, onHover, grand })
 
 const TROPHY = { horus: "/images/trophees/horus-or.png", anubis: "/images/trophees/anubis-or.png" };
 
-function ChampionCard({ team, kind }) {
+function ChampionCard({ T, team, kind }) {
   const image = TROPHY[kind] ?? TROPHY.horus;
   return (
-    <div className="clip-tactical relative overflow-hidden p-4 text-center [--cut:14px]" style={{ background: PANEL, boxShadow: `inset 0 0 0 1px ${team ? GOLD : "rgba(255,255,255,0.12)"}, 0 0 40px ${team ? `${GOLD}33` : "transparent"}` }}>
+    <div
+      className={cn("relative overflow-hidden p-4 text-center", T.champCard.className)}
+      style={{ background: T.champCard.background, boxShadow: team ? T.champCard.glow : "inset 0 0 0 1px rgba(255,255,255,0.12)" }}
+    >
+      {team && T.champCard.rays ? <span className="lux-rays pointer-events-none absolute left-1/2 top-16 -ml-32 -mt-32 h-64 w-64" aria-hidden /> : null}
       {team ? <span className="bracket-sheen pointer-events-none absolute inset-0 opacity-60" aria-hidden /> : null}
-      <img src={image} alt="" className={cn("mx-auto h-24 w-24 object-contain", !team && "opacity-25 grayscale")} draggable={false} />
-      <p className="mt-1 font-tech text-[9px] font-bold uppercase tracking-[0.3em]" style={{ color: GOLD }}>
+      <img src={image} alt="" className={cn("relative mx-auto h-24 w-24 object-contain", !team && "opacity-25 grayscale", team && T.champCard.rays && "lux-float")} draggable={false} />
+      <p className="mt-1 font-tech text-[9px] font-bold uppercase tracking-[0.3em]" style={{ color: T.champ.color }}>
         Champion
       </p>
       {team ? (
         <div className="mt-2 flex items-center justify-center gap-2">
           <TeamCrest team={team} size={22} />
-          <span className="truncate font-display text-xl font-black uppercase leading-none">{team.name}</span>
+          <span className="truncate font-display text-xl font-black uppercase leading-none" style={{ color: T.champCard.text }}>
+            {team.name}
+          </span>
         </div>
       ) : (
-        <p className="mt-2 text-sm text-white/40">À conquérir</p>
+        <p className="mt-2 text-sm" style={{ color: T.champCard.text, opacity: 0.5 }}>
+          À conquérir
+        </p>
       )}
     </div>
   );
