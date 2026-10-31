@@ -24,6 +24,10 @@ const SECTION_GAP = 64;
 const PAD = 24;
 const CHAMP_W = 210;
 const GOLD = "#e7c05a";
+// Palette du tableau, plate façon Valorant : fond anthracite, panneaux (rencontres, tours, champion) un cran plus clairs.
+const STAGE = "#1c1d21";
+const PANEL = "#26282d";
+const EDGE = "rgba(255,255,255,0.08)";
 const LIVE = "#34d399";
 const LATE = "#e879f9";
 const DISPUTE = "#fbbf24";
@@ -253,8 +257,8 @@ export function BracketBoard({ tournament, myTeamId = null }) {
     rounds.map((r, i) => (
       <div
         key={`${bracket}${r.round}`}
-        className="clip-slant absolute flex items-center justify-between bg-white/[0.05] px-3 py-1 [--slant:8px]"
-        style={{ left: PAD + i * COL, top: top - 22, width: CARD_W }}
+        className="clip-slant absolute flex items-center justify-between px-3 py-1 [--slant:8px]"
+        style={{ left: PAD + i * COL, top: top - 22, width: CARD_W, background: PANEL }}
       >
         <span className="truncate font-tech text-[9px] font-bold uppercase tracking-[0.2em] text-white/70">{shortName(r.name)}</span>
         <span className="font-tech text-[9px] font-bold tracking-[0.2em] text-gold">BO{r.bestOf}</span>
@@ -312,7 +316,8 @@ export function BracketBoard({ tournament, myTeamId = null }) {
 
       <div
         ref={viewport}
-        className={cn("bracket-stage relative cursor-grab overflow-auto active:cursor-grabbing", full ? "flex-1" : "max-h-[78vh]")}
+        style={{ background: STAGE }}
+        className={cn("relative cursor-grab overflow-auto active:cursor-grabbing", full ? "flex-1" : "max-h-[78vh]")}
         onPointerDown={onPointerDown}
         onPointerMove={onPointerMove}
         onPointerUp={onPointerUp}
@@ -489,14 +494,15 @@ function MatchCard({ node, nodes, myTeamId, championId, focus, onHover, grand })
   const border = dispute ? DISPUTE : late ? LATE : live ? LIVE : grand ? `${GOLD}aa` : null;
   const body = (
     <div
-      className={cn("clip-tactical relative bg-ink-800 [--cut:10px]", entry.matchId && "transition-transform duration-200 hover:-translate-y-0.5")}
+      className={cn("clip-tactical relative [--cut:10px]", entry.matchId && "transition-transform duration-200 hover:-translate-y-0.5")}
       style={{
         height: CARD_H,
         boxShadow: hovered
           ? "inset 0 0 0 1.5px var(--color-gold), 0 0 22px color-mix(in srgb, var(--color-gold) 45%, transparent)"
           : border
             ? `inset 0 0 0 1px ${border}, 0 0 18px ${border}33`
-            : "inset 0 0 0 1px rgba(255,255,255,0.09)",
+            : `inset 0 0 0 1px ${EDGE}`,
+        background: PANEL,
       }}
     >
       {live ? <span className="bracket-sheen pointer-events-none absolute inset-0" aria-hidden /> : null}
@@ -508,16 +514,16 @@ function MatchCard({ node, nodes, myTeamId, championId, focus, onHover, grand })
     <div className="relative">
       {node.number ? (
         <span
-          className="absolute -left-3 top-1/2 z-10 grid h-6 min-w-6 -translate-y-1/2 place-items-center border bg-ink px-1 font-tech text-[9px] font-bold text-white/70"
-          style={{ borderColor: live ? LIVE : "rgba(255,255,255,0.18)" }}
+          className="absolute -left-3 top-1/2 z-10 grid h-6 min-w-6 -translate-y-1/2 place-items-center border px-1 font-tech text-[9px] font-bold text-white/70"
+          style={{ borderColor: live ? LIVE : "rgba(255,255,255,0.18)", background: STAGE }}
         >
           {node.number}
         </span>
       ) : null}
       {live || late || dispute || entry.decided ? (
         <span
-          className="absolute -top-2 right-2 z-10 flex items-center gap-1 bg-ink px-1.5 font-tech text-[8px] font-bold uppercase tracking-[0.2em]"
-          style={{ color: dispute || entry.decided ? DISPUTE : late ? LATE : LIVE }}
+          className="absolute -top-2 right-2 z-10 flex items-center gap-1 px-1.5 font-tech text-[8px] font-bold uppercase tracking-[0.2em]"
+          style={{ background: STAGE, color: dispute || entry.decided ? DISPUTE : late ? LATE : LIVE }}
         >
           {live && !late && !dispute ? <span className="h-1.5 w-1.5 animate-pulse rounded-full" style={{ background: LIVE }} /> : null}
           {blocked || entry.decided ? "Décision" : dispute ? "Litige" : late ? "Retard" : "Live"}
@@ -539,7 +545,7 @@ const TROPHY = { horus: "/images/trophees/horus-or.png", anubis: "/images/trophe
 function ChampionCard({ team, kind }) {
   const image = TROPHY[kind] ?? TROPHY.horus;
   return (
-    <div className="clip-tactical relative overflow-hidden bg-ink-800 p-4 text-center [--cut:14px]" style={{ boxShadow: `inset 0 0 0 1px ${team ? GOLD : "rgba(255,255,255,0.12)"}, 0 0 40px ${team ? `${GOLD}33` : "transparent"}` }}>
+    <div className="clip-tactical relative overflow-hidden p-4 text-center [--cut:14px]" style={{ background: PANEL, boxShadow: `inset 0 0 0 1px ${team ? GOLD : "rgba(255,255,255,0.12)"}, 0 0 40px ${team ? `${GOLD}33` : "transparent"}` }}>
       {team ? <span className="bracket-sheen pointer-events-none absolute inset-0 opacity-60" aria-hidden /> : null}
       <img src={image} alt="" className={cn("mx-auto h-24 w-24 object-contain", !team && "opacity-25 grayscale")} draggable={false} />
       <p className="mt-1 font-tech text-[9px] font-bold uppercase tracking-[0.3em]" style={{ color: GOLD }}>
