@@ -1,11 +1,11 @@
 import { AnimatePresence, motion } from "framer-motion";
 import Link from "next/link";
 import { useCallback, useEffect, useState } from "react";
-import { LuCheck, LuClock, LuLoaderCircle, LuSwords, LuX, LuZap } from "react-icons/lu";
+import { LuArrowRight, LuCheck, LuClock, LuLoaderCircle, LuSwords, LuX, LuZap } from "react-icons/lu";
 import { api } from "../../lib/api";
 import { cn } from "../../lib/cn";
 import { Avatar } from "../ui/Avatar";
-import { Button } from "../ui/Button";
+import { Button, ButtonLink } from "../ui/Button";
 import { Chip, Notice } from "../ui/Feedback";
 import { Portal } from "../ui/Portal";
 import { TacticalCard } from "../ui/TacticalCard";
@@ -13,6 +13,46 @@ import { Eyebrow } from "../ui/Typography";
 import { TeamCrest, fieldClass, labelClass } from "./TeamParts";
 
 const when = (iso) => new Date(iso).toLocaleString("fr-FR", { weekday: "short", day: "numeric", month: "short", hour: "2-digit", minute: "2-digit" });
+
+/** Défi accepté dont le match est lancé : les deux équipes face à face et le bouton de la feuille de match. */
+function LaunchedChallenge({ challenge }) {
+  const side = (team) => (
+    <div className="flex min-w-0 flex-1 flex-col items-center gap-2 text-center">
+      <TeamCrest team={team} size={56} />
+      <p className="w-full truncate font-display text-lg font-bold uppercase leading-none sm:text-xl">{team?.name}</p>
+      <p className="font-tech text-[10px] uppercase tracking-[0.24em] text-white/45">[{team?.tag}]</p>
+    </div>
+  );
+  return (
+    <TacticalCard cut={20} className="glow-gold" innerClassName="relative overflow-hidden p-5 sm:p-7">
+      <span aria-hidden className="absolute inset-0 bg-linear-to-br from-gold/[0.12] via-transparent to-transparent" />
+      <div className="relative">
+        <div className="flex flex-wrap items-center justify-between gap-2">
+          <p className="inline-flex items-center gap-2 font-tech text-[11px] uppercase tracking-[0.28em] text-gold">
+            <span className="relative flex h-2 w-2">
+              <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-gold opacity-60" />
+              <span className="relative inline-flex h-2 w-2 rounded-full bg-gold" />
+            </span>
+            Défi accepté · match lancé
+          </p>
+          <Chip tone={challenge.friendly ? "neutral" : "gold"}>{challenge.friendly ? "Amical" : "Officiel"} · BO3</Chip>
+        </div>
+        <div className="mt-6 flex items-center gap-3 sm:gap-6">
+          {side(challenge.from)}
+          <span className="shrink-0 font-display text-3xl font-black italic text-gold sm:text-4xl">VS</span>
+          {side(challenge.to)}
+        </div>
+        <div className="mt-6 flex justify-center">
+          <ButtonLink href={`/cod/equipes/match/${challenge.matchId}`} size="lg">
+            <LuSwords aria-hidden className="h-5 w-5" />
+            Rejoindre la feuille de match
+            <LuArrowRight aria-hidden className="h-5 w-5" />
+          </ButtonLink>
+        </div>
+      </div>
+    </TacticalCard>
+  );
+}
 
 /** Choix des joueurs du match parmi l'effectif de mon équipe. */
 function RosterPicker({ members, size, value, onChange }) {
@@ -239,6 +279,8 @@ export function ChallengesPanel() {
   }
 
   if (!data) return error ? <Notice tone="error">{error}</Notice> : null;
+  // Défis acceptés dont le match est lancé (pas encore joué) : mis en avant en haut.
+  const launched = data.recent.filter((c) => c.status === "accepted" && c.matchId);
   const row = (challenge, incoming) => {
     const other = incoming ? challenge.from : challenge.to;
     return (
@@ -257,6 +299,15 @@ export function ChallengesPanel() {
             </div>
             <Chip tone={challenge.status === "accepted" ? "win" : "gold"}>{challenge.status === "accepted" ? "Accepté" : incoming ? "À toi de répondre" : "En attente"}</Chip>
           </div>
+          {challenge.status === "accepted" ? (
+            <p className="flex items-start gap-2 border-l-2 border-win/60 bg-win/[0.06] px-3 py-2 text-sm text-white/75">
+              <LuClock aria-hidden className="mt-0.5 h-4 w-4 shrink-0 text-win" />
+              <span>
+                Défi accepté. Le match se lance tout seul {challenge.scheduledAt ? `le ${when(challenge.scheduledAt)}` : "dans un instant"} : le bouton pour
+                rejoindre la feuille de match apparaîtra en haut de cet onglet.
+              </span>
+            </p>
+          ) : null}
           {data.canManage ? (
             <div className="flex flex-wrap gap-2">
               {incoming && challenge.status === "pending" ? (
@@ -300,6 +351,13 @@ export function ChallengesPanel() {
         <p className="mt-2 text-sm text-white/55">Défie une équipe depuis sa fiche (bouton « Défier »). Amical pour s&apos;entraîner, sans limite, ou officiel pour les points de Division : un par semaine.</p>
       </div>
       {error ? <Notice tone="error">{error}</Notice> : null}
+      {launched.length ? (
+        <div className="space-y-4">
+          {launched.map((c) => (
+            <LaunchedChallenge key={c.id} challenge={c} />
+          ))}
+        </div>
+      ) : null}
       <div className="grid gap-6 lg:grid-cols-2">
         <div>
           <p className={labelClass}>Reçus</p>
@@ -321,8 +379,12 @@ export function ChallengesPanel() {
                 </span>
                 <span className="text-xs text-white/45">{{ declined: "Refusé", cancelled: "Annulé", expired: "Expiré", played: "Joué", accepted: "Lancé" }[c.status] ?? c.status}</span>
                 {c.matchId ? (
-                  <Link href={`/cod/equipes/match/${c.matchId}`} className="text-xs text-gold underline underline-offset-4">
-                    Feuille
+                  <Link
+                    href={`/cod/equipes/match/${c.matchId}`}
+                    className="inline-flex items-center gap-1 border border-gold/40 px-2 py-1 font-tech text-[10px] uppercase tracking-[0.2em] text-gold transition-colors hover:bg-gold/10"
+                  >
+                    Feuille de match
+                    <LuArrowRight aria-hidden className="h-3 w-3" />
                   </Link>
                 ) : null}
               </li>

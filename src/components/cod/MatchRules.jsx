@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
 import {
-  LuArrowDown,
+  LuArrowUp,
   LuBan,
   LuCheck,
   LuChevronDown,
@@ -235,7 +235,7 @@ export function RulesConduct() {
 
 const OPEN_RULES = "sixsence:ouvrir-regles";
 
-/** Lien « Réglages de la partie » du lancement du match : descend jusqu'au bloc des règles (en bas) et l'ouvre. */
+/** Lien « Réglages de la partie » du lancement du match : remonte jusqu'au bloc des règles (juste au-dessus) et l'ouvre. */
 export function RulesLink({ className }) {
   return (
     <button
@@ -248,7 +248,7 @@ export function RulesLink({ className }) {
     >
       <LuSettings2 aria-hidden className="h-4 w-4" />
       Voir les réglages
-      <LuArrowDown aria-hidden className="h-4 w-4 transition-transform group-hover/regles:translate-y-0.5" />
+      <LuArrowUp aria-hidden className="h-4 w-4 transition-transform group-hover/regles:-translate-y-0.5" />
     </button>
   );
 }
