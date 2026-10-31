@@ -9,7 +9,6 @@ export const RELEASES = [
     title: "Tournois revus",
     items: [
       { tag: "Tournoi", text: "Nouveau tableau d'un seul tenant : gagnants, perdants et grande finale reliés, parcours du champion en or, survol d'une équipe pour voir son chemin, zoom et plein écran.", href: "/cod/tournoi" },
-      { tag: "Tournoi", text: "Fiche d'une coupe : nouvel en-tête (statut en direct, récompenses, format en une ligne) et nouveaux onglets Matchs, Participants et Statistiques." },
       { tag: "Tournoi", text: "Matchs en retard ou en litige signalés sur le tableau, messages de l'organisation sur la fiche, tableau des perdants avec son propre format." },
     ],
   },

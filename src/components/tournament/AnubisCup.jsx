@@ -1,14 +1,13 @@
 import { motion } from "framer-motion";
 import Link from "next/link";
 import { useState } from "react";
-import { LuCheck, LuCrown, LuLoaderCircle, LuShuffle, LuUserMinus, LuUserPlus, LuUsers } from "react-icons/lu";
+import { LuCheck, LuCrown, LuLoaderCircle, LuShuffle, LuUserMinus, LuUserPlus } from "react-icons/lu";
 import { api } from "../../lib/api";
 import { cn } from "../../lib/cn";
 import { Avatar } from "../ui/Avatar";
 import { Button, ButtonLink } from "../ui/Button";
 import { Chip, Notice } from "../ui/Feedback";
 import { TacticalCard } from "../ui/TacticalCard";
-import { Eyebrow } from "../ui/Typography";
 
 /** Hexagone de la médaille Anubis (avatars, cadres). */
 const HEX = "polygon(25% 3%, 75% 3%, 100% 50%, 75% 97%, 25% 97%, 0% 50%)";
@@ -60,33 +59,21 @@ function FloatingMedal({ metal = "or", size = 260, src = null, alt = null }) {
 }
 
 /**
- * Coupe Anubis, en deux onglets de la fiche : « infos » (podium des médailles, inscription individuelle et check-in,
- * choix des titulaires du capitaine, déroulé) et « participants » (équipes tirées au sort avec capitaine, titulaires et
- * remplaçants ; avant le tirage, joueurs inscrits). Tableau, matchs et statistiques : onglets communs de la page.
+ * Coupe Anubis : inscription individuelle, check-in de chaque joueur, joueurs inscrits, équipes tirées au
+ * sort (capitaine, sans remplaçant ; liste d'attente avant le tirage), tableau (fourni par la page) et podium des médailles.
  */
-export function AnubisCup({ tournament, userId, now, countdown, onDone, section = "infos" }) {
+export function AnubisCup({ tournament, userId, now, countdown, onDone, bracket }) {
   const scheduled = tournament.status === "scheduled";
   // Check-in : de 2 h à 15 min avant le début ; à la fermeture, tirage dévoilé, premiers matchs à l'heure du début.
   const closesAt = tournament?.checkInClosesAt ?? tournament?.startsAt;
   const checkInOpen = scheduled && now >= new Date(tournament.checkInOpensAt).getTime() && now < new Date(closesAt).getTime();
   const drawnWaiting = tournament?.status === "running" && now < new Date(tournament.startsAt).getTime();
   const plannedTeams = Math.min(tournament.size, Math.floor(tournament.registered / tournament.teamSize));
-  const mySquad = tournament.squads.find((squad) => squad.team?.id === tournament.viewer?.teamId);
-
-  if (section === "participants")
-    return (
-      <div className="space-y-12">
-        {tournament.squads.length ? <Squads tournament={tournament} myTeamId={tournament.viewer?.teamId} /> : null}
-        {scheduled ? <RegisteredPlayers tournament={tournament} userId={userId} /> : null}
-        {!tournament.squads.length && !scheduled ? <p className="text-sm text-white/50">Aucune équipe formée.</p> : null}
-      </div>
-    );
 
   return (
     <div className="space-y-12">
       {tournament.status === "completed" ? <AnubisPodium tournament={tournament} /> : null}
 
-      <div id="inscription" className="scroll-mt-24">
       <TacticalCard highlight cut={30} innerClassName="relative overflow-hidden">
         <div aria-hidden className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_20%_30%,rgba(231,192,90,0.16),transparent_55%)]" />
         <div aria-hidden className="pointer-events-none absolute inset-0 opacity-[0.05] [background-image:linear-gradient(rgba(231,192,90,1)_1px,transparent_1px),linear-gradient(90deg,rgba(231,192,90,1)_1px,transparent_1px)] [background-size:44px_44px]" />
@@ -110,9 +97,9 @@ export function AnubisCup({ tournament, userId, now, countdown, onDone, section 
                     value={`${Math.min(tournament.registered, tournament.capacity)} / ${tournament.capacity}`}
                     hint={
                       tournament.registered > tournament.capacity
-                        ? `+ ${tournament.registered - tournament.capacity} remplaçant${tournament.registered - tournament.capacity > 1 ? "s" : ""}`
+                        ? `+ ${tournament.registered - tournament.capacity} en liste d'attente`
                         : tournament.reserveSlots
-                          ? `+ ${tournament.reserveSlots} places de remplaçant`
+                          ? `+ ${tournament.reserveSlots} places en liste d'attente`
                           : null
                     }
                   />
@@ -129,13 +116,15 @@ export function AnubisCup({ tournament, userId, now, countdown, onDone, section 
           </div>
         </div>
       </TacticalCard>
-      </div>
 
       {drawnWaiting ? <Notice>Équipes tirées au sort : premiers matchs dans {countdown(tournament.startsAt)}. Rejoins ton capitaine et ton salon vocal.</Notice> : null}
       {tournament.status === "cancelled" ? <Notice tone="error">Cette coupe a été annulée : pas assez de joueurs présents au check-in.</Notice> : null}
 
-      {mySquad && tournament.viewer?.canSetRoster ? <CaptainRoster tournament={tournament} squad={mySquad} onDone={onDone} /> : null}
+      {tournament.squads.length ? <Squads tournament={tournament} myTeamId={tournament.viewer?.teamId} /> : null}
 
+      {tournament.status !== "scheduled" && tournament.status !== "cancelled" ? bracket : null}
+
+      {scheduled ? <RegisteredPlayers tournament={tournament} userId={userId} /> : null}
       <AnubisRules teamSize={tournament.teamSize} />
     </div>
   );
@@ -201,7 +190,7 @@ function SoloRegistration({ tournament, userId, checkInOpen, onDone }) {
       <div className="flex flex-wrap items-center gap-3">
         <Chip tone={viewer.checkedIn ? "win" : "gold"}>
           <LuCheck aria-hidden className="h-3 w-3" />
-          {viewer.checkedIn ? "Présent" : viewer.reserveRank ? `Remplaçant n°${viewer.reserveRank}` : "Inscrit"}
+          {viewer.checkedIn ? "Présent" : viewer.reserveRank ? `Liste d'attente n°${viewer.reserveRank}` : "Inscrit"}
         </Chip>
         <p className="min-w-0 flex-1 text-sm text-white/65">
           {viewer.reserveRank ? "Tu prends la place d'un inscrit qui ne fait pas son check-in. " : ""}
@@ -226,7 +215,7 @@ function SoloRegistration({ tournament, userId, checkInOpen, onDone }) {
       <div className="flex flex-wrap items-center gap-4">
         <Button size="lg" disabled={Boolean(pending)} onClick={() => run("join")}>
           {spin("join", LuUserPlus)}
-          {viewer.asReserve ? "M'inscrire comme remplaçant" : "M'inscrire"}
+          {viewer.asReserve ? "M'inscrire en liste d'attente" : "M'inscrire"}
         </Button>
         <p className="text-sm text-white/55">
           {viewer.asReserve ? "Coupe complète : tu joueras si un inscrit ne fait pas son check-in. " : ""}Seul, sans équipe : identifiant Activision requis.
@@ -234,7 +223,7 @@ function SoloRegistration({ tournament, userId, checkInOpen, onDone }) {
       </div>
     );
   } else {
-    content = <p className="text-sm text-white/55">La coupe est complète, places de remplaçant comprises.</p>;
+    content = <p className="text-sm text-white/55">La coupe est complète, liste d'attente comprise.</p>;
   }
   return (
     <div className="space-y-3">
@@ -279,7 +268,7 @@ function RegisteredPlayers({ tournament, userId }) {
               <Link href={`/cod/profile/${player.id}`} className="mt-2 w-full truncate text-xs font-semibold text-white/80 hover:text-white">
                 {player.username}
               </Link>
-              {player.reserve ? <span className="font-tech text-[9px] uppercase tracking-[0.2em] text-[#e7c05a]">Remplaçant</span> : null}
+              {player.reserve ? <span className="font-tech text-[9px] uppercase tracking-[0.2em] text-[#e7c05a]">En attente</span> : null}
             </motion.li>
           ))}
         </ul>
@@ -288,7 +277,7 @@ function RegisteredPlayers({ tournament, userId }) {
   );
 }
 
-/** Équipes formées : nom égyptien, capitaine, titulaires, remplaçants. */
+/** Équipes formées : nom égyptien, capitaine et joueurs (pas de remplaçant). */
 function Squads({ tournament, myTeamId }) {
   return (
     <section aria-labelledby="titre-equipes-formees">
@@ -324,16 +313,6 @@ function Squads({ tournament, myTeamId }) {
                     <SquadRow key={player.id} player={player} captain={player.id === squad.captain} />
                   ))}
                 </ul>
-                {squad.subs.length ? (
-                  <div className="relative mt-4 border-t border-white/8 pt-3">
-                    <p className="font-tech text-[9px] uppercase tracking-[0.26em] text-white/40">Remplaçant{squad.subs.length > 1 ? "s" : ""}</p>
-                    <ul className="mt-2 space-y-2">
-                      {squad.subs.map((player) => (
-                        <SquadRow key={player.id} player={player} sub />
-                      ))}
-                    </ul>
-                  </div>
-                ) : null}
               </TacticalCard>
             </motion.li>
           );
@@ -343,11 +322,11 @@ function Squads({ tournament, myTeamId }) {
   );
 }
 
-function SquadRow({ player, captain = false, sub = false }) {
+function SquadRow({ player, captain = false }) {
   return (
     <li className="flex items-center gap-3">
-      <HexAvatar player={player} size={34} gold={captain} dim={sub} />
-      <Link href={`/cod/profile/${player.id}`} className={cn("min-w-0 flex-1 truncate text-sm font-semibold hover:text-white", sub ? "text-white/50" : "text-white/85")}>
+      <HexAvatar player={player} size={34} gold={captain} />
+      <Link href={`/cod/profile/${player.id}`} className="min-w-0 flex-1 truncate text-sm font-semibold text-white/85 hover:text-white">
         {player.username}
       </Link>
       {captain ? (
@@ -362,77 +341,11 @@ function SquadRow({ player, captain = false, sub = false }) {
   );
 }
 
-/** Capitaine : titulaires des prochains matchs (un remplaçant peut entrer). */
-function CaptainRoster({ tournament, squad, onDone }) {
-  const everyone = [...squad.starters, ...squad.subs];
-  const [roster, setRoster] = useState(() => squad.starters.map((player) => player.id));
-  const [pending, setPending] = useState(false);
-  const [error, setError] = useState(null);
-  const size = tournament.teamSize;
-  const toggle = (id) => setRoster((current) => (current.includes(id) ? current.filter((x) => x !== id) : current.length < size ? [...current, id] : current));
-  const changed = roster.length === size && roster.some((id) => !squad.starters.some((player) => player.id === id));
-
-  async function save() {
-    setPending(true);
-    setError(null);
-    try {
-      await api(`/teams/tournaments/${tournament.id}/squad`, { method: "POST", body: { roster } });
-      await onDone();
-    } catch (caught) {
-      setError(caught.message);
-    } finally {
-      setPending(false);
-    }
-  }
-
-  return (
-    <TacticalCard highlight cut={22} innerClassName="space-y-4 p-6">
-      <div className="flex flex-wrap items-center justify-between gap-2">
-        <div>
-          <Eyebrow>
-            <LuCrown aria-hidden className="mr-1 inline h-3.5 w-3.5" />
-            Tu es capitaine
-          </Eyebrow>
-          <p className="mt-2 font-display text-3xl font-black uppercase leading-none">Titulaires du prochain match</p>
-        </div>
-        <span className="font-tech text-xs text-white/50">
-          {roster.length} / {size}
-        </span>
-      </div>
-      <p className="text-sm text-white/55">Fais entrer un remplaçant entre deux matchs : le changement vaut pour la prochaine rencontre.</p>
-      <ul className="grid gap-2 sm:grid-cols-2 lg:grid-cols-3">
-        {everyone.map((player) => {
-          const selected = roster.includes(player.id);
-          return (
-            <li key={player.id}>
-              <button
-                type="button"
-                aria-pressed={selected}
-                onClick={() => toggle(player.id)}
-                className={cn("flex w-full items-center gap-3 border-l-2 px-3 py-2.5 text-left transition", selected ? "border-[#e7c05a] bg-[#e7c05a]/10" : "border-white/10 bg-white/[0.03] hover:bg-white/[0.06]")}
-              >
-                <HexAvatar player={player} size={32} gold={selected} />
-                <span className="min-w-0 flex-1 truncate font-display text-lg font-bold uppercase leading-none">{player.username}</span>
-                {selected ? <Chip>Titulaire</Chip> : <Chip tone="neutral">Banc</Chip>}
-              </button>
-            </li>
-          );
-        })}
-      </ul>
-      {error ? <Notice tone="error">{error}</Notice> : null}
-      <Button disabled={pending || !changed} onClick={save}>
-        {pending ? <LuLoaderCircle aria-hidden className="h-5 w-5 animate-spin" /> : <LuUsers aria-hidden className="h-5 w-5" />}
-        Valider les titulaires
-      </Button>
-    </TacticalCard>
-  );
-}
-
 /** Podium final : trois médailles, équipe et joueurs. */
 function AnubisPodium({ tournament }) {
   const playersOf = (teamId) => {
     const squad = tournament.squads.find((s) => s.team?.id === teamId);
-    return squad ? [...squad.starters, ...squad.subs] : [];
+    return squad ? squad.starters : [];
   };
   const order = [PLACES[1], PLACES[0], PLACES[2]];
   return (
@@ -484,7 +397,7 @@ function AnubisRules({ teamSize }) {
   const steps = [
     ["01", "Inscris-toi seul", "Pas besoin d'équipe : identifiant Activision et compte Discord suffisent."],
     ["02", "Check-in", "De 2 h à 15 min avant le début, confirme ta présence. Sans check-in, pas de place."],
-    ["03", "Tirage", `Les présents sont répartis au hasard en équipes de ${teamSize}. Le mieux classé devient capitaine, les joueurs en trop remplaçants.`],
+    ["03", "Tirage", `Les présents sont répartis au hasard en équipes de ${teamSize}, le mieux classé devient capitaine. Un inscrit en liste d'attente prend la place d'un absent ; ensuite, les équipes ne changent plus.`],
     ["04", "Médailles", "Or, argent, bronze sur ton profil, et le rôle Discord « Vainqueur — Coupe Anubis » jusqu'à la prochaine coupe."],
   ];
   return (
