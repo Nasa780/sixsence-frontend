@@ -392,7 +392,7 @@ export function OrganisationMessages({ tournament, isAdmin, api }) {
             onChange={(event) => setText(event.target.value)}
             maxLength={1000}
             rows={3}
-            placeholder="Message aux participants (affiché sur la fiche de la coupe)…"
+            placeholder="Message aux participants (affiché sur la fiche de la coupe tant qu'il n'est pas retiré)…"
             className="w-full border border-white/15 bg-ink-700 px-3 py-2 text-sm text-white placeholder:text-white/30"
           />
           <div className="flex items-center justify-between gap-3">

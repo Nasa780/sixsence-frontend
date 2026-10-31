@@ -5,6 +5,7 @@ import { api } from "../../lib/api";
 import { generatedPoster, uploadCupPoster } from "../../lib/cups";
 import { cn } from "../../lib/cn";
 import { TeamCrest, fieldClass, labelClass } from "../teams/TeamParts";
+import { OrganisationMessages } from "../tournament/TournamentViews";
 import { Button } from "../ui/Button";
 import { ConfirmDialog } from "../ui/ConfirmDialog";
 import { Chip, EmptyState, Loading, Notice } from "../ui/Feedback";
@@ -742,9 +743,21 @@ function PosterThumb({ src }) {
  * Onglet « Coupes » : toutes les Coupes Horus et Anubis (à venir et en cours, puis terminées) avec affiche, statut,
  * places et check-ins ; actions par coupe (voir, modifier, gérer le tableau, annuler) ; « Nouvelle coupe ».
  */
+/** Messages de l'organisation d'une coupe : publiés et retirés d'ici, affichés sur la fiche seulement s'il y en a. */
+function CupMessages({ cupId }) {
+  const [tournament, setTournament] = useState(null);
+  const [error, setError] = useState(null);
+  useEffect(() => {
+    api(`/teams/tournaments/${cupId}`).then(setTournament, (caught) => setError(caught.message));
+  }, [cupId]);
+  if (error) return <Notice tone="error">{error}</Notice>;
+  return tournament ? <OrganisationMessages tournament={tournament} isAdmin api={api} /> : <Loading />;
+}
+
 function CupsTab() {
   const [state, setState] = useState(null);
   const [editing, setEditing] = useState(null);
+  const [messaging, setMessaging] = useState(null);
   const [cancelling, setCancelling] = useState(null);
   const [pending, setPending] = useState(null);
   const [error, setError] = useState(null);
@@ -810,6 +823,11 @@ function CupsTab() {
               </Button>
             ) : null}
             {cup.status === "scheduled" || cup.status === "running" ? (
+              <Button size="sm" variant="outline" onClick={() => setMessaging(messaging === cup.id ? null : cup.id)}>
+                Messages
+              </Button>
+            ) : null}
+            {cup.status === "scheduled" || cup.status === "running" ? (
               <Button size="sm" variant="ghost" disabled={pending !== null} onClick={() => setCancelling(cup)}>
                 Annuler
               </Button>
@@ -830,6 +848,7 @@ function CupsTab() {
             }}
           />
         ) : null}
+        {messaging === cup.id ? <CupMessages cupId={cup.id} /> : null}
         {cup.status === "running" || checkInOpen ? <LiveCupPanel cup={cup} onChanged={load} /> : null}
       </li>
     );
