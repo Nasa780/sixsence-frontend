@@ -3,7 +3,7 @@ import Link from "next/link";
 import { useRouter } from "next/router";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { LuCheck, LuDices, LuLoaderCircle, LuShield, LuSwords, LuTrophy, LuUserMinus, LuUserPlus, LuUsers } from "react-icons/lu";
-import { MatchRulesCard } from "../../components/cod/MatchRules";
+import { RulesConduct, RulesEssentials, RulesLoadout } from "../../components/cod/MatchRules";
 import { SlantTab, TeamCrest } from "../../components/teams/TeamParts";
 import { AnubisCup, AnubisTeaser, HorusTeaser } from "../../components/tournament/AnubisCup";
 import { BracketBoard, bracketMatches } from "../../components/tournament/BracketBoard";
@@ -330,7 +330,7 @@ export default function TournamentPage() {
                 </h2>
                 <p className="text-sm text-white/60">
                   {anubis
-                    ? `Inscription seul, check-in de chaque joueur. Équipes de ${tournament.teamSize} tirées au sort parmi les présents ; le mieux classé est capitaine et choisit les titulaires entre deux matchs. Matchs en BO${tournament.bestOf}, finale en BO${tournament.finalBestOf}${tournament.bracket === "double" ? ", double élimination" : ""}. Un match bloqué est tranché par l'équipe SixSence.`
+                    ? `Inscription seul, check-in de chaque joueur. Équipes de ${tournament.teamSize} joueur${tournament.teamSize > 1 ? "s" : ""} tirées au sort parmi les présents, les inscrits en trop deviennent remplaçants ; le joueur le mieux classé de chaque équipe en est le capitaine et peut faire entrer un remplaçant entre deux matchs. Matchs en BO${tournament.bestOf}, finale en BO${tournament.finalBestOf}${tournament.bracket === "double" ? ", double élimination" : ""}. Un match bloqué est tranché par l'équipe SixSence.`
                     : tournament.kind === "horus"
                       ? `Matchs en BO${tournament.bestOf}, finale en BO${tournament.finalBestOf}${tournament.bracket === "double" ? ", double élimination" : ", petite finale pour le bronze"}. Hôte tiré au sort, code de la partie dans le tchat de la feuille de match. Pas d'annulation : un match bloqué est tranché par l'équipe SixSence.`
                       : `Matchs en BO${tournament.bestOf}, finale en BO${tournament.finalBestOf}. Effectifs figés à la qualification, check-in d'un joueur de l'équipe. Pas de points en jeu ; un match bloqué est tranché par l'équipe SixSence.`}{" "}
@@ -338,7 +338,14 @@ export default function TournamentPage() {
                     Règlement complet
                   </Link>
                 </p>
-                <MatchRulesCard bestOf={tournament.bestOf} />
+                {/* Ce qui compte pour un joueur de tournoi : l'essentiel, la classe autorisée, la conduite (les réglages de la
+                    partie privée restent sur les feuilles de match). */}
+                <RulesEssentials />
+                <h3 className="pt-4 font-display text-2xl font-black uppercase leading-none">Classe autorisée</h3>
+                <p className="text-sm text-white/60">Tout ce qui n&apos;est pas autorisé ci-dessous est interdit. Les trois atouts sont imposés.</p>
+                <RulesLoadout />
+                <h3 className="pt-4 font-display text-2xl font-black uppercase leading-none">Pendant le match</h3>
+                <RulesConduct />
               </section>
             ) : null}
           </>

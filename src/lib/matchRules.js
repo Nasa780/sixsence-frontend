@@ -94,7 +94,7 @@ export function settingsTabs(bestOf) {
 export const settingsToChange = (bestOf) => settingsTabs(bestOf).flatMap((tab) => tab.rows.filter((row) => row.set).map((row) => ({ ...row, tab: tab.id })));
 
 export const ESSENTIALS = [
-  { key: "format", title: "Format", lines: ["Classé : BO1, 8 manches", "Division, tournois : BO3 ou BO5, 6 manches"] },
+  { key: "format", title: "Format", lines: ["Classé : BO1, 8 manches", "Division : BO3 ou BO5, 6 manches", "Tournois : BO1 en 8 manches, BO3 ou BO5 en 6"] },
   { key: "hardcore", title: "Hardcore", lines: ["20 PV, sans régénération", "Sans mini-carte, tir allié activé", "Sans séries ni améliorations"] },
   { key: "weapons", title: "Armes", lines: ["Fusils d'assaut, mitraillettes", "Fusils tactiques", "Snipers à verrou"] },
   { key: "perks", title: "Atouts", lines: ["Fantôme", "Ruée ou Ninja", "Sang-froid"] },

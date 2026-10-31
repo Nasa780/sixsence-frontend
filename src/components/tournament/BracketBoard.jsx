@@ -21,7 +21,7 @@ const CARD_H = ROW_H * 2 + 1;
 const GAP_X = 70;
 const PITCH = CARD_H + 22;
 const COL = CARD_W + GAP_X;
-const HEAD = 78; // séparateur de section + en-tête des tours
+const HEAD = 46; // titre de section + bandeau des tours
 const SECTION_GAP = 64;
 const PAD = 24;
 const CHAMP_W = 210;
@@ -146,11 +146,13 @@ export function bracketMatches(tournament) {
     .map((node) => ({ ...node, waiting: [placeholder(node, nodes, 0), placeholder(node, nodes, 1)] }));
 }
 
-/** Courbe douce entre la sortie d'une rencontre et l'entrée de la suivante. */
+/** Coude arrondi entre la sortie d'une rencontre et l'entrée de la suivante. */
 function elbow(x1, y1, x2, y2) {
   if (Math.abs(y1 - y2) < 1) return `M ${x1} ${y1} H ${x2}`;
-  const k = (x2 - x1) * 0.55;
-  return `M ${x1} ${y1} C ${x1 + k} ${y1}, ${x2 - k} ${y2}, ${x2} ${y2}`;
+  const xm = x1 + Math.min(34, (x2 - x1) / 2);
+  const r = Math.min(10, Math.abs(y2 - y1) / 2);
+  const dir = y2 > y1 ? 1 : -1;
+  return `M ${x1} ${y1} H ${xm - r} Q ${xm} ${y1} ${xm} ${y1 + dir * r} V ${y2 - dir * r} Q ${xm} ${y2} ${xm + r} ${y2} H ${x2}`;
 }
 
 /** Nom du tour sans « Gagnants · » ni « Perdants · » (le titre de la section le dit déjà). */
@@ -257,50 +259,68 @@ export function BracketBoard({ tournament, myTeamId = null, theme = DEFAULT_THEM
   };
 
   const colDelay = (node) => (reduce ? 0 : 0.05 + (node.x / COL) * 0.07);
-  // Séparateur de section pleine largeur : trait, titre au centre, trait.
   const sectionLabel = (y, text, color) => (
-    <div className="absolute flex items-center gap-4" style={{ left: PAD, right: PAD, top: y - HEAD }}>
-      <span className="h-px flex-1" style={{ background: `linear-gradient(90deg, transparent, ${color})` }} />
-      <p className={cn("font-display text-base font-black uppercase tracking-[0.3em]", T.section.gradient && "text-gold-gradient")} style={{ color: T.section.gradient ? undefined : color }}>
-        {text}
-      </p>
-      <span className="h-px flex-1" style={{ background: `linear-gradient(90deg, ${color}, transparent)` }} />
-    </div>
+    <p className={cn("absolute font-display text-lg font-black uppercase tracking-wide", T.section.gradient && "text-gold-gradient")} style={{ left: PAD, top: y - HEAD, color: T.section.gradient ? undefined : color }}>
+      {text}
+    </p>
   );
-  // En-tête d'un tour, centré au-dessus de sa colonne : nom, BO, trait doré qui se dessine.
   const pill = (key, left, top, name, bo, final = false) => (
-    <div key={key} className="absolute flex flex-col items-center text-center" style={{ left, top: top - 44, width: CARD_W }}>
-      <span className="font-tech text-[10px] font-bold uppercase tracking-[0.24em]" style={{ color: final ? T.final.color : T.pill.name }}>
-        {name}
-      </span>
-      <span className="mt-1 border px-1.5 py-px font-tech text-[8px] font-bold tracking-[0.2em]" style={{ color: final ? T.final.color : T.pill.bo, borderColor: final ? T.final.color : "rgba(231,192,90,0.35)" }}>
-        BO{bo}
-      </span>
+    <div
+      key={key}
+      className={cn("absolute flex items-center justify-between px-3 py-1", T.pill.className)}
+      style={{ left, top: top - 22, width: CARD_W, ...(final ? T.final.style : T.pill.style) }}
+    >
       {T.pill.line ? (
         <motion.span
           aria-hidden
-          className="mt-2 h-px w-full origin-center"
-          style={{ background: final ? `linear-gradient(90deg, transparent, ${T.final.color}, transparent)` : "linear-gradient(90deg, transparent, rgba(231,192,90,0.55), transparent)" }}
+          className="absolute inset-x-0 bottom-0 h-px origin-left"
+          style={{ background: T.pill.line }}
           initial={reduce ? false : { scaleX: 0 }}
           animate={{ scaleX: 1 }}
           transition={{ duration: reduce ? 0 : 0.9, delay: reduce ? 0 : 0.15 + (left / COL) * 0.08, ease: [0.22, 1, 0.36, 1] }}
         />
       ) : null}
+      <span className="truncate font-tech text-[9px] font-bold uppercase tracking-[0.2em]" style={{ color: final ? T.final.color : T.pill.name }}>
+        {name}
+      </span>
+      <span className="font-tech text-[9px] font-bold tracking-[0.2em]" style={{ color: final ? T.final.color : T.pill.bo }}>
+        BO{bo}
+      </span>
     </div>
   );
   const flow = T.champ.flow;
 
   return (
     <div ref={frame} data-univers={T.univers ?? undefined} className={cn("relative border", T.frame, full && "flex h-full flex-col")}>
-      {/* Barre du haut : format du tableau et commandes */}
-      <div className="flex flex-wrap items-center justify-between gap-3 border-b border-white/10 bg-black/40 px-4 py-2.5">
-        <p className="flex items-center gap-2 font-tech text-[10px] uppercase tracking-[0.2em] text-white/55">
-          <span className="font-display text-sm font-black tracking-[0.18em] text-gold">Tableau</span>
-          <span className="text-white/25">/</span>
-          {map.double ? "Double élimination" : "Élimination directe"}
-          <span className="text-white/25">·</span>
-          {map.wb[0]?.entries.length * 2 || 0} places
-        </p>
+      {/* Légende et commandes */}
+      <div className="flex flex-wrap items-center justify-between gap-3 border-b border-white/10 bg-black/40 px-4 py-3">
+        <ul className="flex flex-wrap items-center gap-x-4 gap-y-1 font-tech text-[10px] uppercase tracking-[0.18em] text-white/60">
+          <li className="flex items-center gap-1.5">
+            <span className="relative flex h-2 w-2">
+              <span className="absolute inline-flex h-full w-full animate-ping rounded-full opacity-60" style={{ background: LIVE }} />
+              <span className="relative inline-flex h-2 w-2 rounded-full" style={{ background: LIVE }} />
+            </span>
+            En cours
+          </li>
+          <li className="flex items-center gap-1.5">
+            <span className="h-2 w-2 rounded-full" style={{ background: LATE }} />
+            Retard
+          </li>
+          <li className="flex items-center gap-1.5">
+            <span className="h-2 w-2 rounded-full" style={{ background: DISPUTE }} />
+            Litige · arbitrage
+          </li>
+          <li className="flex items-center gap-1.5">
+            <span className="h-0.5 w-5 rounded" style={{ background: T.champ.color, boxShadow: `0 0 6px ${T.champ.color}` }} />
+            Parcours du champion
+          </li>
+          {myTeamId ? (
+            <li className="flex items-center gap-1.5">
+              <span className="h-2 w-2" style={{ background: T.focus }} />
+              Ton équipe
+            </li>
+          ) : null}
+        </ul>
         <div className="flex items-center gap-1">
           <button type="button" aria-label="Dézoomer" onClick={() => zoom((s) => s - 0.1)} className="grid h-8 w-8 place-items-center border border-white/10 text-white/70 hover:bg-white/10">
             <LuMinus className="h-4 w-4" />
@@ -331,7 +351,7 @@ export function BracketBoard({ tournament, myTeamId = null, theme = DEFAULT_THEM
       >
         <div style={{ width: width * scale, height: height * scale }}>
           <div className="relative origin-top-left" style={{ width, height, transform: `scale(${scale})` }}>
-            {map.double ? sectionLabel(map.wbTop, "Tableau des gagnants", T.section.wb) : null}
+            {sectionLabel(map.wbTop, map.double ? "Tableau des gagnants" : "Tableau", T.section.wb)}
             {map.wb.map((r, i) => pill(`W${r.round}`, PAD + i * COL, map.wbTop, shortName(r.name), r.bestOf))}
             {map.lbTop ? (
               <>
@@ -431,39 +451,10 @@ export function BracketBoard({ tournament, myTeamId = null, theme = DEFAULT_THEM
           </div>
         </div>
       </div>
-      <div className="flex flex-wrap items-center justify-between gap-x-6 gap-y-2 border-t border-white/10 bg-black/40 px-4 py-2.5">
-        <ul className="flex flex-wrap items-center gap-x-4 gap-y-1 font-tech text-[10px] uppercase tracking-[0.18em] text-white/60">
-          <li className="flex items-center gap-1.5">
-            <span className="relative flex h-2 w-2">
-              <span className="absolute inline-flex h-full w-full animate-ping rounded-full opacity-60" style={{ background: LIVE }} />
-              <span className="relative inline-flex h-2 w-2 rounded-full" style={{ background: LIVE }} />
-            </span>
-            En cours
-          </li>
-          <li className="flex items-center gap-1.5">
-            <span className="h-2 w-2 rounded-full" style={{ background: LATE }} />
-            Retard
-          </li>
-          <li className="flex items-center gap-1.5">
-            <span className="h-2 w-2 rounded-full" style={{ background: DISPUTE }} />
-            Litige · arbitrage
-          </li>
-          <li className="flex items-center gap-1.5">
-            <span className="h-0.5 w-5 rounded" style={{ background: T.champ.color, boxShadow: `0 0 6px ${T.champ.color}` }} />
-            Parcours du champion
-          </li>
-          {myTeamId ? (
-            <li className="flex items-center gap-1.5">
-              <span className="h-2 w-2" style={{ background: T.focus }} />
-              Ton équipe
-            </li>
-          ) : null}
-        </ul>
-        <p className="font-tech text-[9px] uppercase tracking-[0.18em] text-white/40">
-          <span className="md:hidden">Fais glisser pour te déplacer · touche un match pour l&apos;ouvrir</span>
-          <span className="hidden md:inline">Ctrl + molette : zoom · cliquer-glisser : se déplacer · survol : parcours d&apos;une équipe</span>
-        </p>
-      </div>
+      <p className="border-t border-white/10 bg-black/40 px-4 py-2 text-right font-tech text-[9px] uppercase tracking-[0.18em] text-white/40">
+        <span className="md:hidden">Fais glisser pour te déplacer · touche un match pour l&apos;ouvrir</span>
+        <span className="hidden md:inline">Ctrl + molette pour zoomer · cliquer-glisser pour se déplacer · survole une équipe pour voir son parcours</span>
+      </p>
     </div>
   );
 }
@@ -546,10 +537,10 @@ function MatchCard({ T, node, nodes, myTeamId, championId, focus, onHover, grand
     <div className="relative">
       {node.number ? (
         <span
-          className={cn("absolute -top-2 left-2 z-10 border px-1.5 font-tech text-[8px] font-bold leading-[13px] tracking-[0.14em]", T.badge.className)}
+          className={cn("absolute -left-3 top-1/2 z-10 grid h-6 min-w-6 -translate-y-1/2 place-items-center border px-1 font-tech text-[9px] font-bold", T.badge.className)}
           style={{ ...T.badge.style, borderColor: live ? LIVE : T.badge.style.borderColor }}
         >
-          M{node.number}
+          {node.number}
         </span>
       ) : null}
       {live || late || dispute || entry.decided ? (
