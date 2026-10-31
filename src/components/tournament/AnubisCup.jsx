@@ -512,7 +512,7 @@ export function HorusTeaser() {
           </p>
           <p className="mt-4 text-sm leading-relaxed text-white/60">
             La Coupe Horus se joue en équipe : le Leader inscrit sa formation pour rejoindre le tableau en direct. Décroche un trophée d&apos;or,
-            d&apos;argent ou de bronze sur la fiche d&apos;équipe et gagne des points de Division. La prochaine sera annoncée ici et sur Discord.
+            d&apos;argent ou de bronze sur la fiche d&apos;équipe et le profil de chaque joueur, et gagne des points de Division. La prochaine sera annoncée ici et sur Discord.
           </p>
           <div className="mt-7 flex flex-wrap gap-3">
             <ButtonLink href="/cod/division" size="lg">

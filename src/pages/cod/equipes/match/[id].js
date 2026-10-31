@@ -21,8 +21,9 @@ import { mapImage } from "../../../../lib/maps";
 import { rankFor, rankGradient } from "../../../../lib/ranks";
 import { supabase } from "../../../../lib/supabase";
 import { STAFF_CHAT } from "../../../../lib/roles";
+import { roundsToWin } from "../../../../lib/matchRules";
+import { usePageUnivers } from "../../../../lib/univers";
 
-const ROUNDS = 6;
 const mapsWon = (scores, side) => scores.filter(([a, b]) => (side === "A" ? a > b : b > a)).length;
 
 /** Feuille d'un match d'équipe en direct (BO3, BO5 en finale de tournoi) : maps, scores, map décisive, déclaration et confirmation par les Leaders. Public. */
@@ -32,6 +33,8 @@ export default function TeamMatchPage() {
   const { userId } = useSession();
   const [match, setMatch] = useState(null);
   const [error, setError] = useState(null);
+  // Match de coupe : rouge des tournois sur toute la page (menu et pied de page compris).
+  usePageUnivers(match?.tournament ? "tournoi" : null);
 
   const load = useCallback(async () => {
     if (!id) return;
@@ -81,8 +84,8 @@ export default function TeamMatchPage() {
       <Head>
         <title>{`[${match.teamA?.tag}] vs [${match.teamB?.tag}] — Division — SixSence`}</title>
       </Head>
-      {/* Match de tournoi : palette rouge des tournois ; Division et défis gardent l'or. */}
-      <div data-univers={match.tournament ? "tournoi" : undefined}>
+      {/* Match de tournoi : palette rouge des tournois sur toute la page (usePageUnivers plus haut) ; Division et défis gardent la leur. */}
+      <div>
       <Container className="space-y-8 pb-16 pt-28 sm:pt-32">
         <div>
           <Eyebrow>
@@ -104,6 +107,12 @@ export default function TeamMatchPage() {
             <TeamSide team={match.teamB} side="B" winner={match.winner} change={match.pointsChanges?.B} host={match.hostSide === "B"} right />
           </div>
         </TacticalCard>
+
+        {/* Joueurs des deux équipes, juste sous le score. */}
+        <div className="grid gap-6 lg:grid-cols-2">
+          <Roster match={match} side="A" userId={userId} />
+          <Roster match={match} side="B" userId={userId} />
+        </div>
 
         <MatchNotices match={match} name={name} />
         {/* Réglages de la partie privée, repliés, au-dessus du lancement : seulement pour l'équipe hôte. */}
@@ -127,11 +136,6 @@ export default function TeamMatchPage() {
 
         {match.proofs ? <Proofs match={match} userId={userId} onDone={load} /> : null}
 
-        <div className="grid gap-6 lg:grid-cols-2">
-          <Roster match={match} side="A" userId={userId} />
-          <Roster match={match} side="B" userId={userId} />
-        </div>
-
         {open && !match.tournament ? (
           <TacticalCard innerClassName="p-6">
             <Eyebrow>Points en jeu</Eyebrow>
@@ -154,8 +158,11 @@ export default function TeamMatchPage() {
 
 
         <p>
-          <Link href="/cod/equipes" className="group/l inline-flex items-center gap-3 font-display text-sm font-bold uppercase tracking-[0.14em] text-gold transition-colors hover:text-gold-light">
-            Classement des équipes
+          <Link
+            href={match.tournament ? `/cod/tournoi?id=${match.tournament.id}` : "/cod/equipes"}
+            className="group/l inline-flex items-center gap-3 font-display text-sm font-bold uppercase tracking-[0.14em] text-gold transition-colors hover:text-gold-light"
+          >
+            {match.tournament ? "Retour à la coupe" : "Classement des équipes"}
             <span aria-hidden className="h-px w-5 bg-gold/50 transition-all duration-300 group-hover/l:w-10 group-hover/l:bg-gold" />
           </Link>
         </p>
@@ -217,7 +224,7 @@ function MatchNotices({ match, name }) {
           {match.forfeit ? <span className="text-white/55"> par forfait</span> : null}
         </p>
       </div>
-      {match.forfeit ? <Notice>{name(match.winner === "A" ? "B" : "A")} {FORFEIT_REASONS[match.forfeitReason] ?? "a déclaré forfait"} : victoire par forfait, points et XP comme une victoire normale.</Notice> : null}
+      {match.forfeit ? <Notice>{name(match.winner === "A" ? "B" : "A")} {FORFEIT_REASONS[match.forfeitReason] ?? "a déclaré forfait"} : victoire par forfait{match.tournament ? "." : ", points et XP comme une victoire normale."}</Notice> : null}
       {corrected}
       </>
     );
@@ -347,11 +354,11 @@ function Map3Block({ match, name, onDone }) {
   );
 }
 
-/** Saisie d'un score de map : l'équipe gagnante (6 manches) et les manches du perdant (0 à 5). */
-function MapScoreInput({ label, teamA, teamB, value, onChange }) {
-  const winner = value ? (value[0] === ROUNDS ? "A" : "B") : null;
+/** Saisie d'un score de map : l'équipe gagnante (rounds manches : 8 en BO1, 6 en BO3 / BO5) et les manches du perdant. */
+function MapScoreInput({ label, teamA, teamB, value, onChange, rounds = 6 }) {
+  const winner = value ? (value[0] === rounds ? "A" : "B") : null;
   const loserRounds = value ? Math.min(value[0], value[1]) : 0;
-  const set = (nextWinner, rounds) => onChange(nextWinner === "A" ? [ROUNDS, rounds] : [rounds, ROUNDS]);
+  const set = (nextWinner, lost) => onChange(nextWinner === "A" ? [rounds, lost] : [lost, rounds]);
   return (
     <div className="border-l-2 border-white/10 bg-white/[0.03] p-4">
       <p className={labelClass}>{label}</p>
@@ -376,7 +383,7 @@ function MapScoreInput({ label, teamA, teamB, value, onChange }) {
         <label className="ml-auto flex items-center gap-2 text-sm text-white/60">
           Perdant
           <select className="border border-white/15 bg-ink-700 px-2.5 py-2 text-sm text-white" value={loserRounds} disabled={!winner} onChange={(event) => set(winner, Number(event.target.value))}>
-            {[0, 1, 2, 3, 4, 5].map((n) => (
+            {Array.from({ length: rounds }, (_, n) => n).map((n) => (
               <option key={n} value={n}>
                 {n}
               </option>
@@ -444,6 +451,7 @@ function ReportForm({ match, onDone }) {
             label={`Map ${start + i + 1} · ${match.maps[start + i]?.map ?? "?"}`}
             teamA={match.teamA}
             teamB={match.teamB}
+            rounds={roundsToWin(match.bestOf)}
             value={scores[i]}
             onChange={(next) => setScores((current) => current.map((v, j) => (j === i ? next : j > i ? null : v)))}
           />
@@ -553,7 +561,7 @@ function ResolveForm({ match, onDone }) {
       <div className={cn("grid gap-3 md:grid-cols-3", match.bestOf === 5 && "lg:grid-cols-5")}>
         {scores.map((value, i) => (
           <div key={i} className="space-y-2">
-            <MapScoreInput label={match.maps[i]?.map ?? `Map ${i + 1}`} teamA={match.teamA} teamB={match.teamB} value={value} onChange={(next) => setScores((current) => current.map((v, j) => (j === i ? next : v)))} />
+            <MapScoreInput label={match.maps[i]?.map ?? `Map ${i + 1}`} teamA={match.teamA} teamB={match.teamB} rounds={roundsToWin(match.bestOf)} value={value} onChange={(next) => setScores((current) => current.map((v, j) => (j === i ? next : v)))} />
             {value && i >= need ? (
               <button type="button" className="text-xs text-white/45 underline hover:text-loss" onClick={() => setScores((current) => current.map((v, j) => (j >= i ? null : v)))}>
                 Map non jouée
@@ -598,7 +606,11 @@ function Roster({ match, side, userId }) {
           {team?.name}
           {match.hostSide === side ? <HostChip /> : null}
         </h2>
-        {match.winner === side ? <Chip tone="win">Victoire</Chip> : <span className="font-tech text-xs uppercase tracking-[0.2em] text-white/45">{match.pointsBefore[side]} pts</span>}
+        {match.winner === side ? (
+          <Chip tone="win">Victoire</Chip>
+        ) : team?.cup ? null : (
+          <span className="font-tech text-xs uppercase tracking-[0.2em] text-white/45">{match.pointsBefore[side]} pts</span>
+        )}
       </header>
       <ul className="mt-3 space-y-2">
         {ids.map((id) => {
@@ -738,7 +750,7 @@ function CorrectionForm({ match, onDone }) {
       <div className={cn("grid gap-3 md:grid-cols-3", match.bestOf === 5 && "lg:grid-cols-5")}>
         {scores.map((value, i) => (
           <div key={i} className="space-y-2">
-            <MapScoreInput label={match.maps[i]?.map ?? `Map ${i + 1}`} teamA={match.teamA} teamB={match.teamB} value={value} onChange={(next) => setScores((current) => current.map((v, j) => (j === i ? next : v)))} />
+            <MapScoreInput label={match.maps[i]?.map ?? `Map ${i + 1}`} teamA={match.teamA} teamB={match.teamB} rounds={roundsToWin(match.bestOf)} value={value} onChange={(next) => setScores((current) => current.map((v, j) => (j === i ? next : v)))} />
             {value && i >= need ? (
               <button type="button" className="text-xs text-white/45 underline hover:text-loss" onClick={() => setScores((current) => current.map((v, j) => (j >= i ? null : v)))}>
                 Map non jouée
@@ -1053,7 +1065,11 @@ function ForfeitBlock({ match, name, onDone }) {
         pending={pending}
         onConfirm={() => answer(ask === "accept")}
       >
-        {ask === "accept" ? "Ton équipe perd le match (points et XP d'une défaite)." : "Un arbitre SixSence tranchera : explique la situation dans le tchat."}
+        {ask === "accept"
+          ? match.tournament
+            ? "Ton équipe perd le match."
+            : "Ton équipe perd le match (points et XP d'une défaite)."
+          : "Un arbitre SixSence tranchera : explique la situation dans le tchat."}
       </ConfirmDialog>
     </TacticalCard>
   );

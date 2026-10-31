@@ -358,6 +358,15 @@ export function MatchView({ matchId }) {
         </div>
       </TacticalCard>
 
+      {/* --- Les deux équipes --------------------------------------------- */}
+      <div className="grid grid-cols-1 gap-6 lg:grid-cols-[1fr_auto_1fr] lg:items-start">
+        <TeamColumn team="A" match={match} ids={match.team_a} stakes={data.pointsAtStake} playerById={playerById} currentUserId={userId} readyUsers={readyUsers} mvpIds={mvpIds} onReport={canReport ? (target) => setDialog({ kind: "report", target }) : null} />
+        <div aria-hidden className="flex items-center justify-center lg:pt-16">
+          <span className="font-display text-5xl font-black italic leading-none text-outline">VS</span>
+        </div>
+        <TeamColumn team="B" match={match} ids={match.team_b} stakes={data.pointsAtStake} playerById={playerById} currentUserId={userId} readyUsers={readyUsers} mvpIds={mvpIds} onReport={canReport ? (target) => setDialog({ kind: "report", target }) : null} />
+      </div>
+
       {/* --- Fin du match : « Victoire » ou « Défaite », puis « Promotion » s'il y a lieu, une fois par match --- */}
       {match.status === "completed" && myTeam && playerById.get(userId) ? (
         <MatchResultOverlay
@@ -575,14 +584,6 @@ export function MatchView({ matchId }) {
         <MvpVote match={match} playerById={playerById} votes={mvpVotes} myVote={me.myVote} userId={userId} isPlayer={isPlayer} onVoted={() => Promise.all([load(), loadMe()])} />
       ) : null}
 
-      {/* --- Les deux équipes --------------------------------------------- */}
-      <div className="grid grid-cols-1 gap-6 pt-4 lg:grid-cols-[1fr_auto_1fr] lg:items-start">
-        <TeamColumn team="A" match={match} ids={match.team_a} stakes={data.pointsAtStake} playerById={playerById} currentUserId={userId} readyUsers={readyUsers} mvpIds={mvpIds} onReport={canReport ? (target) => setDialog({ kind: "report", target }) : null} />
-        <div aria-hidden className="flex items-center justify-center lg:pt-16">
-          <span className="font-display text-5xl font-black italic leading-none text-outline">VS</span>
-        </div>
-        <TeamColumn team="B" match={match} ids={match.team_b} stakes={data.pointsAtStake} playerById={playerById} currentUserId={userId} readyUsers={readyUsers} mvpIds={mvpIds} onReport={canReport ? (target) => setDialog({ kind: "report", target }) : null} />
-      </div>
 
       <ConfirmDialog
         open={dialog?.kind === "confirm"}

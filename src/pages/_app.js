@@ -1,6 +1,6 @@
 import Head from "next/head";
 import { useRouter } from "next/router";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { Inter, Orbitron, Saira_Condensed } from "next/font/google";
 import { Footer } from "../components/layout/Footer";
 import { Navbar } from "../components/layout/Navbar";
@@ -15,6 +15,7 @@ import { registerServiceWorker } from "../lib/push";
 import "../styles/globals.css";
 import { codModeOf } from "../components/cod/CodModeNav";
 import usePresence from "../hooks/usePresence";
+import { UniversContext } from "../lib/univers";
 
 /**
  * Polices, auto-hébergées par next/font (aucune requête vers Google côté visiteur).
@@ -41,7 +42,10 @@ export default function App({ Component, pageProps }) {
   // Pages GTA 6 : palette coucher de soleil (voir globals.css).
   // Couleur d'accent : coucher de soleil sur GTA 6, vert pour le Classé, cyan pour la Division, rouge pour le Tournoi.
   const codMode = codModeOf(pathname);
-  const univers = pathname.startsWith("/gta6") ? "gta" : codMode === "classe" ? "classe" : codMode === "team" ? "division" : codMode === "tournoi" ? "tournoi" : undefined;
+  const pathUnivers = pathname.startsWith("/gta6") ? "gta" : codMode === "classe" ? "classe" : codMode === "team" ? "division" : codMode === "tournoi" ? "tournoi" : undefined;
+  // Couleur imposée par la page (usePageUnivers), sinon celle de l'adresse.
+  const [pageUnivers, setPageUnivers] = useState(null);
+  const univers = pageUnivers ?? pathUnivers;
 
   // Service worker (appli installable, notifications push) et signalement des erreurs à l'équipe.
   useEffect(() => {
@@ -52,6 +56,7 @@ export default function App({ Component, pageProps }) {
   }, []);
 
   return (
+    <UniversContext.Provider value={setPageUnivers}>
     <div
       data-univers={univers}
       className={`${saira.variable} ${orbitron.variable} ${inter.variable} flex min-h-dvh flex-col overflow-x-hidden font-sans`}
@@ -115,5 +120,6 @@ export default function App({ Component, pageProps }) {
         </>
       )}
     </div>
+    </UniversContext.Provider>
   );
 }
