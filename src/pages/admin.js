@@ -84,7 +84,7 @@ export default function AdminPage() {
           {tab === "overview" ? <OverviewPanel onNavigate={go} role={user.role} /> : null}
           {tab === "disputes" ? <DisputesPanel /> : null}
           {tab === "arbitrages" ? <CasesPanel key="arbitrations" kind="arbitrations" /> : null}
-          {tab === "matchs" ? <MatchesPanel /> : null}
+          {tab === "matchs" ? <MatchesPanel role={user.role} userId={user.id} /> : null}
           {tab === "corrections" ? <CorrectionsPanel /> : null}
           {tab === "signalements" ? <CasesPanel key="reports" kind="reports" /> : null}
           {tab === "sanctions" ? <SanctionsPanel /> : null}

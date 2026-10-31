@@ -23,13 +23,41 @@ const team = (ids, names) => ids.map((id) => names[id] ?? "?").join(", ");
 /** Matchs encore ouverts, que l'équipe peut annuler depuis la liste. */
 const OPEN = ["ready_check", "in_progress", "awaiting_confirmation", "forfeit_claimed", "disputed"];
 const signed = (value) => (value > 0 ? `+${value}` : `${value}`);
+/** Délai de correction du staff et des arbitres (correctionPolicy.ts du serveur) ; l'admin corrige sans limite. */
+const STAFF_CORRECTION_HOURS = 48;
+
+/**
+ * Match terminé encore corrigeable par ce membre de l'équipe : admin toujours ; staff et arbitres pendant 48 h après la
+ * validation, et jamais un match qu'ils ont joué (mêmes règles que le serveur).
+ */
+function correctable(match, role, userId) {
+  if (match.status !== "completed") return false;
+  if (role === "admin") return true;
+  const players = [...(match.team_a ?? []), ...(match.team_b ?? []), ...(match.roster_a ?? []), ...(match.roster_b ?? [])];
+  if (userId && players.includes(userId)) return false;
+  return Boolean(match.completed_at) && Date.now() - new Date(match.completed_at).getTime() <= STAFF_CORRECTION_HOURS * 3_600_000;
+}
+
+/** Lien vers la page du match : « correction possible » seulement si elle l'est encore pour ce membre. */
+function OpenLink({ href, match, role, userId, openLabel }) {
+  const canCorrect = correctable(match, role, userId);
+  return (
+    <span className="inline-flex flex-col items-start gap-0.5 lg:items-end">
+      <Link href={href} className="inline-flex items-center gap-1.5 text-sm text-gold underline underline-offset-4">
+        {canCorrect ? "Ouvrir (correction possible)" : match.status === "completed" ? "Ouvrir le match" : openLabel}
+        <LuExternalLink aria-hidden className="h-3.5 w-3.5" />
+      </Link>
+      {match.status === "completed" && !canCorrect ? <span className="text-[11px] text-white/40">Correction fermée (plus de {STAFF_CORRECTION_HOURS} h ou match joué)</span> : null}
+    </span>
+  );
+}
 
 /**
  * « Matchs » : les derniers matchs, ou ceux d'un joueur (recherche par pseudo), pour retrouver
  * un match à corriger. Lien vers la page du match (bloc « Corriger le résultat »). Les matchs encore
  * ouverts (tous les modes) s'annulent directement depuis la liste, avec confirmation.
  */
-export function MatchesPanel() {
+export function MatchesPanel({ role, userId }) {
   const [query, setQuery] = useState("");
   const [matches, setMatches] = useState(null);
   const [error, setError] = useState(null);
@@ -67,7 +95,7 @@ export function MatchesPanel() {
       ) : (
         matches.map((match) => {
           const [label, tone] = STATUS[match.status] ?? [match.status, "neutral"];
-          if (match.kind === "division") return <DivisionMatchRow key={`d-${match.id}`} match={match} label={label} tone={tone} onCancelled={refresh} />;
+          if (match.kind === "division") return <DivisionMatchRow key={`d-${match.id}`} match={match} label={label} tone={tone} onCancelled={refresh} role={role} userId={userId} />;
           return (
             <TacticalCard key={match.id} cut={18} innerClassName="flex flex-col gap-3 p-5 lg:flex-row lg:items-center lg:justify-between">
               <div className="min-w-0 space-y-1.5">
@@ -93,10 +121,7 @@ export function MatchesPanel() {
               </div>
               <div className="flex shrink-0 flex-wrap items-center gap-4">
                 {OPEN.includes(match.status) ? <CancelMatch kind="classe" match={match} onDone={refresh} /> : null}
-                <Link href={`/cod/match/${match.id}`} className="inline-flex items-center gap-1.5 text-sm text-gold underline underline-offset-4">
-                  {match.status === "completed" ? "Ouvrir (correction possible)" : "Ouvrir le match"}
-                  <LuExternalLink aria-hidden className="h-3.5 w-3.5" />
-                </Link>
+                <OpenLink href={`/cod/match/${match.id}`} match={match} role={role} userId={userId} openLabel="Ouvrir le match" />
               </div>
             </TacticalCard>
           );
@@ -116,7 +141,7 @@ function ModeChip({ kind }) {
 }
 
 /** Ligne d'un match de Division : équipes (tag), score en maps, forfait, tournoi. */
-function DivisionMatchRow({ match, label, tone, onCancelled }) {
+function DivisionMatchRow({ match, label, tone, onCancelled, role, userId }) {
   return (
     <TacticalCard cut={18} innerClassName="flex flex-col gap-3 p-5 lg:flex-row lg:items-center lg:justify-between">
       <div className="min-w-0 space-y-1.5">
@@ -143,10 +168,7 @@ function DivisionMatchRow({ match, label, tone, onCancelled }) {
       </div>
       <div className="flex shrink-0 flex-wrap items-center gap-4">
         {OPEN.includes(match.status) ? <CancelMatch kind="division" match={match} onDone={onCancelled} /> : null}
-        <Link href={`/cod/equipes/match/${match.id}`} className="inline-flex items-center gap-1.5 text-sm text-gold underline underline-offset-4">
-          {match.status === "completed" ? "Ouvrir (correction possible)" : "Ouvrir la feuille de match"}
-          <LuExternalLink aria-hidden className="h-3.5 w-3.5" />
-        </Link>
+        <OpenLink href={`/cod/equipes/match/${match.id}`} match={match} role={role} userId={userId} openLabel="Ouvrir la feuille de match" />
       </div>
     </TacticalCard>
   );
