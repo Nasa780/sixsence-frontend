@@ -6,6 +6,14 @@
 export const RELEASES = [
   {
     date: "2026-10-31",
+    title: "Tournois revus",
+    items: [
+      { tag: "Tournoi", text: "Nouveau tableau d'un seul tenant : gagnants, perdants et grande finale reliés, parcours du champion en or, survol d'une équipe pour voir son chemin, zoom et plein écran.", href: "/cod/tournoi" },
+      { tag: "Tournoi", text: "Fiche d'une coupe : nouvel en-tête (statut en direct, récompenses, format en une ligne) et nouveaux onglets Matchs, Participants et Statistiques." },
+    ],
+  },
+  {
+    date: "2026-10-31",
     title: "Compte à rebours GTA 6",
     items: [
       { tag: "GTA 6", text: "Un compte à rebours jusqu'à la sortie de GTA 6, le 19 novembre, sur la page GTA 6 et sur l'accueil.", href: "/gta6" },

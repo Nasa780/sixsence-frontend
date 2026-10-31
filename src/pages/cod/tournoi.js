@@ -1,12 +1,13 @@
 import Head from "next/head";
 import Link from "next/link";
 import { useRouter } from "next/router";
-import { useCallback, useEffect, useState } from "react";
-import { LuCheck, LuDices, LuFlag, LuListOrdered, LuLoaderCircle, LuShield, LuSwords, LuTrophy, LuUserMinus, LuUserPlus, LuUsers } from "react-icons/lu";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { LuCheck, LuDices, LuLoaderCircle, LuShield, LuSwords, LuTrophy, LuUserMinus, LuUserPlus, LuUsers } from "react-icons/lu";
 import { MatchRulesCard } from "../../components/cod/MatchRules";
 import { SlantTab, TeamCrest } from "../../components/teams/TeamParts";
 import { AnubisCup, AnubisTeaser, HorusTeaser } from "../../components/tournament/AnubisCup";
-import { BracketBoard } from "../../components/tournament/BracketBoard";
+import { BracketBoard, bracketMatches } from "../../components/tournament/BracketBoard";
+import { TournamentMatches, TournamentParticipants, TournamentStats } from "../../components/tournament/TournamentViews";
 import { CupHero, CupList } from "../../components/tournament/CupCards";
 import { Avatar } from "../../components/ui/Avatar";
 import { Button, ButtonLink } from "../../components/ui/Button";
@@ -31,19 +32,11 @@ function countdown(target, now) {
   return d > 0 ? `${d} j ${h} h ${String(m).padStart(2, "0")}` : `${h}:${String(m).padStart(2, "0")}:${String(s).padStart(2, "0")}`;
 }
 
-/** Onglets de la fiche d'une coupe (Horus) ou du tournoi de saison. */
-const VIEWS = [
-  ["infos", "Infos"],
-  ["tableau", "Tableau"],
-  ["equipes", "Équipes"],
-  ["recompenses", "Récompenses"],
-  ["regles", "Règles"],
-];
 
 const PODIUM = [
-  ["winner", "Or", "🥇"],
-  ["finalist", "Argent", "🥈"],
-  ["third", "Bronze", "🥉"],
+  ["winner", "Or", "or"],
+  ["finalist", "Argent", "argent"],
+  ["third", "Bronze", "bronze"],
 ];
 
 /**
@@ -118,6 +111,38 @@ export default function TournamentPage() {
   const checkInOpen = scheduled && now >= new Date(tournament.checkInOpensAt).getTime() && now < new Date(closesAt).getTime();
   const drawnWaiting = tournament?.status === "running" && now < new Date(tournament.startsAt).getTime();
   const currentView = view ?? (scheduled ? "infos" : "tableau");
+  const tabsRef = useRef(null);
+  const matches = useMemo(() => (tournament ? bracketMatches(tournament) : []), [tournament]);
+  const viewer = tournament?.viewer;
+  const myTeamId = viewer?.teamId ?? null;
+  const myLive = matches.find((m) => m.entry.status === "playing" && m.entry.matchId && myTeamId && [m.entry.teamA?.id, m.entry.teamB?.id].includes(myTeamId));
+  // Ouvre un onglet et y fait défiler la page (ou jusqu'à un bloc précis, ex. l'inscription).
+  const openView = (id, anchor = null) => {
+    setView(id);
+    setTimeout(() => (anchor ? document.getElementById(anchor) : tabsRef.current)?.scrollIntoView({ behavior: "smooth", block: "start" }), 60);
+  };
+  // Bouton de l'encadré Récompenses : ce que le visiteur a de mieux à faire maintenant.
+  const heroAction = !tournament
+    ? null
+    : myLive
+      ? { label: "Ma feuille de match", icon: LuSwords, href: `/cod/equipes/match/${myLive.entry.matchId}` }
+      : checkInOpen && viewer?.canCheckIn && !viewer.checkedIn
+        ? { label: "Faire le check-in", icon: LuCheck, onClick: () => openView("infos", "inscription") }
+        : scheduled && viewer?.canRegister
+          ? { label: viewer.asReserve ? "S'inscrire comme remplaçant" : "S'inscrire", icon: LuUserPlus, onClick: () => openView("infos", "inscription") }
+          : scheduled
+            ? { label: "Voir les participants", icon: LuUsers, onClick: () => openView("participants") }
+            : tournament.status === "cancelled"
+              ? null
+              : { label: "Voir le tableau", icon: LuSwords, onClick: () => openView("tableau") };
+  const views = [
+    ["infos", "Infos", null],
+    ["tableau", "Tableau", null],
+    ["matchs", "Matchs", matches.length || null],
+    ["participants", "Participants", anubis ? (scheduled ? tournament?.registered : tournament?.squads?.length) ?? null : tournament ? `${tournament.teams?.length ?? 0}/${tournament.size}` : null],
+    ["stats", "Statistiques", null],
+    ["regles", "Règles", null],
+  ];
 
   return (
     <>
@@ -199,23 +224,12 @@ export default function TournamentPage() {
         {listView ? cups ? <CupList cups={cups} now={now} /> : !error ? <Loading /> : null : null}
         {!listView && tournament === undefined && !error ? <Loading /> : null}
         {!listView && tournament === null ? anubis ? <AnubisTeaser /> : horus ? <HorusTeaser /> : <TournamentTeaser /> : null}
-        {!listView && tournament ? <CupHero tournament={tournament} now={now} /> : null}
+        {!listView && tournament ? <CupHero tournament={tournament} now={now} action={heroAction} onRules={() => openView("regles")} /> : null}
 
-        {!listView && tournament?.kind === "anubis" ? (
-          <AnubisCup
-            tournament={tournament}
-            userId={userId}
-            now={now}
-            countdown={(target) => countdown(target, now)}
-            onDone={load}
-            bracket={<Bracket tournament={tournament} myTeamId={tournament.viewer?.teamId} />}
-          />
-        ) : null}
-
-        {!listView && tournament && tournament.kind !== "anubis" ? (
+        {!listView && tournament ? (
           <>
-            <div role="tablist" aria-label="Fiche du tournoi" className="flex gap-1 overflow-x-auto border-b border-white/10">
-              {VIEWS.filter(([id]) => id !== "recompenses" || tournament.kind !== "playin").map(([id, label]) => (
+            <div ref={tabsRef} role="tablist" aria-label="Fiche du tournoi" className="flex scroll-mt-24 gap-1 overflow-x-auto border-b border-white/10">
+              {views.map(([id, label, count]) => (
                 <button
                   key={id}
                   type="button"
@@ -223,16 +237,21 @@ export default function TournamentPage() {
                   aria-selected={currentView === id}
                   onClick={() => setView(id)}
                   className={cn(
-                    "-mb-px shrink-0 border-b-2 px-4 py-3 font-display text-sm font-black uppercase tracking-[0.14em] transition-colors",
+                    "-mb-px flex shrink-0 items-center gap-2 border-b-2 px-4 py-3 font-display text-sm font-black uppercase tracking-[0.14em] transition-colors",
                     currentView === id ? "border-gold text-gold" : "border-transparent text-white/50 hover:text-white",
                   )}
                 >
                   {label}
+                  {count !== null && count !== undefined ? <span className={cn("px-1.5 py-0.5 font-tech text-[9px] tracking-normal", currentView === id ? "bg-gold/20" : "bg-white/10")}>{count}</span> : null}
                 </button>
               ))}
             </div>
 
-            {currentView === "infos" ? (
+            {anubis && (currentView === "infos" || currentView === "participants") ? (
+              <AnubisCup tournament={tournament} userId={userId} now={now} countdown={(target) => countdown(target, now)} onDone={load} section={currentView} />
+            ) : null}
+
+            {!anubis && currentView === "infos" ? (
               <>
                 {tournament.status === "completed" && tournament.winner && tournament.kind === "horus" ? (
                   <ol className="grid gap-3 sm:grid-cols-3">
@@ -240,9 +259,7 @@ export default function TournamentPage() {
                       tournament[key] ? (
                         <li key={key}>
                           <TacticalCard highlight={key === "winner"} cut={20} innerClassName={cn("flex items-center gap-4 p-5", key === "winner" && "holo")}>
-                            <span aria-hidden className="text-3xl">
-                              {medal}
-                            </span>
+                            <img src={`/images/trophees/horus-${medal}.png`} alt="" className="h-14 w-14 shrink-0 object-contain" />
                             <TeamCrest team={tournament[key]} size={52} />
                             <div className="min-w-0">
                               <p className="font-tech text-[10px] uppercase tracking-[0.24em] text-gold">{label}</p>
@@ -274,20 +291,6 @@ export default function TournamentPage() {
                     </div>
                   </TacticalCard>
                 ) : null}
-                <div className="flex flex-wrap gap-2">
-                  {[
-                    tournament.minTeams ? [LuListOrdered, `Min. ${tournament.minTeams} équipes`] : null,
-                    [LuDices, tournament.kind === "horus" ? "Tirage aléatoire" : "Têtes de série au classement"],
-                    tournament.kind === "horus" ? [LuFlag, "Compte au circuit"] : null,
-                  ]
-                    .filter(Boolean)
-                    .map(([Icon, label]) => (
-                      <span key={label} className="inline-flex items-center gap-1.5 border border-gold/40 bg-gold/10 px-3 py-1.5 font-tech text-[11px] uppercase tracking-[0.14em] text-gold">
-                        <Icon aria-hidden className="h-3.5 w-3.5" />
-                        {label}
-                      </span>
-                    ))}
-                </div>
                 {scheduled ? (
                   <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
                     <StatTile label={checkInOpen ? "Tirage dans" : "Check-in dans"} value={countdown(checkInOpen ? closesAt : tournament.checkInOpensAt, now)} accent />
@@ -304,50 +307,30 @@ export default function TournamentPage() {
                 {tournament.status === "running" && !drawnWaiting ? <Notice>Le tournoi est en cours : le tableau se met à jour après chaque match.</Notice> : null}
                 {tournament.status === "cancelled" ? <Notice tone="error">{tournament.kind === "horus" ? "Cette coupe a été annulée (pas assez d'équipes présentes)." : "Ce tournoi a été annulé."}</Notice> : null}
 
-                {tournament.kind === "horus" && scheduled ? <RegistrationPanel tournament={tournament} userId={userId} onDone={load} /> : null}
-                {tournament.viewer?.registered !== false && tournament.viewer ? <CheckInPanel tournament={tournament} open={checkInOpen} onDone={load} /> : null}
+                <div id="inscription" className="scroll-mt-24 space-y-6">
+                  {tournament.kind === "horus" && scheduled ? <RegistrationPanel tournament={tournament} userId={userId} onDone={load} /> : null}
+                  {tournament.viewer?.registered !== false && tournament.viewer ? <CheckInPanel tournament={tournament} open={checkInOpen} onDone={load} /> : null}
+                </div>
+                {tournament.kind !== "playin" ? <Rewards tournament={tournament} /> : null}
                 <HowItWorks tournament={tournament} />
               </>
             ) : null}
 
             {currentView === "tableau" ? <Bracket tournament={tournament} myTeamId={tournament.viewer?.teamId} /> : null}
-            {currentView === "equipes" ? (
-                <section aria-labelledby="titre-qualifies">
-                  <h2 id="titre-qualifies" className="font-display text-3xl font-black uppercase leading-none sm:text-4xl">
-                    {tournament.kind === "horus" ? "Équipes inscrites" : "Qualifiés"}
-                  </h2>
-                  {tournament.teams.length === 0 ? <p className="mt-4 text-sm text-white/50">Aucune équipe inscrite pour l&apos;instant.</p> : null}
-                  <ul className="mt-4 grid gap-2 sm:grid-cols-2 lg:grid-cols-4">
-                    {tournament.teams.map((team) => (
-                      <li key={team.id}>
-                        <Link href={`/cod/equipes/${team.id}`} className={cn("flex items-center gap-3 border-l-2 bg-white/[0.03] px-3 py-2.5 hover:bg-white/[0.06]", team.forfeit ? "border-loss/60 opacity-60" : "border-white/10")}>
-                          {tournament.kind !== "horus" || !scheduled ? <span className="w-6 font-tech text-xs text-white/45">#{team.seed}</span> : null}
-                          <TeamCrest team={team} size={32} />
-                          <span className="min-w-0 flex-1 truncate font-display text-lg font-bold uppercase leading-none">{team.name}</span>
-                          {team.reserve ? <Chip>Remplaçante</Chip> : null}
-                          {team.forfeit ? (
-                            <Chip tone="loss">Forfait</Chip>
-                          ) : team.bench ? (
-                            <Chip tone="neutral">Non retenue</Chip>
-                          ) : scheduled ? (
-                            <Chip tone={team.checkedIn ? "win" : "neutral"}>{team.checkedIn ? "Prête" : "En attente"}</Chip>
-                          ) : null}
-                        </Link>
-                      </li>
-                    ))}
-                  </ul>
-                </section>
-            ) : null}
-            {currentView === "recompenses" ? <Rewards tournament={tournament} /> : null}
+            {currentView === "matchs" ? <TournamentMatches tournament={tournament} myTeamId={tournament.viewer?.teamId} /> : null}
+            {!anubis && currentView === "participants" ? <TournamentParticipants tournament={tournament} myTeamId={tournament.viewer?.teamId} /> : null}
+            {currentView === "stats" ? <TournamentStats tournament={tournament} myTeamId={tournament.viewer?.teamId} /> : null}
             {currentView === "regles" ? (
               <section aria-labelledby="titre-regles-tournoi" className="space-y-4">
                 <h2 id="titre-regles-tournoi" className="font-display text-3xl font-black uppercase leading-none sm:text-4xl">
                   Règles
                 </h2>
                 <p className="text-sm text-white/60">
-                  {tournament.kind === "horus"
-                    ? `Matchs en BO${tournament.bestOf}, finale en BO${tournament.finalBestOf}${tournament.bracket === "double" ? ", double élimination" : ", petite finale pour le bronze"}. Hôte tiré au sort, code de la partie dans le tchat de la feuille de match. Pas d'annulation : un match bloqué est tranché par l'équipe SixSence.`
-                    : `Matchs en BO${tournament.bestOf}, finale en BO${tournament.finalBestOf}. Effectifs figés à la qualification, check-in d'un joueur de l'équipe. Pas de points en jeu ; un match bloqué est tranché par l'équipe SixSence.`}{" "}
+                  {anubis
+                    ? `Inscription seul, check-in de chaque joueur. Équipes de ${tournament.teamSize} tirées au sort parmi les présents ; le mieux classé est capitaine et choisit les titulaires entre deux matchs. Matchs en BO${tournament.bestOf}, finale en BO${tournament.finalBestOf}${tournament.bracket === "double" ? ", double élimination" : ""}. Un match bloqué est tranché par l'équipe SixSence.`
+                    : tournament.kind === "horus"
+                      ? `Matchs en BO${tournament.bestOf}, finale en BO${tournament.finalBestOf}${tournament.bracket === "double" ? ", double élimination" : ", petite finale pour le bronze"}. Hôte tiré au sort, code de la partie dans le tchat de la feuille de match. Pas d'annulation : un match bloqué est tranché par l'équipe SixSence.`
+                      : `Matchs en BO${tournament.bestOf}, finale en BO${tournament.finalBestOf}. Effectifs figés à la qualification, check-in d'un joueur de l'équipe. Pas de points en jeu ; un match bloqué est tranché par l'équipe SixSence.`}{" "}
                   <Link href="/reglement" className="text-gold underline underline-offset-4">
                     Règlement complet
                   </Link>
@@ -512,6 +495,8 @@ function CheckInPanel({ tournament, open, onDone }) {
 
 /** Tableau du tournoi : gagnants, perdants, grande finale et champion d'un seul tenant (components/tournament/BracketBoard). */
 function Bracket({ tournament, myTeamId }) {
+  if (!tournament.rounds?.some((round) => round.entries.length))
+    return <p className="text-sm text-white/55">Le tableau sera dévoilé au tirage, 15 minutes avant le début, parmi les présents au check-in.</p>;
   return (
     <section aria-label="Tableau du tournoi">
       <BracketBoard tournament={tournament} myTeamId={myTeamId} />
