@@ -31,8 +31,12 @@ export function HexAvatar({ player, size = 44, gold = false, dim = false }) {
   );
 }
 
-/** Médaille flottante : halo, rayons qui tournent lentement, léger balancement. */
-export function FloatingMedal({ metal = "or", size = 260, src = null, alt = null }) {
+/**
+ * Médaille flottante : halo, rayons qui tournent lentement, léger balancement. `backing` : silhouette sombre de la
+ * médaille juste derrière elle (sur un fond coloré, ses parties semi-transparentes ne laissent plus passer la couleur).
+ */
+export function FloatingMedal({ metal = "or", size = 260, src = null, alt = null, backing = false }) {
+  const image = src ?? MEDAL_IMAGE[metal];
   return (
     <div className="relative mx-auto flex items-center justify-center" style={{ width: size, height: size }}>
       <div aria-hidden className="absolute inset-[8%] rounded-full bg-[radial-gradient(circle,rgba(231,192,90,0.35),transparent_68%)] blur-2xl" />
@@ -43,15 +47,18 @@ export function FloatingMedal({ metal = "or", size = 260, src = null, alt = null
         animate={{ rotate: 360 }}
         transition={{ duration: 90, repeat: Infinity, ease: "linear" }}
       />
-      <motion.img
-        src={src ?? MEDAL_IMAGE[metal]}
-        alt={alt ?? `Médaille Anubis (${metal})`}
-        width={420}
-        height={420}
-        className="relative h-[92%] w-auto object-contain drop-shadow-[0_24px_30px_rgba(0,0,0,0.75)]"
+      <motion.div
+        className="relative flex h-[92%] items-center justify-center"
         animate={{ y: [0, -8, 0], rotate: [-1.5, 1.5, -1.5] }}
         transition={{ duration: 6, repeat: Infinity, ease: "easeInOut" }}
-      />
+      >
+        {backing ? (
+          // eslint-disable-next-line @next/next/no-img-element
+          <img src={image} alt="" aria-hidden width={420} height={420} className="absolute h-full w-auto object-contain brightness-0 opacity-90" />
+        ) : null}
+        {/* eslint-disable-next-line @next/next/no-img-element */}
+        <img src={image} alt={alt ?? `Médaille Anubis (${metal})`}width={420} height={420} className="relative h-full w-auto object-contain drop-shadow-[0_24px_30px_rgba(0,0,0,0.75)]" />
+      </motion.div>
     </div>
   );
 }

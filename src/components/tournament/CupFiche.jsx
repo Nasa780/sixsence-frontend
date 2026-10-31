@@ -359,7 +359,7 @@ function FicheHero({ t, now, phase, cta }) {
           </div>
         </div>
         <div className="relative hidden lg:block">
-          <FloatingMedal size={300} src={artOf(t.kind).or} alt={t.kind === "anubis" ? "Médaille de la Coupe Anubis" : "Trophée du tournoi"} />
+          <FloatingMedal backing size={300} src={artOf(t.kind).or} alt={t.kind === "anubis" ? "Médaille de la Coupe Anubis" : "Trophée du tournoi"} />
         </div>
       </div>
     </header>
