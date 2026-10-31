@@ -158,8 +158,11 @@ export default function TeamMatchPage() {
 
 
         <p>
-          <Link href="/cod/equipes" className="group/l inline-flex items-center gap-3 font-display text-sm font-bold uppercase tracking-[0.14em] text-gold transition-colors hover:text-gold-light">
-            Classement des équipes
+          <Link
+            href={match.tournament ? `/cod/tournoi?id=${match.tournament.id}` : "/cod/equipes"}
+            className="group/l inline-flex items-center gap-3 font-display text-sm font-bold uppercase tracking-[0.14em] text-gold transition-colors hover:text-gold-light"
+          >
+            {match.tournament ? "Retour à la coupe" : "Classement des équipes"}
             <span aria-hidden className="h-px w-5 bg-gold/50 transition-all duration-300 group-hover/l:w-10 group-hover/l:bg-gold" />
           </Link>
         </p>
@@ -221,7 +224,7 @@ function MatchNotices({ match, name }) {
           {match.forfeit ? <span className="text-white/55"> par forfait</span> : null}
         </p>
       </div>
-      {match.forfeit ? <Notice>{name(match.winner === "A" ? "B" : "A")} {FORFEIT_REASONS[match.forfeitReason] ?? "a déclaré forfait"} : victoire par forfait, points et XP comme une victoire normale.</Notice> : null}
+      {match.forfeit ? <Notice>{name(match.winner === "A" ? "B" : "A")} {FORFEIT_REASONS[match.forfeitReason] ?? "a déclaré forfait"} : victoire par forfait{match.tournament ? "." : ", points et XP comme une victoire normale."}</Notice> : null}
       {corrected}
       </>
     );
@@ -602,7 +605,11 @@ function Roster({ match, side, userId }) {
           {team?.name}
           {match.hostSide === side ? <HostChip /> : null}
         </h2>
-        {match.winner === side ? <Chip tone="win">Victoire</Chip> : <span className="font-tech text-xs uppercase tracking-[0.2em] text-white/45">{match.pointsBefore[side]} pts</span>}
+        {match.winner === side ? (
+          <Chip tone="win">Victoire</Chip>
+        ) : team?.cup ? null : (
+          <span className="font-tech text-xs uppercase tracking-[0.2em] text-white/45">{match.pointsBefore[side]} pts</span>
+        )}
       </header>
       <ul className="mt-3 space-y-2">
         {ids.map((id) => {
@@ -1057,7 +1064,11 @@ function ForfeitBlock({ match, name, onDone }) {
         pending={pending}
         onConfirm={() => answer(ask === "accept")}
       >
-        {ask === "accept" ? "Ton équipe perd le match (points et XP d'une défaite)." : "Un arbitre SixSence tranchera : explique la situation dans le tchat."}
+        {ask === "accept"
+          ? match.tournament
+            ? "Ton équipe perd le match."
+            : "Ton équipe perd le match (points et XP d'une défaite)."
+          : "Un arbitre SixSence tranchera : explique la situation dans le tchat."}
       </ConfirmDialog>
     </TacticalCard>
   );

@@ -13,7 +13,10 @@ export const MATCH_STEPS = {
   disputed: "Arbitrage en cours",
 };
 
-/** Map, format et étape d'un match en cours (Classé : cod_matches ; Division : team_matches, map en cours). */
+/**
+ * Map, format, étape et couleur (univers) d'un match en cours (Classé : cod_matches ; Division : team_matches, map en
+ * cours ; match de coupe : rouge des tournois, nom de la coupe).
+ */
 export function useMatchSummary(kind, matchId) {
   const [summary, setSummary] = useState(null);
   useEffect(() => {
@@ -21,7 +24,7 @@ export function useMatchSummary(kind, matchId) {
     let alive = true;
     const query =
       kind === "division"
-        ? supabase.from("team_matches").select("id, status, maps, scores, best_of, roster_a").eq("id", matchId).maybeSingle()
+        ? supabase.from("team_matches").select("id, status, maps, scores, best_of, roster_a, tournament:tournaments(name)").eq("id", matchId).maybeSingle()
         : supabase.from("cod_matches").select("id, status, map, format").eq("id", matchId).maybeSingle();
     query.then(({ data }) => {
       if (!alive || !data) return;
@@ -29,9 +32,10 @@ export function useMatchSummary(kind, matchId) {
         const maps = data.maps ?? [];
         const current = maps[Math.min((data.scores ?? []).length, Math.max(0, maps.length - 1))];
         const size = (data.roster_a ?? []).length;
-        setSummary({ map: current?.map ?? null, format: `Division${size ? ` ${size}v${size}` : ""} · BO${data.best_of ?? 3}`, status: data.status });
+        const label = data.tournament?.name ?? `Division${size ? ` ${size}v${size}` : ""}`;
+        setSummary({ map: current?.map ?? null, format: `${label} · BO${data.best_of ?? 3}`, status: data.status, univers: data.tournament ? "tournoi" : "division" });
       } else {
-        setSummary({ map: data.map, format: `Classé${data.format ? ` ${data.format}` : ""}`, status: data.status });
+        setSummary({ map: data.map, format: `Classé${data.format ? ` ${data.format}` : ""}`, status: data.status, univers: "classe" });
       }
     });
     return () => {
@@ -53,7 +57,7 @@ export function LiveDot({ className = "" }) {
 }
 
 /**
- * Carte « Match en cours » (hub MW4, page de la file) aux couleurs du mode (vert Classé, cyan Division) : image de la
+ * Carte « Match en cours » (hub MW4, page de la file) aux couleurs du mode (vert Classé, cyan Division, rouge pour un match de coupe) : image de la
  * map en fond, format, map, étape du match et un seul bouton « Retour au match ». `text` : note facultative.
  */
 export function ActiveMatchBanner({ matchId, kind = "classe", text = null }) {
@@ -62,7 +66,7 @@ export function ActiveMatchBanner({ matchId, kind = "classe", text = null }) {
   const image = summary?.map ? mapImage(summary.map) : null;
 
   return (
-    <motion.div data-univers={kind === "division" ? "division" : "classe"} initial={{ opacity: 0, y: 14 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.45, ease: [0.22, 1, 0.36, 1] }}>
+    <motion.div data-univers={summary?.univers ?? (kind === "division" ? "division" : "classe")} initial={{ opacity: 0, y: 14 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.45, ease: [0.22, 1, 0.36, 1] }}>
       <Link href={matchHref(kind, matchId)} className="group relative block overflow-hidden border border-gold/50 bg-ink-800 clip-tactical [--cut:18px] transition-colors hover:border-gold">
         {image ? (
           <div aria-hidden className="absolute inset-0 bg-cover bg-center opacity-35 transition-transform duration-700 group-hover:scale-105" style={{ backgroundImage: `url('${image}')` }} />

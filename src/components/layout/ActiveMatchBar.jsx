@@ -21,7 +21,7 @@ export function ActiveMatchBar() {
 
   return (
     <>
-      <div data-univers={active.kind === "division" ? "division" : "classe"} className="fixed inset-x-0 top-16 z-40 border-y border-gold/40 bg-ink/95 backdrop-blur">
+      <div data-univers={summary?.univers ?? (active.kind === "division" ? "division" : "classe")} className="fixed inset-x-0 top-16 z-40 border-y border-gold/40 bg-ink/95 backdrop-blur">
         <Container>
           <Link href={matchHref(active.kind, active.id)} className="group flex h-10 items-center justify-between gap-3">
             <span className="flex min-w-0 items-center gap-2.5 text-sm">
