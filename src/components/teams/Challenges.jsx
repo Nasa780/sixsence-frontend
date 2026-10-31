@@ -42,11 +42,7 @@ function LaunchedChallenge({ challenge }) {
           <span className="shrink-0 font-display text-3xl font-black italic text-gold sm:text-4xl">VS</span>
           {side(challenge.to)}
         </div>
-        <p className="mx-auto mt-6 max-w-md text-center text-sm text-white/65">
-          Tout se passe sur la feuille de match : l&apos;équipe hôte y donne le code de la partie privée, le chat et les maps tirées au sort y sont, et
-          les scores s&apos;y déclarent à la fin.
-        </p>
-        <div className="mt-5 flex justify-center">
+        <div className="mt-6 flex justify-center">
           <ButtonLink href={`/cod/equipes/match/${challenge.matchId}`} size="lg">
             <LuSwords aria-hidden className="h-5 w-5" />
             Rejoindre la feuille de match
