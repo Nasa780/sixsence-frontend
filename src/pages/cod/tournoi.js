@@ -4,10 +4,10 @@ import { useRouter } from "next/router";
 import { useCallback, useEffect, useState } from "react";
 import { LuCheck, LuDices, LuFlag, LuListOrdered, LuLoaderCircle, LuShield, LuSwords, LuTrophy, LuUserMinus, LuUserPlus, LuUsers } from "react-icons/lu";
 import { RulesConduct, RulesEssentials, RulesLoadout } from "../../components/cod/MatchRules";
-import { SlantTab, TeamCrest } from "../../components/teams/TeamParts";
+import { TeamCrest } from "../../components/teams/TeamParts";
 import { AnubisCup, AnubisTeaser, HorusTeaser } from "../../components/tournament/AnubisCup";
 import { BracketBoard } from "../../components/tournament/BracketBoard";
-import { CupHero, CupList } from "../../components/tournament/CupCards";
+import { CupHero, CupList, CupTabs } from "../../components/tournament/CupCards";
 import { OrganisationMessages } from "../../components/tournament/TournamentViews";
 import { Avatar } from "../../components/ui/Avatar";
 import { Button, ButtonLink } from "../../components/ui/Button";
@@ -75,7 +75,9 @@ export default function TournamentPage() {
   const load = useCallback(async () => {
     if (!router.isReady) return;
     try {
-      if (listView) setCups(await api("/teams/cups"));
+      // Liste des coupes : page « Toutes les coupes » et prochaines dates des onglets.
+      const list = api("/teams/cups").then(setCups, () => null);
+      if (listView) await list;
       else if (cupId) setTournament(await api(`/teams/tournaments/${cupId}`));
       else setTournament((await api(`/teams/tournament?kind=${asked}`)).tournament);
       setError(null);
@@ -181,21 +183,7 @@ export default function TournamentPage() {
         }
       />
       <Container className="space-y-10 py-12">
-        <div role="tablist" aria-label="Tournois" className="flex gap-2 overflow-x-auto pb-1">
-          <SlantTab active={listView} onClick={() => tab(null)}>
-            Toutes les coupes
-          </SlantTab>
-          <SlantTab active={!listView && horus && !cupId} onClick={() => tab("horus")}>
-            Coupe Horus
-          </SlantTab>
-          <SlantTab active={!listView && anubis && !cupId} onClick={() => tab("anubis")}>
-            Coupe Anubis
-          </SlantTab>
-          <SlantTab active={!listView && kind === "saison" && !cupId} onClick={() => tab("saison")}>
-            Fin de saison
-          </SlantTab>
-          {playin ? <SlantTab active>Play-in</SlantTab> : null}
-        </div>
+        <CupTabs active={listView ? null : kind} cups={cups} onChange={tab} extra={playin ? "Play-in" : null} />
         {error ? <Notice tone="error">{error}</Notice> : null}
         {listView ? cups ? <CupList cups={cups} now={now} /> : !error ? <Loading /> : null : null}
         {!listView && tournament === undefined && !error ? <Loading /> : null}
