@@ -24,12 +24,12 @@ const SECTION_GAP = 64;
 const PAD = 24;
 const CHAMP_W = 210;
 const GOLD = "#e7c05a";
-// Palette du tableau : fond à l'or du site, panneaux noirs (rencontres, tours, champion) ; sur ce fond clair (BRIGHT),
-// liaisons, titres et parcours du champion passent en noir.
-const STAGE = "#d4af37";
-const PANEL = "#16140f";
-const EDGE = "rgba(0,0,0,0.4)";
-const BRIGHT = true;
+// Palette du tableau : noir du site, panneaux à peine plus clairs avec un liseré or ; l'or du site pour les accents
+// (titres, tours, survol, scores), même sur la page Tournoi rouge (data-univers="or"). BRIGHT : réglages d'un fond clair.
+const STAGE = "#0a0a0a";
+const PANEL = "#141414";
+const EDGE = "rgba(212,175,55,0.16)";
+const BRIGHT = false;
 const line = (alpha) => (BRIGHT ? `rgba(20,16,6,${Math.min(0.85, alpha * 2.2)})` : `rgba(255,255,255,${alpha})`);
 const LIVE = "#34d399";
 const LATE = "#e879f9";
@@ -263,13 +263,13 @@ export function BracketBoard({ tournament, myTeamId = null }) {
         className="clip-slant absolute flex items-center justify-between px-3 py-1 [--slant:8px]"
         style={{ left: PAD + i * COL, top: top - 22, width: CARD_W, background: PANEL }}
       >
-        <span className="truncate font-tech text-[9px] font-bold uppercase tracking-[0.2em] text-white/70">{shortName(r.name)}</span>
+        <span className="truncate font-tech text-[9px] font-bold uppercase tracking-[0.2em] text-gold/80">{shortName(r.name)}</span>
         <span className="font-tech text-[9px] font-bold tracking-[0.2em] text-gold">BO{r.bestOf}</span>
       </div>
     ));
 
   return (
-    <div ref={frame} className={cn("relative border border-white/10 bg-ink/80", full && "flex h-full flex-col bg-ink")}>
+    <div ref={frame} data-univers="or" className={cn("relative border border-gold/20 bg-ink/80", full && "flex h-full flex-col bg-ink")}>
       {/* Légende et commandes */}
       <div className="flex flex-wrap items-center justify-between gap-3 border-b border-white/10 px-4 py-3">
         <ul className="flex flex-wrap items-center gap-x-4 gap-y-1 font-tech text-[10px] uppercase tracking-[0.18em] text-white/55">
@@ -329,11 +329,11 @@ export function BracketBoard({ tournament, myTeamId = null }) {
       >
         <div style={{ width: width * scale, height: height * scale }}>
           <div className="relative origin-top-left" style={{ width, height, transform: `scale(${scale})` }}>
-            {sectionLabel(map.wbTop, map.double ? "Tableau des gagnants" : "Tableau", BRIGHT ? "#141006" : undefined)}
+            {sectionLabel(map.wbTop, map.double ? "Tableau des gagnants" : "Tableau", BRIGHT ? "#141006" : "var(--color-gold)")}
             {roundPills(map.wb, "W", map.wbTop)}
             {map.lbTop ? (
               <>
-                {sectionLabel(map.lbTop, "Tableau des perdants", BRIGHT ? "rgba(20,16,6,0.8)" : "rgba(255,255,255,0.8)")}
+                {sectionLabel(map.lbTop, "Tableau des perdants", BRIGHT ? "rgba(20,16,6,0.8)" : "color-mix(in srgb, var(--color-gold) 70%, white)")}
                 {roundPills(map.lb, "L", map.lbTop)}
               </>
             ) : null}
