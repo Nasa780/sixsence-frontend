@@ -5,13 +5,14 @@ import { Container } from "../components/ui/Container";
 import { PageHeader } from "../components/ui/Typography";
 import { RELEASES } from "../lib/releases";
 
-/** Type d'une nouveauté : couleur de l'étiquette (Classé vert, Division cyan, Tournoi rouge, or ailleurs). */
+/** Type d'une nouveauté : couleur de l'étiquette (Classé vert, Division cyan, Tournoi rouge, GTA 6 coucher de soleil, or ailleurs). */
 const TAGS = {
   Classé: "#34d399",
   Division: "#22d3ee",
   Tournoi: "#e5484d",
   Site: "#e7c05a",
   Discord: "#8b9cf7",
+  "GTA 6": "#ff6a3d",
 };
 
 const dateFr = (iso) => new Date(`${iso}T12:00:00Z`).toLocaleDateString("fr-FR", { weekday: "long", day: "numeric", month: "long", year: "numeric" });

@@ -2,6 +2,7 @@ import Head from "next/head";
 import { LuCalendarDays, LuTicket, LuUsers } from "react-icons/lu";
 import { Reveal } from "../../components/effects/Reveal";
 import { EventCard } from "../../components/gta/EventCard";
+import { Gta6Countdown } from "../../components/gta/Gta6Countdown";
 import { ButtonLink } from "../../components/ui/Button";
 import { Container } from "../../components/ui/Container";
 import { EmptyState, Loading } from "../../components/ui/Feedback";
@@ -42,6 +43,10 @@ export default function GtaHubPage() {
       />
 
       <Container className="space-y-20 py-12">
+        <Reveal>
+          <Gta6Countdown />
+        </Reveal>
+
         <div className="grid grid-cols-1 gap-8 md:grid-cols-3">
           {PILLARS.map((pillar, index) => (
             <Reveal key={pillar.title} delay={index * 0.08}>

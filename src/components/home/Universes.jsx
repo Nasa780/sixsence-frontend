@@ -2,6 +2,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { LuArrowRight, LuCheck } from "react-icons/lu";
 import { Reveal } from "../effects/Reveal";
+import { Gta6Countdown } from "../gta/Gta6Countdown";
 import { Container } from "../ui/Container";
 import { TacticalCard } from "../ui/TacticalCard";
 import { SectionHeading } from "../ui/Typography";
@@ -41,6 +42,7 @@ const UNIVERSES = [
     text: "Sessions organisées, rassemblements et tournois : consulte le planning et réserve ta place.",
     points: ["Planning des sessions à venir", "Inscription en un clic", "Places limitées, suivi des inscrits"],
     cta: "Voir le planning",
+    countdown: true,
   },
 ];
 
@@ -104,6 +106,12 @@ export function Universes() {
                         </li>
                       ))}
                     </ul>
+
+                    {universe.countdown ? (
+                      <div className="mt-7 border-t border-white/10 pt-5">
+                        <Gta6Countdown compact />
+                      </div>
+                    ) : null}
 
                     <p className="mt-9 inline-flex items-center gap-2 font-display text-lg font-bold uppercase tracking-[0.14em] text-gold">
                       {universe.cta}
