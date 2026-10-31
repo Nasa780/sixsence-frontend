@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { LuCalendarDays, LuDices, LuListOrdered, LuSwords, LuTrophy, LuUsers } from "react-icons/lu";
+import { LuCalendarDays, LuCrown, LuDices, LuLayoutGrid, LuListOrdered, LuSwords, LuTrophy, LuUser, LuUsers } from "react-icons/lu";
 import { cn } from "../../lib/cn";
 import { TeamCrest } from "../teams/TeamParts";
 
@@ -152,75 +152,86 @@ export function CupList({ cups, now }) {
   );
 }
 
-/** En-tête de la fiche d'une coupe : bannière, affiche, statut, nom, date, infos et récompenses. */
-export function CupHero({ tournament, now }) {
-  const cup = {
-    ...tournament,
-    registered: tournament.kind === "anubis" ? tournament.registered ?? 0 : tournament.teams?.length ?? 0,
-    capacity: tournament.kind === "anubis" ? tournament.capacity ?? null : tournament.size,
-    reserveSlots: tournament.reserveSlots ?? 0,
-  };
-  const status = cupStatus(cup, now);
-  const rewards = rewardLines(cup);
-  const xp = tournament.rewards?.xp;
-  const fill = cup.capacity ? Math.min(100, Math.round((cup.registered / cup.capacity) * 100)) : null;
+const TAB_ITEMS = [
+  { id: null, label: "Toutes les coupes", short: "Toutes", sub: "Calendrier et résultats", icon: LuLayoutGrid },
+  { id: "horus", label: "Coupe Horus", short: "Horus", sub: "En équipe · trophées", icon: LuUsers, art: "/images/trophees/horus-or.png" },
+  { id: "anubis", label: "Coupe Anubis", short: "Anubis", sub: "En solo · médailles", icon: LuUser, art: "/images/trophees/anubis-or.png" },
+  { id: "saison", label: "Fin de saison", short: "Saison", sub: "Les meilleures du circuit", icon: LuCrown },
+];
 
+/** Prochaine échéance d'un onglet d'après la liste des coupes : en cours, date de la prochaine, ou nombre à venir. */
+function tabNext(id, cups) {
+  if (!cups) return null;
+  const upcoming = cups.upcoming ?? [];
+  if (!id) return upcoming.length ? `${upcoming.length} à venir` : "Rien de prévu";
+  const next = upcoming.filter((cup) => cup.kind === id).sort((a, b) => new Date(a.startsAt) - new Date(b.startsAt))[0];
+  if (!next) return "Pas encore prévue";
+  if (next.status === "running") return "En cours";
+  const date = new Date(next.startsAt);
+  return `${date.toLocaleDateString("fr-FR", { weekday: "short", day: "numeric", month: "short" })} · ${date.getHours()} h${date.getMinutes() ? String(date.getMinutes()).padStart(2, "0") : ""}`;
+}
+
+/**
+ * Onglets des tournois : cartes de compétition sur ordinateur (visuel, type de coupe, prochaine date), barre HUD
+ * soulignée sur téléphone. `active` : null (toutes), horus, anubis ou saison ; `extra` : onglet ponctuel (play-in).
+ */
+export function CupTabs({ active, cups, onChange, extra = null }) {
   return (
-    <section className="relative overflow-hidden border border-white/10">
-      <div aria-hidden className="absolute inset-0 scale-110 bg-cover bg-center opacity-25 blur-2xl" style={{ backgroundImage: `url('${tournament.posterUrl}')` }} />
-      <div aria-hidden className="absolute inset-0 bg-linear-to-r from-ink via-ink/85 to-ink/60" />
-      <div className="relative grid gap-6 p-5 sm:p-7 lg:grid-cols-[auto_1fr_17rem] lg:items-center">
-        <Poster cup={tournament} className="w-32 border border-white/15 shadow-2xl shadow-black/60 sm:w-44" />
-        <div className="min-w-0">
-          <p className={cn("flex items-center gap-2 font-tech text-[11px] uppercase tracking-[0.22em]", status.tone)}>
-            <span aria-hidden className={cn("h-2 w-2 rounded-full", status.dot)} />
-            {status.label}
-            <span className="text-white/35">· {KIND_LABEL[tournament.kind] ?? "Coupe"}</span>
-          </p>
-          <h2 className="mt-2 font-display text-4xl font-black uppercase leading-[0.95] sm:text-5xl">{tournament.name}</h2>
-          <p className="mt-3 flex items-center gap-2 text-sm text-white/70">
-            <LuCalendarDays aria-hidden className="h-4 w-4 text-white/45" />
-            {new Date(tournament.startsAt).toLocaleString("fr-FR", { weekday: "long", day: "numeric", month: "long", hour: "2-digit", minute: "2-digit" })}
-          </p>
-          <div className="mt-4 flex flex-wrap gap-1.5">
-            {formatChips(cup).map(([Icon, label]) => (
-              <span key={label} className="inline-flex items-center gap-1 border border-white/15 bg-ink/60 px-2.5 py-1 font-tech text-[10px] uppercase tracking-[0.12em] text-white/70">
-                <Icon aria-hidden className="h-3 w-3" />
-                {label}
-              </span>
-            ))}
-          </div>
-          {fill !== null && tournament.status === "scheduled" ? (
-            <div className="mt-4 flex max-w-sm items-center gap-3 text-xs text-white/55">
-              <span className="font-semibold text-white/80">
-                {placesTaken(cup)}/{cup.capacity} {tournament.kind === "anubis" ? "joueurs" : "places"}
-                {reservesTaken(cup) ? ` + ${reservesTaken(cup)} remplaçant${reservesTaken(cup) > 1 ? "s" : ""}` : ""}
-              </span>
-              <span className="h-1.5 flex-1 bg-white/10">
-                <span className="block h-full bg-gold" style={{ width: `${fill}%` }} />
-              </span>
-              {tournament.minTeams ? <span>min. {tournament.minTeams}</span> : null}
-            </div>
-          ) : null}
-        </div>
-        <div className="border border-white/10 bg-ink/70 p-4">
-          <p className="font-tech text-[10px] uppercase tracking-[0.24em] text-white/45">Récompenses</p>
-          <ul className="mt-3 space-y-2">
-            {rewards.map((line, index) =>
-              line ? (
-                <li key={`${line}-${index}`} className="flex items-center justify-between gap-2 text-sm">
-                  <span className="flex items-center gap-2">
-                    <LuTrophy aria-hidden className="h-4 w-4" style={{ color: MEDALS[index] }} />
-                    <span className="text-white/45">{index + 1}{index ? "e" : "er"}</span>
-                    <span className="font-display font-black">{line}</span>
+    <div role="tablist" aria-label="Tournois">
+      <div className="hidden grid-cols-4 gap-3 md:grid">
+        {TAB_ITEMS.map((item) => {
+          const on = active === item.id;
+          const Icon = item.icon;
+          const next = tabNext(item.id, cups);
+          return (
+            <button
+              key={item.label}
+              type="button"
+              role="tab"
+              aria-selected={on}
+              onClick={() => onChange(item.id)}
+              className={cn(
+                "clip-tactical group relative flex h-24 items-center gap-3 overflow-hidden px-4 text-left transition [--cut:14px]",
+                on ? "bg-linear-to-br from-gold/30 via-gold/10 to-black" : "bg-white/[0.04] hover:bg-white/[0.07]",
+              )}
+            >
+              {on ? <span className="absolute inset-x-0 top-0 h-0.5 bg-gold shadow-[0_0_12px_var(--color-gold)]" /> : null}
+              {item.art ? (
+                // eslint-disable-next-line @next/next/no-img-element
+                <img src={item.art} alt="" className={cn("h-16 w-16 shrink-0 object-contain transition", on ? "drop-shadow-[0_0_14px_rgba(229,72,77,0.5)]" : "opacity-60 grayscale-[40%] group-hover:opacity-90")} />
+              ) : (
+                <span className={cn("grid h-16 w-16 shrink-0 place-items-center", on ? "text-gold-light" : "text-white/35")}>
+                  <Icon aria-hidden className="h-8 w-8" />
+                </span>
+              )}
+              <span className="min-w-0">
+                <span className={cn("block truncate font-display text-lg font-black uppercase leading-none", on ? "text-white" : "text-white/70")}>{item.label}</span>
+                <span className="mt-1 block truncate text-[11px] text-white/45">{item.sub}</span>
+                {next ? (
+                  <span className={cn("mt-1.5 inline-flex items-center gap-1 font-tech text-[9px] uppercase tracking-[0.2em]", on ? "text-gold-light" : "text-white/35")}>
+                    <LuCalendarDays aria-hidden className="h-3 w-3" />
+                    {next}
                   </span>
-                </li>
-              ) : null,
-            )}
-          </ul>
-          {xp ? <p className="mt-3 text-xs text-white/45">+{xp.win} XP par match gagné, +{xp.loss} XP par match perdu.</p> : null}
-        </div>
+                ) : null}
+              </span>
+            </button>
+          );
+        })}
       </div>
-    </section>
+      <div className="flex overflow-x-auto border-b border-white/10 md:hidden">
+        {TAB_ITEMS.map((item) => {
+          const on = active === item.id;
+          const Icon = item.icon;
+          return (
+            <button key={item.label} type="button" role="tab" aria-selected={on} onClick={() => onChange(item.id)} className="relative flex flex-1 shrink-0 items-center justify-center gap-1.5 px-3 py-3.5">
+              <Icon aria-hidden className={cn("h-4 w-4", on ? "text-gold-light" : "text-white/35")} />
+              <span className={cn("font-display text-sm font-bold uppercase tracking-[0.12em]", on ? "text-white" : "text-white/50")}>{item.short}</span>
+              {on ? <span className="absolute inset-x-0 -bottom-px h-0.5 bg-gold shadow-[0_0_12px_var(--color-gold)]" /> : null}
+            </button>
+          );
+        })}
+      </div>
+      {extra ? <p className="mt-3 font-tech text-[10px] uppercase tracking-[0.24em] text-gold">{extra}</p> : null}
+    </div>
   );
 }
