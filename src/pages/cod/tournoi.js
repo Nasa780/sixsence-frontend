@@ -7,7 +7,7 @@ import { MatchRulesCard } from "../../components/cod/MatchRules";
 import { SlantTab, TeamCrest } from "../../components/teams/TeamParts";
 import { AnubisCup, AnubisTeaser, HorusTeaser } from "../../components/tournament/AnubisCup";
 import { BracketBoard, bracketMatches } from "../../components/tournament/BracketBoard";
-import { TournamentMatches, TournamentParticipants, TournamentStats } from "../../components/tournament/TournamentViews";
+import { OrganisationMessages, TournamentMatches, TournamentParticipants, TournamentStats } from "../../components/tournament/TournamentViews";
 import { CupHero, CupList } from "../../components/tournament/CupCards";
 import { Avatar } from "../../components/ui/Avatar";
 import { Button, ButtonLink } from "../../components/ui/Button";
@@ -16,6 +16,7 @@ import { Chip, Loading, Notice, StatTile } from "../../components/ui/Feedback";
 import { TacticalCard } from "../../components/ui/TacticalCard";
 import { Eyebrow, PageHeader } from "../../components/ui/Typography";
 import useSession from "../../hooks/useSession";
+import useUser from "../../hooks/useUser";
 import { api } from "../../lib/api";
 import { supabase } from "../../lib/supabase";
 import { cn } from "../../lib/cn";
@@ -53,6 +54,7 @@ export default function TournamentPage() {
   const asked = router.query.coupe === "saison" || router.query.coupe === "anubis" || router.query.coupe === "playin" ? router.query.coupe : "horus";
   const tab = (coupe) => router.replace({ pathname: router.pathname, query: coupe ? { coupe } : {} }, undefined, { shallow: true });
   const { userId } = useSession();
+  const user = useUser();
   const [tournament, setTournament] = useState(undefined);
   const [cups, setCups] = useState(null);
   const [error, setError] = useState(null);
@@ -225,6 +227,7 @@ export default function TournamentPage() {
         {!listView && tournament === undefined && !error ? <Loading /> : null}
         {!listView && tournament === null ? anubis ? <AnubisTeaser /> : horus ? <HorusTeaser /> : <TournamentTeaser /> : null}
         {!listView && tournament ? <CupHero tournament={tournament} now={now} action={heroAction} onRules={() => openView("regles")} /> : null}
+        {!listView && tournament ? <OrganisationMessages key={tournament.id} tournament={tournament} isAdmin={user?.role === "admin"} api={api} /> : null}
 
         {!listView && tournament ? (
           <>

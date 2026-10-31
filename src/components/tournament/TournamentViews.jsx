@@ -1,7 +1,7 @@
 import { motion, useReducedMotion } from "framer-motion";
 import Link from "next/link";
-import { useMemo, useState } from "react";
-import { LuArrowRight, LuCrown, LuMedal, LuSwords, LuTrophy } from "react-icons/lu";
+import { useEffect, useMemo, useState } from "react";
+import { LuArrowRight, LuCrown, LuMedal, LuMegaphone, LuSwords, LuTrash2, LuTrophy } from "react-icons/lu";
 import { cn } from "../../lib/cn";
 import { teamResults, tournamentStats } from "../../lib/tournamentResults";
 import { TeamCrest } from "../teams/TeamParts";
@@ -18,8 +18,10 @@ const MEDALS = { 1: "#e7c05a", 2: "#c0c7d0", 3: "#c97b4b" };
 
 /** Statut d'une rencontre : libellé et ton. */
 function statusOf(entry) {
-  if (entry.status === "playing") return ["En cours", "live"];
   if (entry.status === "blocked") return ["Décision", "gold"];
+  if (entry.dispute) return ["Litige", "gold"];
+  if (entry.late) return ["Retard", "late"];
+  if (entry.status === "playing") return ["En cours", "live"];
   if (entry.status === "done") return [entry.teamA && entry.teamB ? "Terminé" : "Exempt", "neutral"];
   return ["À venir", "neutral"];
 }
@@ -37,6 +39,7 @@ export function TournamentMatches({ tournament, myTeamId }) {
   const filters = [
     ["tous", "Tous", () => true],
     ["live", "En cours", (m) => m.entry.status === "playing"],
+    ["litige", "Retard · litige", (m) => m.entry.late || m.entry.dispute || m.entry.status === "blocked"],
     ["avenir", "À venir", (m) => m.entry.status === "pending"],
     ["finis", "Terminés", (m) => m.entry.status === "done" || m.entry.status === "blocked"],
     ...(myTeamId ? [["mes", "Mes matchs", mine]] : []),
@@ -120,6 +123,8 @@ export function TournamentMatches({ tournament, myTeamId }) {
                     <span className="h-1.5 w-1.5 animate-pulse rounded-full" style={{ background: LIVE }} />
                     {label}
                   </span>
+                ) : tone === "late" ? (
+                  <span className="font-tech text-[10px] font-bold uppercase tracking-[0.18em] text-fuchsia-400">{label}</span>
                 ) : (
                   <Chip tone={tone === "gold" ? "gold" : "neutral"}>{label}</Chip>
                 )}
@@ -314,6 +319,91 @@ export function TournamentStats({ tournament, myTeamId }) {
         <LuSwords aria-hidden className="h-3.5 w-3.5" />
         Les forfaits et exemptions ne comptent pas dans les matchs joués.
       </p>
+    </section>
+  );
+}
+
+// --- Messages de l'organisation -------------------------------------------------------------------
+
+const since = (iso) => {
+  const minutes = Math.max(0, Math.round((Date.now() - new Date(iso).getTime()) / 60000));
+  if (minutes < 60) return minutes <= 1 ? "à l'instant" : `il y a ${minutes} min`;
+  const hours = Math.round(minutes / 60);
+  if (hours < 24) return `il y a ${hours} h`;
+  return new Date(iso).toLocaleString("fr-FR", { day: "numeric", month: "short", hour: "2-digit", minute: "2-digit" });
+};
+
+/**
+ * Messages de l'équipe SixSence sur la fiche d'une coupe (comme Sked) ; l'admin en publie et en retire depuis la fiche
+ * (POST / DELETE /admin/tournaments/:id/messages).
+ */
+export function OrganisationMessages({ tournament, isAdmin, api }) {
+  const [messages, setMessages] = useState(tournament.messages ?? []);
+  // Fiche relue (toutes les minutes, temps réel) : messages à jour.
+  useEffect(() => setMessages(tournament.messages ?? []), [tournament.messages]);
+  const [text, setText] = useState("");
+  const [pending, setPending] = useState(false);
+  const [error, setError] = useState(null);
+  const run = async (action) => {
+    setPending(true);
+    setError(null);
+    try {
+      setMessages((await action()).messages);
+      setText("");
+    } catch (caught) {
+      setError(caught.message);
+    } finally {
+      setPending(false);
+    }
+  };
+  if (!messages.length && !isAdmin) return null;
+  return (
+    <section aria-labelledby="titre-messages-orga" className="clip-tactical bg-white/[0.03] p-5 [--cut:14px]" style={{ boxShadow: "inset 0 0 0 1px color-mix(in srgb, var(--color-gold) 35%, transparent)" }}>
+      <h2 id="titre-messages-orga" className="flex items-center gap-2 font-display text-lg font-black uppercase tracking-wide">
+        <LuMegaphone aria-hidden className="h-5 w-5 text-gold" />
+        Messages de l&apos;organisation
+      </h2>
+      {messages.length === 0 ? <p className="mt-2 text-sm text-white/45">Aucun message pour l&apos;instant.</p> : null}
+      <ul className="mt-3 space-y-4">
+        {messages.map((message) => (
+          <li key={message.id} className="border-l-2 border-gold/50 pl-3">
+            <p className="flex items-center gap-2 font-tech text-[10px] uppercase tracking-[0.16em] text-white/45">
+              {message.author} · {since(message.createdAt)}
+              {isAdmin ? (
+                <button type="button" disabled={pending} onClick={() => run(() => api(`/admin/tournaments/${tournament.id}/messages/${message.id}`, { method: "DELETE" }))} className="ml-auto text-white/40 hover:text-loss" aria-label="Retirer le message">
+                  <LuTrash2 className="h-3.5 w-3.5" />
+                </button>
+              ) : null}
+            </p>
+            <p className="mt-1.5 whitespace-pre-line text-sm leading-relaxed text-white/85">{message.body}</p>
+          </li>
+        ))}
+      </ul>
+      {isAdmin ? (
+        <form
+          className="mt-4 space-y-2 border-t border-white/10 pt-4"
+          onSubmit={(event) => {
+            event.preventDefault();
+            if (text.trim()) run(() => api(`/admin/tournaments/${tournament.id}/messages`, { method: "POST", body: { body: text.trim() } }));
+          }}
+        >
+          <textarea
+            value={text}
+            onChange={(event) => setText(event.target.value)}
+            maxLength={1000}
+            rows={3}
+            placeholder="Message aux participants (affiché sur la fiche de la coupe)…"
+            className="w-full border border-white/15 bg-ink-700 px-3 py-2 text-sm text-white placeholder:text-white/30"
+          />
+          <div className="flex items-center justify-between gap-3">
+            <span className="font-tech text-[10px] text-white/35">{text.length} / 1000 · visible de tous</span>
+            <button type="submit" disabled={pending || !text.trim()} className="clip-slant bg-gold px-4 py-2 font-display text-xs font-black uppercase tracking-[0.14em] text-ink disabled:opacity-40 [--slant:10px]">
+              Publier
+            </button>
+          </div>
+          {error ? <p className="text-sm text-loss">{error}</p> : null}
+        </form>
+      ) : null}
     </section>
   );
 }

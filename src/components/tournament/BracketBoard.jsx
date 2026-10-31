@@ -25,6 +25,8 @@ const PAD = 24;
 const CHAMP_W = 210;
 const GOLD = "#e7c05a";
 const LIVE = "#34d399";
+const LATE = "#e879f9";
+const DISPUTE = "#fbbf24";
 
 const keyOf = (bracket, round, slot) => `${bracket}${round}-${slot}`;
 
@@ -272,8 +274,12 @@ export function BracketBoard({ tournament, myTeamId = null }) {
             En cours
           </li>
           <li className="flex items-center gap-1.5">
-            <span className="h-2 w-2 rounded-full bg-amber-400" />
-            Décision de l&apos;équipe
+            <span className="h-2 w-2 rounded-full" style={{ background: LATE }} />
+            Retard
+          </li>
+          <li className="flex items-center gap-1.5">
+            <span className="h-2 w-2 rounded-full" style={{ background: DISPUTE }} />
+            Litige · arbitrage
           </li>
           <li className="flex items-center gap-1.5">
             <span className="h-0.5 w-5 rounded" style={{ background: GOLD, boxShadow: `0 0 6px ${GOLD}` }} />
@@ -400,7 +406,7 @@ export function BracketBoard({ tournament, myTeamId = null }) {
                 className="absolute"
                 style={{ left: node.x, top: node.y, width: CARD_W }}
                 initial={reduce ? false : { opacity: 0, x: -14 }}
-                animate={{ opacity: focus && !involved(node.entry, focus) ? 0.4 : 1, x: 0 }}
+                animate={{ opacity: focus && !involved(node.entry, focus) ? 0.55 : 1, x: 0 }}
                 transition={{ duration: reduce ? 0 : 0.35, delay: colDelay(node) }}
               >
                 {node.bracket === "T" ? (
@@ -408,7 +414,7 @@ export function BracketBoard({ tournament, myTeamId = null }) {
                     {tournament.thirdPlace?.name ?? "Petite finale"} · BO{tournament.thirdPlace?.bestOf}
                   </p>
                 ) : null}
-                <MatchCard node={node} nodes={nodes} myTeamId={myTeamId} championId={championTeam?.id} onHover={setHover} grand={node.bracket === "G" || (!map.double && node.key === map.last)} />
+                <MatchCard node={node} nodes={nodes} myTeamId={myTeamId} championId={championTeam?.id} focus={focus} onHover={setHover} grand={node.bracket === "G" || (!map.double && node.key === map.last)} />
               </motion.div>
             ))}
 
@@ -445,26 +451,32 @@ function placeholder(node, nodes, side) {
   return `${kind === "winner" ? "Vainqueur" : "Perdant"} #${from.number ?? "?"}`;
 }
 
-function MatchCard({ node, nodes, myTeamId, championId, onHover, grand }) {
+function MatchCard({ node, nodes, myTeamId, championId, focus, onHover, grand }) {
   const { entry } = node;
   const live = entry.status === "playing";
   const blocked = entry.status === "blocked";
+  // Litige : contestation, forfait déclaré ou rencontre bloquée (décision de l'équipe) ; retard : hôte sans code.
+  const dispute = blocked || entry.dispute;
+  const late = !dispute && entry.late;
   const done = entry.status === "done";
   const bye = done && (!entry.teamA || !entry.teamB);
+  const hovered = Boolean(focus && [entry.teamA?.id, entry.teamB?.id].includes(focus));
   const row = (team, index) => {
     const won = done && team && entry.winner === team.id;
     const lost = done && team && !won;
     const mine = team && team.id === myTeamId;
+    // Équipe survolée : sa ligne ressort (fond et nom de la couleur du mode) dans chacun de ses matchs.
+    const picked = team && focus === team.id;
     return (
       <div
-        className={cn("relative flex items-center gap-2 pl-3 pr-2.5 transition-colors", index === 0 && "border-b border-white/[0.07]", mine && "bg-gold/[0.12]")}
+        className={cn("relative flex items-center gap-2 pl-3 pr-2.5 transition-colors", index === 0 && "border-b border-white/[0.07]", mine && "bg-gold/[0.12]", picked && "bg-gold/20")}
         style={{ height: ROW_H }}
         onMouseEnter={() => team && onHover(team.id)}
         onMouseLeave={() => onHover(null)}
       >
-        {mine ? <span className="absolute inset-y-0 left-0 w-0.5 bg-gold" /> : null}
+        {mine || picked ? <span className="absolute inset-y-0 left-0 w-0.5 bg-gold" /> : null}
         {team ? <TeamCrest team={team} size={20} /> : <span className="h-5 w-5 shrink-0 border border-dashed border-white/15" />}
-        <span className={cn("min-w-0 flex-1 truncate text-[13px] font-semibold leading-none", team ? (lost ? "text-white/40" : "text-white") : "text-white/30 italic", won && "text-white")}>
+        <span className={cn("min-w-0 flex-1 truncate text-[13px] font-semibold leading-none", team ? (lost ? "text-white/40" : "text-white") : "text-white/30 italic", won && "text-white", picked && "text-gold")}>
           {team ? team.name : placeholder(node, nodes, index)}
         </span>
         {team && team.id === championId && grand ? <LuCrown aria-label="Champion" className="h-3.5 w-3.5 shrink-0" style={{ color: GOLD }} /> : null}
@@ -474,13 +486,17 @@ function MatchCard({ node, nodes, myTeamId, championId, onHover, grand }) {
       </div>
     );
   };
-  const border = live ? LIVE : blocked ? "#fbbf24" : grand ? `${GOLD}aa` : null;
+  const border = dispute ? DISPUTE : late ? LATE : live ? LIVE : grand ? `${GOLD}aa` : null;
   const body = (
     <div
       className={cn("clip-tactical relative bg-ink-800 [--cut:10px]", entry.matchId && "transition-transform duration-200 hover:-translate-y-0.5")}
       style={{
         height: CARD_H,
-        boxShadow: border ? `inset 0 0 0 1px ${border}, 0 0 18px ${border}33` : "inset 0 0 0 1px rgba(255,255,255,0.09)",
+        boxShadow: hovered
+          ? "inset 0 0 0 1.5px var(--color-gold), 0 0 22px color-mix(in srgb, var(--color-gold) 45%, transparent)"
+          : border
+            ? `inset 0 0 0 1px ${border}, 0 0 18px ${border}33`
+            : "inset 0 0 0 1px rgba(255,255,255,0.09)",
       }}
     >
       {live ? <span className="bracket-sheen pointer-events-none absolute inset-0" aria-hidden /> : null}
@@ -498,14 +514,14 @@ function MatchCard({ node, nodes, myTeamId, championId, onHover, grand }) {
           {node.number}
         </span>
       ) : null}
-      {live ? (
-        <span className="absolute -top-2 right-2 z-10 flex items-center gap-1 bg-ink px-1.5 font-tech text-[8px] font-bold uppercase tracking-[0.2em]" style={{ color: LIVE }}>
-          <span className="h-1.5 w-1.5 animate-pulse rounded-full" style={{ background: LIVE }} />
-          Live
+      {live || late || dispute || entry.decided ? (
+        <span
+          className="absolute -top-2 right-2 z-10 flex items-center gap-1 bg-ink px-1.5 font-tech text-[8px] font-bold uppercase tracking-[0.2em]"
+          style={{ color: dispute || entry.decided ? DISPUTE : late ? LATE : LIVE }}
+        >
+          {live && !late && !dispute ? <span className="h-1.5 w-1.5 animate-pulse rounded-full" style={{ background: LIVE }} /> : null}
+          {blocked || entry.decided ? "Décision" : dispute ? "Litige" : late ? "Retard" : "Live"}
         </span>
-      ) : null}
-      {blocked || entry.decided ? (
-        <span className="absolute -top-2 right-2 z-10 bg-ink px-1.5 font-tech text-[8px] font-bold uppercase tracking-[0.2em] text-amber-400">Décision</span>
       ) : null}
       {entry.matchId ? (
         <Link href={`/cod/equipes/match/${entry.matchId}`} className="block" draggable={false}>

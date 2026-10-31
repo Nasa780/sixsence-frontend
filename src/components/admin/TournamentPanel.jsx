@@ -420,6 +420,7 @@ function CupForm({ mode, initial = null, lockFormat = false, testTeamSize = fals
     bestOf: initial?.bestOf ?? 3,
     finalBestOf: initial?.finalBestOf ?? 3,
     bracket: initial?.bracket ?? "single",
+    losersBestOf: initial?.losersBestOf ?? null,
     teamSize: initial?.teamSize ?? 4,
     posterUrl: initial?.posterUrl ?? null,
   }));
@@ -433,7 +434,7 @@ function CupForm({ mode, initial = null, lockFormat = false, testTeamSize = fals
     setPending(true);
     setError(null);
     try {
-      const body = { kind: form.kind, name: form.name.trim(), size: form.size, bestOf: form.bestOf, finalBestOf: form.finalBestOf, bracket: form.bracket, posterUrl: form.posterUrl, teamSize: form.teamSize };
+      const body = { kind: form.kind, name: form.name.trim(), size: form.size, bestOf: form.bestOf, finalBestOf: form.finalBestOf, bracket: form.bracket, losersBestOf: form.bracket === "double" ? form.losersBestOf : null, posterUrl: form.posterUrl, teamSize: form.teamSize };
       await onSubmit(mode === "schedule" ? { ...body, weekday: form.weekday, time: form.time } : { ...body, startsAt: new Date(form.startsAt).toISOString() });
     } catch (caught) {
       setError(caught.message);
@@ -555,6 +556,23 @@ function CupForm({ mode, initial = null, lockFormat = false, testTeamSize = fals
                 </Button>
               ))}
             </div>
+            {form.bracket === "double" ? (
+              <div>
+                <label htmlFor={`f-losers-${mode}`} className={labelClass}>
+                  Tableau des perdants
+                </label>
+                <select
+                  id={`f-losers-${mode}`}
+                  className={fieldClass}
+                  value={form.losersBestOf ?? ""}
+                  onChange={(event) => set({ losersBestOf: event.target.value ? Number(event.target.value) : null })}
+                >
+                  <option value="">Comme les autres matchs (BO{form.bestOf})</option>
+                  <option value={1}>BO1</option>
+                  <option value={3}>BO3</option>
+                </select>
+              </div>
+            ) : null}
           </fieldset>
         </div>
         <div>
