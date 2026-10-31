@@ -427,8 +427,8 @@ export function MatchView({ matchId }) {
 
         {match.status === "in_progress" ? (
           <>
-            {/* Réglages de la partie privée, repliés, au-dessus du lancement : seulement pour l'hôte (premier joueur de l'équipe 1). */}
-            {match.team_a[0] === userId ? <MatchRulesCard bestOf={1} isHost /> : null}
+            {/* Réglages de la partie privée, repliés, au-dessus du lancement sur ordinateur (en bas sur téléphone) : seulement pour l'hôte (premier joueur de l'équipe 1). */}
+            {match.team_a[0] === userId ? <MatchRulesCard bestOf={1} isHost className="hidden md:block" /> : null}
             <KickoffBlock data={data} userId={userId} myTeam={myTeam} hostName={hostName} playerById={playerById} onDone={load} />
             {myTeam ? (
               <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
@@ -661,6 +661,8 @@ export function MatchView({ matchId }) {
         </TacticalCard>
       )}
 
+      {/* Téléphone : réglages de la partie privée en bas, pour ne pas cacher la feuille (le lien du lancement y descend). */}
+      {match.status === "in_progress" && match.team_a[0] === userId ? <MatchRulesCard bestOf={1} isHost className="md:hidden" /> : null}
     </div>
   );
 }

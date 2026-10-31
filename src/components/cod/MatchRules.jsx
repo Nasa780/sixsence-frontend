@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
 import {
+  LuArrowDown,
   LuArrowUp,
   LuBan,
   LuCheck,
@@ -235,7 +236,10 @@ export function RulesConduct() {
 
 const OPEN_RULES = "sixsence:ouvrir-regles";
 
-/** Lien « Réglages de la partie » du lancement du match : remonte jusqu'au bloc des règles (juste au-dessus) et l'ouvre. */
+/**
+ * Lien « Réglages de la partie » du lancement du match : va jusqu'au bloc des règles et l'ouvre. Flèche vers le bas sur
+ * téléphone (bloc en bas de la feuille), vers le haut sur ordinateur (bloc juste au-dessus du lancement).
+ */
 export function RulesLink({ className }) {
   return (
     <button
@@ -248,29 +252,32 @@ export function RulesLink({ className }) {
     >
       <LuSettings2 aria-hidden className="h-4 w-4" />
       Voir les réglages
-      <LuArrowUp aria-hidden className="h-4 w-4 transition-transform group-hover/regles:-translate-y-0.5" />
+      <LuArrowDown aria-hidden className="h-4 w-4 transition-transform group-hover/regles:translate-y-0.5 md:hidden" />
+      <LuArrowUp aria-hidden className="hidden h-4 w-4 transition-transform group-hover/regles:-translate-y-0.5 md:block" />
     </button>
   );
 }
 
 /**
- * Bloc repliable « Règles du match » d'une feuille de match, placé en bas pour ne pas cacher la feuille sur téléphone :
+ * Bloc repliable « Règles du match » d'une feuille de match : au-dessus du lancement sur ordinateur, en bas de la feuille sur
+ * téléphone pour ne pas la cacher (placé deux fois, `className` « hidden md:block » / « md:hidden ») ;
  * en-tête bien visible (pastille, titre, Voir / Masquer), replié d'office avec le rappel des interdits ; RulesLink (lancement
  * du match) y descend et l'ouvre. Le Mode hôte reste facultatif.
  */
-export function MatchRulesCard({ bestOf = 1, isHost = false }) {
+export function MatchRulesCard({ bestOf = 1, isHost = false, className = "" }) {
   const [open, setOpen] = useState(false);
   const ref = useRef(null);
   useEffect(() => {
     const show = () => {
       setOpen(true);
-      requestAnimationFrame(() => ref.current?.scrollIntoView({ behavior: "smooth", block: "start" }));
+      // Seul le bloc affiché (téléphone ou ordinateur) fait défiler la page.
+      requestAnimationFrame(() => ref.current?.offsetParent && ref.current.scrollIntoView({ behavior: "smooth", block: "start" }));
     };
     window.addEventListener(OPEN_RULES, show);
     return () => window.removeEventListener(OPEN_RULES, show);
   }, []);
   return (
-    <div ref={ref} className="scroll-mt-24 border border-l-4 border-gold/40 border-l-gold bg-ink/60">
+    <div ref={ref} className={cn("scroll-mt-24 border border-l-4 border-gold/40 border-l-gold bg-ink/60", className)}>
       <button
         type="button"
         aria-expanded={open}

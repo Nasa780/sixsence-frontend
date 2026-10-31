@@ -116,7 +116,7 @@ export default function TeamMatchPage() {
 
         <MatchNotices match={match} name={name} />
         {/* Réglages de la partie privée, repliés, au-dessus du lancement : seulement pour l'équipe hôte. */}
-        {match.status === "in_progress" && match.viewer?.side && match.viewer.side === match.hostSide ? <MatchRulesCard bestOf={match.bestOf} isHost /> : null}
+        {match.status === "in_progress" && match.viewer?.side && match.viewer.side === match.hostSide ? <MatchRulesCard bestOf={match.bestOf} isHost className="hidden md:block" /> : null}
 
         {match.status === "in_progress" && match.scores.length === 0 && !match.pendingScores ? <KickoffBlock match={match} name={name} onDone={load} /> : null}
         {match.status === "forfeit_claimed" ? <ForfeitBlock match={match} name={name} onDone={load} /> : null}
@@ -156,6 +156,9 @@ export default function TeamMatchPage() {
           </TacticalCard>
         ) : null}
 
+
+        {/* Téléphone : réglages de la partie privée en bas, pour ne pas cacher la feuille (le lien du lancement y descend). */}
+        {match.status === "in_progress" && match.viewer?.side && match.viewer.side === match.hostSide ? <MatchRulesCard bestOf={match.bestOf} isHost className="md:hidden" /> : null}
 
         <p>
           <Link
