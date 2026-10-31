@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { FaDiscord, FaTiktok } from "react-icons/fa6";
-import { DISCORD_INVITE_URL, MATCH_TEAM_ENABLED, TIKTOK_URL } from "../../lib/config";
+import { DISCORD_INVITE_URL, TIKTOK_URL } from "../../lib/config";
 import { Container } from "../ui/Container";
 import { Logo } from "../ui/Logo";
 
@@ -32,12 +32,8 @@ export function Footer() {
       <Container className="grid gap-12 py-14 md:grid-cols-[1.4fr_1fr_1fr]">
         <div>
           <Logo />
-          <p className="mt-5 font-display text-xl font-black uppercase leading-none tracking-wide text-white">Prêt à faire tes preuves ?</p>
-          <p className="mt-2 max-w-sm text-sm leading-relaxed text-white/55">
-            {MATCH_TEAM_ENABLED
-              ? "Matchs classés en solo sur Call of Duty, championnats Division en équipe, tournois réguliers et événements exclusifs sur GTA 6."
-              : "Matchs classés en solo sur Call of Duty et événements exclusifs sur GTA 6."}{" "}
-            Connecte simplement ton compte Discord pour rejoindre l&apos;action instantanément.
+          <p className="mt-4 max-w-sm text-sm leading-relaxed text-white/55">
+            SixSence est la plateforme de compétition de la communauté Call of Duty Hardcore, bientôt ouverte à GTA 6.
           </p>
           {DISCORD_INVITE_URL ? (
             <a
