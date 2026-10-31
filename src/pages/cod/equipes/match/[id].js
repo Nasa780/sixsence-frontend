@@ -21,6 +21,7 @@ import { mapImage } from "../../../../lib/maps";
 import { rankFor, rankGradient } from "../../../../lib/ranks";
 import { supabase } from "../../../../lib/supabase";
 import { STAFF_CHAT } from "../../../../lib/roles";
+import { usePageUnivers } from "../../../../lib/univers";
 
 const ROUNDS = 6;
 const mapsWon = (scores, side) => scores.filter(([a, b]) => (side === "A" ? a > b : b > a)).length;
@@ -32,6 +33,8 @@ export default function TeamMatchPage() {
   const { userId } = useSession();
   const [match, setMatch] = useState(null);
   const [error, setError] = useState(null);
+  // Match de coupe : rouge des tournois sur toute la page (menu et pied de page compris).
+  usePageUnivers(match?.tournament ? "tournoi" : null);
 
   const load = useCallback(async () => {
     if (!id) return;
@@ -81,8 +84,8 @@ export default function TeamMatchPage() {
       <Head>
         <title>{`[${match.teamA?.tag}] vs [${match.teamB?.tag}] — Division — SixSence`}</title>
       </Head>
-      {/* Match de tournoi : palette rouge des tournois ; Division et défis gardent l'or. */}
-      <div data-univers={match.tournament ? "tournoi" : undefined}>
+      {/* Match de tournoi : palette rouge des tournois sur toute la page (usePageUnivers plus haut) ; Division et défis gardent la leur. */}
+      <div>
       <Container className="space-y-8 pb-16 pt-28 sm:pt-32">
         <div>
           <Eyebrow>
