@@ -427,20 +427,11 @@
   .bracket-flow, .bracket-sheen::after { animation: none; }
 }
 
-/* Tableau, thème Luxe : projecteur qui respire, poussière d'or, reflet sur les cartes, halo du champion, rayons et trophée. */
-@keyframes lux-spot { 0%, 100% { transform: translateX(-5%) scale(1); opacity: 0.8; } 50% { transform: translateX(5%) scale(1.08); opacity: 1; } }
-.lux-spot { animation: lux-spot 9s ease-in-out infinite; }
-@keyframes lux-dust { 0% { transform: translateY(0); opacity: 0; } 15% { opacity: 0.85; } 100% { transform: translateY(-220px); opacity: 0; } }
-.lux-dust { animation: lux-dust 9s linear infinite; opacity: 0; }
-@keyframes lux-foil { 0% { transform: translateX(-120%); } 22%, 100% { transform: translateX(120%); } }
-.lux-foil { background: linear-gradient(105deg, transparent 35%, rgba(255, 217, 112, 0.16) 48%, rgba(255, 246, 213, 0.22) 50%, rgba(255, 217, 112, 0.16) 52%, transparent 65%); transform: translateX(-120%); animation: lux-foil 7s ease-in-out infinite; }
-@keyframes lux-halo { 0%, 100% { opacity: 0.08; } 50% { opacity: 0.28; } }
-.lux-halo { opacity: 0.12; filter: blur(4px); animation: lux-halo 2.8s ease-in-out infinite; }
+/* Tableau, thème Luxe : rayons derrière le trophée du champion, trophée qui flotte. */
 @keyframes lux-rays { to { transform: rotate(360deg); } }
 .lux-rays { background: repeating-conic-gradient(from 0deg, rgba(255, 217, 112, 0.16) 0deg 6deg, transparent 6deg 24deg); -webkit-mask-image: radial-gradient(closest-side, #000 30%, transparent); mask-image: radial-gradient(closest-side, #000 30%, transparent); animation: lux-rays 22s linear infinite; }
 @keyframes lux-float { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-5px); } }
 .lux-float { animation: lux-float 3.6s ease-in-out infinite; }
 @media (prefers-reduced-motion: reduce) {
-  .lux-spot, .lux-dust, .lux-foil, .lux-halo, .lux-rays, .lux-float { animation: none; }
-  .lux-dust, .lux-foil { display: none; }
+  .lux-rays, .lux-float { animation: none; }
 }

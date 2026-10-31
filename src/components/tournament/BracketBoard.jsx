@@ -336,7 +336,6 @@ export function BracketBoard({ tournament, myTeamId = null, theme = DEFAULT_THEM
       >
         <div style={{ width: width * scale, height: height * scale }}>
           <div className="relative origin-top-left" style={{ width, height, transform: `scale(${scale})` }}>
-            {T.decor === "luxe" ? <LuxeDecor /> : null}
             {sectionLabel(map.wbTop, map.double ? "Tableau des gagnants" : "Tableau", T.section.wb)}
             {map.wb.map((r, i) => pill(`W${r.round}`, PAD + i * COL, map.wbTop, shortName(r.name), r.bestOf))}
             {map.lbTop ? (
@@ -371,7 +370,6 @@ export function BracketBoard({ tournament, myTeamId = null, theme = DEFAULT_THEM
                 const stroke = hovered ? T.focus : champ ? T.champ.color : mine ? T.focus : advanced ? T.line.adv : T.line.idle;
                 return (
                   <g key={index}>
-                    {champ && T.champ.halo && !reduce ? <path d={d} fill="none" stroke={T.champ.color} strokeWidth={10} strokeLinecap="round" className="lux-halo" /> : null}
                     <motion.path
                       d={d}
                       fill="none"
@@ -456,31 +454,6 @@ function placeholder(node, nodes, side) {
   return `${kind === "winner" ? "Vainqueur" : "Perdant"} #${from.number ?? "?"}`;
 }
 
-// Poussière d'or : positions et rythmes fixes (même rendu côté serveur et navigateur).
-const DUST = Array.from({ length: 34 }, (_, i) => ({
-  left: (i * 37.7) % 100,
-  top: 20 + ((i * 53.3) % 80),
-  size: 1.5 + ((i * 7) % 3),
-  delay: (i * 0.83) % 9,
-  duration: 7 + ((i * 1.9) % 6),
-}));
-
-/** Décor du thème Luxe : projecteur doré qui respire en haut et poussière d'or qui monte lentement. */
-function LuxeDecor() {
-  return (
-    <div aria-hidden className="pointer-events-none absolute inset-0 overflow-hidden">
-      <div className="lux-spot absolute -top-[30%] left-[10%] h-[80%] w-[80%] rounded-full" style={{ background: "radial-gradient(closest-side, rgba(231,192,90,0.18), rgba(231,192,90,0.05) 55%, transparent)" }} />
-      {DUST.map((p, i) => (
-        <span
-          key={i}
-          className="lux-dust absolute rounded-full"
-          style={{ left: `${p.left}%`, top: `${p.top}%`, width: p.size, height: p.size, background: "#ffd970", boxShadow: "0 0 6px #ffd970", animationDelay: `${p.delay}s`, animationDuration: `${p.duration}s` }}
-        />
-      ))}
-    </div>
-  );
-}
-
 function MatchCard({ T, node, nodes, myTeamId, championId, focus, onHover, grand }) {
   const { entry } = node;
   const live = entry.status === "playing";
@@ -541,7 +514,6 @@ function MatchCard({ T, node, nodes, myTeamId, championId, focus, onHover, grand
       }}
     >
       {live ? <span className="bracket-sheen pointer-events-none absolute inset-0" aria-hidden /> : null}
-      {T.card.shimmer && !live ? <span className="lux-foil pointer-events-none absolute inset-0" style={{ animationDelay: `${((node.number ?? 1) * 1.37) % 7}s` }} aria-hidden /> : null}
       {row(entry.teamA, 0)}
       {row(entry.teamB, 1)}
     </div>
