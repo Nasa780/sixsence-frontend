@@ -24,10 +24,13 @@ const SECTION_GAP = 64;
 const PAD = 24;
 const CHAMP_W = 210;
 const GOLD = "#e7c05a";
-// Palette du tableau, plate façon Valorant : fond anthracite, panneaux (rencontres, tours, champion) un cran plus clairs.
-const STAGE = "#1c1d21";
-const PANEL = "#26282d";
-const EDGE = "rgba(255,255,255,0.08)";
+// Palette du tableau : fond à l'or du site, panneaux noirs (rencontres, tours, champion) ; sur ce fond clair (BRIGHT),
+// liaisons, titres et parcours du champion passent en noir.
+const STAGE = "#d4af37";
+const PANEL = "#16140f";
+const EDGE = "rgba(0,0,0,0.4)";
+const BRIGHT = true;
+const line = (alpha) => (BRIGHT ? `rgba(20,16,6,${Math.min(0.85, alpha * 2.2)})` : `rgba(255,255,255,${alpha})`);
 const LIVE = "#34d399";
 const LATE = "#e879f9";
 const DISPUTE = "#fbbf24";
@@ -326,18 +329,18 @@ export function BracketBoard({ tournament, myTeamId = null }) {
       >
         <div style={{ width: width * scale, height: height * scale }}>
           <div className="relative origin-top-left" style={{ width, height, transform: `scale(${scale})` }}>
-            {sectionLabel(map.wbTop, map.double ? "Tableau des gagnants" : "Tableau", undefined)}
+            {sectionLabel(map.wbTop, map.double ? "Tableau des gagnants" : "Tableau", BRIGHT ? "#141006" : undefined)}
             {roundPills(map.wb, "W", map.wbTop)}
             {map.lbTop ? (
               <>
-                {sectionLabel(map.lbTop, "Tableau des perdants", "rgba(255,255,255,0.8)")}
+                {sectionLabel(map.lbTop, "Tableau des perdants", BRIGHT ? "rgba(20,16,6,0.8)" : "rgba(255,255,255,0.8)")}
                 {roundPills(map.lb, "L", map.lbTop)}
               </>
             ) : null}
             {map.double && tournament.grandFinal ? (
               <div
                 className="clip-slant absolute flex items-center justify-between px-3 py-1 [--slant:8px]"
-                style={{ left: nodes.get(keyOf("G", 0, 0)).x, top: map.wbTop - 22, width: CARD_W, background: `${GOLD}22` }}
+                style={{ left: nodes.get(keyOf("G", 0, 0)).x, top: map.wbTop - 22, width: CARD_W, background: BRIGHT ? PANEL : `${GOLD}22` }}
               >
                 <span className="font-tech text-[9px] font-bold uppercase tracking-[0.2em]" style={{ color: GOLD }}>
                   Grande finale
@@ -352,6 +355,16 @@ export function BracketBoard({ tournament, myTeamId = null }) {
             <svg className="pointer-events-none absolute inset-0" width={width} height={height} aria-hidden>
               <defs>
                 {/* Zone du filtre en coordonnées du tableau : une liaison horizontale (sans hauteur) garde sa lueur. */}
+                {/* Fond clair : halo sombre sous le parcours du champion. */}
+                <filter id="ombre" filterUnits="userSpaceOnUse" x="0" y="0" width={width} height={height}>
+                  <feGaussianBlur in="SourceAlpha" stdDeviation="3" result="b" />
+                  <feFlood floodColor="#000" floodOpacity="0.45" />
+                  <feComposite in2="b" operator="in" result="o" />
+                  <feMerge>
+                    <feMergeNode in="o" />
+                    <feMergeNode in="SourceGraphic" />
+                  </feMerge>
+                </filter>
                 <filter id="lueur-or" filterUnits="userSpaceOnUse" x="0" y="0" width={width} height={height}>
                   <feGaussianBlur stdDeviation="3" result="b" />
                   <feMerge>
@@ -369,22 +382,30 @@ export function BracketBoard({ tournament, myTeamId = null }) {
                 const hovered = focus && travelled(edge, focus);
                 const mine = myTeamId && travelled(edge, myTeamId);
                 const advanced = a.entry.status === "done" && a.entry.winner && teamsOf(b.entry).includes(a.entry.winner);
-                const stroke = hovered ? "var(--color-gold)" : champ ? GOLD : mine ? "var(--color-gold)" : advanced ? "rgba(255,255,255,0.28)" : "rgba(255,255,255,0.12)";
+                const stroke = hovered ? "var(--color-gold)" : champ ? (BRIGHT ? "#1a1408" : GOLD) : mine ? "var(--color-gold)" : advanced ? line(0.28) : line(0.12);
                 return (
                   <g key={index}>
                     <motion.path
                       d={d}
                       fill="none"
                       stroke={stroke}
-                      strokeWidth={champ || hovered ? 2.5 : 1.5}
-                      filter={champ || hovered ? "url(#lueur-or)" : undefined}
+                      strokeWidth={champ ? (BRIGHT ? 3.5 : 2.5) : hovered ? 2.5 : 1.5}
+                      filter={champ || hovered ? (BRIGHT ? "url(#ombre)" : "url(#lueur-or)") : undefined}
                       initial={reduce ? false : { pathLength: 0, opacity: 0 }}
                       animate={{ pathLength: 1, opacity: focus && !hovered ? 0.35 : 1 }}
                       transition={{ duration: reduce ? 0 : 0.5, delay: reduce ? 0 : 0.35 + (a.x / COL) * 0.08 }}
                     />
                     {champ && !reduce ? (
                       // Flux lumineux qui coule le long du parcours du champion.
-                      <path d={d} fill="none" stroke="#fff6d5" strokeWidth={2} strokeLinecap="round" strokeDasharray="6 26" className="bracket-flow" opacity={0.9} />
+                      BRIGHT ? (
+                        // Fond clair : comète blanche bordée de sombre, plus longue (période de 64 px, comme l'animation).
+                        <>
+                          <path d={d} fill="none" stroke="#0d0b06" strokeWidth={5.5} strokeLinecap="round" strokeDasharray="18 46" className="bracket-flow" />
+                          <path d={d} fill="none" stroke="#ffffff" strokeWidth={3} strokeLinecap="round" strokeDasharray="18 46" className="bracket-flow" />
+                        </>
+                      ) : (
+                        <path d={d} fill="none" stroke="#fff6d5" strokeWidth={2} strokeLinecap="round" strokeDasharray="6 26" className="bracket-flow" opacity={0.9} />
+                      )
                     ) : null}
                   </g>
                 );
@@ -394,7 +415,7 @@ export function BracketBoard({ tournament, myTeamId = null }) {
                 <motion.path
                   d={elbow(nodes.get(map.last).x + CARD_W, map.champion.y, map.champion.x, map.champion.y)}
                   fill="none"
-                  stroke={championTeam ? GOLD : "rgba(255,255,255,0.12)"}
+                  stroke={championTeam ? (BRIGHT ? "#1a1408" : GOLD) : line(0.12)}
                   strokeWidth={championTeam ? 2.5 : 1.5}
                   filter={championTeam ? "url(#lueur-or)" : undefined}
                   initial={reduce ? false : { pathLength: 0 }}
@@ -411,11 +432,11 @@ export function BracketBoard({ tournament, myTeamId = null }) {
                 className="absolute"
                 style={{ left: node.x, top: node.y, width: CARD_W }}
                 initial={reduce ? false : { opacity: 0, x: -14 }}
-                animate={{ opacity: focus && !involved(node.entry, focus) ? 0.55 : 1, x: 0 }}
+                animate={{ opacity: focus && !involved(node.entry, focus) && !BRIGHT ? 0.55 : 1, x: 0 }}
                 transition={{ duration: reduce ? 0 : 0.35, delay: colDelay(node) }}
               >
                 {node.bracket === "T" ? (
-                  <p className="absolute -top-6 left-0 font-tech text-[9px] font-bold uppercase tracking-[0.2em] text-white/55">
+                  <p className={cn("absolute -top-6 left-0 font-tech text-[9px] font-bold uppercase tracking-[0.2em]", BRIGHT ? "text-black/70" : "text-white/55")}>
                     {tournament.thirdPlace?.name ?? "Petite finale"} · BO{tournament.thirdPlace?.bestOf}
                   </p>
                 ) : null}
@@ -515,7 +536,7 @@ function MatchCard({ node, nodes, myTeamId, championId, focus, onHover, grand })
       {node.number ? (
         <span
           className="absolute -left-3 top-1/2 z-10 grid h-6 min-w-6 -translate-y-1/2 place-items-center border px-1 font-tech text-[9px] font-bold text-white/70"
-          style={{ borderColor: live ? LIVE : "rgba(255,255,255,0.18)", background: STAGE }}
+          style={{ borderColor: live ? LIVE : "rgba(255,255,255,0.18)", background: BRIGHT ? PANEL : STAGE }}
         >
           {node.number}
         </span>
@@ -523,7 +544,7 @@ function MatchCard({ node, nodes, myTeamId, championId, focus, onHover, grand })
       {live || late || dispute || entry.decided ? (
         <span
           className="absolute -top-2 right-2 z-10 flex items-center gap-1 px-1.5 font-tech text-[8px] font-bold uppercase tracking-[0.2em]"
-          style={{ background: STAGE, color: dispute || entry.decided ? DISPUTE : late ? LATE : LIVE }}
+          style={{ background: BRIGHT ? PANEL : STAGE, color: dispute || entry.decided ? DISPUTE : late ? LATE : LIVE }}
         >
           {live && !late && !dispute ? <span className="h-1.5 w-1.5 animate-pulse rounded-full" style={{ background: LIVE }} /> : null}
           {blocked || entry.decided ? "Décision" : dispute ? "Litige" : late ? "Retard" : "Live"}
