@@ -21,9 +21,9 @@ import { mapImage } from "../../../../lib/maps";
 import { rankFor, rankGradient } from "../../../../lib/ranks";
 import { supabase } from "../../../../lib/supabase";
 import { STAFF_CHAT } from "../../../../lib/roles";
+import { roundsToWin } from "../../../../lib/matchRules";
 import { usePageUnivers } from "../../../../lib/univers";
 
-const ROUNDS = 6;
 const mapsWon = (scores, side) => scores.filter(([a, b]) => (side === "A" ? a > b : b > a)).length;
 
 /** Feuille d'un match d'équipe en direct (BO3, BO5 en finale de tournoi) : maps, scores, map décisive, déclaration et confirmation par les Leaders. Public. */
@@ -354,11 +354,11 @@ function Map3Block({ match, name, onDone }) {
   );
 }
 
-/** Saisie d'un score de map : l'équipe gagnante (6 manches) et les manches du perdant (0 à 5). */
-function MapScoreInput({ label, teamA, teamB, value, onChange }) {
-  const winner = value ? (value[0] === ROUNDS ? "A" : "B") : null;
+/** Saisie d'un score de map : l'équipe gagnante (rounds manches : 8 en BO1, 6 en BO3 / BO5) et les manches du perdant. */
+function MapScoreInput({ label, teamA, teamB, value, onChange, rounds = 6 }) {
+  const winner = value ? (value[0] === rounds ? "A" : "B") : null;
   const loserRounds = value ? Math.min(value[0], value[1]) : 0;
-  const set = (nextWinner, rounds) => onChange(nextWinner === "A" ? [ROUNDS, rounds] : [rounds, ROUNDS]);
+  const set = (nextWinner, lost) => onChange(nextWinner === "A" ? [rounds, lost] : [lost, rounds]);
   return (
     <div className="border-l-2 border-white/10 bg-white/[0.03] p-4">
       <p className={labelClass}>{label}</p>
@@ -383,7 +383,7 @@ function MapScoreInput({ label, teamA, teamB, value, onChange }) {
         <label className="ml-auto flex items-center gap-2 text-sm text-white/60">
           Perdant
           <select className="border border-white/15 bg-ink-700 px-2.5 py-2 text-sm text-white" value={loserRounds} disabled={!winner} onChange={(event) => set(winner, Number(event.target.value))}>
-            {[0, 1, 2, 3, 4, 5].map((n) => (
+            {Array.from({ length: rounds }, (_, n) => n).map((n) => (
               <option key={n} value={n}>
                 {n}
               </option>
@@ -451,6 +451,7 @@ function ReportForm({ match, onDone }) {
             label={`Map ${start + i + 1} · ${match.maps[start + i]?.map ?? "?"}`}
             teamA={match.teamA}
             teamB={match.teamB}
+            rounds={roundsToWin(match.bestOf)}
             value={scores[i]}
             onChange={(next) => setScores((current) => current.map((v, j) => (j === i ? next : j > i ? null : v)))}
           />
@@ -560,7 +561,7 @@ function ResolveForm({ match, onDone }) {
       <div className={cn("grid gap-3 md:grid-cols-3", match.bestOf === 5 && "lg:grid-cols-5")}>
         {scores.map((value, i) => (
           <div key={i} className="space-y-2">
-            <MapScoreInput label={match.maps[i]?.map ?? `Map ${i + 1}`} teamA={match.teamA} teamB={match.teamB} value={value} onChange={(next) => setScores((current) => current.map((v, j) => (j === i ? next : v)))} />
+            <MapScoreInput label={match.maps[i]?.map ?? `Map ${i + 1}`} teamA={match.teamA} teamB={match.teamB} rounds={roundsToWin(match.bestOf)} value={value} onChange={(next) => setScores((current) => current.map((v, j) => (j === i ? next : v)))} />
             {value && i >= need ? (
               <button type="button" className="text-xs text-white/45 underline hover:text-loss" onClick={() => setScores((current) => current.map((v, j) => (j >= i ? null : v)))}>
                 Map non jouée
@@ -749,7 +750,7 @@ function CorrectionForm({ match, onDone }) {
       <div className={cn("grid gap-3 md:grid-cols-3", match.bestOf === 5 && "lg:grid-cols-5")}>
         {scores.map((value, i) => (
           <div key={i} className="space-y-2">
-            <MapScoreInput label={match.maps[i]?.map ?? `Map ${i + 1}`} teamA={match.teamA} teamB={match.teamB} value={value} onChange={(next) => setScores((current) => current.map((v, j) => (j === i ? next : v)))} />
+            <MapScoreInput label={match.maps[i]?.map ?? `Map ${i + 1}`} teamA={match.teamA} teamB={match.teamB} rounds={roundsToWin(match.bestOf)} value={value} onChange={(next) => setScores((current) => current.map((v, j) => (j === i ? next : v)))} />
             {value && i >= need ? (
               <button type="button" className="text-xs text-white/45 underline hover:text-loss" onClick={() => setScores((current) => current.map((v, j) => (j >= i ? null : v)))}>
                 Map non jouée

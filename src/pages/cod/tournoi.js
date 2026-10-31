@@ -658,7 +658,7 @@ function Rewards({ tournament }) {
               {color ? <LuTrophy aria-hidden className="h-5 w-5 shrink-0" style={{ color }} /> : <LuShield aria-hidden className="h-5 w-5 shrink-0 text-white/30" />}
               <span className="min-w-0">
                 <span className="block font-semibold">{place}</span>
-                <span className="block text-[11px] text-white/45">{color ? `${sub} dans la vitrine` : sub}</span>
+                <span className="block text-[11px] text-white/45">{color ? `${sub} : vitrine de l'équipe et profil des joueurs` : sub}</span>
               </span>
             </span>
             <span className="text-right font-display text-xl font-black text-[#22d3ee]">+{r.division[key]}</span>
