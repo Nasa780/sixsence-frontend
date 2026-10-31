@@ -60,10 +60,11 @@ function FloatingMedal({ metal = "or", size = 260, src = null, alt = null }) {
 }
 
 /**
- * Coupe Anubis : inscription individuelle, check-in de chaque joueur, joueurs inscrits, équipes tirées au
- * sort (capitaine, titulaires, remplaçants), tableau (fourni par la page) et podium des médailles.
+ * Coupe Anubis, en deux onglets de la fiche : « infos » (podium des médailles, inscription individuelle et check-in,
+ * choix des titulaires du capitaine, déroulé) et « participants » (équipes tirées au sort avec capitaine, titulaires et
+ * remplaçants ; avant le tirage, joueurs inscrits). Tableau, matchs et statistiques : onglets communs de la page.
  */
-export function AnubisCup({ tournament, userId, now, countdown, onDone, bracket }) {
+export function AnubisCup({ tournament, userId, now, countdown, onDone, section = "infos" }) {
   const scheduled = tournament.status === "scheduled";
   // Check-in : de 2 h à 15 min avant le début ; à la fermeture, tirage dévoilé, premiers matchs à l'heure du début.
   const closesAt = tournament?.checkInClosesAt ?? tournament?.startsAt;
@@ -72,10 +73,20 @@ export function AnubisCup({ tournament, userId, now, countdown, onDone, bracket 
   const plannedTeams = Math.min(tournament.size, Math.floor(tournament.registered / tournament.teamSize));
   const mySquad = tournament.squads.find((squad) => squad.team?.id === tournament.viewer?.teamId);
 
+  if (section === "participants")
+    return (
+      <div className="space-y-12">
+        {tournament.squads.length ? <Squads tournament={tournament} myTeamId={tournament.viewer?.teamId} /> : null}
+        {scheduled ? <RegisteredPlayers tournament={tournament} userId={userId} /> : null}
+        {!tournament.squads.length && !scheduled ? <p className="text-sm text-white/50">Aucune équipe formée.</p> : null}
+      </div>
+    );
+
   return (
     <div className="space-y-12">
       {tournament.status === "completed" ? <AnubisPodium tournament={tournament} /> : null}
 
+      <div id="inscription" className="scroll-mt-24">
       <TacticalCard highlight cut={30} innerClassName="relative overflow-hidden">
         <div aria-hidden className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_20%_30%,rgba(231,192,90,0.16),transparent_55%)]" />
         <div aria-hidden className="pointer-events-none absolute inset-0 opacity-[0.05] [background-image:linear-gradient(rgba(231,192,90,1)_1px,transparent_1px),linear-gradient(90deg,rgba(231,192,90,1)_1px,transparent_1px)] [background-size:44px_44px]" />
@@ -118,17 +129,13 @@ export function AnubisCup({ tournament, userId, now, countdown, onDone, bracket 
           </div>
         </div>
       </TacticalCard>
+      </div>
 
       {drawnWaiting ? <Notice>Équipes tirées au sort : premiers matchs dans {countdown(tournament.startsAt)}. Rejoins ton capitaine et ton salon vocal.</Notice> : null}
       {tournament.status === "cancelled" ? <Notice tone="error">Cette coupe a été annulée : pas assez de joueurs présents au check-in.</Notice> : null}
 
       {mySquad && tournament.viewer?.canSetRoster ? <CaptainRoster tournament={tournament} squad={mySquad} onDone={onDone} /> : null}
 
-      {tournament.squads.length ? <Squads tournament={tournament} myTeamId={tournament.viewer?.teamId} /> : null}
-
-      {tournament.status !== "scheduled" && tournament.status !== "cancelled" ? bracket : null}
-
-      {scheduled ? <RegisteredPlayers tournament={tournament} userId={userId} /> : null}
       <AnubisRules teamSize={tournament.teamSize} />
     </div>
   );

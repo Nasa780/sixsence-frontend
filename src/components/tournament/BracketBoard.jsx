@@ -58,7 +58,7 @@ function layout(tournament) {
         if (a) edges.push({ from: a.key, to: keyOf("W", r.round, entry.slot) });
         if (b) edges.push({ from: b.key, to: keyOf("W", r.round, entry.slot) });
       }
-      add("W", r.round, entry, PAD + i * COL, y, { feeds: i === 0 ? null : [["W", r.round - 1, entry.slot * 2, "winner"], ["W", r.round - 1, entry.slot * 2 + 1, "winner"]] });
+      add("W", r.round, entry, PAD + i * COL, y, { roundName: r.name, bestOf: r.bestOf, feeds: i === 0 ? null : [["W", r.round - 1, entry.slot * 2, "winner"], ["W", r.round - 1, entry.slot * 2 + 1, "winner"]] });
     });
   });
   const wbBottom = wbTop + Math.max(1, wb[0]?.entries.length ?? 1) * PITCH;
@@ -67,6 +67,8 @@ function layout(tournament) {
   const final = nodes.get(keyOf("W", n, 0));
   if (!double && tournament.thirdPlace && final) {
     add("T", n, tournament.thirdPlace.entry, final.x, Math.max(final.y + PITCH * 1.6, wbTop + PITCH), {
+      roundName: tournament.thirdPlace.name ?? "Petite finale",
+      bestOf: tournament.thirdPlace.bestOf,
       feeds: [["W", n - 1, 0, "loser"], ["W", n - 1, 1, "loser"]],
     });
   }
@@ -94,7 +96,7 @@ function layout(tournament) {
         if (b) edges.push({ from: b.key, to: keyOf("L", k, entry.slot) });
         feeds = [["L", k - 1, entry.slot * 2, "winner"], ["L", k - 1, entry.slot * 2 + 1, "winner"]];
       }
-      add("L", k, entry, PAD + i * COL, y, { feeds });
+      add("L", k, entry, PAD + i * COL, y, { roundName: r.name, bestOf: r.bestOf, feeds });
     });
   });
   const lbBottom = lb.length ? lbTop + Math.max(1, lb[0]?.entries.length ?? 1) * PITCH : wbBottom;
@@ -105,6 +107,8 @@ function layout(tournament) {
   if (double && tournament.grandFinal && final) {
     const lbFinal = nodes.get(keyOf("L", lb.length, 0));
     add("G", 0, tournament.grandFinal.entry, PAD + cols * COL, final.y, {
+      roundName: tournament.grandFinal.name ?? "Grande finale",
+      bestOf: tournament.grandFinal.bestOf,
       feeds: [["W", n, 0, "winner"], ["L", lb.length, 0, "winner"]],
     });
     edges.push({ from: final.key, to: keyOf("G", 0, 0) });
@@ -124,6 +128,19 @@ function layout(tournament) {
   ordered.forEach((node, index) => (node.number = index + 1));
 
   return { nodes, edges, width, height, wbTop, lbTop: lb.length ? lbTop : null, n, lb, wb, double, last, champion, cols };
+}
+
+/**
+ * Rencontres du tableau dans l'ordre de jeu, avec leur numéro (le même que sur le tableau), le nom du tour, le BO
+ * et l'origine des cases vides : { key, bracket (W, L, G, T), round, number, roundName, bestOf, entry, waiting }.
+ */
+export function bracketMatches(tournament) {
+  if (!tournament?.rounds?.length) return [];
+  const { nodes } = layout(tournament);
+  return [...nodes.values()]
+    .filter((node) => node.number)
+    .sort((a, b) => a.number - b.number)
+    .map((node) => ({ ...node, waiting: [placeholder(node, nodes, 0), placeholder(node, nodes, 1)] }));
 }
 
 /** Coude arrondi entre la sortie d'une rencontre et l'entrée de la suivante. */
