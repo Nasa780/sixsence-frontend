@@ -27,8 +27,8 @@ const GOLD = "#e7c05a";
 // Palette du tableau : noir du site, panneaux à peine plus clairs avec un liseré or ; l'or du site pour les accents
 // (titres, tours, survol, scores), même sur la page Tournoi rouge (data-univers="or"). BRIGHT : réglages d'un fond clair.
 const STAGE = "#0a0a0a";
-const PANEL = "#141414";
-const EDGE = "rgba(212,175,55,0.16)";
+const PANEL = "#1b1b1e";
+const EDGE = "rgba(212,175,55,0.28)";
 const BRIGHT = false;
 const line = (alpha) => (BRIGHT ? `rgba(20,16,6,${Math.min(0.85, alpha * 2.2)})` : `rgba(255,255,255,${alpha})`);
 const LIVE = "#34d399";
@@ -261,7 +261,7 @@ export function BracketBoard({ tournament, myTeamId = null }) {
       <div
         key={`${bracket}${r.round}`}
         className="clip-slant absolute flex items-center justify-between px-3 py-1 [--slant:8px]"
-        style={{ left: PAD + i * COL, top: top - 22, width: CARD_W, background: PANEL }}
+        style={{ left: PAD + i * COL, top: top - 22, width: CARD_W, background: "rgba(212,175,55,0.12)" }}
       >
         <span className="truncate font-tech text-[9px] font-bold uppercase tracking-[0.2em] text-gold/80">{shortName(r.name)}</span>
         <span className="font-tech text-[9px] font-bold tracking-[0.2em] text-gold">BO{r.bestOf}</span>
@@ -382,7 +382,7 @@ export function BracketBoard({ tournament, myTeamId = null }) {
                 const hovered = focus && travelled(edge, focus);
                 const mine = myTeamId && travelled(edge, myTeamId);
                 const advanced = a.entry.status === "done" && a.entry.winner && teamsOf(b.entry).includes(a.entry.winner);
-                const stroke = hovered ? "var(--color-gold)" : champ ? (BRIGHT ? "#1a1408" : GOLD) : mine ? "var(--color-gold)" : advanced ? line(0.28) : line(0.12);
+                const stroke = hovered ? "var(--color-gold)" : champ ? (BRIGHT ? "#1a1408" : GOLD) : mine ? "var(--color-gold)" : advanced ? line(0.45) : line(0.22);
                 return (
                   <g key={index}>
                     <motion.path
@@ -392,7 +392,7 @@ export function BracketBoard({ tournament, myTeamId = null }) {
                       strokeWidth={champ ? (BRIGHT ? 3.5 : 2.5) : hovered ? 2.5 : 1.5}
                       filter={champ || hovered ? (BRIGHT ? "url(#ombre)" : "url(#lueur-or)") : undefined}
                       initial={reduce ? false : { pathLength: 0, opacity: 0 }}
-                      animate={{ pathLength: 1, opacity: focus && !hovered ? 0.35 : 1 }}
+                      animate={{ pathLength: 1, opacity: focus && !hovered ? 0.5 : 1 }}
                       transition={{ duration: reduce ? 0 : 0.5, delay: reduce ? 0 : 0.35 + (a.x / COL) * 0.08 }}
                     />
                     {champ && !reduce ? (
@@ -415,7 +415,7 @@ export function BracketBoard({ tournament, myTeamId = null }) {
                 <motion.path
                   d={elbow(nodes.get(map.last).x + CARD_W, map.champion.y, map.champion.x, map.champion.y)}
                   fill="none"
-                  stroke={championTeam ? (BRIGHT ? "#1a1408" : GOLD) : line(0.12)}
+                  stroke={championTeam ? (BRIGHT ? "#1a1408" : GOLD) : line(0.22)}
                   strokeWidth={championTeam ? 2.5 : 1.5}
                   filter={championTeam ? "url(#lueur-or)" : undefined}
                   initial={reduce ? false : { pathLength: 0 }}
@@ -432,7 +432,7 @@ export function BracketBoard({ tournament, myTeamId = null }) {
                 className="absolute"
                 style={{ left: node.x, top: node.y, width: CARD_W }}
                 initial={reduce ? false : { opacity: 0, x: -14 }}
-                animate={{ opacity: focus && !involved(node.entry, focus) && !BRIGHT ? 0.55 : 1, x: 0 }}
+                animate={{ opacity: focus && !involved(node.entry, focus) && !BRIGHT ? 0.7 : 1, x: 0 }}
                 transition={{ duration: reduce ? 0 : 0.35, delay: colDelay(node) }}
               >
                 {node.bracket === "T" ? (
@@ -501,12 +501,12 @@ function MatchCard({ node, nodes, myTeamId, championId, focus, onHover, grand })
         onMouseLeave={() => onHover(null)}
       >
         {mine || picked ? <span className="absolute inset-y-0 left-0 w-0.5 bg-gold" /> : null}
-        {team ? <TeamCrest team={team} size={20} /> : <span className="h-5 w-5 shrink-0 border border-dashed border-white/15" />}
-        <span className={cn("min-w-0 flex-1 truncate text-[13px] font-semibold leading-none", team ? (lost ? "text-white/40" : "text-white") : "text-white/30 italic", won && "text-white", picked && "text-gold")}>
+        {team ? <TeamCrest team={team} size={20} /> : <span className="h-5 w-5 shrink-0 border border-dashed border-white/25" />}
+        <span className={cn("min-w-0 flex-1 truncate text-[13px] font-semibold leading-none", team ? (lost ? "text-white/60" : "text-white") : "text-white/45 italic", won && "text-white", picked && "text-gold")}>
           {team ? team.name : placeholder(node, nodes, index)}
         </span>
         {team && team.id === championId && grand ? <LuCrown aria-label="Champion" className="h-3.5 w-3.5 shrink-0" style={{ color: GOLD }} /> : null}
-        <span className={cn("w-5 text-right font-tech text-sm font-bold tabular-nums", won ? "text-gold" : "text-white/40")}>
+        <span className={cn("w-5 text-right font-tech text-sm font-bold tabular-nums", won ? "text-gold" : "text-white/55")}>
           {entry.score ? entry.score[index] : bye && team ? "✓" : ""}
         </span>
       </div>
