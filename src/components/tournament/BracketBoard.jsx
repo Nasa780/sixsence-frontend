@@ -306,7 +306,7 @@ export function BracketBoard({ tournament, myTeamId = null }) {
 
       <div
         ref={viewport}
-        className={cn("relative cursor-grab overflow-auto bg-grid active:cursor-grabbing", full ? "flex-1" : "max-h-[78vh]")}
+        className={cn("bracket-stage relative cursor-grab overflow-auto active:cursor-grabbing", full ? "flex-1" : "max-h-[78vh]")}
         onPointerDown={onPointerDown}
         onPointerMove={onPointerMove}
         onPointerUp={onPointerUp}
