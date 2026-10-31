@@ -416,3 +416,13 @@
 @media (prefers-reduced-motion: reduce) {
   .lobby-type, .lobby-eq { animation: none; width: auto; border-right: 0; }
 }
+
+/* Tableau des tournois (BracketBoard) : flux doré le long du parcours du champion, reflet des matchs en cours. */
+@keyframes bracket-flow { to { stroke-dashoffset: -64; } }
+.bracket-flow { animation: bracket-flow 1.4s linear infinite; }
+@keyframes bracket-sheen { from { transform: translateX(-120%) skewX(-20deg); } to { transform: translateX(320%) skewX(-20deg); } }
+.bracket-sheen { overflow: hidden; }
+.bracket-sheen::after { content: ""; position: absolute; inset: 0; width: 35%; background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.09), transparent); animation: bracket-sheen 2.6s ease-in-out infinite; }
+@media (prefers-reduced-motion: reduce) {
+  .bracket-flow, .bracket-sheen::after { animation: none; }
+}

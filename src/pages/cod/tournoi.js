@@ -2,10 +2,11 @@ import Head from "next/head";
 import Link from "next/link";
 import { useRouter } from "next/router";
 import { useCallback, useEffect, useState } from "react";
-import { LuCheck, LuCrown, LuDices, LuFlag, LuListOrdered, LuLoaderCircle, LuShield, LuSwords, LuTrophy, LuUserMinus, LuUserPlus, LuUsers } from "react-icons/lu";
+import { LuCheck, LuDices, LuFlag, LuListOrdered, LuLoaderCircle, LuShield, LuSwords, LuTrophy, LuUserMinus, LuUserPlus, LuUsers } from "react-icons/lu";
 import { MatchRulesCard } from "../../components/cod/MatchRules";
 import { SlantTab, TeamCrest } from "../../components/teams/TeamParts";
 import { AnubisCup, AnubisTeaser, HorusTeaser } from "../../components/tournament/AnubisCup";
+import { BracketBoard } from "../../components/tournament/BracketBoard";
 import { CupHero, CupList } from "../../components/tournament/CupCards";
 import { Avatar } from "../../components/ui/Avatar";
 import { Button, ButtonLink } from "../../components/ui/Button";
@@ -509,113 +510,12 @@ function CheckInPanel({ tournament, open, onDone }) {
   );
 }
 
+/** Tableau du tournoi : gagnants, perdants, grande finale et champion d'un seul tenant (components/tournament/BracketBoard). */
 function Bracket({ tournament, myTeamId }) {
-  const double = tournament.bracket === "double";
   return (
-    <section aria-labelledby="titre-tableau" className="space-y-10">
-      <div>
-      <h2 id="titre-tableau" className="font-display text-3xl font-black uppercase leading-none sm:text-4xl">
-        {double ? "Tableau des gagnants" : "Tableau"}
-      </h2>
-      <div className="mt-6 overflow-x-auto pb-2">
-        <div className="flex min-w-max gap-6">
-          {tournament.rounds.map((round) => (
-            <div key={round.round} className="flex w-64 flex-col">
-              <p className="font-tech text-[10px] uppercase tracking-[0.24em] text-gold">
-                {round.name} · BO{round.bestOf}
-              </p>
-              <ul className="mt-3 flex flex-1 flex-col justify-around gap-3">
-                {round.entries.map((entry) => (
-                  <li key={entry.slot}>
-                    <BracketEntry entry={entry} myTeamId={myTeamId} final={!double && round.round === tournament.rounds.length} />
-                  </li>
-                ))}
-                {round.round === tournament.rounds.length && tournament.thirdPlace ? (
-                  <li>
-                    <p className="mb-2 font-tech text-[10px] uppercase tracking-[0.24em] text-white/50">
-                      {tournament.thirdPlace.name} · BO{tournament.thirdPlace.bestOf}
-                    </p>
-                    <BracketEntry entry={tournament.thirdPlace.entry} myTeamId={myTeamId} />
-                  </li>
-                ) : null}
-              </ul>
-            </div>
-          ))}
-        </div>
-      </div>
-      </div>
-
-      {double && tournament.losers?.length ? (
-        <div>
-          <h2 className="font-display text-3xl font-black uppercase leading-none sm:text-4xl">Tableau des perdants</h2>
-          <p className="mt-2 text-sm text-white/50">Une défaite au tableau des gagnants envoie ici : une deuxième défaite élimine.</p>
-          <div className="mt-6 overflow-x-auto pb-2">
-            <div className="flex min-w-max gap-6">
-              {tournament.losers.map((round) => (
-                <div key={round.round} className="flex w-64 flex-col">
-                  <p className="font-tech text-[10px] uppercase tracking-[0.24em] text-white/60">
-                    {round.name} · BO{round.bestOf}
-                  </p>
-                  <ul className="mt-3 flex flex-1 flex-col justify-around gap-3">
-                    {round.entries.map((entry) => (
-                      <li key={entry.slot}>
-                        <BracketEntry entry={entry} myTeamId={myTeamId} />
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-              ))}
-            </div>
-          </div>
-        </div>
-      ) : null}
-
-      {double && tournament.grandFinal ? (
-        <div className="max-w-sm">
-          <h2 className="font-display text-3xl font-black uppercase leading-none sm:text-4xl">
-            Grande <span className="text-gold-gradient">finale</span>
-          </h2>
-          <p className="mt-2 font-tech text-[10px] uppercase tracking-[0.24em] text-gold">BO{tournament.grandFinal.bestOf} · un seul match</p>
-          <div className="mt-4">
-            <BracketEntry entry={tournament.grandFinal.entry} myTeamId={myTeamId} final />
-          </div>
-        </div>
-      ) : null}
+    <section aria-label="Tableau du tournoi">
+      <BracketBoard tournament={tournament} myTeamId={myTeamId} />
     </section>
-  );
-}
-
-function BracketEntry({ entry, myTeamId, final }) {
-  const row = (team, index) => {
-    const won = entry.winner && team && entry.winner === team.id;
-    const lost = entry.status === "done" && team && !won;
-    return (
-      <div className={cn("flex items-center gap-2.5 px-3 py-2", index === 0 && "border-b border-white/8", lost && "opacity-45", team?.id === myTeamId && "bg-gold/8")}>
-        {team ? <TeamCrest team={team} size={26} /> : <span className="h-[26px] w-[26px] shrink-0 border border-dashed border-white/15" />}
-        <span className={cn("min-w-0 flex-1 truncate font-display text-base font-bold uppercase leading-none", !team && "text-white/30")}>
-          {team ? team.name : entry.status === "done" || entry.status === "empty" ? "—" : "À déterminer"}
-        </span>
-        {team?.seed ? <span className="font-tech text-[10px] text-white/35">#{team.seed}</span> : null}
-        {entry.score ? <span className={cn("w-4 text-right font-tech text-sm font-bold", won ? "text-gold" : "text-white/55")}>{entry.score[index]}</span> : null}
-        {won && final ? <LuCrown aria-label="Vainqueur" className="h-4 w-4 text-gold" /> : null}
-      </div>
-    );
-  };
-  const body = (
-    <TacticalCard cut={12} highlight={entry.status === "playing"} interactive={Boolean(entry.matchId)} innerClassName="overflow-hidden">
-      {row(entry.teamA, 0)}
-      {row(entry.teamB, 1)}
-      {entry.status === "playing" ? <p className="bg-gold/10 px-3 py-1 font-tech text-[9px] uppercase tracking-[0.24em] text-gold">En cours</p> : null}
-      {entry.status === "blocked" ? <p className="bg-loss/10 px-3 py-1 font-tech text-[9px] uppercase tracking-[0.24em] text-loss">Décision de l&apos;équipe SixSence</p> : null}
-      {entry.decided ? <p className="bg-white/[0.04] px-3 py-1 font-tech text-[9px] uppercase tracking-[0.24em] text-white/50">Victoire sur décision de l&apos;équipe</p> : null}
-    </TacticalCard>
-  );
-  return entry.matchId ? (
-    <Link href={`/cod/equipes/match/${entry.matchId}`} className="block">
-      {body}
-    </Link>
-  ) : (
-    body
   );
 }
 
