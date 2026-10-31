@@ -1,6 +1,5 @@
 import Link from "next/link";
-import { LuArrowLeft, LuArrowRight, LuCalendarDays, LuClock, LuDices, LuGamepad2, LuListOrdered, LuMap, LuRepeat, LuSwords, LuTicket, LuTrophy, LuUsers, LuZap } from "react-icons/lu";
-import { roundsToWin } from "../../lib/matchRules";
+import { LuCalendarDays, LuDices, LuListOrdered, LuSwords, LuTrophy, LuUsers } from "react-icons/lu";
 import { cn } from "../../lib/cn";
 import { TeamCrest } from "../teams/TeamParts";
 
@@ -153,165 +152,74 @@ export function CupList({ cups, now }) {
   );
 }
 
-/** Phases jouées, entre parenthèses après la date (comme Sked). */
-const phases = (t) => (t.bracket === "double" ? "gagnants + perdants + grande finale" : t.kind === "horus" ? "tableau + petite finale" : "tableau + finale");
-const MEDAL_ART = { horus: "horus", anubis: "anubis" };
-// Jours des rendez-vous récurrents (0 = dimanche, comme cup_schedules.weekday et getUTCDay).
-const WEEKDAYS = ["dimanche", "lundi", "mardi", "mercredi", "jeudi", "vendredi", "samedi"];
-
-/** Format en une ligne : manches par map selon le BO (8 en BO1, 6 en BO3 / BO5). */
-function formatLine(t) {
-  const players = t.teamSize ?? t.playersPerTeam ?? null;
-  const bo = (n) => `BO${n} (${roundsToWin(n)} manches)`;
-  const losers = t.losersBestOf && t.losersBestOf !== t.bestOf ? `perdants ${bo(t.losersBestOf)}` : null;
-  const final = t.finalBestOf !== t.bestOf ? `finale ${bo(t.finalBestOf)}` : null;
-  return [players ? `${players}v${players}` : null, bo(t.bestOf), losers, final].filter(Boolean).join(" · ");
-}
-
-/**
- * En-tête de la fiche d'une coupe, façon Sked à l'identité SixSence : bannière (affiche floutée), affiche, statut
- * (« En direct » qui pulse), nom, jeu et mode, date et phases, encadré Récompenses avec le bouton d'action du moment
- * (`action` : { label, icon, onClick | href }), puis la ligne du format (élimination, BO et manches, maps, tirage,
- * places, inscription, check-in, règles).
- */
-export function CupHero({ tournament, now, action = null, onRules = null }) {
+/** En-tête de la fiche d'une coupe : bannière, affiche, statut, nom, date, infos et récompenses. */
+export function CupHero({ tournament, now }) {
   const cup = {
     ...tournament,
     registered: tournament.kind === "anubis" ? tournament.registered ?? 0 : tournament.teams?.length ?? 0,
     capacity: tournament.kind === "anubis" ? tournament.capacity ?? null : tournament.size,
     reserveSlots: tournament.reserveSlots ?? 0,
   };
-  const live = tournament.status === "running";
-  const status = live ? { label: "En direct", tone: "text-loss", dot: "bg-loss" } : cupStatus(cup, now);
-  const fill = cup.capacity ? Math.min(100, Math.round((placesTaken(cup) / cup.capacity) * 100)) : null;
-  const r = tournament.rewards;
-  const art = MEDAL_ART[tournament.kind];
-  const places = [
-    ["1er", "or", r ? `+${r.division.winner} pts` : rewardLines(cup)[0], r ? `+${r.circuit.winner} circuit` : null],
-    ["2e", "argent", r ? `+${r.division.finalist} pts` : rewardLines(cup)[1], r ? `+${r.circuit.finalist} circuit` : null],
-    ["3e", "bronze", r ? `+${r.division.third} pts` : rewardLines(cup)[2], r ? `+${r.circuit.third} circuit` : null],
-  ].filter(([, , line]) => line);
-  const ActionIcon = action?.icon ?? LuArrowRight;
-  const button = action ? (
-    action.href ? (
-      <Link href={action.href} className="clip-slant flex w-full items-center justify-center gap-2 bg-gold py-3 font-display text-sm font-black uppercase tracking-[0.14em] text-ink transition-transform hover:-translate-y-0.5 [--slant:12px]">
-        <ActionIcon aria-hidden className="h-4 w-4" />
-        {action.label}
-      </Link>
-    ) : (
-      <button type="button" onClick={action.onClick} className="clip-slant flex w-full items-center justify-center gap-2 bg-gold py-3 font-display text-sm font-black uppercase tracking-[0.14em] text-ink transition-transform hover:-translate-y-0.5 [--slant:12px]">
-        <ActionIcon aria-hidden className="h-4 w-4" />
-        {action.label}
-      </button>
-    )
-  ) : null;
-
-  const strip = [
-    [LuSwords, tournament.bracket === "double" ? "Double élimination" : "Élimination directe", live ? `lancée ${dateShort(tournament.startsAt).toLowerCase()}` : null],
-    [LuUsers, formatLine(tournament), null],
-    [LuMap, "Maps tirées au sort", null],
-    [LuDices, tournament.kind === "saison" || tournament.kind === "playin" ? "Têtes de série au classement" : "Tirage au sort", null],
-    tournament.status === "scheduled" ? [LuClock, "Check-in 2 h → 15 min avant", null] : null,
-    tournament.schedule ? [LuRepeat, `Tous les ${WEEKDAYS[tournament.schedule.weekday]}s · ${tournament.schedule.time.replace(":", " h ")}`, `édition #${tournament.schedule.edition}`] : null,
-    [LuTicket, "Inscription gratuite", null],
-  ].filter(Boolean);
+  const status = cupStatus(cup, now);
+  const rewards = rewardLines(cup);
+  const xp = tournament.rewards?.xp;
+  const fill = cup.capacity ? Math.min(100, Math.round((cup.registered / cup.capacity) * 100)) : null;
 
   return (
     <section className="relative overflow-hidden border border-white/10">
-      <div aria-hidden className="absolute inset-0 scale-110 bg-cover bg-center opacity-30 blur-2xl" style={{ backgroundImage: `url('${tournament.posterUrl}')` }} />
-      <div aria-hidden className="absolute inset-0 bg-linear-to-r from-ink via-ink/85 to-ink/55" />
-      <div aria-hidden className="absolute inset-0 bg-grid opacity-40" />
-      <div aria-hidden className="absolute -right-16 top-0 h-full w-48 -skew-x-[22deg] bg-linear-to-b from-gold/15 to-transparent" />
-
-      <div className="relative p-5 sm:p-7">
-        <Link href="/cod/tournoi" className="inline-flex items-center gap-1.5 font-tech text-[10px] uppercase tracking-[0.2em] text-white/50 transition-colors hover:text-white">
-          <LuArrowLeft aria-hidden className="h-3.5 w-3.5" />
-          Toutes les coupes
-        </Link>
-        <div className="mt-4 grid gap-6 lg:grid-cols-[auto_1fr_19rem] lg:items-end">
-          <Poster cup={tournament} className="w-28 border border-white/15 shadow-2xl shadow-black/60 sm:w-40" />
-          <div className="min-w-0">
-            <p className={cn("flex items-center gap-2 font-tech text-[11px] font-bold uppercase tracking-[0.22em]", status.tone)}>
-              <span aria-hidden className="relative flex h-2 w-2">
-                {live ? <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-loss opacity-70" /> : null}
-                <span className={cn("relative inline-flex h-2 w-2 rounded-full", status.dot)} />
+      <div aria-hidden className="absolute inset-0 scale-110 bg-cover bg-center opacity-25 blur-2xl" style={{ backgroundImage: `url('${tournament.posterUrl}')` }} />
+      <div aria-hidden className="absolute inset-0 bg-linear-to-r from-ink via-ink/85 to-ink/60" />
+      <div className="relative grid gap-6 p-5 sm:p-7 lg:grid-cols-[auto_1fr_17rem] lg:items-center">
+        <Poster cup={tournament} className="w-32 border border-white/15 shadow-2xl shadow-black/60 sm:w-44" />
+        <div className="min-w-0">
+          <p className={cn("flex items-center gap-2 font-tech text-[11px] uppercase tracking-[0.22em]", status.tone)}>
+            <span aria-hidden className={cn("h-2 w-2 rounded-full", status.dot)} />
+            {status.label}
+            <span className="text-white/35">· {KIND_LABEL[tournament.kind] ?? "Coupe"}</span>
+          </p>
+          <h2 className="mt-2 font-display text-4xl font-black uppercase leading-[0.95] sm:text-5xl">{tournament.name}</h2>
+          <p className="mt-3 flex items-center gap-2 text-sm text-white/70">
+            <LuCalendarDays aria-hidden className="h-4 w-4 text-white/45" />
+            {new Date(tournament.startsAt).toLocaleString("fr-FR", { weekday: "long", day: "numeric", month: "long", hour: "2-digit", minute: "2-digit" })}
+          </p>
+          <div className="mt-4 flex flex-wrap gap-1.5">
+            {formatChips(cup).map(([Icon, label]) => (
+              <span key={label} className="inline-flex items-center gap-1 border border-white/15 bg-ink/60 px-2.5 py-1 font-tech text-[10px] uppercase tracking-[0.12em] text-white/70">
+                <Icon aria-hidden className="h-3 w-3" />
+                {label}
               </span>
-              {status.label}
-              <span className="font-normal text-white/35">· {KIND_LABEL[tournament.kind] ?? "Coupe"}</span>
-            </p>
-            <h2 className="mt-2 font-display text-4xl font-black uppercase leading-[0.92] sm:text-6xl">{tournament.name}</h2>
-            <p className="mt-3 flex flex-wrap items-center gap-x-4 gap-y-1.5 text-sm text-white/70">
-              <span className="flex items-start gap-1.5">
-                <LuGamepad2 aria-hidden className="mt-0.5 h-4 w-4 shrink-0 text-white/45" />
-                <span>
-                  Modern Warfare 4 · <span className="font-semibold text-white">Recherche &amp; Destruction Hardcore</span>
-                </span>
-              </span>
-              <span className="flex items-start gap-1.5">
-                <LuCalendarDays aria-hidden className="mt-0.5 h-4 w-4 shrink-0 text-white/45" />
-                <span>
-                  {new Date(tournament.startsAt).toLocaleString("fr-FR", { weekday: "short", day: "numeric", month: "short", hour: "2-digit", minute: "2-digit" })}{" "}
-                  <span className="text-white/45">({phases(tournament)})</span>
-                </span>
-              </span>
-            </p>
+            ))}
           </div>
-
-          <div className="clip-tactical bg-ink/80 p-4 backdrop-blur [--cut:14px]" style={{ boxShadow: "inset 0 0 0 1px rgba(255,255,255,0.1)" }}>
-            <p className="font-tech text-[10px] uppercase tracking-[0.24em] text-white/45">Récompenses</p>
-            <ul className="mt-3 space-y-2">
-              {places.map(([rank, metal, line, extra], index) => (
-                <li key={rank} className="flex items-center gap-2.5 text-sm">
-                  {art ? (
-                    <img src={`/images/trophees/${art}-${metal}.png`} alt="" className="h-7 w-7 shrink-0 object-contain" />
-                  ) : (
-                    <LuTrophy aria-hidden className="h-5 w-5 shrink-0" style={{ color: MEDALS[index] }} />
-                  )}
-                  <span className="w-6 text-white/45">{rank}</span>
-                  <span className="flex-1 font-display font-black">{line}</span>
-                  {extra ? <span className="border border-white/10 px-1.5 py-0.5 font-tech text-[9px] uppercase tracking-[0.12em] text-white/55">{extra}</span> : null}
-                </li>
-              ))}
-            </ul>
-            {r?.xp ? (
-              <p className="mt-3 flex items-center gap-1.5 text-xs text-white/50">
-                <LuZap aria-hidden className="h-3.5 w-3.5 text-gold" />+{r.xp.win} XP par match gagné, +{r.xp.loss} perdu
-              </p>
-            ) : tournament.kind === "anubis" ? (
-              <p className="mt-3 text-xs text-white/50">Sur le profil de chaque joueur du podium.</p>
-            ) : null}
-            {button ? <div className="mt-4">{button}</div> : null}
-          </div>
+          {fill !== null && tournament.status === "scheduled" ? (
+            <div className="mt-4 flex max-w-sm items-center gap-3 text-xs text-white/55">
+              <span className="font-semibold text-white/80">
+                {placesTaken(cup)}/{cup.capacity} {tournament.kind === "anubis" ? "joueurs" : "places"}
+                {reservesTaken(cup) ? ` + ${reservesTaken(cup)} remplaçant${reservesTaken(cup) > 1 ? "s" : ""}` : ""}
+              </span>
+              <span className="h-1.5 flex-1 bg-white/10">
+                <span className="block h-full bg-gold" style={{ width: `${fill}%` }} />
+              </span>
+              {tournament.minTeams ? <span>min. {tournament.minTeams}</span> : null}
+            </div>
+          ) : null}
         </div>
-      </div>
-
-      {/* Ligne du format */}
-      <div className="relative flex flex-wrap items-center gap-x-5 gap-y-2.5 border-t border-white/10 bg-ink/70 px-5 py-3.5 text-xs text-white/65 sm:px-7">
-        {strip.map(([Icon, label, extra]) => (
-          <span key={label} className="flex items-center gap-1.5">
-            <Icon aria-hidden className="h-3.5 w-3.5 text-gold" />
-            <span className="font-semibold text-white/85">{label}</span>
-            {extra ? <span className="text-white/45">· {extra}</span> : null}
-          </span>
-        ))}
-        {fill !== null ? (
-          <span className="flex items-center gap-2">
-            <LuListOrdered aria-hidden className="h-3.5 w-3.5 text-gold" />
-            <span className="font-semibold text-white/85">
-              {placesTaken(cup)}/{cup.capacity} {tournament.kind === "anubis" ? "joueurs" : "places"}
-            </span>
-            <span className="h-1.5 w-20 bg-white/10">
-              <span className="block h-full bg-gold" style={{ width: `${fill}%` }} />
-            </span>
-            {reservesTaken(cup) ? <span className="text-white/45">+ {reservesTaken(cup)} rempl.</span> : null}
-            {tournament.minTeams ? <span className="text-white/45">min. {tournament.minTeams}</span> : null}
-          </span>
-        ) : null}
-        {onRules ? (
-          <button type="button" onClick={onRules} className="ml-auto font-semibold text-gold underline underline-offset-4 hover:text-gold-light">
-            Lire les règles du tournoi
-          </button>
-        ) : null}
+        <div className="border border-white/10 bg-ink/70 p-4">
+          <p className="font-tech text-[10px] uppercase tracking-[0.24em] text-white/45">Récompenses</p>
+          <ul className="mt-3 space-y-2">
+            {rewards.map((line, index) =>
+              line ? (
+                <li key={`${line}-${index}`} className="flex items-center justify-between gap-2 text-sm">
+                  <span className="flex items-center gap-2">
+                    <LuTrophy aria-hidden className="h-4 w-4" style={{ color: MEDALS[index] }} />
+                    <span className="text-white/45">{index + 1}{index ? "e" : "er"}</span>
+                    <span className="font-display font-black">{line}</span>
+                  </span>
+                </li>
+              ) : null,
+            )}
+          </ul>
+          {xp ? <p className="mt-3 text-xs text-white/45">+{xp.win} XP par match gagné, +{xp.loss} XP par match perdu.</p> : null}
+        </div>
       </div>
     </section>
   );

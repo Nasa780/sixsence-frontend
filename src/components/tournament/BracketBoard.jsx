@@ -21,7 +21,7 @@ const CARD_H = ROW_H * 2 + 1;
 const GAP_X = 70;
 const PITCH = CARD_H + 22;
 const COL = CARD_W + GAP_X;
-const HEAD = 46; // titre de section + bandeau des tours
+const HEAD = 78; // séparateur de section + en-tête des tours
 const SECTION_GAP = 64;
 const PAD = 24;
 const CHAMP_W = 210;
@@ -121,8 +121,9 @@ function layout(tournament) {
   const lastNode = last ? nodes.get(last) : null;
   const champion = lastNode ? { x: lastNode.x + COL - 20, y: lastNode.y + CARD_H / 2 } : null;
   const width = (champion ? champion.x + CHAMP_W : PAD + cols * COL) + PAD;
-  const thirdNode = nodes.get(keyOf("T", n, 0));
-  const height = Math.max(lbBottom, wbBottom, thirdNode ? thirdNode.y + CARD_H + 40 : 0) + PAD;
+  // Hauteur : jusqu'à la rencontre la plus basse (petite finale comprise, quel que soit son numéro de case).
+  const lowest = Math.max(0, ...[...nodes.values()].map((node) => node.y + CARD_H + 40));
+  const height = Math.max(lbBottom, wbBottom, lowest) + PAD;
 
   // Numéros de match dans l'ordre de jeu (cases réellement jouables).
   const ordered = [...nodes.values()]
@@ -146,13 +147,11 @@ export function bracketMatches(tournament) {
     .map((node) => ({ ...node, waiting: [placeholder(node, nodes, 0), placeholder(node, nodes, 1)] }));
 }
 
-/** Coude arrondi entre la sortie d'une rencontre et l'entrée de la suivante. */
+/** Courbe douce entre la sortie d'une rencontre et l'entrée de la suivante. */
 function elbow(x1, y1, x2, y2) {
   if (Math.abs(y1 - y2) < 1) return `M ${x1} ${y1} H ${x2}`;
-  const xm = x1 + Math.min(34, (x2 - x1) / 2);
-  const r = Math.min(10, Math.abs(y2 - y1) / 2);
-  const dir = y2 > y1 ? 1 : -1;
-  return `M ${x1} ${y1} H ${xm - r} Q ${xm} ${y1} ${xm} ${y1 + dir * r} V ${y2 - dir * r} Q ${xm} ${y2} ${xm + r} ${y2} H ${x2}`;
+  const k = (x2 - x1) * 0.55;
+  return `M ${x1} ${y1} C ${x1 + k} ${y1}, ${x2 - k} ${y2}, ${x2} ${y2}`;
 }
 
 /** Nom du tour sans « Gagnants · » ni « Perdants · » (le titre de la section le dit déjà). */
@@ -189,23 +188,38 @@ export function BracketBoard({ tournament, myTeamId = null, theme = DEFAULT_THEM
   const focus = hover ?? null;
   const involved = (entry, teamId) => Boolean(teamId && teamsOf(entry).includes(teamId));
 
-  const fit = useCallback(() => {
+  // Zoom juste : tout le tableau dans la largeur (téléphone : 72 % au moins, on fait glisser), réajusté quand la fenêtre
+  // change de taille tant que le visiteur n'a pas zoomé lui-même (boutons ou Ctrl + molette).
+  const manual = useRef(false);
+  const fitScale = useCallback(() => {
     const box = viewport.current;
-    if (!box) return;
-    setScale(Math.max(0.35, Math.min(1, (box.clientWidth - 8) / width)));
+    if (!box) return 1;
+    const fitted = (box.clientWidth - 2) / width;
+    return box.clientWidth < 640 ? Math.max(0.72, Math.min(1, fitted)) : Math.max(0.4, Math.min(1.15, fitted));
   }, [width]);
+  const fit = useCallback(() => {
+    manual.current = false;
+    setScale(fitScale());
+  }, [fitScale]);
+  const zoom = (next) => {
+    manual.current = true;
+    setScale((s) => Math.max(0.35, Math.min(1.6, next(s))));
+  };
   useEffect(() => {
     const box = viewport.current;
-    if (!box) return;
-    // Téléphone : 72 % (lisible), on fait glisser pour se déplacer ; ordinateur : ajusté entre 50 % et 100 %.
-    setScale(box.clientWidth < 640 ? 0.72 : Math.max(0.5, Math.min(1, (box.clientWidth - 8) / width)));
-  }, [width]);
+    if (!box) return undefined;
+    setScale(fitScale());
+    const observer = new ResizeObserver(() => !manual.current && setScale(fitScale()));
+    observer.observe(box);
+    return () => observer.disconnect();
+  }, [fitScale]);
   useEffect(() => {
     const box = viewport.current;
     if (!box) return undefined;
     const onWheel = (event) => {
       if (!event.ctrlKey && !event.metaKey) return;
       event.preventDefault();
+      manual.current = true;
       setScale((s) => Math.max(0.35, Math.min(1.6, s * (event.deltaY > 0 ? 0.9 : 1.1))));
     };
     box.addEventListener("wheel", onWheel, { passive: false });
@@ -244,74 +258,56 @@ export function BracketBoard({ tournament, myTeamId = null, theme = DEFAULT_THEM
   };
 
   const colDelay = (node) => (reduce ? 0 : 0.05 + (node.x / COL) * 0.07);
+  // Séparateur de section pleine largeur : trait, titre au centre, trait.
   const sectionLabel = (y, text, color) => (
-    <p className={cn("absolute font-display text-lg font-black uppercase tracking-wide", T.section.gradient && "text-gold-gradient")} style={{ left: PAD, top: y - HEAD, color: T.section.gradient ? undefined : color }}>
-      {text}
-    </p>
+    <div className="absolute flex items-center gap-4" style={{ left: PAD, right: PAD, top: y - HEAD }}>
+      <span className="h-px flex-1" style={{ background: `linear-gradient(90deg, transparent, ${color})` }} />
+      <p className={cn("font-display text-base font-black uppercase tracking-[0.3em]", T.section.gradient && "text-gold-gradient")} style={{ color: T.section.gradient ? undefined : color }}>
+        {text}
+      </p>
+      <span className="h-px flex-1" style={{ background: `linear-gradient(90deg, ${color}, transparent)` }} />
+    </div>
   );
+  // En-tête d'un tour, centré au-dessus de sa colonne : nom, BO, trait doré qui se dessine.
   const pill = (key, left, top, name, bo, final = false) => (
-    <div
-      key={key}
-      className={cn("absolute flex items-center justify-between px-3 py-1", T.pill.className)}
-      style={{ left, top: top - 22, width: CARD_W, ...(final ? T.final.style : T.pill.style) }}
-    >
+    <div key={key} className="absolute flex flex-col items-center text-center" style={{ left, top: top - 44, width: CARD_W }}>
+      <span className="font-tech text-[10px] font-bold uppercase tracking-[0.24em]" style={{ color: final ? T.final.color : T.pill.name }}>
+        {name}
+      </span>
+      <span className="mt-1 border px-1.5 py-px font-tech text-[8px] font-bold tracking-[0.2em]" style={{ color: final ? T.final.color : T.pill.bo, borderColor: final ? T.final.color : "rgba(231,192,90,0.35)" }}>
+        BO{bo}
+      </span>
       {T.pill.line ? (
         <motion.span
           aria-hidden
-          className="absolute inset-x-0 bottom-0 h-px origin-left"
-          style={{ background: T.pill.line }}
+          className="mt-2 h-px w-full origin-center"
+          style={{ background: final ? `linear-gradient(90deg, transparent, ${T.final.color}, transparent)` : "linear-gradient(90deg, transparent, rgba(231,192,90,0.55), transparent)" }}
           initial={reduce ? false : { scaleX: 0 }}
           animate={{ scaleX: 1 }}
           transition={{ duration: reduce ? 0 : 0.9, delay: reduce ? 0 : 0.15 + (left / COL) * 0.08, ease: [0.22, 1, 0.36, 1] }}
         />
       ) : null}
-      <span className="truncate font-tech text-[9px] font-bold uppercase tracking-[0.2em]" style={{ color: final ? T.final.color : T.pill.name }}>
-        {name}
-      </span>
-      <span className="font-tech text-[9px] font-bold tracking-[0.2em]" style={{ color: final ? T.final.color : T.pill.bo }}>
-        BO{bo}
-      </span>
     </div>
   );
   const flow = T.champ.flow;
 
   return (
     <div ref={frame} data-univers={T.univers ?? undefined} className={cn("relative border", T.frame, full && "flex h-full flex-col")}>
-      {/* Légende et commandes */}
-      <div className="flex flex-wrap items-center justify-between gap-3 border-b border-white/10 bg-black/40 px-4 py-3">
-        <ul className="flex flex-wrap items-center gap-x-4 gap-y-1 font-tech text-[10px] uppercase tracking-[0.18em] text-white/60">
-          <li className="flex items-center gap-1.5">
-            <span className="relative flex h-2 w-2">
-              <span className="absolute inline-flex h-full w-full animate-ping rounded-full opacity-60" style={{ background: LIVE }} />
-              <span className="relative inline-flex h-2 w-2 rounded-full" style={{ background: LIVE }} />
-            </span>
-            En cours
-          </li>
-          <li className="flex items-center gap-1.5">
-            <span className="h-2 w-2 rounded-full" style={{ background: LATE }} />
-            Retard
-          </li>
-          <li className="flex items-center gap-1.5">
-            <span className="h-2 w-2 rounded-full" style={{ background: DISPUTE }} />
-            Litige · arbitrage
-          </li>
-          <li className="flex items-center gap-1.5">
-            <span className="h-0.5 w-5 rounded" style={{ background: T.champ.color, boxShadow: `0 0 6px ${T.champ.color}` }} />
-            Parcours du champion
-          </li>
-          {myTeamId ? (
-            <li className="flex items-center gap-1.5">
-              <span className="h-2 w-2" style={{ background: T.focus }} />
-              Ton équipe
-            </li>
-          ) : null}
-        </ul>
+      {/* Barre du haut : format du tableau et commandes */}
+      <div className="flex flex-wrap items-center justify-between gap-3 border-b border-white/10 bg-black/40 px-4 py-2.5">
+        <p className="flex items-center gap-2 font-tech text-[10px] uppercase tracking-[0.2em] text-white/55">
+          <span className="font-display text-sm font-black tracking-[0.18em] text-gold">Tableau</span>
+          <span className="text-white/25">/</span>
+          {map.double ? "Double élimination" : "Élimination directe"}
+          <span className="text-white/25">·</span>
+          {map.wb[0]?.entries.length * 2 || 0} places
+        </p>
         <div className="flex items-center gap-1">
-          <button type="button" aria-label="Dézoomer" onClick={() => setScale((s) => Math.max(0.35, s - 0.1))} className="grid h-8 w-8 place-items-center border border-white/10 text-white/70 hover:bg-white/10">
+          <button type="button" aria-label="Dézoomer" onClick={() => zoom((s) => s - 0.1)} className="grid h-8 w-8 place-items-center border border-white/10 text-white/70 hover:bg-white/10">
             <LuMinus className="h-4 w-4" />
           </button>
           <span className="w-12 text-center font-tech text-[11px] text-white/60">{Math.round(scale * 100)} %</span>
-          <button type="button" aria-label="Zoomer" onClick={() => setScale((s) => Math.min(1.6, s + 0.1))} className="grid h-8 w-8 place-items-center border border-white/10 text-white/70 hover:bg-white/10">
+          <button type="button" aria-label="Zoomer" onClick={() => zoom((s) => s + 0.1)} className="grid h-8 w-8 place-items-center border border-white/10 text-white/70 hover:bg-white/10">
             <LuPlus className="h-4 w-4" />
           </button>
           <button type="button" onClick={fit} className="ml-1 flex h-8 items-center gap-1.5 border border-white/10 px-3 font-tech text-[10px] uppercase tracking-[0.18em] text-white/70 hover:bg-white/10">
@@ -327,7 +323,7 @@ export function BracketBoard({ tournament, myTeamId = null, theme = DEFAULT_THEM
       <div
         ref={viewport}
         style={T.stage}
-        className={cn("relative cursor-grab overflow-auto active:cursor-grabbing", full ? "flex-1" : "max-h-[78vh]")}
+        className={cn("relative cursor-grab overflow-x-auto overflow-y-hidden active:cursor-grabbing", full && "flex-1 overflow-y-auto")}
         onPointerDown={onPointerDown}
         onPointerMove={onPointerMove}
         onPointerUp={onPointerUp}
@@ -336,7 +332,7 @@ export function BracketBoard({ tournament, myTeamId = null, theme = DEFAULT_THEM
       >
         <div style={{ width: width * scale, height: height * scale }}>
           <div className="relative origin-top-left" style={{ width, height, transform: `scale(${scale})` }}>
-            {sectionLabel(map.wbTop, map.double ? "Tableau des gagnants" : "Tableau", T.section.wb)}
+            {map.double ? sectionLabel(map.wbTop, "Tableau des gagnants", T.section.wb) : null}
             {map.wb.map((r, i) => pill(`W${r.round}`, PAD + i * COL, map.wbTop, shortName(r.name), r.bestOf))}
             {map.lbTop ? (
               <>
@@ -367,7 +363,7 @@ export function BracketBoard({ tournament, myTeamId = null, theme = DEFAULT_THEM
                 const hovered = focus && travelled(edge, focus);
                 const mine = myTeamId && travelled(edge, myTeamId);
                 const advanced = a.entry.status === "done" && a.entry.winner && teamsOf(b.entry).includes(a.entry.winner);
-                const stroke = hovered ? T.focus : champ ? T.champ.color : mine ? T.focus : advanced ? T.line.adv : T.line.idle;
+                const stroke = hovered ? T.hover : champ ? T.champ.color : mine ? T.focus : advanced ? T.line.adv : T.line.idle;
                 return (
                   <g key={index}>
                     <motion.path
@@ -436,10 +432,39 @@ export function BracketBoard({ tournament, myTeamId = null, theme = DEFAULT_THEM
           </div>
         </div>
       </div>
-      <p className="border-t border-white/10 bg-black/40 px-4 py-2 text-right font-tech text-[9px] uppercase tracking-[0.18em] text-white/40">
-        <span className="md:hidden">Fais glisser pour te déplacer · touche un match pour l&apos;ouvrir</span>
-        <span className="hidden md:inline">Ctrl + molette pour zoomer · cliquer-glisser pour se déplacer · survole une équipe pour voir son parcours</span>
-      </p>
+      <div className="flex flex-wrap items-center justify-between gap-x-6 gap-y-2 border-t border-white/10 bg-black/40 px-4 py-2.5">
+        <ul className="flex flex-wrap items-center gap-x-4 gap-y-1 font-tech text-[10px] uppercase tracking-[0.18em] text-white/60">
+          <li className="flex items-center gap-1.5">
+            <span className="relative flex h-2 w-2">
+              <span className="absolute inline-flex h-full w-full animate-ping rounded-full opacity-60" style={{ background: LIVE }} />
+              <span className="relative inline-flex h-2 w-2 rounded-full" style={{ background: LIVE }} />
+            </span>
+            En cours
+          </li>
+          <li className="flex items-center gap-1.5">
+            <span className="h-2 w-2 rounded-full" style={{ background: LATE }} />
+            Retard
+          </li>
+          <li className="flex items-center gap-1.5">
+            <span className="h-2 w-2 rounded-full" style={{ background: DISPUTE }} />
+            Litige · arbitrage
+          </li>
+          <li className="flex items-center gap-1.5">
+            <span className="h-0.5 w-5 rounded" style={{ background: T.champ.color, boxShadow: `0 0 6px ${T.champ.color}` }} />
+            Parcours du champion
+          </li>
+          {myTeamId ? (
+            <li className="flex items-center gap-1.5">
+              <span className="h-2 w-2" style={{ background: T.focus }} />
+              Ton équipe
+            </li>
+          ) : null}
+        </ul>
+        <p className="font-tech text-[9px] uppercase tracking-[0.18em] text-white/40">
+          <span className="md:hidden">Fais glisser pour te déplacer · touche un match pour l&apos;ouvrir</span>
+          <span className="hidden md:inline">Ctrl + molette : zoom · cliquer-glisser : se déplacer · survol : parcours d&apos;une équipe</span>
+        </p>
+      </div>
     </div>
   );
 }
@@ -477,16 +502,16 @@ function MatchCard({ T, node, nodes, myTeamId, championId, focus, onHover, grand
         style={{
           height: ROW_H,
           borderBottom: index === 0 ? `1px solid ${T.card.divider}` : undefined,
-          background: picked ? `color-mix(in srgb, ${T.focus} 20%, transparent)` : mine ? `color-mix(in srgb, ${T.focus} 12%, transparent)` : undefined,
+          background: picked ? `color-mix(in srgb, ${T.hover} 22%, transparent)` : mine ? `color-mix(in srgb, ${T.focus} 12%, transparent)` : undefined,
         }}
         onMouseEnter={() => team && onHover(team.id)}
         onMouseLeave={() => onHover(null)}
       >
-        {mine || picked ? <span className="absolute inset-y-0 left-0 w-0.5" style={{ background: T.focus }} /> : null}
+        {mine || picked ? <span className="absolute inset-y-0 left-0 w-0.5" style={{ background: picked ? T.hover : T.focus }} /> : null}
         {team ? <TeamCrest team={team} size={20} /> : <span className="h-5 w-5 shrink-0 border border-dashed" style={{ borderColor: T.text.empty }} />}
         <span
           className={cn("min-w-0 flex-1 truncate text-[13px] leading-none", won ? "font-bold" : "font-semibold", !team && "italic")}
-          style={{ color: picked ? T.focus : !team ? T.text.empty : lost ? T.text.lost : won && T.text.winName ? T.text.winName : T.text.name }}
+          style={{ color: picked ? T.hover : !team ? T.text.empty : lost ? T.text.lost : won && T.text.winName ? T.text.winName : T.text.name }}
         >
           {team ? team.name : placeholder(node, nodes, index)}
         </span>
@@ -505,7 +530,7 @@ function MatchCard({ T, node, nodes, myTeamId, championId, focus, onHover, grand
         height: CARD_H,
         background: T.card.background,
         boxShadow: hovered
-          ? `inset 0 0 0 1.5px ${T.focus}, 0 0 22px color-mix(in srgb, ${T.focus} 45%, transparent)`
+          ? `inset 0 0 0 1.5px ${T.hover}, 0 0 22px color-mix(in srgb, ${T.hover} 45%, transparent)`
           : status
             ? `inset 0 0 0 1.5px ${status}, 0 0 18px ${status}44`
             : grand
@@ -522,10 +547,10 @@ function MatchCard({ T, node, nodes, myTeamId, championId, focus, onHover, grand
     <div className="relative">
       {node.number ? (
         <span
-          className={cn("absolute -left-3 top-1/2 z-10 grid h-6 min-w-6 -translate-y-1/2 place-items-center border px-1 font-tech text-[9px] font-bold", T.badge.className)}
+          className={cn("absolute -top-2 left-2 z-10 border px-1.5 font-tech text-[8px] font-bold leading-[13px] tracking-[0.14em]", T.badge.className)}
           style={{ ...T.badge.style, borderColor: live ? LIVE : T.badge.style.borderColor }}
         >
-          {node.number}
+          M{node.number}
         </span>
       ) : null}
       {live || late || dispute || entry.decided ? (

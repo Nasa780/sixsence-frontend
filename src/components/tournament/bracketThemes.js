@@ -12,6 +12,8 @@ export const THEMES = {
     label: "Luxe noir & or",
     univers: "or",
     focus: "#ffd970",
+    // Survol d'une équipe : rouge (ton équipe reste en or, focus).
+    hover: "#e5484d",
     frame: "border-gold/30 bg-black",
     stage: {
       background: "radial-gradient(ellipse 120% 90% at 50% 50%, transparent 55%, rgba(0,0,0,0.8)), #000000",
