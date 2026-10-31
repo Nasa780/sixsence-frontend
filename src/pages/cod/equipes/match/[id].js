@@ -105,6 +105,12 @@ export default function TeamMatchPage() {
           </div>
         </TacticalCard>
 
+        {/* Joueurs des deux équipes, juste sous le score. */}
+        <div className="grid gap-6 lg:grid-cols-2">
+          <Roster match={match} side="A" userId={userId} />
+          <Roster match={match} side="B" userId={userId} />
+        </div>
+
         <MatchNotices match={match} name={name} />
         {/* Réglages de la partie privée, repliés, au-dessus du lancement : seulement pour l'équipe hôte. */}
         {match.status === "in_progress" && match.viewer?.side && match.viewer.side === match.hostSide ? <MatchRulesCard bestOf={match.bestOf} isHost /> : null}
@@ -126,11 +132,6 @@ export default function TeamMatchPage() {
         {match.viewer?.canCorrect ? <CorrectionForm key={match.correctedAt ?? "initial"} match={match} onDone={load} /> : null}
 
         {match.proofs ? <Proofs match={match} userId={userId} onDone={load} /> : null}
-
-        <div className="grid gap-6 lg:grid-cols-2">
-          <Roster match={match} side="A" userId={userId} />
-          <Roster match={match} side="B" userId={userId} />
-        </div>
 
         {open && !match.tournament ? (
           <TacticalCard innerClassName="p-6">
