@@ -426,14 +426,12 @@
 @media (prefers-reduced-motion: reduce) {
   .bracket-flow, .bracket-sheen::after { animation: none; }
 }
-/* Fond du tableau : noir profond, semis de points, lueur du mode en haut à gauche et lueur dorée côté champion. */
-.bracket-stage {
-  background-color: #08080a;
-  background-image:
-    radial-gradient(ellipse 60% 50% at 8% 0%, color-mix(in srgb, var(--color-gold) 12%, transparent), transparent 70%),
-    radial-gradient(ellipse 45% 55% at 96% 35%, rgba(231, 192, 90, 0.08), transparent 70%),
-    radial-gradient(ellipse 120% 90% at 50% 50%, transparent 55%, rgba(0, 0, 0, 0.55)),
-    radial-gradient(rgba(255, 255, 255, 0.07) 1px, transparent 1.4px);
-  background-size: 100% 100%, 100% 100%, 100% 100%, 22px 22px;
-  background-attachment: local, local, local, local;
+
+/* Tableau, thème Luxe : rayons derrière le trophée du champion, trophée qui flotte. */
+@keyframes lux-rays { to { transform: rotate(360deg); } }
+.lux-rays { background: repeating-conic-gradient(from 0deg, rgba(255, 217, 112, 0.16) 0deg 6deg, transparent 6deg 24deg); -webkit-mask-image: radial-gradient(closest-side, #000 30%, transparent); mask-image: radial-gradient(closest-side, #000 30%, transparent); animation: lux-rays 22s linear infinite; }
+@keyframes lux-float { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-5px); } }
+.lux-float { animation: lux-float 3.6s ease-in-out infinite; }
+@media (prefers-reduced-motion: reduce) {
+  .lux-rays, .lux-float { animation: none; }
 }

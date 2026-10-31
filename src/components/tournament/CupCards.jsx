@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { LuArrowLeft, LuArrowRight, LuCalendarDays, LuClock, LuDices, LuGamepad2, LuListOrdered, LuMap, LuSwords, LuTicket, LuTrophy, LuUsers, LuZap } from "react-icons/lu";
+import { LuArrowLeft, LuArrowRight, LuCalendarDays, LuClock, LuDices, LuGamepad2, LuListOrdered, LuMap, LuRepeat, LuSwords, LuTicket, LuTrophy, LuUsers, LuZap } from "react-icons/lu";
 import { roundsToWin } from "../../lib/matchRules";
 import { cn } from "../../lib/cn";
 import { TeamCrest } from "../teams/TeamParts";
@@ -156,12 +156,16 @@ export function CupList({ cups, now }) {
 /** Phases jouées, entre parenthèses après la date (comme Sked). */
 const phases = (t) => (t.bracket === "double" ? "gagnants + perdants + grande finale" : t.kind === "horus" ? "tableau + petite finale" : "tableau + finale");
 const MEDAL_ART = { horus: "horus", anubis: "anubis" };
+// Jours des rendez-vous récurrents (0 = dimanche, comme cup_schedules.weekday et getUTCDay).
+const WEEKDAYS = ["dimanche", "lundi", "mardi", "mercredi", "jeudi", "vendredi", "samedi"];
 
 /** Format en une ligne : manches par map selon le BO (8 en BO1, 6 en BO3 / BO5). */
 function formatLine(t) {
   const players = t.teamSize ?? t.playersPerTeam ?? null;
   const bo = (n) => `BO${n} (${roundsToWin(n)} manches)`;
-  return [players ? `${players}v${players}` : null, t.bestOf === t.finalBestOf ? bo(t.bestOf) : `${bo(t.bestOf)} · finale ${bo(t.finalBestOf)}`].filter(Boolean).join(" · ");
+  const losers = t.losersBestOf && t.losersBestOf !== t.bestOf ? `perdants ${bo(t.losersBestOf)}` : null;
+  const final = t.finalBestOf !== t.bestOf ? `finale ${bo(t.finalBestOf)}` : null;
+  return [players ? `${players}v${players}` : null, bo(t.bestOf), losers, final].filter(Boolean).join(" · ");
 }
 
 /**
@@ -208,6 +212,7 @@ export function CupHero({ tournament, now, action = null, onRules = null }) {
     [LuMap, "Maps tirées au sort", null],
     [LuDices, tournament.kind === "saison" || tournament.kind === "playin" ? "Têtes de série au classement" : "Tirage au sort", null],
     tournament.status === "scheduled" ? [LuClock, "Check-in 2 h → 15 min avant", null] : null,
+    tournament.schedule ? [LuRepeat, `Tous les ${WEEKDAYS[tournament.schedule.weekday]}s · ${tournament.schedule.time.replace(":", " h ")}`, `édition #${tournament.schedule.edition}`] : null,
     [LuTicket, "Inscription gratuite", null],
   ].filter(Boolean);
 
