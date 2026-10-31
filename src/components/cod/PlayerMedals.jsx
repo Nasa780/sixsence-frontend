@@ -8,7 +8,7 @@ const dateFr = (iso) => new Date(iso).toLocaleDateString("fr-FR", { day: "numeri
 
 /**
  * Vitrine d'un joueur (profil) : médailles de la Coupe Anubis et coupes de la Coupe Horus ensemble (images différentes),
- * nom de la coupe et date, la plus récente d'abord ;
+ * nom de la coupe, équipe (nom, sans tag) et date, la plus récente d'abord ;
  * au-delà de 8, palmarès regroupé par métal (vitrine commune AwardShelf). Rien n'est affiché sans médaille.
  */
 export function PlayerMedals({ playerId }) {
@@ -18,7 +18,7 @@ export function PlayerMedals({ playerId }) {
     let alive = true;
     supabase
       .from("cup_medals")
-      .select("id, place, name, kind, created_at")
+      .select("id, place, name, team_name, kind, created_at")
       .eq("user_id", playerId)
       .order("created_at", { ascending: false })
       .then(({ data }) => alive && setMedals(data || []));
@@ -33,7 +33,7 @@ export function PlayerMedals({ playerId }) {
     image: image(medal.kind, medal.place),
     label: METALS[medal.place]?.label ?? "Médaille",
     title: medal.name,
-    sub: dateFr(medal.created_at),
+    sub: `${medal.team_name ? `${medal.team_name} · ` : ""}${dateFr(medal.created_at)}`,
   }));
   return <AwardShelf id="titre-medailles" title="Vitrine" items={items} swing />;
 }
