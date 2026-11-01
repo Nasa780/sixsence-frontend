@@ -87,7 +87,7 @@ export default function App({ Component, pageProps }) {
         <meta
           key="og:description"
           property="og:description"
-          content="Call of Duty MW4 en Hardcore : classé en solo, Division en 4v4 et tournois. La première place est à prendre : gratuit, connexion avec Discord. GTA 6 bientôt."
+          content="Call of Duty MW4 en Hardcore : classé en solo, Division en 4v4 et tournois. La première place est à prendre : gratuit, connexion avec Discord. Événement GTA VI à venir."
         />
         <meta property="og:url" content={`${SITE_URL}${asPath.split(/[?#]/)[0]}`} />
         <meta key="og:image" property="og:image" content={`${SITE_URL}/og/banniere-sixsence.jpg`} />
