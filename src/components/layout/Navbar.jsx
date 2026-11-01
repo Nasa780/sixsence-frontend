@@ -3,7 +3,7 @@ import Link from "next/link";
 import { useRouter } from "next/router";
 import { useEffect, useRef, useState } from "react";
 import { FaDiscord } from "react-icons/fa6";
-import { LuArrowRight, LuCalendarDays, LuChevronDown, LuCircleHelp, LuCrosshair, LuIdCard, LuLogOut, LuMenu, LuScrollText, LuShield, LuShieldCheck, LuSparkles, LuSwords, LuTrophy, LuTriangleAlert, LuUser, LuUsers, LuX } from "react-icons/lu";
+import { LuArrowRight, LuCalendarDays, LuChevronDown, LuCircleHelp, LuCrown, LuCrosshair, LuIdCard, LuLogOut, LuMenu, LuScrollText, LuShield, LuShieldCheck, LuSparkles, LuSwords, LuTrophy, LuTriangleAlert, LuUser, LuUsers, LuX } from "react-icons/lu";
 import useActiveMatch from "../../hooks/useActiveMatch";
 import useSession from "../../hooks/useSession";
 import useTeamTags from "../../hooks/useTeamTags";
@@ -273,6 +273,10 @@ export function Navbar() {
                       <LuCalendarDays aria-hidden className="h-4 w-4" />
                       Calendrier
                     </Link>
+                    <Link href="/renommee" className={MOBILE_ITEM}>
+                      <LuCrown aria-hidden className="h-4 w-4" />
+                      Renommée
+                    </Link>
                     <Link href="/nouveautes" className={MOBILE_ITEM}>
                       <LuSparkles aria-hidden className="h-4 w-4" />
                       Nouveautés
@@ -483,6 +487,9 @@ function UserMenu({ user }) {
             <div className="border-t border-white/10 py-1.5">
               <MenuItem href="/calendrier" icon={LuCalendarDays}>
                 Calendrier
+              </MenuItem>
+              <MenuItem href="/renommee" icon={LuCrown}>
+                Renommée
               </MenuItem>
               <MenuItem href="/nouveautes" icon={LuSparkles}>
                 Nouveautés
