@@ -3,7 +3,8 @@ import Link from "next/link";
 import { useRouter } from "next/router";
 import { useEffect, useRef, useState } from "react";
 import { FaDiscord } from "react-icons/fa6";
-import { LuCalendarDays, LuCircleHelp, LuCrosshair, LuLogOut, LuMenu, LuScrollText, LuShield, LuShieldCheck, LuSwords, LuTrophy, LuUser, LuUsers, LuX } from "react-icons/lu";
+import { LuArrowRight, LuCalendarDays, LuChevronDown, LuCircleHelp, LuCrosshair, LuIdCard, LuLogOut, LuMenu, LuScrollText, LuShield, LuShieldCheck, LuSparkles, LuSwords, LuTrophy, LuTriangleAlert, LuUser, LuUsers, LuX } from "react-icons/lu";
+import useActiveMatch from "../../hooks/useActiveMatch";
 import useSession from "../../hooks/useSession";
 import useTeamTags from "../../hooks/useTeamTags";
 import useUser from "../../hooks/useUser";
@@ -11,7 +12,9 @@ import { signInWithDiscord, signOut } from "../../lib/auth";
 import { cn } from "../../lib/cn";
 import { codModeOf } from "../cod/CodModeNav";
 import { MATCH_TEAM_ENABLED, MY_MATCHES_ENABLED } from "../../lib/config";
+import { levelFor, rankFor } from "../../lib/ranks";
 import { isReferee } from "../../lib/roles";
+import { RankEmblem } from "../cod/RankEmblem";
 import { Avatar } from "../ui/Avatar";
 import { Button } from "../ui/Button";
 import { Container } from "../ui/Container";
@@ -238,7 +241,13 @@ export function Navbar() {
                   <div className="flex flex-col gap-1">
                     <div className="flex items-center gap-3 px-4 py-2">
                       <Avatar src={user.avatar} name={user.username} size={36} />
-                      <span className="truncate font-display text-lg font-bold uppercase tracking-wide">{user.username}</span>
+                      <span className="min-w-0">
+                        <span className="block truncate font-display text-lg font-bold uppercase leading-none tracking-wide">{user.username}</span>
+                        <span className="mt-1 block font-tech text-[10px] uppercase tracking-[0.18em] text-white/50">
+                          <span style={{ color: rankFor(user.profile?.points ?? 0).text }}>{rankFor(user.profile?.points ?? 0).name}</span> · {user.profile?.points ?? 0} pts · Niv.{" "}
+                          {levelFor(user.profile?.xp ?? 0)}
+                        </span>
+                      </span>
                     </div>
                     <Link href="/cod/profile" className={MOBILE_ITEM}>
                       <LuUser aria-hidden className="h-4 w-4" />
@@ -256,9 +265,17 @@ export function Navbar() {
                         Mes matchs
                       </Link>
                     ) : null}
+                    <Link href="/cod/profile?cartes=1" className={MOBILE_ITEM}>
+                      <LuIdCard aria-hidden className="h-4 w-4" />
+                      Mes cartes de visite
+                    </Link>
                     <Link href="/calendrier" className={MOBILE_ITEM}>
                       <LuCalendarDays aria-hidden className="h-4 w-4" />
                       Calendrier
+                    </Link>
+                    <Link href="/nouveautes" className={MOBILE_ITEM}>
+                      <LuSparkles aria-hidden className="h-4 w-4" />
+                      Nouveautés
                     </Link>
                     <Link href="/reglement" className={MOBILE_ITEM}>
                       <LuScrollText aria-hidden className="h-4 w-4" />
@@ -304,9 +321,26 @@ export function Navbar() {
   );
 }
 
-/** Avatar + pseudo, avec un menu déroulant (profil, file classée, déconnexion). */
+/** Lien du menu du profil (icône + libellé). */
+function MenuItem({ href, icon: Icon, children }) {
+  return (
+    <Link role="menuitem" href={href} className="flex items-center gap-2.5 px-4 py-2 text-sm text-white/75 transition-colors hover:bg-white/5 hover:text-gold">
+      <Icon aria-hidden className="h-4 w-4" />
+      {children}
+    </Link>
+  );
+}
+
+/**
+ * Avatar + pseudo, avec un menu déroulant : carte du joueur (rang, points, niveau, équipe), rappel de l'identifiant
+ * Activision, match en cours, les trois modes, le compte, les pages utiles, l'administration, la déconnexion.
+ */
 function UserMenu({ user }) {
   const myTeam = useTeamTags([user.id]).get(user.id);
+  const active = useActiveMatch();
+  const profile = user.profile ?? null;
+  const points = profile?.points ?? 0;
+  const rank = rankFor(points);
   const [open, setOpen] = useState(false);
   const container = useRef(null);
   const { pathname } = useRouter();
@@ -343,6 +377,7 @@ function UserMenu({ user }) {
       >
         <Avatar src={user.avatar} name={user.username} size={34} />
         <span className="max-w-[9rem] truncate font-display text-base font-bold uppercase tracking-[0.1em]">{user.username}</span>
+        <LuChevronDown aria-hidden className={cn("h-4 w-4 text-white/50 transition-transform", open && "rotate-180")} />
       </button>
 
       <AnimatePresence>
@@ -353,66 +388,130 @@ function UserMenu({ user }) {
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -6 }}
             transition={{ duration: 0.15 }}
-            className="absolute right-0 top-full mt-2 w-56 border border-white/12 bg-ink-800 py-1.5 shadow-2xl shadow-black/60"
+            className="absolute right-0 top-full mt-2 w-80 overflow-hidden border border-white/12 bg-ink-800 shadow-2xl shadow-black/60"
           >
-            <Link
-              role="menuitem"
-              href="/cod/profile"
-              className="flex items-center gap-2.5 px-4 py-2.5 text-sm text-white/75 transition-colors hover:bg-white/5 hover:text-gold"
-            >
-              <LuUser aria-hidden className="h-4 w-4" />
-              Mon profil
+            {/* Carte du joueur : rang et points du Classé, niveau, équipe. */}
+            <Link role="menuitem" href="/cod/profile" className="relative block overflow-hidden border-b border-white/10 p-4 transition-colors hover:bg-white/[0.03]">
+              <span aria-hidden className="pointer-events-none absolute -right-10 -top-10 h-32 w-32 rounded-full blur-2xl" style={{ background: `${rank.color}33` }} />
+              <span className="relative flex items-center gap-3">
+                <Avatar src={user.avatar} name={user.username} size={44} />
+                <span className="min-w-0 flex-1">
+                  <span className="flex items-center gap-2">
+                    <span className="truncate font-display text-lg font-black uppercase leading-none tracking-wide">{user.username}</span>
+                    {myTeam ? (
+                      <span className="shrink-0 font-tech text-[10px] font-bold tracking-[0.16em]" style={{ color: myTeam.color }}>
+                        [{myTeam.tag}]
+                      </span>
+                    ) : null}
+                  </span>
+                  <span className="mt-1.5 flex items-center gap-1.5 whitespace-nowrap font-tech text-[10px] uppercase tracking-[0.1em] text-white/50">
+                    <span style={{ color: rank.text }}>{rank.name}</span>
+                    <span className="text-white/25">·</span>
+                    {points} pts
+                    <span className="text-white/25">·</span>
+                    Niv. {levelFor(profile?.xp ?? 0)}
+                  </span>
+                </span>
+                <RankEmblem rank={rank} size={40} animated={false} />
+              </span>
             </Link>
-            {myTeam ? (
-              <Link
-                role="menuitem"
-                href="/cod/equipe"
-                className="flex items-center gap-2.5 px-4 py-2.5 text-sm text-white/75 transition-colors hover:bg-white/5 hover:text-gold"
-              >
-                <LuUsers aria-hidden className="h-4 w-4" />
-                Mon équipe
+            {profile && !profile.activision_id ? (
+              <Link role="menuitem" href="/cod/profile" className="flex items-center gap-2.5 border-b border-white/10 bg-gold/[0.08] px-4 py-2.5 text-xs text-gold transition-colors hover:bg-gold/15">
+                <LuTriangleAlert aria-hidden className="h-4 w-4 shrink-0" />
+                Ajoute ton identifiant Activision pour jouer
               </Link>
             ) : null}
-            {MY_MATCHES_ENABLED ? (
+            {active ? (
               <Link
                 role="menuitem"
-                href="/cod/matchs"
-                className="flex items-center gap-2.5 px-4 py-2.5 text-sm text-white/75 transition-colors hover:bg-white/5 hover:text-gold"
+                href={active.kind === "division" ? `/cod/equipes/match/${active.id}` : `/cod/match/${active.id}`}
+                className="flex items-center gap-2.5 border-b border-white/10 bg-loss/10 px-4 py-3 font-display text-sm font-bold uppercase tracking-[0.12em] text-white transition-colors hover:bg-loss/20"
               >
-                <LuSwords aria-hidden className="h-4 w-4" />
-                Mes matchs
+                <span className="relative flex h-2 w-2">
+                  <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-loss opacity-70" />
+                  <span className="relative inline-flex h-2 w-2 rounded-full bg-loss" />
+                </span>
+                Match en cours
+                <LuArrowRight aria-hidden className="ml-auto h-4 w-4" />
               </Link>
             ) : null}
-            {MODE_SUBMENU ? null : (
-              <Link
-                role="menuitem"
-                href="/cod/ranked"
-                className="flex items-center gap-2.5 px-4 py-2.5 text-sm text-white/75 transition-colors hover:bg-white/5 hover:text-gold"
-              >
-                <LuCrosshair aria-hidden className="h-4 w-4" />
-                Classé
-              </Link>
-            )}
+
+            {/* Jouer : les trois modes, à leurs couleurs. */}
+            {MODE_SUBMENU ? (
+              <div className="grid grid-cols-3 gap-1.5 border-b border-white/10 p-2.5">
+                {LINKS[1].children.map((mode) => {
+                  const Icon = mode.icon;
+                  return (
+                    <Link
+                      key={mode.href}
+                      role="menuitem"
+                      href={mode.href}
+                      style={{ "--mode": mode.color }}
+                      className="flex flex-col items-center gap-1.5 border border-white/10 bg-white/[0.02] px-2 py-2.5 transition-colors hover:border-[var(--mode)] hover:bg-[color-mix(in_srgb,var(--mode)_10%,transparent)]"
+                    >
+                      <Icon aria-hidden className="h-4 w-4" style={{ color: mode.color }} />
+                      <span className="font-display text-xs font-bold uppercase tracking-[0.12em] text-white/80">{mode.label}</span>
+                    </Link>
+                  );
+                })}
+              </div>
+            ) : null}
+
+            <div className="py-1.5">
+              <MenuItem href="/cod/profile" icon={LuUser}>
+                Mon profil
+              </MenuItem>
+              {myTeam ? (
+                <MenuItem href="/cod/equipe" icon={LuUsers}>
+                  Mon équipe
+                </MenuItem>
+              ) : null}
+              <MenuItem href="/cod/profile?cartes=1" icon={LuIdCard}>
+                Mes cartes de visite
+              </MenuItem>
+              {MY_MATCHES_ENABLED ? (
+                <MenuItem href="/cod/matchs" icon={LuSwords}>
+                  Mes matchs
+                </MenuItem>
+              ) : null}
+              {MODE_SUBMENU ? null : (
+                <MenuItem href="/cod/ranked" icon={LuCrosshair}>
+                  Classé
+                </MenuItem>
+              )}
+            </div>
+            <div className="border-t border-white/10 py-1.5">
+              <MenuItem href="/calendrier" icon={LuCalendarDays}>
+                Calendrier
+              </MenuItem>
+              <MenuItem href="/nouveautes" icon={LuSparkles}>
+                Nouveautés
+              </MenuItem>
+              <MenuItem href="/reglement" icon={LuScrollText}>
+                Règlement
+              </MenuItem>
+              <MenuItem href="/faq" icon={LuCircleHelp}>
+                FAQ
+              </MenuItem>
+            </div>
             {isReferee(user.role) ? (
-              <Link
-                role="menuitem"
-                href="/admin"
-                className="flex items-center gap-2.5 px-4 py-2.5 text-sm text-white/75 transition-colors hover:bg-white/5 hover:text-gold"
-              >
-                <LuShieldCheck aria-hidden className="h-4 w-4" />
-                Administration
-              </Link>
+              <div className="border-t border-white/10 py-1.5">
+                <MenuItem href="/admin" icon={LuShieldCheck}>
+                  Administration
+                </MenuItem>
+              </div>
             ) : null}
-            <div className="my-1.5 border-t border-white/10" />
-            <button
-              type="button"
-              role="menuitem"
-              onClick={signOut}
-              className="flex w-full items-center gap-2.5 px-4 py-2.5 text-left text-sm text-white/75 transition-colors hover:bg-white/5 hover:text-loss"
-            >
-              <LuLogOut aria-hidden className="h-4 w-4" />
-              Déconnexion
-            </button>
+            <div className="border-t border-white/10 py-1.5">
+              <button
+                type="button"
+                role="menuitem"
+                onClick={signOut}
+                className="flex w-full items-center gap-2.5 px-4 py-2.5 text-left text-sm text-white/75 transition-colors hover:bg-white/5 hover:text-loss"
+              >
+                <LuLogOut aria-hidden className="h-4 w-4" />
+                Déconnexion
+              </button>
+            </div>
           </motion.div>
         ) : null}
       </AnimatePresence>
