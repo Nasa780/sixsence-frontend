@@ -93,7 +93,7 @@ export default function App({ Component, pageProps }) {
         <meta key="og:image" property="og:image" content={`${SITE_URL}/og/banniere-sixsence.jpg`} />
         <meta property="og:image:width" content="1600" />
         <meta property="og:image:height" content="640" />
-        <meta key="og:image:alt" property="og:image:alt" content="Bannière SixSence avec le logo : sixsence.fr, le sixième sens du jeu compétitif. Tournois, communauté, site web, Discord." />
+        <meta key="og:image:alt" property="og:image:alt" content="Bannière SixSence, logo dans le coin : sixsence.fr, le sixième sens du jeu compétitif. Tournois, communauté, site web, Discord." />
         <meta name="twitter:card" content="summary_large_image" />
       </Head>
 
