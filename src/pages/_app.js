@@ -87,13 +87,13 @@ export default function App({ Component, pageProps }) {
         <meta
           key="og:description"
           property="og:description"
-          content="Classé MW4 en solo, Division en 4v4, Coupes Horus et Anubis. La première place est à prendre : gratuit, connexion avec Discord. GTA 6 bientôt."
+          content="Call of Duty MW4 en Hardcore : classé en solo, Division en 4v4 et tournois. La première place est à prendre : gratuit, connexion avec Discord. GTA 6 bientôt."
         />
         <meta property="og:url" content={`${SITE_URL}${asPath.split(/[?#]/)[0]}`} />
         <meta key="og:image" property="og:image" content={`${SITE_URL}/og/banniere-sixsence.jpg`} />
         <meta property="og:image:width" content="1600" />
         <meta property="og:image:height" content="640" />
-        <meta key="og:image:alt" property="og:image:alt" content="Bannière SixSence : sixsence.fr, le sixième sens du jeu compétitif. Tournois, communauté, site web, Discord." />
+        <meta key="og:image:alt" property="og:image:alt" content="Bannière SixSence avec le logo : sixsence.fr, le sixième sens du jeu compétitif. Tournois, communauté, site web, Discord." />
         <meta name="twitter:card" content="summary_large_image" />
       </Head>
 
