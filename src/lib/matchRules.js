@@ -1,7 +1,7 @@
 /**
  * Règles de match Modern Warfare 4 (R&D Hardcore) : paramètres de la partie privée, classe autorisée et conduite.
  * Affichées dans le règlement (/reglement) et sur les feuilles de match (bloc « Paramètres de la partie »).
- * Le Hardcore est simulé (santé 20, sans régénération ni mini-carte) : le vrai mode Hardcore fait planter le jeu.
+ * Le Hardcore est simulé (santé 15, sans régénération ni mini-carte) : le vrai mode Hardcore fait planter le jeu.
  */
 
 /** Manches à gagner par map : 8 en BO1 (Classé), 6 en BO3 / BO5 (Division, tournois). */
@@ -50,7 +50,7 @@ export function settingsTabs(bestOf) {
       id: "JOUEUR",
       rows: [
         { label: "Nombre de vies", def: "1 vie" },
-        { label: "Santé max", def: "Par défaut (100)", set: "20" },
+        { label: "Santé max", def: "Par défaut (100)", set: "15" },
         { label: "Régénération de santé", def: "Par défaut", set: "Désactivé" },
         { label: "Activer protection", def: "Désactivé" },
         { label: "Stabilisation de l'arme", def: "Désactivé" },
@@ -95,7 +95,7 @@ export const settingsToChange = (bestOf) => settingsTabs(bestOf).flatMap((tab) =
 
 export const ESSENTIALS = [
   { key: "format", title: "Format", lines: ["Classé : BO1, 8 manches", "Division : BO3 ou BO5, 6 manches", "Tournois : BO1 en 8 manches, BO3 ou BO5 en 6"] },
-  { key: "hardcore", title: "Hardcore", lines: ["20 PV, sans régénération", "Sans mini-carte, tir allié activé", "Sans séries ni améliorations"] },
+  { key: "hardcore", title: "Hardcore", lines: ["15 PV, sans régénération", "Sans mini-carte, tir allié activé", "Sans séries ni améliorations"] },
   { key: "weapons", title: "Armes", lines: ["Fusils d'assaut, mitraillettes", "Fusils tactiques", "Snipers à verrou"] },
   { key: "perks", title: "Atouts", lines: ["Fantôme", "Ruée ou Ninja", "Sang-froid"] },
   { key: "disconnect", title: "Déconnexion", lines: ["Une pause de 5 minutes", "par équipe et par map"] },
