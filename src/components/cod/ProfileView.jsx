@@ -24,6 +24,7 @@ import { ProfileClips } from "../clips/Clips";
 import { ActivisionForm } from "./ActivisionForm";
 import { CardBackdrop } from "./CallingCard";
 import { CardPicker } from "./CardPicker";
+import { NotificationSettings } from "./NotificationSettings";
 import { PlayerInsights } from "./PlayerInsights";
 import { PerformancePanel } from "./PerformancePanel";
 import { PlayerMedals } from "./PlayerMedals";
@@ -426,6 +427,20 @@ export function ProfileView({ userId, editable = false, ownUser = null, nameAsTi
               </div>
               <div className="mt-8 border-t border-white/10 pt-6">
                 <TwitchForm user={{ ...ownUser, profile: { ...ownUser.profile, twitch: profile.twitch } }} onSaved={load} />
+              </div>
+            </section>
+          ) : null}
+
+          {/* --- Notifications (uniquement sur son propre profil) ---------- */}
+          {editable && ownUser ? (
+            <section id="notifications" aria-labelledby="titre-notifications" className="scroll-mt-28">
+              <Eyebrow>Alertes</Eyebrow>
+              <h2 id="titre-notifications" className="mt-3 font-display text-4xl font-black uppercase leading-none">
+                Mes notifications
+              </h2>
+              <p className="mt-2 text-sm text-white/55">Choisis ce que tu reçois en notification et en message privé Discord.</p>
+              <div className="mt-6">
+                <NotificationSettings />
               </div>
             </section>
           ) : null}

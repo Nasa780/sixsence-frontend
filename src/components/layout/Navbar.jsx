@@ -3,7 +3,7 @@ import Link from "next/link";
 import { useRouter } from "next/router";
 import { useEffect, useRef, useState } from "react";
 import { FaDiscord } from "react-icons/fa6";
-import { LuArrowRight, LuCalendarDays, LuClapperboard, LuChevronDown, LuCircleHelp, LuCrown, LuCrosshair, LuIdCard, LuLogOut, LuMenu, LuScrollText, LuShield, LuShieldCheck, LuSparkles, LuSwords, LuTrophy, LuTriangleAlert, LuUser, LuUsers, LuX } from "react-icons/lu";
+import { LuArrowRight, LuBell, LuCalendarDays, LuClapperboard, LuChevronDown, LuCircleHelp, LuCrown, LuCrosshair, LuIdCard, LuLogOut, LuMenu, LuScrollText, LuShield, LuShieldCheck, LuSparkles, LuSwords, LuTrophy, LuTriangleAlert, LuUser, LuUsers, LuX } from "react-icons/lu";
 import useActiveMatch from "../../hooks/useActiveMatch";
 import useSession from "../../hooks/useSession";
 import useTeamTags from "../../hooks/useTeamTags";
@@ -274,6 +274,10 @@ export function Navbar() {
                       <LuIdCard aria-hidden className="h-4 w-4" />
                       Mes cartes de visite
                     </Link>
+                    <Link href="/cod/profile#notifications" className={MOBILE_ITEM}>
+                      <LuBell aria-hidden className="h-4 w-4" />
+                      Mes notifications
+                    </Link>
                     <Link href="/calendrier" className={MOBILE_ITEM}>
                       <LuCalendarDays aria-hidden className="h-4 w-4" />
                       Calendrier
@@ -500,6 +504,9 @@ function UserMenu({ user }) {
               ) : null}
               <MenuItem href="/cod/profile?cartes=1" icon={LuIdCard}>
                 Mes cartes de visite
+              </MenuItem>
+              <MenuItem href="/cod/profile#notifications" icon={LuBell}>
+                Mes notifications
               </MenuItem>
               {MY_MATCHES_ENABLED ? (
                 <MenuItem href="/cod/matchs" icon={LuSwords}>
