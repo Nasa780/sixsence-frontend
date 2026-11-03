@@ -330,12 +330,19 @@ export function Navbar() {
   );
 }
 
+// Cartes dont l'illustration a de larges bords sombres : zoom dans le menu seulement (le profil garde le plein cadre).
+// [zoom, point fixe] : le point fixe à gauche pousse le sujet vers la droite, hors du pseudo.
+const MENU_CARD_ZOOM = { "rang-legende": [1.6, "10% 50%"] };
+
 /** Carte de visite équipée en fond de la carte du joueur (menu du profil), voilée à gauche pour le pseudo. */
 function MenuCard({ cardKey }) {
-  const { rarity } = cardInfo(cardKey ?? "sixsence");
+  const key = cardKey ?? "sixsence";
+  const { rarity } = cardInfo(key);
   return (
-    <span aria-hidden className="pointer-events-none absolute inset-0">
-      <CardArt cardKey={cardKey ?? "sixsence"} place="tile" />
+    <span aria-hidden className="pointer-events-none absolute inset-0 overflow-hidden">
+      <span className="absolute inset-0" style={MENU_CARD_ZOOM[key] ? { transform: `scale(${MENU_CARD_ZOOM[key][0]})`, transformOrigin: MENU_CARD_ZOOM[key][1] } : undefined}>
+        <CardArt cardKey={key} place="tile" />
+      </span>
       <RarityFx rarity={rarity} />
       <span className="absolute inset-0 bg-linear-to-r from-ink/85 via-ink/45 to-ink/5" />
     </span>
