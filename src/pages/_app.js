@@ -13,6 +13,7 @@ import NotFound from "./404";
 import { installErrorReporting } from "../lib/monitoring";
 import { registerServiceWorker } from "../lib/push";
 import "../styles/globals.css";
+import { ActivisionPrompt } from "../components/cod/ActivisionPrompt";
 import { codModeOf } from "../components/cod/CodModeNav";
 import usePresence from "../hooks/usePresence";
 import { UniversContext } from "../lib/univers";
@@ -118,6 +119,8 @@ export default function App({ Component, pageProps }) {
           <Footer />
           {/* Changement de page lent : écran de chargement SixSence avec une astuce. */}
           <RouteLoader />
+          {/* Identifiant Activision manquant : fenêtre dès la connexion. */}
+          <ActivisionPrompt />
         </>
       )}
     </div>
