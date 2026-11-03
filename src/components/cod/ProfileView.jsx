@@ -20,6 +20,7 @@ import { Chip, EmptyState, Loading, Notice, StatTile } from "../ui/Feedback";
 import { TacticalCard } from "../ui/TacticalCard";
 import { ReasonDialog } from "../ui/ReasonDialog";
 import { Eyebrow } from "../ui/Typography";
+import { ProfileClips } from "../clips/Clips";
 import { ActivisionForm } from "./ActivisionForm";
 import { CardBackdrop } from "./CallingCard";
 import { CardPicker } from "./CardPicker";
@@ -333,6 +334,8 @@ export function ProfileView({ userId, editable = false, ownUser = null, nameAsTi
       <PlayerMedals playerId={player.id} />
 
       <TwitchPanel channel={profile.twitch} />
+
+      <ProfileClips playerId={player.id} own={editable && Boolean(ownUser)} />
 
       <div className="grid grid-cols-1 gap-12 lg:grid-cols-[1fr_22rem]">
         {/* --- Historique -------------------------------------------------- */}

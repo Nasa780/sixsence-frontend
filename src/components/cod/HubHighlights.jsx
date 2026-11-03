@@ -1,7 +1,7 @@
 import { motion, useInView, useReducedMotion } from "framer-motion";
 import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
-import { LuCrown, LuFlame, LuRadio, LuShield, LuSwords, LuTrophy, LuUserPlus } from "react-icons/lu";
+import { LuClapperboard, LuCrown, LuFlame, LuRadio, LuShield, LuSwords, LuTrophy, LuUserPlus } from "react-icons/lu";
 import { api } from "../../lib/api";
 import { cn } from "../../lib/cn";
 import { rankFor } from "../../lib/ranks";
@@ -19,6 +19,7 @@ export const FEED = {
   coupe: { icon: LuCrown, color: "#e7c05a", label: "Coupe" },
   equipe: { icon: LuShield, color: "#22d3ee", label: "Équipe" },
   arrivee: { icon: LuUserPlus, color: "#e7c05a", label: "Arrivée" },
+  clip: { icon: LuClapperboard, color: "#ffb27a", label: "Clip" },
 };
 
 export function ago(iso) {

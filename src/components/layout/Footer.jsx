@@ -18,6 +18,7 @@ const COLUMNS = [
       { href: "/nouveautes", label: "Nouveautés" },
       { href: "/calendrier", label: "Calendrier" },
       { href: "/renommee", label: "Renommée" },
+      { href: "/clips", label: "Clips" },
       { href: "/reglement", label: "Règlement" },
       { href: "/faq", label: "FAQ" },
     ],
