@@ -14,6 +14,8 @@ import { codModeOf } from "../cod/CodModeNav";
 import { MATCH_TEAM_ENABLED, MY_MATCHES_ENABLED } from "../../lib/config";
 import { levelFor, rankFor } from "../../lib/ranks";
 import { isReferee } from "../../lib/roles";
+import { CardArt, RarityFx } from "../cod/CallingCard";
+import { cardInfo } from "../../lib/cards";
 import { RankEmblem } from "../cod/RankEmblem";
 import { Avatar } from "../ui/Avatar";
 import { Button } from "../ui/Button";
@@ -239,9 +241,12 @@ export function Navbar() {
                 <InstallButton variant="menu" />
                 {loading ? null : user ? (
                   <div className="flex flex-col gap-1">
-                    <div className="flex items-center gap-3 px-4 py-2">
-                      <Avatar src={user.avatar} name={user.username} size={36} />
-                      <span className="min-w-0">
+                    <div className="relative flex items-center gap-3 overflow-hidden px-4 py-3">
+                      <MenuCard cardKey={user.profile?.calling_card} />
+                      <span className="relative">
+                        <Avatar src={user.avatar} name={user.username} size={36} />
+                      </span>
+                      <span className="relative min-w-0">
                         <span className="block truncate font-display text-lg font-bold uppercase leading-none tracking-wide">{user.username}</span>
                         <span className="mt-1 block font-tech text-[10px] uppercase tracking-[0.18em] text-white/50">
                           <span style={{ color: rankFor(user.profile?.points ?? 0).text }}>{rankFor(user.profile?.points ?? 0).name}</span> · {user.profile?.points ?? 0} pts · Niv.{" "}
@@ -325,6 +330,18 @@ export function Navbar() {
   );
 }
 
+/** Carte de visite équipée en fond de la carte du joueur (menu du profil), voilée à gauche pour le pseudo. */
+function MenuCard({ cardKey }) {
+  const { rarity } = cardInfo(cardKey ?? "sixsence");
+  return (
+    <span aria-hidden className="pointer-events-none absolute inset-0">
+      <CardArt cardKey={cardKey ?? "sixsence"} place="tile" />
+      <RarityFx rarity={rarity} />
+      <span className="absolute inset-0 bg-linear-to-r from-ink/85 via-ink/45 to-ink/5" />
+    </span>
+  );
+}
+
 /** Lien du menu du profil (icône + libellé). */
 function MenuItem({ href, icon: Icon, children }) {
   return (
@@ -394,9 +411,9 @@ function UserMenu({ user }) {
             transition={{ duration: 0.15 }}
             className="absolute right-0 top-full mt-2 w-80 overflow-hidden border border-white/12 bg-ink-800 shadow-2xl shadow-black/60"
           >
-            {/* Carte du joueur : rang et points du Classé, niveau, équipe. */}
-            <Link role="menuitem" href="/cod/profile" className="relative block overflow-hidden border-b border-white/10 p-4 transition-colors hover:bg-white/[0.03]">
-              <span aria-hidden className="pointer-events-none absolute -right-10 -top-10 h-32 w-32 rounded-full blur-2xl" style={{ background: `${rank.color}33` }} />
+            {/* Carte du joueur sur sa carte de visite équipée : rang et points du Classé, niveau, équipe. */}
+            <Link role="menuitem" href="/cod/profile" className="relative block overflow-hidden border-b border-white/10 px-4 py-6 transition-[filter] hover:brightness-110">
+              <MenuCard cardKey={profile?.calling_card} />
               <span className="relative flex items-center gap-3">
                 <Avatar src={user.avatar} name={user.username} size={44} />
                 <span className="min-w-0 flex-1">
