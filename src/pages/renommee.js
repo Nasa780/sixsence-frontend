@@ -3,6 +3,7 @@ import Head from "next/head";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import { LuCrown, LuFlame, LuMedal, LuStar, LuTrophy, LuZap } from "react-icons/lu";
+import { ClipCard } from "../components/clips/Clips";
 import { PlayerOfWeek } from "../components/cod/HubHighlights";
 import { TeamCrest } from "../components/teams/TeamParts";
 import { Avatar } from "../components/ui/Avatar";
@@ -27,13 +28,17 @@ export default function RenownPage() {
   const [data, setData] = useState(null);
   const [error, setError] = useState(null);
   const [playerOfWeek, setPlayerOfWeek] = useState(null);
+  const [clipOfWeek, setClipOfWeek] = useState(null);
 
   useEffect(() => {
     api("/hall-of-fame")
       .then(setData)
       .catch((caught) => setError(caught.message));
     api("/highlights")
-      .then((highlights) => setPlayerOfWeek(highlights.playerOfWeek ?? null))
+      .then((highlights) => {
+        setPlayerOfWeek(highlights.playerOfWeek ?? null);
+        setClipOfWeek(highlights.clipOfWeek ?? null);
+      })
       .catch(() => {});
   }, []);
 
@@ -72,6 +77,24 @@ export default function RenownPage() {
                 <SectionTitle id="titre-semaine" eyebrow="7 derniers jours" title="Top de la semaine" />
                 <div className="mt-6">
                   <PlayerOfWeek player={playerOfWeek} />
+                </div>
+              </section>
+            ) : null}
+
+            {clipOfWeek ? (
+              <section aria-labelledby="titre-clip-semaine">
+                <SectionTitle id="titre-clip-semaine" eyebrow="Le plus voté des 7 derniers jours" title="Clip de la semaine" />
+                <div className="mt-6 grid items-center gap-6 lg:grid-cols-[1.3fr_1fr]">
+                  <ClipCard clip={clipOfWeek} highlight onRemoved={() => setClipOfWeek(null)} />
+                  <div>
+                    <p className="font-display text-3xl font-black uppercase leading-[0.95]">{clipOfWeek.title}</p>
+                    <p className="mt-3 text-sm text-white/55">
+                      Par {clipOfWeek.author.username} · {clipOfWeek.votes} vote{clipOfWeek.votes > 1 ? "s" : ""} 🔥
+                    </p>
+                    <Link href="/clips" className="mt-5 inline-block text-sm font-semibold text-gold underline underline-offset-4">
+                      Tous les clips
+                    </Link>
+                  </div>
                 </div>
               </section>
             ) : null}
