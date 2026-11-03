@@ -1,10 +1,12 @@
 import { useEffect, useState } from "react";
 import { FaTwitch } from "react-icons/fa6";
 import { LuLoaderCircle, LuPlay, LuSave, LuX } from "react-icons/lu";
+import useLive from "../../hooks/useLive";
 import { supabase } from "../../lib/supabase";
 import { Button } from "../ui/Button";
 import { Notice } from "../ui/Feedback";
 import { TacticalCard } from "../ui/TacticalCard";
+import { LiveDot } from "./TwitchLive";
 
 const TWITCH = "#9146ff";
 const VALID = /^[A-Za-z0-9_]{4,25}$/;
@@ -17,9 +19,12 @@ export function parseTwitch(value) {
 
 /**
  * Chaîne Twitch du joueur (profil) : lien vers la chaîne et lecteur intégré, chargé seulement au clic
- * (le lecteur affiche le direct, ou la chaîne hors ligne). Rien n'est affiché sans chaîne liée.
+ * (le lecteur affiche le direct, ou la chaîne hors ligne). Rien n'est affiché sans chaîne liée. Joueur en direct
+ * sur COD ou GTA (`streams` de GET /live) : pastille Live, titre du direct et spectateurs. `initial` : aperçu.
  */
-export function TwitchPanel({ channel }) {
+export function TwitchPanel({ channel, initial = null }) {
+  const live = useLive(initial);
+  const stream = channel ? live?.streams?.find((item) => item.channel.toLowerCase() === channel.toLowerCase()) : null;
   const [playing, setPlaying] = useState(false);
   const [host, setHost] = useState(null);
   useEffect(() => setHost(window.location.hostname), []);
@@ -32,15 +37,17 @@ export function TwitchPanel({ channel }) {
           <FaTwitch aria-hidden className="h-6 w-6 text-white" />
         </span>
         <div className="min-w-0 flex-1">
-          <p className="font-tech text-[10px] uppercase tracking-[0.26em]" style={{ color: "#bf94ff" }}>
-            Chaîne Twitch
+          <p className="flex items-center gap-2 font-tech text-[10px] uppercase tracking-[0.26em]" style={{ color: "#bf94ff" }}>
+            {stream ? <LiveDot /> : null}
+            {stream ? `En direct · ${stream.viewers} spectateur${stream.viewers > 1 ? "s" : ""}` : "Chaîne Twitch"}
           </p>
           <a href={`https://www.twitch.tv/${channel}`} target="_blank" rel="noreferrer" className="mt-1 block truncate font-display text-3xl font-black uppercase leading-none hover:text-[#bf94ff]">
             {channel}
           </a>
+          {stream?.title ? <p className="mt-1.5 truncate text-sm text-white/55">{stream.title}</p> : null}
         </div>
         <div className="flex flex-wrap gap-2">
-          <Button size="sm" variant="outline" onClick={() => setPlaying((value) => !value)}>
+          <Button size="sm" variant={stream && !playing ? "primary" : "outline"} onClick={() => setPlaying((value) => !value)}>
             {playing ? <LuX aria-hidden className="h-4 w-4" /> : <LuPlay aria-hidden className="h-4 w-4" />}
             {playing ? "Fermer le lecteur" : "Regarder ici"}
           </Button>

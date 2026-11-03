@@ -5,6 +5,13 @@
  */
 export const RELEASES = [
   {
+    date: "2026-11-04",
+    title: "En direct sur Twitch",
+    items: [
+      { tag: "Site", text: "Les joueurs en direct sur Call of Duty ou GTA s'affichent sur l'accueil et la page MW4, avec le lecteur intégré. Lie ta chaîne Twitch depuis ton profil pour y apparaître.", href: "/cod/profile" },
+    ],
+  },
+  {
     date: "2026-10-31",
     title: "Tournois revus",
     items: [
