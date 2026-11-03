@@ -141,8 +141,7 @@ export function ActivisionDialog({ user, done, onSaved, onClose }) {
             <p className="mt-3 text-sm leading-relaxed text-white/65">
               Ajoute ton identifiant Activision : l&apos;hôte de chaque match
               s&apos;en sert pour t&apos;inviter dans la partie privée. Sans
-              lui, impossible d&apos;entrer dans la file ou de s&apos;inscrire à
-              une coupe.
+              lui, impossible de jouer.
             </p>
             <div className="mt-4 flex gap-3 border-l-2 border-gold/50 bg-white/[0.03] px-4 py-3 text-xs leading-relaxed text-white/60">
               <LuGamepad2
