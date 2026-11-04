@@ -282,6 +282,65 @@ async function readMapName(worker, image, tableTop) {
   return detectMap(data.text);
 }
 
+/** Grands chiffres du score : très carrés, ils se lisent comme un afficheur à 7 segments (clé : haut, haut gauche, haut droit, milieu, bas gauche, bas droit, bas). */
+const SEGMENTS = { 1110111: 0, 1011101: 2, 1011011: 3, "0111010": 4, 1101011: 5, 1101111: 6, 1010010: 7, 1111111: 8, 1111011: 9 };
+
+/** Grand chiffre d'une équipe, d'après les pixels de sa couleur au-dessus du tableau. Null si illisible. */
+function readRoundDigit(pixels, width, tableTop, isTeamColor) {
+  const left = Math.round(width * 0.3);
+  const right = Math.round(width * 0.72);
+  const bottom = Math.max(1, Math.round(tableTop) - 10);
+  const on = (x, y) => {
+    const offset = (y * width + x) * 4;
+    return isTeamColor(pixels[offset], pixels[offset + 1], pixels[offset + 2]);
+  };
+
+  // Le bloc le plus dense : le chiffre, sans le logo ni le nom de l'équipe.
+  const columns = new Array(right - left).fill(0);
+  for (let y = 0; y < bottom; y += 1) for (let x = left; x < right; x += 1) if (on(x, y)) columns[x - left] += 1;
+  const peak = Math.max(...columns);
+  if (peak < 20) return null;
+  let x0 = columns.indexOf(peak);
+  let x1 = x0;
+  while (x0 > 0 && columns[x0 - 1] > 2) x0 -= 1;
+  while (x1 < columns.length - 1 && columns[x1 + 1] > 2) x1 += 1;
+  x0 += left;
+  x1 += left;
+  const rows = new Array(bottom).fill(0);
+  for (let y = 0; y < bottom; y += 1) for (let x = x0; x <= x1; x += 1) if (on(x, y)) rows[y] += 1;
+  let y0 = 0;
+  let y1 = bottom - 1;
+  while (y0 < bottom && rows[y0] < 3) y0 += 1;
+  while (y1 > 0 && rows[y1] < 3) y1 -= 1;
+  const glyphWidth = x1 - x0 + 1;
+  const glyphHeight = y1 - y0 + 1;
+  if (glyphHeight < 30) return null;
+  if (glyphWidth / glyphHeight < 0.42) return 1;
+
+  const fill = (fx0, fx1, fy0, fy1) => {
+    let lit = 0;
+    let total = 0;
+    for (let y = Math.round(y0 + fy0 * glyphHeight); y < y0 + fy1 * glyphHeight; y += 1) {
+      for (let x = Math.round(x0 + fx0 * glyphWidth); x < x0 + fx1 * glyphWidth; x += 1) {
+        total += 1;
+        if (on(x, y)) lit += 1;
+      }
+    }
+    return total ? lit / total : 0;
+  };
+  const across = (y0Part, y1Part) => (fill(0.3, 0.7, y0Part, y1Part) > 0.5 ? 1 : 0);
+  const side = (x0Part, x1Part, y0Part, y1Part) => (fill(x0Part, x1Part, y0Part, y1Part) > 0.75 ? 1 : 0);
+  const key = [across(0.02, 0.14), side(0.02, 0.22, 0.2, 0.4), side(0.78, 0.98, 0.2, 0.4), across(0.44, 0.56), side(0.02, 0.22, 0.6, 0.8), side(0.78, 0.98, 0.6, 0.8), across(0.86, 0.98)].join("");
+  return SEGMENTS[key] ?? null;
+}
+
+/** Score de manches lu sur la capture : [équipe bleue, équipe orange], chaque valeur pouvant rester inconnue. */
+function readRounds(pixels, width, tableTop) {
+  const cyan = (r, g, b) => b > 150 && g > 130 && r < 120;
+  const orange = (r, g, b) => r > 130 && r > g * 1.6 && b < 130;
+  return [readRoundDigit(pixels, width, tableTop, cyan), readRoundDigit(pixels, width, tableTop, orange)];
+}
+
 /** Grand titre « MANCHE GAGNÉE » ou « MANCHE PERDUE » en haut à gauche : la partie n'est pas finie. */
 async function isMidGame(worker, image) {
   const scale = Math.min(1, 1000 / image.width);
@@ -336,7 +395,8 @@ export async function readScoreboard(file, players, onProgress = () => {}) {
   canvas.height = bitmap.height;
   const context = canvas.getContext("2d", { willReadFrequently: true });
   context.drawImage(bitmap, 0, 0);
-  const image = brightness(context.getImageData(0, 0, canvas.width, canvas.height));
+  const imageData = context.getImageData(0, 0, canvas.width, canvas.height);
+  const image = brightness(imageData);
 
   onProgress("Préparation de la lecture…");
   const { createWorker } = await import("tesseract.js");
@@ -349,6 +409,7 @@ export async function readScoreboard(file, players, onProgress = () => {}) {
 
     const mapSeen = detectMap(table.text) ?? (await readMapName(worker, image, columns[0].centerY));
     const midGame = /MANCHE/i.test(table.text) || (await isMidGame(worker, image));
+    const rounds = readRounds(imageData.data, image.width, columns[0].centerY);
 
     onProgress("Lecture des chiffres…");
     const rows = [];
@@ -376,7 +437,7 @@ export async function readScoreboard(file, players, onProgress = () => {}) {
       // Le texte qui ressemble le plus à un joueur du match ; sinon le premier lu.
       row.name = candidates.sort((a, b) => Math.max(...players.map((p) => nameSimilarity(b, p.activision ?? p.username))) - Math.max(...players.map((p) => nameSimilarity(a, p.activision ?? p.username))))[0];
     }
-    return { rows: matchPlayers(rows, players).map(({ centerY, rowHeight, ...row }) => row), mapSeen, midGame };
+    return { rows: matchPlayers(rows, players).map(({ centerY, rowHeight, ...row }) => row), mapSeen, midGame, rounds };
   } finally {
     await worker.terminate();
   }

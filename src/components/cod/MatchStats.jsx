@@ -81,9 +81,12 @@ function StatsTable({ rows, players }) {
 }
 
 /** Pourquoi la capture ne peut pas être validée : autre map, ou joueurs du match absents. Null si tout va bien. */
-function captureProblem(reading, usable, players, expectedMap) {
+function captureProblem(reading, usable, players, expectedMap, roundsToWin) {
   if (reading.midGame) return "Cette capture est prise en cours de partie : envoie le tableau de fin de match.";
   if (reading.mapSeen && expectedMap && mapId(reading.mapSeen) !== mapId(expectedMap)) return `Cette capture est sur ${reading.mapSeen}, ce match se joue sur ${expectedMap}.`;
+  // Score de manches : aucune équipe à 8 (BO1) ou à 6 (BO3, BO5), la partie n'est pas finie.
+  const [blue, orange] = reading.rounds ?? [];
+  if (roundsToWin && blue != null && orange != null && blue !== roundsToWin && orange !== roundsToWin) return `Cette capture affiche ${blue}-${orange} : une map se gagne en ${roundsToWin} manches. Envoie le tableau de fin de partie.`;
   const found = new Set(usable.map((row) => row.userId));
   const covered = ["A", "B"].every((side) => {
     const team = players.filter((player) => player.side === side);
@@ -94,12 +97,12 @@ function captureProblem(reading, usable, players, expectedMap) {
 }
 
 /** Résultat de la lecture : le joueur vérifie d'un coup d'œil et valide. Il ne tape rien. */
-function Preview({ reading, players, expectedMap, pending, onChoose, onConfirm, onCancel, onProofOnly }) {
+function Preview({ reading, players, expectedMap, roundsToWin, pending, onChoose, onConfirm, onCancel, onProofOnly }) {
   const usable = reading.rows.filter((row) => row.readable && row.userId);
   const free = players.filter((player) => !reading.rows.some((row) => row.userId === player.id));
   const unknown = reading.rows.filter((row) => row.readable && !row.userId);
   const unreadable = reading.rows.filter((row) => !row.readable).length;
-  const problem = captureProblem(reading, usable, players, expectedMap);
+  const problem = captureProblem(reading, usable, players, expectedMap, roundsToWin);
 
   return (
     <div className="space-y-4 border border-gold/30 bg-gold/[0.04] p-4">
@@ -171,6 +174,9 @@ export function MatchStats({ kind, matchId, status = null, initial = null }) {
   if (data.rows.length === 0 && !data.canSubmit) return null;
   const target = missingMaps.includes(mapNo) ? mapNo : missingMaps[0];
   const nothingYet = data.sentMaps.length === 0;
+  // BO3, BO5 : la map lue sur la capture désigne la map du match, sans rien choisir.
+  const seenIndex = reading?.mapSeen ? data.mapNames.findIndex((name) => mapId(name) === mapId(reading.mapSeen)) + 1 : 0;
+  const readingMap = missingMaps.includes(seenIndex) ? seenIndex : target;
 
   function reset() {
     setReading(null);
@@ -208,7 +214,7 @@ export function MatchStats({ kind, matchId, status = null, initial = null }) {
     try {
       const rows = reading.rows.filter((row) => row.readable && row.userId).map(({ userId, score, kills, plants, defuses }) => ({ userId, score, kills, plants, defuses }));
       const hash = await fingerprint(file);
-      setData(await api(`/cod/stats/${kind}/${matchId}`, { method: "POST", body: { mapNo: target, rows, hash } }));
+      setData(await api(`/cod/stats/${kind}/${matchId}`, { method: "POST", body: { mapNo: readingMap, rows, hash } }));
       await saveProof(kind, matchId, user.id, file).catch(() => setNotice("Stats enregistrées, mais l'image n'a pas pu être gardée comme preuve."));
       reset();
     } catch (caught) {
@@ -302,7 +308,8 @@ export function MatchStats({ kind, matchId, status = null, initial = null }) {
         <Preview
           reading={reading}
           players={data.players}
-          expectedMap={data.mapNames[target - 1]}
+          expectedMap={data.mapNames[readingMap - 1]}
+          roundsToWin={data.roundsToWin}
           pending={pending}
           onChoose={choose}
           onConfirm={confirm}
