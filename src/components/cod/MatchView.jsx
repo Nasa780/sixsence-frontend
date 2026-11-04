@@ -581,8 +581,8 @@ export function MatchView({ matchId }) {
       </div>
 
       {/* --- Vote du MVP (24 h après la fin du match) ---------------------- */}
-      {/* --- Stats lues sur la capture de fin de match --------------------- */}
-      {match.status === "completed" ? <MatchStats kind="classe" matchId={match.id} /> : null}
+      {/* --- Capture de fin de match : stats et preuve ---------------------- */}
+      <MatchStats kind="classe" matchId={match.id} status={match.status} />
 
       {match.status === "completed" ? (
         <MvpVote match={match} playerById={playerById} votes={mvpVotes} myVote={me.myVote} userId={userId} isPlayer={isPlayer} onVoted={() => Promise.all([load(), loadMe()])} />
@@ -645,8 +645,8 @@ export function MatchView({ matchId }) {
       {privateAccess ? (
         <>
           {/* --- Preuves (captures du tableau des scores) -------------------- */}
-          {canProve || (proofs || []).length > 0 ? (
-            <MatchProofs matchId={match.id} proofs={proofs || []} canUpload={canProve} currentUserId={userId} onUploaded={load} />
+          {(proofs || []).length > 0 ? (
+            <MatchProofs proofs={proofs} />
           ) : null}
 
           {/* --- Chat ----------------------------------------------------------- */}
@@ -1303,42 +1303,13 @@ function ReadyCheckBlock({ match, isPlayer, iAmReady, pending, onAccept, signedI
   );
 }
 
-const PROOF_TYPES = { "image/png": "png", "image/jpeg": "jpg", "image/webp": "webp" };
-const MAX_PROOF_BYTES = 5 * 1024 * 1024;
 
 /**
  * Preuves du match : captures du tableau des scores, utiles en cas de contestation.
  * Le fichier part directement dans Supabase Storage (dossier <match>/<joueur>/),
  * puis le backend l'enregistre (5 captures maximum par joueur).
  */
-function MatchProofs({ matchId, proofs, canUpload, currentUserId, onUploaded }) {
-  const [uploading, setUploading] = useState(false);
-  const [error, setError] = useState(null);
-  const inputRef = useRef(null);
-
-  async function upload(event) {
-    const file = event.target.files?.[0];
-    event.target.value = "";
-    if (!file) return;
-    const extension = PROOF_TYPES[file.type];
-    if (!extension) return setError("Formats acceptés : PNG, JPEG ou WebP.");
-    if (file.size > MAX_PROOF_BYTES) return setError("Image trop lourde : 5 Mo maximum.");
-
-    setUploading(true);
-    setError(null);
-    try {
-      const path = `${matchId}/${currentUserId}/${Date.now()}.${extension}`;
-      const { error: storageError } = await supabase.storage.from("match-proofs").upload(path, file, { contentType: file.type });
-      if (storageError) throw new Error("Envoi de l'image impossible. Réessaie dans un instant.");
-      await api(`/cod/matches/${matchId}/proofs`, { method: "POST", body: { path } });
-      await onUploaded();
-    } catch (caught) {
-      setError(caught.message);
-    } finally {
-      setUploading(false);
-    }
-  }
-
+function MatchProofs({ proofs }) {
   return (
     <section aria-labelledby="titre-preuves">
       <div className="flex flex-wrap items-end justify-between gap-4">
@@ -1348,32 +1319,7 @@ function MatchProofs({ matchId, proofs, canUpload, currentUserId, onUploaded }) 
             Captures du match
           </h2>
         </div>
-        {canUpload ? (
-          <>
-            <input
-              ref={inputRef}
-              type="file"
-              accept="image/png,image/jpeg,image/webp"
-              className="sr-only"
-              tabIndex={-1}
-              aria-hidden
-              onChange={upload}
-            />
-            <Button variant="outline" size="sm" onClick={() => inputRef.current?.click()} disabled={uploading}>
-              {uploading ? <LuLoaderCircle aria-hidden className="h-4 w-4 animate-spin" /> : <LuImagePlus aria-hidden className="h-4 w-4" />}
-              Ajouter une capture
-            </Button>
-          </>
-        ) : null}
       </div>
-      {canUpload ? (
-        <p className="mt-3 text-sm text-white/55">
-          Une capture du tableau des scores en fin de partie permet à un administrateur de trancher en cas de contestation (PNG, JPEG ou
-          WebP, 5 Mo max).
-        </p>
-      ) : null}
-      {error ? <p className="mt-3 text-sm text-loss">{error}</p> : null}
-
       {proofs.length > 0 ? (
         <ul className="mt-6 grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4">
           {proofs.map((proof) => (

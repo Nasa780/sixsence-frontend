@@ -135,9 +135,9 @@ export default function TeamMatchPage() {
         {match.viewer?.canResolve ? <ResolveForm match={match} onDone={load} /> : null}
         {match.viewer?.canCorrect ? <CorrectionForm key={match.correctedAt ?? "initial"} match={match} onDone={load} /> : null}
 
-        {match.status === "completed" ? <MatchStats kind="division" matchId={match.id} /> : null}
+        <MatchStats kind="division" matchId={match.id} status={match.status} />
 
-        {match.proofs ? <Proofs match={match} userId={userId} onDone={load} /> : null}
+        {match.proofs?.length ? <Proofs match={match} /> : null}
 
         {open && !match.tournament ? (
           <TacticalCard innerClassName="p-6">
@@ -646,34 +646,7 @@ function Roster({ match, side, userId }) {
 const PROOF_TYPES = { "image/png": "png", "image/jpeg": "jpg", "image/webp": "webp" };
 
 /** Captures du tableau des scores : envoyées par les joueurs du match, visibles des joueurs du match et des arbitres. */
-function Proofs({ match, userId, onDone }) {
-  const [uploading, setUploading] = useState(false);
-  const [error, setError] = useState(null);
-  const inputRef = useRef(null);
-  const canUpload = match.viewer?.canProve;
-
-  async function upload(event) {
-    const file = event.target.files?.[0];
-    event.target.value = "";
-    if (!file) return;
-    const extension = PROOF_TYPES[file.type];
-    if (!extension) return setError("Formats acceptés : PNG, JPEG ou WebP.");
-    if (file.size > 5 * 1024 * 1024) return setError("Image trop lourde : 5 Mo maximum.");
-    setUploading(true);
-    setError(null);
-    try {
-      const path = `${match.id}/${userId}/${Date.now()}.${extension}`;
-      const { error: storageError } = await supabase.storage.from("team-match-proofs").upload(path, file, { contentType: file.type });
-      if (storageError) throw new Error("Envoi de l'image impossible. Réessaie dans un instant.");
-      await api(`/teams/matches/${match.id}/proofs`, { method: "POST", body: { path } });
-      await onDone();
-    } catch (caught) {
-      setError(caught.message);
-    } finally {
-      setUploading(false);
-    }
-  }
-
+function Proofs({ match }) {
   return (
     <section aria-labelledby="titre-preuves">
       <div className="flex flex-wrap items-end justify-between gap-4">
@@ -683,26 +656,10 @@ function Proofs({ match, userId, onDone }) {
             Captures du match
           </h2>
         </div>
-        {canUpload ? (
-          <>
-            <input ref={inputRef} type="file" accept="image/png,image/jpeg,image/webp" className="sr-only" tabIndex={-1} aria-hidden onChange={upload} />
-            <Button variant="outline" size="sm" onClick={() => inputRef.current?.click()} disabled={uploading}>
-              {uploading ? <LuLoaderCircle aria-hidden className="h-4 w-4 animate-spin" /> : <LuImagePlus aria-hidden className="h-4 w-4" />}
-              Ajouter une capture
-            </Button>
-          </>
-        ) : null}
       </div>
-      {canUpload ? (
-        <p className="mt-3 text-sm text-white/55">
-          Une capture du tableau des scores de chaque map permet à un arbitre de trancher en cas de contestation (PNG, JPEG ou WebP, 5 Mo max, 5 par joueur).
-        </p>
-      ) : null}
-      {error ? <p className="mt-3 text-sm text-loss">{error}</p> : null}
-      {match.proofs.length > 0 ? (
-        <ul className="mt-6 grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4">
-          {match.proofs.map((proof) => (
-            <li key={proof.id}>
+      <ul className="mt-6 grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4">
+        {match.proofs.map((proof) => (
+          <li key={proof.id}>
               <a href={proof.url} target="_blank" rel="noopener noreferrer" className="group block border border-white/10 bg-white/[0.03] hover:border-gold">
                 {/* eslint-disable-next-line @next/next/no-img-element */}
                 <img src={proof.url} alt={`Capture envoyée par ${proof.username}`} loading="lazy" className="aspect-video w-full object-cover" />
@@ -712,10 +669,7 @@ function Proofs({ match, userId, onDone }) {
               </a>
             </li>
           ))}
-        </ul>
-      ) : (
-        <p className="mt-4 text-sm text-white/45">Aucune capture pour l&apos;instant.</p>
-      )}
+      </ul>
     </section>
   );
 }
