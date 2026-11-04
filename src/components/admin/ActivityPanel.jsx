@@ -3,10 +3,20 @@ import { LuArrowDownRight, LuArrowUpRight, LuMinus } from "react-icons/lu";
 import { api } from "../../lib/api";
 import { cn } from "../../lib/cn";
 import { Loading, Notice, StatTile } from "../ui/Feedback";
+import { ActivityChart } from "./ActivityChart";
 
 const COLORS = { or: "#d4af37", classe: "#34d399", division: "#22d3ee" };
 const shortDay = (day) => new Date(`${day}T12:00:00Z`).toLocaleDateString("fr-FR", { day: "numeric", month: "short" });
 const longDay = (day) => new Date(`${day}T12:00:00Z`).toLocaleDateString("fr-FR", { weekday: "long", day: "numeric", month: "long" });
+const plural = (n, word) => `${n} ${word}${n > 1 ? "s" : ""}`;
+
+/** Résumé au-dessus d'un graphique : le total et le meilleur jour. */
+function daySummary(points, word) {
+  const total = points.reduce((sum, point) => sum + point.value, 0);
+  if (!total) return null;
+  const best = points.reduce((top, point) => (point.value > top.value ? point : top));
+  return `${plural(total, word)} · pic le ${best.short}`;
+}
 
 /** Écart avec la période précédente, en texte : la flèche porte le sens, jamais la couleur seule. */
 function Trend({ current, previous, period }) {
@@ -17,49 +27,6 @@ function Trend({ current, previous, period }) {
       <Icon aria-hidden className="h-3.5 w-3.5" />
       {diff === 0 ? "stable" : `${diff > 0 ? "+" : ""}${diff}`} sur les {period} jours d&apos;avant
     </span>
-  );
-}
-
-/**
- * Petit histogramme d'une seule série : barres fines posées sur la ligne de base, échelle commençant à zéro, valeur
- * la plus haute écrite en haut, infobulle au survol. `points` : [{ key, label, value }].
- */
-function Bars({ title, points, color, unit, edges }) {
-  const [active, setActive] = useState(null);
-  const max = Math.max(1, ...points.map((point) => point.value));
-  const total = points.reduce((sum, point) => sum + point.value, 0);
-  const hovered = points.find((point) => point.key === active);
-
-  return (
-    <figure className="border border-white/10 bg-white/[0.02] p-4">
-      <figcaption className="flex items-baseline justify-between gap-3">
-        <span className="font-display text-lg font-bold uppercase tracking-wide">{title}</span>
-        <span className="font-tech text-sm font-bold tabular-nums text-white/70">{total}</span>
-      </figcaption>
-      <div className="relative mt-4">
-        <span className="absolute -top-2 left-0 font-tech text-[9px] tabular-nums text-white/35">{max}</span>
-        <div role="img" aria-label={`${title} : ${total} ${unit}, jusqu'à ${max} sur une période`} className="flex h-28 items-end gap-0.5 border-b border-white/15" onMouseLeave={() => setActive(null)}>
-          {points.map((point) => (
-            <div key={point.key} className="group flex h-full min-w-0 flex-1 items-end" onMouseEnter={() => setActive(point.key)}>
-              <div
-                className={cn("w-full rounded-t-[3px] transition-opacity", active && active !== point.key && "opacity-40")}
-                style={{ height: point.value ? `${Math.max(4, (point.value / max) * 100)}%` : 2, background: point.value ? color : "rgba(255,255,255,0.1)" }}
-              />
-            </div>
-          ))}
-        </div>
-        {hovered ? (
-          <p className="pointer-events-none absolute right-0 top-0 border border-white/15 bg-ink px-2 py-1 text-xs">
-            <span className="text-white/55">{hovered.label} : </span>
-            <span className="font-semibold tabular-nums">{hovered.value}</span>
-          </p>
-        ) : null}
-      </div>
-      <div className="mt-1.5 flex justify-between font-tech text-[9px] uppercase tracking-[0.12em] text-white/35">
-        <span>{edges[0]}</span>
-        <span>{edges[1]}</span>
-      </div>
-    </figure>
   );
 }
 
@@ -106,8 +73,13 @@ export function ActivityPanel({ initial = null }) {
   if (!data) return <Loading />;
 
   const { days, trends, hours, funnel, community } = data;
-  const dayPoints = (pick) => days.map((row) => ({ key: row.day, label: longDay(row.day), value: pick(row) }));
-  const edges = [shortDay(days[0].day), shortDay(days[days.length - 1].day)];
+  const dayPoints = (pick) => days.map((row) => ({ key: row.day, tick: shortDay(row.day), short: shortDay(row.day), label: longDay(row.day), value: pick(row) }));
+  const visitors = dayPoints((row) => row.visitors);
+  const signups = dayPoints((row) => row.signups);
+  const ranked = dayPoints((row) => row.ranked);
+  const division = dayPoints((row) => row.division);
+  const hourPoints = hours.map((row) => ({ key: String(row.hour), tick: `${row.hour} h`, label: `De ${row.hour} h à ${row.hour + 1} h`, value: row.matches }));
+  const busiest = hourPoints.reduce((top, point) => (point.value > top.value ? point : top));
   const shown = data.period;
 
   return (
@@ -136,11 +108,11 @@ export function ActivityPanel({ initial = null }) {
         <StatTile label="Joueurs actifs" value={trends.activePlayers.current} hint={<Trend {...trends.activePlayers} period={shown} />} />
       </div>
 
-      <div className="grid gap-3 md:grid-cols-2">
-        <Bars title="Visiteurs par jour" unit="visiteurs" color={COLORS.or} points={dayPoints((row) => row.visitors)} edges={edges} />
-        <Bars title="Inscrits par jour" unit="inscrits" color={COLORS.or} points={dayPoints((row) => row.signups)} edges={edges} />
-        <Bars title="Matchs classés" unit="matchs" color={COLORS.classe} points={dayPoints((row) => row.ranked)} edges={edges} />
-        <Bars title="Matchs de Division et tournois" unit="matchs" color={COLORS.division} points={dayPoints((row) => row.division)} edges={edges} />
+      <ActivityChart key={`visiteurs-${shown}`} title="Visiteurs par jour" summary={daySummary(visitors, "visiteur")} unit="visiteurs" type="area" color={COLORS.or} height={240} average points={visitors} />
+      <div className="grid gap-3 lg:grid-cols-3">
+        <ActivityChart key={`inscrits-${shown}`} title="Inscrits" summary={daySummary(signups, "inscrit")} unit="inscrits" color={COLORS.or} points={signups} empty="Pas d'inscrit sur cette période." />
+        <ActivityChart key={`classe-${shown}`} title="Matchs classés" summary={daySummary(ranked, "match")} unit="matchs" color={COLORS.classe} points={ranked} empty="Pas de match sur cette période." />
+        <ActivityChart key={`division-${shown}`} title="Division et tournois" summary={daySummary(division, "match")} unit="matchs" color={COLORS.division} points={division} empty="Pas de match sur cette période." />
       </div>
       <p className="text-xs text-white/40">Matchs comptés depuis le début de la saison 1 : ceux de la période de test sont archivés.</p>
 
@@ -161,13 +133,7 @@ export function ActivityPanel({ initial = null }) {
             <StatTile label="Chaînes Twitch" value={community.twitch} />
             <StatTile label="Clips" value={community.clips} />
           </div>
-          <Bars
-            title={`Heures de jeu (${shown} jours)`}
-            unit="matchs"
-            color={COLORS.or}
-            points={hours.map((row) => ({ key: String(row.hour), label: `${row.hour} h`, value: row.matches }))}
-            edges={["0 h", "23 h"]}
-          />
+          <ActivityChart key={`heures-${shown}`} title="Heures de jeu" summary={busiest.value ? `surtout vers ${busiest.tick}` : null} unit="matchs" color={COLORS.or} points={hourPoints} empty="Pas de match sur cette période." />
         </div>
       </div>
 
