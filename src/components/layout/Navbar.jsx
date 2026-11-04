@@ -3,7 +3,7 @@ import Link from "next/link";
 import { useRouter } from "next/router";
 import { useEffect, useRef, useState } from "react";
 import { FaDiscord } from "react-icons/fa6";
-import { LuArrowRight, LuBell, LuCalendarDays, LuClapperboard, LuChevronDown, LuCircleHelp, LuCrown, LuCrosshair, LuIdCard, LuLogOut, LuMenu, LuScrollText, LuShield, LuShieldCheck, LuSparkles, LuSwords, LuTrophy, LuTriangleAlert, LuUser, LuUsers, LuX } from "react-icons/lu";
+import { LuArrowRight, LuBell, LuCalendarDays, LuClapperboard, LuChevronDown, LuCircleHelp, LuCrown, LuCrosshair, LuIdCard, LuLogOut, LuMenu, LuScrollText, LuShield, LuShieldCheck, LuSparkles, LuSwords, LuTicket, LuTrophy, LuTriangleAlert, LuUser, LuUsers, LuX } from "react-icons/lu";
 import useActiveMatch from "../../hooks/useActiveMatch";
 import useSession from "../../hooks/useSession";
 import useTeamTags from "../../hooks/useTeamTags";
@@ -504,6 +504,9 @@ function UserMenu({ user }) {
               ) : null}
               <MenuItem href="/cod/profile?cartes=1" icon={LuIdCard}>
                 Mes cartes de visite
+              </MenuItem>
+              <MenuItem href="/cod/pass" icon={LuTicket}>
+                Pass de saison
               </MenuItem>
               <MenuItem href="/cod/profile#notifications" icon={LuBell}>
                 Mes notifications
