@@ -117,6 +117,8 @@ export default function App({ Component, pageProps }) {
             </ErrorBoundary>
           </main>
           <Footer />
+          {/* Hauteur de la barre d'onglets du téléphone, pour ne pas cacher le bas du pied de page. */}
+          <div aria-hidden className="h-[calc(4rem+1px+env(safe-area-inset-bottom))] shrink-0 lg:hidden" />
           {/* Changement de page lent : écran de chargement SixSence avec une astuce. */}
           <RouteLoader />
           {/* Identifiant Activision manquant : fenêtre dès la connexion. */}

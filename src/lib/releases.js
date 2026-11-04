@@ -6,6 +6,14 @@
 export const RELEASES = [
   {
     date: "2026-11-05",
+    title: "Le site sur téléphone, comme une appli",
+    items: [
+      { tag: "Site", text: "Une barre d'onglets toujours sous le pouce : Accueil, Jouer, Clips, Pass et Menu. Le menu a été refait, et il se ferme en le faisant glisser." },
+      { tag: "Site", text: "Des pastilles te signalent ce qui t'attend : invitation d'équipe, défi reçu, nouvelle carte, résultat à confirmer." },
+    ],
+  },
+  {
+    date: "2026-11-05",
     title: "Stats de match par capture",
     items: [
       { tag: "Site", text: "Dépose la capture de fin de match sur la feuille de match : score, éliminations, poses et désamorçages sont lus tout seuls, sans rien taper, et s'ajoutent à ton profil." },

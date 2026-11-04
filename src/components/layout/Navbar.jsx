@@ -1,10 +1,11 @@
-import { AnimatePresence, motion } from "framer-motion";
+import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
 import Link from "next/link";
 import { useRouter } from "next/router";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { FaDiscord } from "react-icons/fa6";
-import { LuArrowRight, LuBell, LuCalendarDays, LuClapperboard, LuChevronDown, LuCircleHelp, LuCrown, LuCrosshair, LuIdCard, LuLogOut, LuMenu, LuScrollText, LuShield, LuShieldCheck, LuSparkles, LuSwords, LuTicket, LuTrophy, LuTriangleAlert, LuUser, LuUsers, LuX } from "react-icons/lu";
+import { LuArrowRight, LuBell, LuCalendarDays, LuClapperboard, LuChevronDown, LuCircleHelp, LuCrown, LuCrosshair, LuGamepad2, LuHouse, LuIdCard, LuLogOut, LuMenu, LuScrollText, LuShield, LuShieldCheck, LuSparkles, LuSwords, LuTicket, LuTrophy, LuTriangleAlert, LuUser, LuUsers, LuX } from "react-icons/lu";
 import useActiveMatch from "../../hooks/useActiveMatch";
+import usePending from "../../hooks/usePending";
 import useSession from "../../hooks/useSession";
 import useTeamTags from "../../hooks/useTeamTags";
 import useUser from "../../hooks/useUser";
@@ -63,6 +64,7 @@ export function Navbar() {
   const myTeam = useTeamTags(user ? [user.id] : []).get(user?.id);
   const [scrolled, setScrolled] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
+  const pending = usePending();
   const [notifications, setNotifications] = useState(false);
   const closeNotifications = useCallback(() => setNotifications(false), []);
 
@@ -91,6 +93,7 @@ export function Navbar() {
   return (
     // Menus toujours dans l'or SixSence, quelle que soit la couleur de la page (Classé, Division, Tournoi) ;
     // le lien GTA 6 garde son coucher de soleil (son propre data-univers).
+    <>
     <header data-univers="or" className="fixed inset-x-0 top-0 z-50">
       <div
         className={cn(
@@ -184,16 +187,6 @@ export function Navbar() {
               )}
             </div>
 
-            <button
-              type="button"
-              aria-label={mobileOpen ? "Fermer le menu" : "Ouvrir le menu"}
-              aria-expanded={mobileOpen}
-              aria-controls="menu-mobile"
-              onClick={() => setMobileOpen((open) => !open)}
-              className="flex h-11 w-11 items-center justify-center text-white/80 transition-colors hover:text-gold lg:hidden"
-            >
-              {mobileOpen ? <LuX aria-hidden className="h-6 w-6" /> : <LuMenu aria-hidden className="h-6 w-6" />}
-            </button>
           </div>
         </Container>
       </div>
@@ -205,6 +198,8 @@ export function Navbar() {
             user={user}
             loading={loading}
             myTeam={myTeam}
+            pending={pending}
+            onClose={() => setMobileOpen(false)}
             onNotifications={() => {
               setMobileOpen(false);
               setNotifications(true);
@@ -213,6 +208,8 @@ export function Navbar() {
         ) : null}
       </AnimatePresence>
     </header>
+    <MobileTabBar pathname={pathname} menuOpen={mobileOpen} pending={pending} onToggleMenu={() => setMobileOpen((open) => !open)} onNavigate={() => setMobileOpen(false)} />
+    </>
   );
 }
 
@@ -235,8 +232,91 @@ function MenuCard({ cardKey }) {
   );
 }
 
-/** Case du menu mobile : icône et libellé. */
-function MobileTile({ href, icon: Icon, active = false, onClick = null, children }) {
+/** Pastille : nombre de choses en attente, rien à zéro. */
+function PendingDot({ count, className = "" }) {
+  if (!count) return null;
+  return (
+    <span className={cn("flex h-[18px] min-w-[18px] items-center justify-center rounded-full bg-loss px-1 font-tech text-[10px] font-bold leading-none text-white", className)}>
+      <span aria-hidden>{count > 9 ? "9+" : count}</span>
+      <span className="sr-only">{count} en attente</span>
+    </span>
+  );
+}
+
+const TABS = [
+  { key: "accueil", href: "/", label: "Accueil", icon: LuHouse, current: (pathname) => pathname === "/" },
+  { key: "jouer", href: "/cod", label: "Jouer", icon: LuGamepad2, current: (pathname) => pathname.startsWith("/cod") && !isActive(pathname, "/cod/pass") && !isActive(pathname, "/cod/profile") },
+  { key: "clips", href: "/clips", label: "Clips", icon: LuClapperboard, current: (pathname) => isActive(pathname, "/clips") },
+  { key: "pass", href: "/cod/pass", label: "Pass", icon: LuTicket, current: (pathname) => isActive(pathname, "/cod/pass") },
+];
+
+const TAB_CLASS = "relative flex h-full flex-col items-center justify-center gap-1 font-display text-[11px] font-bold uppercase tracking-[0.1em] transition-colors";
+
+/** Trait de l'onglet actif, qui glisse d'un onglet à l'autre. */
+function TabMark() {
+  return <motion.span layoutId="onglet-mobile" aria-hidden className="absolute inset-x-3 top-0 h-0.5 bg-gold shadow-[0_0_10px_var(--color-gold)]" />;
+}
+
+/**
+ * Barre d'onglets du téléphone, toujours visible : Accueil, Jouer (le match en cours s'il y en a un), Clips, Pass,
+ * Menu. Sous les fenêtres du site, au-dessus de la page ; `_app.js` laisse sa hauteur libre sous le pied de page.
+ */
+export function MobileTabBar({ pathname, menuOpen, pending, onToggleMenu, onNavigate }) {
+  const active = useActiveMatch();
+  const menuCount = pending.invites + pending.requests + pending.challenges + pending.cards;
+  return (
+    <nav aria-label="Onglets" data-univers="or" className="fixed inset-x-0 bottom-0 z-40 border-t border-white/10 bg-ink/95 pb-[env(safe-area-inset-bottom)] backdrop-blur-md lg:hidden">
+      <div className="grid h-16 grid-cols-5">
+        {TABS.map((tab) => {
+          const Icon = tab.icon;
+          const here = !menuOpen && tab.current(pathname);
+          const inMatch = tab.key === "jouer" && active;
+          const href = inMatch ? (active.kind === "division" ? `/cod/equipes/match/${active.id}` : `/cod/match/${active.id}`) : tab.href;
+          return (
+            <Link key={tab.key} href={href} onClick={onNavigate} aria-current={here ? "page" : undefined} className={cn(TAB_CLASS, here ? "text-gold" : "text-white/55")}>
+              {here ? <TabMark /> : null}
+              <span className="relative">
+                <motion.span whileTap={{ scale: 0.85 }} className="block">
+                  <Icon aria-hidden className="h-5 w-5" />
+                </motion.span>
+                {tab.key === "jouer" ? <PendingDot count={pending.confirm} className="absolute -right-3 -top-2" /> : null}
+                {inMatch && !pending.confirm ? (
+                  <span aria-hidden className="absolute -right-1.5 -top-1 flex h-2 w-2">
+                    <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-loss opacity-70" />
+                    <span className="relative inline-flex h-2 w-2 rounded-full bg-loss" />
+                  </span>
+                ) : null}
+              </span>
+              {inMatch ? "Match" : tab.label}
+            </Link>
+          );
+        })}
+        <button type="button" aria-label={menuOpen ? "Fermer le menu" : "Ouvrir le menu"} aria-expanded={menuOpen} aria-controls="menu-mobile" onClick={onToggleMenu} className={cn(TAB_CLASS, menuOpen ? "text-gold" : "text-white/55")}>
+          {menuOpen ? <TabMark /> : null}
+          <span className="relative">
+            <motion.span whileTap={{ scale: 0.85 }} className="block">
+              {menuOpen ? <LuX aria-hidden className="h-5 w-5" /> : <LuMenu aria-hidden className="h-5 w-5" />}
+            </motion.span>
+            {menuOpen ? null : <PendingDot count={menuCount} className="absolute -right-3 -top-2" />}
+          </span>
+          Menu
+        </button>
+      </div>
+    </nav>
+  );
+}
+
+// Le menu glisse depuis la droite, puis ses blocs et ses cases apparaissent en cascade.
+const MENU_PANEL = {
+  hidden: { x: "100%" },
+  visible: { x: 0, transition: { type: "tween", ease: "easeOut", duration: 0.22, delayChildren: 0.06, staggerChildren: 0.035 } },
+  exit: { x: "100%", transition: { type: "tween", ease: "easeIn", duration: 0.18 } },
+};
+const MENU_GROUP = { hidden: { opacity: 0, y: 10 }, visible: { opacity: 1, y: 0, transition: { duration: 0.2, staggerChildren: 0.025 } } };
+const MENU_ITEM = { hidden: { opacity: 0, y: 8 }, visible: { opacity: 1, y: 0, transition: { duration: 0.18 } } };
+
+/** Case du menu mobile : icône, libellé et pastille. */
+function MobileTile({ href, icon: Icon, active = false, onClick = null, badge = 0, children }) {
   const className = cn(
     "flex min-h-12 w-full items-center gap-2.5 border px-3 py-2.5 text-left text-sm transition-colors",
     active ? "border-gold/60 bg-gold/10 text-gold" : "border-white/10 bg-white/[0.02] text-white/80 hover:text-gold",
@@ -244,35 +324,44 @@ function MobileTile({ href, icon: Icon, active = false, onClick = null, children
   const content = (
     <>
       <Icon aria-hidden className="h-4 w-4 shrink-0" />
-      <span className="min-w-0 leading-tight">{children}</span>
+      <span className="min-w-0 flex-1 leading-tight">{children}</span>
+      <PendingDot count={badge} className="shrink-0" />
     </>
   );
-  return onClick ? (
-    <button type="button" onClick={onClick} className={className}>
-      {content}
-    </button>
-  ) : (
-    <Link href={href} aria-current={active ? "page" : undefined} className={className}>
-      {content}
-    </Link>
+  return (
+    <motion.div variants={MENU_ITEM}>
+      {onClick ? (
+        <button type="button" onClick={onClick} className={className}>
+          {content}
+        </button>
+      ) : (
+        <Link href={href} aria-current={active ? "page" : undefined} className={className}>
+          {content}
+        </Link>
+      )}
+    </motion.div>
   );
 }
 
 function MobileSection({ title, children }) {
   return (
-    <section className="mt-6">
+    <motion.section variants={MENU_GROUP} className="mt-6">
       <h2 className="mb-2 font-tech text-[10px] uppercase tracking-[0.24em] text-white/40">{title}</h2>
       <div className="grid grid-cols-2 gap-2">{children}</div>
-    </section>
+    </motion.section>
   );
 }
 
 /**
  * Menu du téléphone, plein écran : le joueur et son match en cours, les trois modes, puis les pages regroupées.
  * Sans compte : connexion en tête, et toutes les pages publiques restent accessibles.
+ * Se referme en le faisant glisser vers la droite ; le défilement vertical reste libre.
  */
-export function MobileMenu({ pathname, user, loading, myTeam, onNotifications }) {
+export function MobileMenu({ pathname, user, loading, myTeam, pending, onClose, onNotifications }) {
+  const reduced = useReducedMotion();
   const active = useActiveMatch();
+  const teamCount = pending.invites + pending.requests + pending.challenges;
+  const teamHref = pending.challenges ? "/cod/equipe?onglet=defis" : pending.requests ? "/cod/equipe?onglet=recrutement" : "/cod/equipe";
   const profile = user?.profile ?? null;
   const rank = rankFor(profile?.points ?? 0);
   const here = (href) => isActive(pathname, href);
@@ -280,15 +369,21 @@ export function MobileMenu({ pathname, user, loading, myTeam, onNotifications })
   return (
     <motion.div
       id="menu-mobile"
-      initial={{ opacity: 0, y: -12 }}
-      animate={{ opacity: 1, y: 0 }}
-      exit={{ opacity: 0, y: -12 }}
-      transition={{ duration: 0.2 }}
-      className="fixed inset-x-0 bottom-0 top-16 overflow-y-auto overscroll-contain border-t border-white/10 bg-ink lg:hidden"
+      variants={reduced ? undefined : MENU_PANEL}
+      initial={reduced ? false : "hidden"}
+      animate="visible"
+      exit={reduced ? undefined : "exit"}
+      drag={reduced ? false : "x"}
+      dragDirectionLock
+      dragConstraints={{ left: 0, right: 0 }}
+      dragElastic={{ left: 0, right: 0.7 }}
+      dragMomentum={false}
+      onDragEnd={(_event, info) => (info.offset.x > 90 || info.velocity.x > 500) && onClose()}
+      className="fixed inset-x-0 bottom-[calc(4rem+1px+env(safe-area-inset-bottom))] top-16 overflow-y-auto overscroll-contain border-t border-white/10 bg-ink lg:hidden"
     >
-      <Container className="pb-[calc(2rem+env(safe-area-inset-bottom))] pt-4">
+      <Container className="pb-8 pt-4">
         {user ? (
-          <>
+          <motion.div variants={MENU_GROUP}>
             <Link href="/cod/profile" className="relative block overflow-hidden border border-white/10 px-4 py-5">
               <MenuCard cardKey={profile?.calling_card} />
               <span className="relative flex items-center gap-3">
@@ -328,11 +423,11 @@ export function MobileMenu({ pathname, user, loading, myTeam, onNotifications })
                   <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-loss opacity-70" />
                   <span className="relative inline-flex h-2 w-2 rounded-full bg-loss" />
                 </span>
-                Match en cours
+                {pending.confirm ? "Résultat à confirmer" : "Match en cours"}
                 <LuArrowRight aria-hidden className="ml-auto h-4 w-4" />
               </Link>
             ) : null}
-          </>
+          </motion.div>
         ) : loading ? null : (
           <Button fullWidth onClick={() => signInWithDiscord()}>
             <FaDiscord aria-hidden className="h-5 w-5" />
@@ -342,7 +437,7 @@ export function MobileMenu({ pathname, user, loading, myTeam, onNotifications })
 
         {/* Jouer : les trois modes, à leurs couleurs. */}
         {MODE_SUBMENU ? (
-          <section className="mt-6">
+          <motion.section variants={MENU_GROUP} className="mt-6">
             <h2 className="mb-2 font-tech text-[10px] uppercase tracking-[0.24em] text-white/40">Jouer</h2>
             <div className="grid grid-cols-3 gap-2">
               {LINKS[1].children.map((mode) => {
@@ -361,10 +456,10 @@ export function MobileMenu({ pathname, user, loading, myTeam, onNotifications })
                 );
               })}
             </div>
-          </section>
+          </motion.section>
         ) : null}
 
-        <nav aria-label="Navigation mobile" className="mt-6 grid grid-cols-3 gap-2">
+        <motion.nav variants={MENU_GROUP} aria-label="Navigation mobile" className="mt-6 grid grid-cols-3 gap-2">
           {LINKS.filter((link) => ["/", "/cod", "/gta6"].includes(link.href)).map((link) => {
             const current = link.href === "/cod" ? pathname === "/cod" : here(link.href);
             return (
@@ -382,12 +477,12 @@ export function MobileMenu({ pathname, user, loading, myTeam, onNotifications })
               </Link>
             );
           })}
-        </nav>
+        </motion.nav>
 
         {user ? (
           <MobileSection title="Mon compte">
-            {myTeam ? (
-              <MobileTile href="/cod/equipe" icon={LuUsers} active={pathname === "/cod/equipe"}>
+            {myTeam || pending.invites ? (
+              <MobileTile href={teamHref} icon={LuUsers} active={pathname === "/cod/equipe"} badge={teamCount}>
                 Mon équipe
               </MobileTile>
             ) : null}
@@ -396,7 +491,7 @@ export function MobileMenu({ pathname, user, loading, myTeam, onNotifications })
                 Mes matchs
               </MobileTile>
             ) : null}
-            <MobileTile href="/cod/profile?cartes=1" icon={LuIdCard}>
+            <MobileTile href="/cod/profile?cartes=1" icon={LuIdCard} badge={pending.cards}>
               Mes cartes de visite
             </MobileTile>
             <MobileTile href="/cod/pass" icon={LuTicket} active={here("/cod/pass")}>
@@ -443,7 +538,7 @@ export function MobileMenu({ pathname, user, loading, myTeam, onNotifications })
           </MobileTile>
         </MobileSection>
 
-        <div className="mt-6 space-y-1 border-t border-white/10 pt-4">
+        <motion.div variants={MENU_GROUP} className="mt-6 space-y-1 border-t border-white/10 pt-4">
           <InstallButton variant="menu" />
           {user && isReferee(user.role) ? (
             <Link href="/admin" className={MOBILE_ITEM}>
@@ -457,7 +552,7 @@ export function MobileMenu({ pathname, user, loading, myTeam, onNotifications })
               Déconnexion
             </button>
           ) : null}
-        </div>
+        </motion.div>
       </Container>
     </motion.div>
   );

@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { refreshPending } from "../../hooks/usePending";
 import { LuCheck, LuChevronDown, LuLoaderCircle, LuX } from "react-icons/lu";
 import { api } from "../../lib/api";
 import { RARITY } from "../../lib/cards";
@@ -38,7 +39,7 @@ export function CardPicker({ open, onClose, player, points, onEquipped }) {
         if (!active) return;
         setData(result);
         setSelected(result.equipped);
-        if (result.newCount > 0) api("/cod/cards/seen", { method: "POST" }).catch(() => {});
+        if (result.newCount > 0) api("/cod/cards/seen", { method: "POST" }).then(refreshPending, () => {});
       })
       .catch((caught) => active && setError(caught.message));
     const onKey = (event) => event.key === "Escape" && onClose();
