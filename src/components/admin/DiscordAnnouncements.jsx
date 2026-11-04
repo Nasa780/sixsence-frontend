@@ -5,7 +5,7 @@ import { cn } from "../../lib/cn";
 import { RELEASES } from "../../lib/releases";
 import { Button } from "../ui/Button";
 import { TacticalCard } from "../ui/TacticalCard";
-import { Field } from "./Fields";
+import { Field, fromLocalInput } from "./Fields";
 
 const FIELDS = {
   type: {
@@ -20,7 +20,11 @@ const FIELDS = {
   title: { key: "title", label: "Titre", required: true, placeholder: "Ex. : La Coupe Anubis arrive !" },
   text: { key: "text", label: "Texte", type: "textarea", required: true, placeholder: "Le message (gras : **texte**)" },
   url: { key: "url", label: "Lien « En savoir plus » (facultatif)", placeholder: "/cod/tournoi ou https://…" },
+  postAt: { key: "postAt", label: "Publier plus tard (facultatif)", type: "datetime", hint: "Laisse vide pour publier tout de suite." },
 };
+const EMPTY = { type: "annonce", title: "", text: "", url: "", postAt: "" };
+const when = (iso) => new Date(iso).toLocaleString("fr-FR", { weekday: "short", day: "numeric", month: "short", hour: "2-digit", minute: "2-digit" });
+const TYPE_LABEL = { annonce: "Annonce", nouveautes: "Nouveautés" };
 
 /** Dernière mise à jour du journal (lib/releases.js), mise en forme pour Discord. */
 function latestRelease() {
@@ -30,16 +34,59 @@ function latestRelease() {
     title: release.title,
     text: release.items.map((item) => `• **${item.tag}** : ${item.text}`).join("\n"),
     url: "/nouveautes",
+    postAt: "",
   };
+}
+
+/** Annonces programmées : celles à venir, annulables, puis les dernières traitées. */
+function ScheduledList({ data, onCancel, busy }) {
+  if (!data || (data.upcoming.length === 0 && data.past.length === 0)) return null;
+  return (
+    <div className="space-y-3 border-t border-white/8 pt-4">
+      <p className="text-sm font-semibold text-white/85">Annonces programmées</p>
+      {data.upcoming.length === 0 ? <p className="text-xs text-white/50">Aucune à venir.</p> : null}
+      <ul className="space-y-2">
+        {data.upcoming.map((item) => (
+          <li key={item.id} className="flex items-center justify-between gap-3 border border-white/10 bg-white/[0.02] px-3 py-2.5">
+            <span className="min-w-0">
+              <span className="block truncate text-sm font-semibold text-white/85">{item.title}</span>
+              <span className="block text-xs text-white/50">
+                {when(item.postAt)} · {TYPE_LABEL[item.type]}
+              </span>
+            </span>
+            {item.status === "pending" ? (
+              <Button size="sm" variant="outline" disabled={busy} onClick={() => onCancel(item.id)}>
+                Annuler
+              </Button>
+            ) : (
+              <span className="text-xs text-white/50">Envoi…</span>
+            )}
+          </li>
+        ))}
+      </ul>
+      {data.past.length ? (
+        <ul className="space-y-1 text-xs text-white/50">
+          {data.past.map((item) => (
+            <li key={item.id}>
+              {item.status === "posted" ? "Publiée" : "Échec"} · {when(item.postAt)} · {item.title}
+              {item.error ? <span className="text-loss"> : {item.error}</span> : null}
+            </li>
+          ))}
+        </ul>
+      ) : null}
+    </div>
+  );
 }
 
 /**
  * Annonces illustrées du bot (backend services/announcements.ts) : types coupés ou actifs, rôles
- * d'Intégration à créer sur le serveur, publication d'une annonce libre ou de la dernière mise à jour.
+ * d'Intégration à créer sur le serveur, publication d'une annonce libre ou de la dernière mise à jour, tout de suite
+ * ou à une date choisie (services/scheduledAnnouncements.ts).
  */
 export function DiscordAnnouncements() {
   const [settings, setSettings] = useState(null);
-  const [form, setForm] = useState({ type: "annonce", title: "", text: "", url: "" });
+  const [form, setForm] = useState(EMPTY);
+  const [scheduled, setScheduled] = useState(null);
   const [pending, setPending] = useState(null);
   const [message, setMessage] = useState(null);
 
@@ -60,6 +107,7 @@ export function DiscordAnnouncements() {
     api("/admin/discord/announce")
       .then(setSettings)
       .catch((caught) => setMessage({ tone: "error", text: caught.message }));
+    api("/admin/discord/scheduled").then(setScheduled, () => setScheduled(null));
   }, []);
 
   const toggle = (type) =>
@@ -72,15 +120,18 @@ export function DiscordAnnouncements() {
     run("member", () => api("/admin/discord/member-role", { method: "POST" }), "Distribution du rôle Membre lancée : le bilan arrive dans le salon du journal.");
   const publish = (event) => {
     event.preventDefault();
+    const body = { type: form.type, title: form.title, text: form.text, url: form.url || undefined };
     run(
       "publish",
       async () => {
-        await api("/admin/discord/announce", { method: "POST", body: { ...form, url: form.url || undefined } });
-        setForm({ type: "annonce", title: "", text: "", url: "" });
+        if (form.postAt) setScheduled(await api("/admin/discord/scheduled", { method: "POST", body: { ...body, postAt: fromLocalInput(form.postAt) } }));
+        else await api("/admin/discord/announce", { method: "POST", body });
+        setForm(EMPTY);
       },
-      "Annonce publiée sur Discord.",
+      form.postAt ? `Annonce programmée pour ${when(fromLocalInput(form.postAt))}.` : "Annonce publiée sur Discord.",
     );
   };
+  const cancel = (id) => run("cancel", async () => setScheduled(await api(`/admin/discord/scheduled/${id}`, { method: "DELETE" })), "Annonce annulée.");
 
   const missing = settings?.roles.filter((role) => !role.exists) ?? [];
 
@@ -161,9 +212,11 @@ export function DiscordAnnouncements() {
             ))}
             <Button size="sm" type="submit" disabled={pending !== null || !settings.configured}>
               {pending === "publish" ? <LuLoaderCircle aria-hidden className="h-4 w-4 animate-spin" /> : null}
-              Publier sur Discord
+              {form.postAt ? "Programmer l’annonce" : "Publier sur Discord"}
             </Button>
           </form>
+
+          <ScheduledList data={scheduled} onCancel={cancel} busy={pending !== null} />
         </>
       ) : null}
     </TacticalCard>
