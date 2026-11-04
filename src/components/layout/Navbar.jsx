@@ -78,6 +78,16 @@ export function Navbar() {
     setMobileOpen(false);
   }, [pathname]);
 
+  // Menu ouvert : la page derrière ne défile plus.
+  useEffect(() => {
+    if (!mobileOpen) return undefined;
+    const previous = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    return () => {
+      document.body.style.overflow = previous;
+    };
+  }, [mobileOpen]);
+
   return (
     // Menus toujours dans l'or SixSence, quelle que soit la couleur de la page (Classé, Division, Tournoi) ;
     // le lien GTA 6 garde son coucher de soleil (son propre data-univers).
@@ -190,161 +200,16 @@ export function Navbar() {
 
       <AnimatePresence>
         {mobileOpen ? (
-          <motion.div
-            id="menu-mobile"
-            initial={{ opacity: 0, y: -12 }}
-            animate={{ opacity: 1, y: 0 }}
-            exit={{ opacity: 0, y: -12 }}
-            transition={{ duration: 0.2 }}
-            className="max-h-[calc(100dvh-4rem)] overflow-y-auto border-b border-white/10 bg-ink/95 backdrop-blur-md lg:hidden"
-          >
-            <Container className="flex flex-col py-4">
-              <nav aria-label="Navigation mobile" className="flex flex-col">
-                {LINKS.map((link) => {
-                  const active = isActive(pathname, link.href);
-                  return (
-                    <Link
-                      key={link.href}
-                      href={link.href}
-                      aria-current={active ? "page" : undefined}
-                      data-univers={link.univers}
-                      className={cn(
-                        "border-l-2 px-4 py-3.5 font-display text-xl font-bold uppercase tracking-[0.14em] transition-colors",
-                        active ? "border-gold bg-gold/8 text-gold" : "border-transparent text-white/70 hover:text-white",
-                      )}
-                    >
-                      {link.label}
-                    </Link>
-                  );
-                }).flatMap((element, index) =>
-                  LINKS[index].children
-                    ? [
-                        element,
-                        ...LINKS[index].children.map((child) => {
-                          const mode = codModeOf(pathname);
-                          const current = (child.href === "/cod/ranked" && mode === "classe") || (child.href === "/cod/division" && mode === "team") || (child.href === "/cod/tournoi" && mode === "tournoi");
-                          return (
-                            <Link
-                              key={child.href}
-                              href={child.href}
-                              data-univers="or"
-                              style={{ "--mode": child.color }}
-                              className={cn(
-                                "ml-4 border-l-2 px-4 py-2.5 font-display text-base font-bold uppercase tracking-[0.14em] transition-colors duration-200 hover:border-[var(--mode)] hover:text-[var(--mode)]",
-                                current ? "border-gold bg-gold/10 text-gold" : "border-gold/40 text-white/70",
-                              )}
-                            >
-                              {child.label}
-                            </Link>
-                          );
-                        }),
-                      ]
-                    : [element],
-                )}
-              </nav>
-
-              <div className="mt-4 border-t border-white/10 pt-4">
-                <InstallButton variant="menu" />
-                {loading ? null : user ? (
-                  <div className="flex flex-col gap-1">
-                    <div className="relative flex items-center gap-3 overflow-hidden px-4 py-3">
-                      <MenuCard cardKey={user.profile?.calling_card} />
-                      <span className="relative">
-                        <Avatar src={user.avatar} name={user.username} size={36} />
-                      </span>
-                      <span className="relative min-w-0">
-                        <span className="block truncate font-display text-lg font-bold uppercase leading-none tracking-wide">{user.username}</span>
-                        <span className="mt-1 block font-tech text-[10px] uppercase tracking-[0.18em] text-white/50">
-                          <span style={{ color: rankFor(user.profile?.points ?? 0).text }}>{rankFor(user.profile?.points ?? 0).name}</span> · {user.profile?.points ?? 0} pts · Niv.{" "}
-                          {levelFor(user.profile?.xp ?? 0)}
-                        </span>
-                      </span>
-                    </div>
-                    <Link href="/cod/profile" className={MOBILE_ITEM}>
-                      <LuUser aria-hidden className="h-4 w-4" />
-                      Mon profil
-                    </Link>
-                    {myTeam ? (
-                      <Link href="/cod/equipe" className={MOBILE_ITEM}>
-                        <LuUsers aria-hidden className="h-4 w-4" />
-                        Mon équipe
-                      </Link>
-                    ) : null}
-                    {MY_MATCHES_ENABLED ? (
-                      <Link href="/cod/matchs" className={MOBILE_ITEM}>
-                        <LuSwords aria-hidden className="h-4 w-4" />
-                        Mes matchs
-                      </Link>
-                    ) : null}
-                    <Link href="/cod/profile?cartes=1" className={MOBILE_ITEM}>
-                      <LuIdCard aria-hidden className="h-4 w-4" />
-                      Mes cartes de visite
-                    </Link>
-                    <button
-                      type="button"
-                      onClick={() => {
-                        setMobileOpen(false);
-                        setNotifications(true);
-                      }}
-                      className={`${MOBILE_ITEM} w-full text-left`}
-                    >
-                      <LuBell aria-hidden className="h-4 w-4" />
-                      Mes notifications
-                    </button>
-                    <Link href="/calendrier" className={MOBILE_ITEM}>
-                      <LuCalendarDays aria-hidden className="h-4 w-4" />
-                      Calendrier
-                    </Link>
-                    <Link href="/clips" className={MOBILE_ITEM}>
-                      <LuClapperboard aria-hidden className="h-4 w-4" />
-                      Clips
-                    </Link>
-                    <Link href="/renommee" className={MOBILE_ITEM}>
-                      <LuCrown aria-hidden className="h-4 w-4" />
-                      Renommée
-                    </Link>
-                    <Link href="/nouveautes" className={MOBILE_ITEM}>
-                      <LuSparkles aria-hidden className="h-4 w-4" />
-                      Nouveautés
-                    </Link>
-                    <Link href="/reglement" className={MOBILE_ITEM}>
-                      <LuScrollText aria-hidden className="h-4 w-4" />
-                      Règlement
-                    </Link>
-                    <Link href="/faq" className={MOBILE_ITEM}>
-                      <LuCircleHelp aria-hidden className="h-4 w-4" />
-                      FAQ
-                    </Link>
-                    {MODE_SUBMENU ? null : (
-                      <Link href="/cod/ranked" className={MOBILE_ITEM}>
-                        <LuCrosshair aria-hidden className="h-4 w-4" />
-                        Classé
-                      </Link>
-                    )}
-                    {isReferee(user.role) ? (
-                      <Link href="/admin" className={MOBILE_ITEM}>
-                        <LuShieldCheck aria-hidden className="h-4 w-4" />
-                        Administration
-                      </Link>
-                    ) : null}
-                    <button
-                      type="button"
-                      onClick={signOut}
-                      className="flex w-full items-center gap-2.5 px-4 py-3 text-left text-sm text-white/70 transition-colors hover:text-loss"
-                    >
-                      <LuLogOut aria-hidden className="h-4 w-4" />
-                      Déconnexion
-                    </button>
-                  </div>
-                ) : (
-                  <Button fullWidth onClick={() => signInWithDiscord()}>
-                    <FaDiscord aria-hidden className="h-5 w-5" />
-                    Connexion Discord
-                  </Button>
-                )}
-              </div>
-            </Container>
-          </motion.div>
+          <MobileMenu
+            pathname={pathname}
+            user={user}
+            loading={loading}
+            myTeam={myTeam}
+            onNotifications={() => {
+              setMobileOpen(false);
+              setNotifications(true);
+            }}
+          />
         ) : null}
       </AnimatePresence>
     </header>
@@ -367,6 +232,234 @@ function MenuCard({ cardKey }) {
       <RarityFx rarity={rarity} />
       <span className="absolute inset-0 bg-linear-to-r from-ink/85 via-ink/45 to-ink/5" />
     </span>
+  );
+}
+
+/** Case du menu mobile : icône et libellé. */
+function MobileTile({ href, icon: Icon, active = false, onClick = null, children }) {
+  const className = cn(
+    "flex min-h-12 w-full items-center gap-2.5 border px-3 py-2.5 text-left text-sm transition-colors",
+    active ? "border-gold/60 bg-gold/10 text-gold" : "border-white/10 bg-white/[0.02] text-white/80 hover:text-gold",
+  );
+  const content = (
+    <>
+      <Icon aria-hidden className="h-4 w-4 shrink-0" />
+      <span className="min-w-0 leading-tight">{children}</span>
+    </>
+  );
+  return onClick ? (
+    <button type="button" onClick={onClick} className={className}>
+      {content}
+    </button>
+  ) : (
+    <Link href={href} aria-current={active ? "page" : undefined} className={className}>
+      {content}
+    </Link>
+  );
+}
+
+function MobileSection({ title, children }) {
+  return (
+    <section className="mt-6">
+      <h2 className="mb-2 font-tech text-[10px] uppercase tracking-[0.24em] text-white/40">{title}</h2>
+      <div className="grid grid-cols-2 gap-2">{children}</div>
+    </section>
+  );
+}
+
+/**
+ * Menu du téléphone, plein écran : le joueur et son match en cours, les trois modes, puis les pages regroupées.
+ * Sans compte : connexion en tête, et toutes les pages publiques restent accessibles.
+ */
+export function MobileMenu({ pathname, user, loading, myTeam, onNotifications }) {
+  const active = useActiveMatch();
+  const profile = user?.profile ?? null;
+  const rank = rankFor(profile?.points ?? 0);
+  const here = (href) => isActive(pathname, href);
+
+  return (
+    <motion.div
+      id="menu-mobile"
+      initial={{ opacity: 0, y: -12 }}
+      animate={{ opacity: 1, y: 0 }}
+      exit={{ opacity: 0, y: -12 }}
+      transition={{ duration: 0.2 }}
+      className="fixed inset-x-0 bottom-0 top-16 overflow-y-auto overscroll-contain border-t border-white/10 bg-ink lg:hidden"
+    >
+      <Container className="pb-[calc(2rem+env(safe-area-inset-bottom))] pt-4">
+        {user ? (
+          <>
+            <Link href="/cod/profile" className="relative block overflow-hidden border border-white/10 px-4 py-5">
+              <MenuCard cardKey={profile?.calling_card} />
+              <span className="relative flex items-center gap-3">
+                <Avatar src={user.avatar} name={user.username} size={44} />
+                <span className="min-w-0 flex-1">
+                  <span className="flex items-center gap-2">
+                    <span className="truncate font-display text-xl font-black uppercase leading-none tracking-wide">{user.username}</span>
+                    {myTeam ? (
+                      <span className="shrink-0 font-tech text-[10px] font-bold tracking-[0.16em]" style={{ color: myTeam.color }}>
+                        [{myTeam.tag}]
+                      </span>
+                    ) : null}
+                  </span>
+                  <span className="mt-1.5 flex items-center gap-1.5 whitespace-nowrap font-tech text-[10px] uppercase tracking-[0.1em] text-white/55">
+                    <span style={{ color: rank.text }}>{rank.name}</span>
+                    <span className="text-white/25">·</span>
+                    {profile?.points ?? 0} pts
+                    <span className="text-white/25">·</span>
+                    Niv. {levelFor(profile?.xp ?? 0)}
+                  </span>
+                </span>
+                <RankEmblem rank={rank} size={40} animated={false} />
+              </span>
+            </Link>
+            {profile && !profile.activision_id ? (
+              <Link href="/cod/profile" className="mt-2 flex items-center gap-2.5 border border-gold/30 bg-gold/[0.08] px-4 py-3 text-sm text-gold">
+                <LuTriangleAlert aria-hidden className="h-4 w-4 shrink-0" />
+                Ajoute ton identifiant Activision pour jouer
+              </Link>
+            ) : null}
+            {active ? (
+              <Link
+                href={active.kind === "division" ? `/cod/equipes/match/${active.id}` : `/cod/match/${active.id}`}
+                className="mt-2 flex items-center gap-2.5 border border-loss/40 bg-loss/10 px-4 py-3 font-display text-base font-bold uppercase tracking-[0.12em] text-white"
+              >
+                <span className="relative flex h-2 w-2">
+                  <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-loss opacity-70" />
+                  <span className="relative inline-flex h-2 w-2 rounded-full bg-loss" />
+                </span>
+                Match en cours
+                <LuArrowRight aria-hidden className="ml-auto h-4 w-4" />
+              </Link>
+            ) : null}
+          </>
+        ) : loading ? null : (
+          <Button fullWidth onClick={() => signInWithDiscord()}>
+            <FaDiscord aria-hidden className="h-5 w-5" />
+            Connexion Discord
+          </Button>
+        )}
+
+        {/* Jouer : les trois modes, à leurs couleurs. */}
+        {MODE_SUBMENU ? (
+          <section className="mt-6">
+            <h2 className="mb-2 font-tech text-[10px] uppercase tracking-[0.24em] text-white/40">Jouer</h2>
+            <div className="grid grid-cols-3 gap-2">
+              {LINKS[1].children.map((mode) => {
+                const Icon = mode.icon;
+                return (
+                  <Link
+                    key={mode.href}
+                    href={mode.href}
+                    aria-current={here(mode.href) ? "page" : undefined}
+                    style={{ "--mode": mode.color, borderColor: here(mode.href) ? mode.color : undefined }}
+                    className="flex flex-col items-center gap-2 border border-white/10 bg-[color-mix(in_srgb,var(--mode)_9%,transparent)] px-2 py-4"
+                  >
+                    <Icon aria-hidden className="h-6 w-6" style={{ color: mode.color }} />
+                    <span className="font-display text-sm font-bold uppercase tracking-[0.1em] text-white">{mode.label}</span>
+                  </Link>
+                );
+              })}
+            </div>
+          </section>
+        ) : null}
+
+        <nav aria-label="Navigation mobile" className="mt-6 grid grid-cols-3 gap-2">
+          {LINKS.filter((link) => ["/", "/cod", "/gta6"].includes(link.href)).map((link) => {
+            const current = link.href === "/cod" ? pathname === "/cod" : here(link.href);
+            return (
+              <Link
+                key={link.href}
+                href={link.href}
+                data-univers={link.univers}
+                aria-current={current ? "page" : undefined}
+                className={cn(
+                  "border-b-2 py-2.5 text-center font-display text-base font-bold uppercase tracking-[0.12em]",
+                  current ? "border-gold text-gold" : "border-white/10 text-white/70",
+                )}
+              >
+                {link.label}
+              </Link>
+            );
+          })}
+        </nav>
+
+        {user ? (
+          <MobileSection title="Mon compte">
+            {myTeam ? (
+              <MobileTile href="/cod/equipe" icon={LuUsers} active={pathname === "/cod/equipe"}>
+                Mon équipe
+              </MobileTile>
+            ) : null}
+            {MY_MATCHES_ENABLED ? (
+              <MobileTile href="/cod/matchs" icon={LuSwords} active={here("/cod/matchs")}>
+                Mes matchs
+              </MobileTile>
+            ) : null}
+            <MobileTile href="/cod/profile?cartes=1" icon={LuIdCard}>
+              Mes cartes de visite
+            </MobileTile>
+            <MobileTile href="/cod/pass" icon={LuTicket} active={here("/cod/pass")}>
+              Pass de saison
+            </MobileTile>
+            <MobileTile icon={LuBell} onClick={onNotifications}>
+              Mes notifications
+            </MobileTile>
+          </MobileSection>
+        ) : null}
+
+        <MobileSection title="Communauté">
+          <MobileTile href="/clips" icon={LuClapperboard} active={here("/clips")}>
+            Clips
+          </MobileTile>
+          <MobileTile href="/renommee" icon={LuCrown} active={here("/renommee")}>
+            Renommée
+          </MobileTile>
+          <MobileTile href="/calendrier" icon={LuCalendarDays} active={here("/calendrier")}>
+            Calendrier
+          </MobileTile>
+          <MobileTile href="/nouveautes" icon={LuSparkles} active={here("/nouveautes")}>
+            Nouveautés
+          </MobileTile>
+          {user ? null : (
+            <MobileTile href="/cod/pass" icon={LuTicket} active={here("/cod/pass")}>
+              Pass de saison
+            </MobileTile>
+          )}
+        </MobileSection>
+
+        <MobileSection title="Infos">
+          <MobileTile href="/reglement" icon={LuScrollText} active={here("/reglement")}>
+            Règlement
+          </MobileTile>
+          <MobileTile href="/faq" icon={LuCircleHelp} active={here("/faq")}>
+            FAQ
+          </MobileTile>
+          <MobileTile href="/founders" icon={LuUser} active={here("/founders")}>
+            Fondateurs
+          </MobileTile>
+          <MobileTile href="/partners" icon={LuUsers} active={here("/partners")}>
+            Partenaires
+          </MobileTile>
+        </MobileSection>
+
+        <div className="mt-6 space-y-1 border-t border-white/10 pt-4">
+          <InstallButton variant="menu" />
+          {user && isReferee(user.role) ? (
+            <Link href="/admin" className={MOBILE_ITEM}>
+              <LuShieldCheck aria-hidden className="h-4 w-4" />
+              Administration
+            </Link>
+          ) : null}
+          {user ? (
+            <button type="button" onClick={signOut} className="flex w-full items-center gap-2.5 px-4 py-3 text-left text-sm text-white/70 transition-colors hover:text-loss">
+              <LuLogOut aria-hidden className="h-4 w-4" />
+              Déconnexion
+            </button>
+          ) : null}
+        </div>
+      </Container>
+    </motion.div>
   );
 }
 
