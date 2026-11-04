@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { LuFlag, LuFlame, LuLink2, LuLoaderCircle, LuPlay, LuPlus, LuTrash2, LuX } from "react-icons/lu";
 import useUser from "../../hooks/useUser";
 import { api } from "../../lib/api";
+import { API_URL } from "../../lib/config";
 import { signInWithDiscord } from "../../lib/auth";
 import { cn } from "../../lib/cn";
 import { isModerator } from "../../lib/roles";
@@ -34,10 +35,11 @@ function embedUrl(clip) {
   return `https://www.tiktok.com/embed/v2/${clip.videoId}`;
 }
 
-/** Miniature de la carte : YouTube directement, Medal par /api/clip-miniature (adresse signée qui expire). */
+/** Miniature de la carte : YouTube directement, Medal par /api/clip-miniature (adresse signée qui expire), Twitch par le serveur ; TikTok n'en fournit pas. */
 function thumbnail(clip) {
   if (clip.provider === "youtube") return `https://i.ytimg.com/vi/${clip.videoId}/hqdefault.jpg`;
   if (clip.provider === "medal") return `/api/clip-miniature?id=${encodeURIComponent(clip.videoId)}`;
+  if (clip.provider === "twitch") return `${API_URL}/clips/twitch-miniature/${encodeURIComponent(clip.videoId)}`;
   return null;
 }
 
