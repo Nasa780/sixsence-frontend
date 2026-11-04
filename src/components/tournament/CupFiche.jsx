@@ -292,7 +292,7 @@ function FicheHero({ t, now, phase, cta }) {
       />
 
       <div className="relative grid gap-8 p-6 sm:p-10 lg:grid-cols-[minmax(0,1fr)_320px] lg:items-center">
-        <div className="flex min-w-0 gap-7">
+        <div className="flex min-w-0 flex-col gap-7 md:flex-row">
           {t.posterUrl ? (
             <motion.img
               src={t.posterUrl}
@@ -300,7 +300,7 @@ function FicheHero({ t, now, phase, cta }) {
               initial={reduce ? false : { opacity: 0, y: 24, rotate: -6 }}
               animate={{ opacity: 1, y: 0, rotate: -2 }}
               transition={{ duration: 0.8, ease: EASE }}
-              className="hidden h-64 w-auto shrink-0 self-center border border-white/15 shadow-[0_24px_60px_rgba(0,0,0,0.7)] md:block"
+              className="h-56 w-auto shrink-0 self-center border border-white/15 shadow-[0_24px_60px_rgba(0,0,0,0.7)] md:h-64"
             />
           ) : null}
           <div className="min-w-0">

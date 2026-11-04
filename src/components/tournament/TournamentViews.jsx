@@ -78,6 +78,16 @@ export function TournamentMatches({ tournament, myTeamId }) {
         {shown.map((m, index) => {
           const [label, tone] = statusOf(m.entry);
           const live = tone === "live";
+          const status = live ? (
+            <span className="flex items-center gap-1.5 font-tech text-[10px] font-bold uppercase tracking-[0.18em]" style={{ color: LIVE }}>
+              <span className="h-1.5 w-1.5 animate-pulse rounded-full" style={{ background: LIVE }} />
+              {label}
+            </span>
+          ) : tone === "late" ? (
+            <span className="font-tech text-[10px] font-bold uppercase tracking-[0.18em] text-fuchsia-400">{label}</span>
+          ) : (
+            <Chip tone={tone === "gold" ? "gold" : "neutral"}>{label}</Chip>
+          );
           const side = (team, i) => {
             const won = m.entry.status === "done" && team && m.entry.winner === team.id;
             return (
@@ -98,9 +108,12 @@ export function TournamentMatches({ tournament, myTeamId }) {
                 {m.number}
               </span>
               <div className="min-w-0 flex-1">
-                <p className="mb-1.5 font-tech text-[9px] uppercase tracking-[0.18em] text-white/45">
-                  {m.roundName} · BO{m.bestOf}
-                </p>
+                <div className="mb-1.5 flex items-start justify-between gap-2">
+                  <p className="min-w-0 font-tech text-[9px] uppercase tracking-[0.1em] text-white/45 sm:tracking-[0.18em]">
+                    {m.roundName} · BO{m.bestOf}
+                  </p>
+                  <span className="shrink-0 sm:hidden">{status}</span>
+                </div>
                 <div className="flex items-center gap-2 sm:gap-3">
                   {side(m.entry.teamA, 0)}
                   <span className="shrink-0 px-1 text-center font-tech text-base font-bold tabular-nums sm:text-lg">
@@ -117,18 +130,7 @@ export function TournamentMatches({ tournament, myTeamId }) {
                   {side(m.entry.teamB, 1)}
                 </div>
               </div>
-              <span className="hidden shrink-0 sm:block">
-                {live ? (
-                  <span className="flex items-center gap-1.5 font-tech text-[10px] font-bold uppercase tracking-[0.18em]" style={{ color: LIVE }}>
-                    <span className="h-1.5 w-1.5 animate-pulse rounded-full" style={{ background: LIVE }} />
-                    {label}
-                  </span>
-                ) : tone === "late" ? (
-                  <span className="font-tech text-[10px] font-bold uppercase tracking-[0.18em] text-fuchsia-400">{label}</span>
-                ) : (
-                  <Chip tone={tone === "gold" ? "gold" : "neutral"}>{label}</Chip>
-                )}
-              </span>
+              <span className="hidden shrink-0 sm:block">{status}</span>
               {m.entry.matchId ? <LuArrowRight aria-hidden className="h-4 w-4 shrink-0 text-white/35" /> : null}
             </div>
           );

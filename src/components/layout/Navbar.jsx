@@ -481,6 +481,9 @@ export function MobileMenu({ pathname, user, loading, myTeam, pending, onClose, 
 
         {user ? (
           <MobileSection title="Mon compte">
+            <MobileTile href="/cod/profile" icon={LuUser} active={pathname === "/cod/profile"}>
+              Mon profil
+            </MobileTile>
             {myTeam || pending.invites ? (
               <MobileTile href={teamHref} icon={LuUsers} active={pathname === "/cod/equipe"} badge={teamCount}>
                 Mon équipe
