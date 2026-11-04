@@ -5,6 +5,13 @@
  */
 export const RELEASES = [
   {
+    date: "2026-11-05",
+    title: "Stats de match par capture",
+    items: [
+      { tag: "Site", text: "Dépose la capture de fin de match sur la feuille de match : score, éliminations, poses et désamorçages sont lus tout seuls, sans rien taper, et s'ajoutent à ton profil." },
+    ],
+  },
+  {
     date: "2026-11-04",
     title: "Pass de saison",
     items: [

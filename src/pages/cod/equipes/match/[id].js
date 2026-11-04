@@ -23,6 +23,7 @@ import { supabase } from "../../../../lib/supabase";
 import { STAFF_CHAT } from "../../../../lib/roles";
 import { roundsToWin } from "../../../../lib/matchRules";
 import { usePageUnivers } from "../../../../lib/univers";
+import { MatchStats } from "../../../../components/cod/MatchStats";
 
 const mapsWon = (scores, side) => scores.filter(([a, b]) => (side === "A" ? a > b : b > a)).length;
 
@@ -133,6 +134,8 @@ export default function TeamMatchPage() {
         {match.viewer?.canConfirm ? <ConfirmBlock match={match} name={name} onDone={load} /> : null}
         {match.viewer?.canResolve ? <ResolveForm match={match} onDone={load} /> : null}
         {match.viewer?.canCorrect ? <CorrectionForm key={match.correctedAt ?? "initial"} match={match} onDone={load} /> : null}
+
+        {match.status === "completed" ? <MatchStats kind="division" matchId={match.id} /> : null}
 
         {match.proofs ? <Proofs match={match} userId={userId} onDone={load} /> : null}
 

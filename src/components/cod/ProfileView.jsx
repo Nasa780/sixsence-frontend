@@ -33,6 +33,7 @@ import { RankBadge } from "./RankBadge";
 import { RankCard } from "./RankCard";
 import { SeasonRecap } from "./SeasonRecap";
 import { READY_REQUIRED } from "../../lib/config";
+import { PlayerCaptureStats } from "./MatchStats";
 
 const PLATFORM_LABEL = { pc: "PC", playstation: "PlayStation", xbox: "Xbox" };
 const signed = (value) => (value > 0 ? `+${value}` : value === 0 ? "±0" : `${value}`);
@@ -322,6 +323,8 @@ export function ProfileView({ userId, editable = false, ownUser = null, nameAsTi
       <section aria-label="Performance">
         <PerformancePanel history={history} userId={player.id} points={profile.points} seasonId={activeSeason?.id ?? null} seasonLabel={seasonLabel} />
       </section>
+
+      <PlayerCaptureStats playerId={player.id} />
 
       {/* --- Analyse : place sur le site, ratio 30 j, face à face, adversaires, activité, équipes */}
       <PlayerInsights playerId={player.id} />

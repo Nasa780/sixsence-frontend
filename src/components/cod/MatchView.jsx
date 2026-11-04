@@ -30,6 +30,7 @@ import { RankEmblem } from "./RankEmblem";
 import { RankUpOverlay } from "./RankUpOverlay";
 import { MatchResultOverlay } from "./MatchResultOverlay";
 import { Eyebrow } from "../ui/Typography";
+import { MatchStats } from "./MatchStats";
 
 const STATUS_LABEL = {
   ready_check: "En attente des joueurs",
@@ -580,6 +581,9 @@ export function MatchView({ matchId }) {
       </div>
 
       {/* --- Vote du MVP (24 h après la fin du match) ---------------------- */}
+      {/* --- Stats lues sur la capture de fin de match --------------------- */}
+      {match.status === "completed" ? <MatchStats kind="classe" matchId={match.id} /> : null}
+
       {match.status === "completed" ? (
         <MvpVote match={match} playerById={playerById} votes={mvpVotes} myVote={me.myVote} userId={userId} isPlayer={isPlayer} onVoted={() => Promise.all([load(), loadMe()])} />
       ) : null}
