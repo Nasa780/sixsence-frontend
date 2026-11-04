@@ -6,6 +6,13 @@
 export const RELEASES = [
   {
     date: "2026-11-04",
+    title: "Pass de saison",
+    items: [
+      { tag: "Site", text: "Un pass de saison gratuit : 30 paliers à gravir en jouant, avec des cartes de visite et des badges exclusifs à gagner.", href: "/cod/pass" },
+    ],
+  },
+  {
+    date: "2026-11-04",
     title: "Nouvelles commandes Discord",
     items: [
       { tag: "Discord", text: "/defi : un Leader défie une équipe directement depuis Discord et choisit ses joueurs." },

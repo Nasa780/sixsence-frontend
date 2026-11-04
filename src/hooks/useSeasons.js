@@ -46,9 +46,13 @@ export default function useSeasons() {
 
 /** Libellé d'un badge de fin de saison (« s2-top10 » -> Top 10 de la saison 2), ou null. */
 export function seasonBadge(key, seasons) {
-  const match = /^s(\d+)-(top10|champion)$/.exec(key);
+  const match = /^s(\d+)-(top10|champion|pass-bronze|pass-argent|pass-or)$/.exec(key);
   if (!match) return null;
   const name = seasons?.find((season) => season.id === Number(match[1]))?.name ?? `Saison ${match[1]}`;
+  if (match[2].startsWith("pass-")) {
+    const [metal, level] = { "pass-bronze": ["Bronze", 10], "pass-argent": ["Argent", 20], "pass-or": ["Or", 30] }[match[2]];
+    return { label: `Pass ${metal} · ${name}`, description: `Palier ${level} du pass de la ${name}.` };
+  }
   return match[2] === "champion"
     ? { label: `Champion · ${name}`, description: `Premier du classement à la fin de la ${name}.` }
     : { label: `Top 10 · ${name}`, description: `Dans les dix premiers à la fin de la ${name}.` };

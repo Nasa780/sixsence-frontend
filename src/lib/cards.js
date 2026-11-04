@@ -42,6 +42,11 @@ const CARDS = {
   "rang-grand-maitre": { rarity: "epique", art: { type: "rank", rank: "Grand Maître", title: "#e05cc6", image: "/images/cartes/grand-maitre.webp", og: "/images/cartes/og/grand-maitre.jpg", position: "45% center", mobilePosition: "24% center" } },
   "rang-champion": { rarity: "legendaire", art: { type: "rank", rank: "Champion", title: "#f0a6e8", image: "/images/cartes/champion.webp", og: "/images/cartes/og/champion.jpg", position: "center 60%", mobilePosition: "22% center", light: true } },
   "rang-legende": { rarity: "legendaire", art: { type: "rank", rank: "Légende", title: "#ff8a3d", video: "/images/cartes/legende.mp4", poster: "/images/cartes/legende-poster.webp", cover: true, position: "center", mobilePosition: "40% center", og: "/images/cartes/og/legende.jpg", light: true } },
+  // Pass de la saison 1 : dessins provisoires, remplacés par art.image quand les illustrations existent.
+  "pass-s1-eclaireur": { rarity: "commune", art: { type: "glyph", glyph: "5", color: "#d4af37" } },
+  "pass-s1-sentinelle": { rarity: "rare", art: { type: "glyph", glyph: "15", color: "#5cc8ff" } },
+  "pass-s1-gardien": { rarity: "epique", art: { type: "illustration", glyph: "25", hue: "#8b5cf6" } },
+  "pass-s1-pharaon": { rarity: "legendaire", art: { type: "illustration", glyph: "30", hue: "#f5b83d" } },
   "premier-sang": { rarity: "commune", art: { type: "glyph", glyph: "1", color: "#f87171" } },
   domination: { rarity: "commune", art: { type: "glyph", glyph: "10", color: "#d4af37" } },
   veteran: { rarity: "commune", art: { type: "glyph", glyph: "50", color: "#b8c2cf" } },
