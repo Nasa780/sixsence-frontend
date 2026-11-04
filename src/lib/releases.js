@@ -6,6 +6,13 @@
 export const RELEASES = [
   {
     date: "2026-11-04",
+    title: "Clips Medal sur le site",
+    items: [
+      { tag: "Site", text: "Les clips Medal se regardent maintenant directement sur SixSence, avec leur miniature, sans passer par Medal.", href: "/clips" },
+    ],
+  },
+  {
+    date: "2026-11-04",
     title: "En direct sur Twitch",
     items: [
       { tag: "Site", text: "Les joueurs en direct sur Call of Duty ou GTA s'affichent sur l'accueil et la page MW4, avec le lecteur intégré. Lie ta chaîne Twitch depuis ton profil pour y apparaître.", href: "/cod/profile" },
