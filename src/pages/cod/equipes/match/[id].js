@@ -20,6 +20,7 @@ import { cn } from "../../../../lib/cn";
 import { mapImage } from "../../../../lib/maps";
 import { rankFor, rankGradient } from "../../../../lib/ranks";
 import { supabase } from "../../../../lib/supabase";
+import { refreshPending } from "../../../../hooks/usePending";
 import { STAFF_CHAT } from "../../../../lib/roles";
 import { roundsToWin } from "../../../../lib/matchRules";
 import { usePageUnivers } from "../../../../lib/univers";
@@ -492,6 +493,7 @@ function ConfirmBlock({ match, name, onDone }) {
     try {
       await api(`/teams/matches/${match.id}/confirm`, { method: "POST", body: { accept } });
       setAsk(null);
+      refreshPending();
       await onDone();
     } catch (caught) {
       setError(caught.message);

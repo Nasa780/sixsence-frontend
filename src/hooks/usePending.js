@@ -9,14 +9,19 @@ const REFRESH_MS = 120_000;
 // Lecture partagée : la barre d'onglets et le menu affichent les mêmes nombres.
 let cache = { userId: null, value: EMPTY };
 const listeners = new Set();
+let lastRead = 0;
 
 async function lookup(userId) {
+  lastRead += 1;
+  const read = lastRead;
   const value = await api("/cod/pending");
+  // Une réponse lente ne remplace pas une lecture plus récente.
+  if (read !== lastRead) return;
   cache = { userId, value };
   listeners.forEach((listener) => listener(value));
 }
 
-/** Relit les pastilles tout de suite (nouvelles cartes ouvertes, par exemple). */
+/** Relit les pastilles tout de suite, après une action qui les change (cartes vues, invitation, défi, résultat). */
 export function refreshPending() {
   if (cache.userId) lookup(cache.userId).catch(() => {});
 }
