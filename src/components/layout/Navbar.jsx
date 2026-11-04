@@ -1,7 +1,7 @@
 import { AnimatePresence, motion } from "framer-motion";
 import Link from "next/link";
 import { useRouter } from "next/router";
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { FaDiscord } from "react-icons/fa6";
 import { LuArrowRight, LuBell, LuCalendarDays, LuClapperboard, LuChevronDown, LuCircleHelp, LuCrown, LuCrosshair, LuIdCard, LuLogOut, LuMenu, LuScrollText, LuShield, LuShieldCheck, LuSparkles, LuSwords, LuTicket, LuTrophy, LuTriangleAlert, LuUser, LuUsers, LuX } from "react-icons/lu";
 import useActiveMatch from "../../hooks/useActiveMatch";
@@ -17,6 +17,7 @@ import { isReferee } from "../../lib/roles";
 import { CardArt, RarityFx } from "../cod/CallingCard";
 import { cardInfo } from "../../lib/cards";
 import { RankEmblem } from "../cod/RankEmblem";
+import { NotificationDialog } from "../cod/NotificationSettings";
 import { Avatar } from "../ui/Avatar";
 import { Button } from "../ui/Button";
 import { Container } from "../ui/Container";
@@ -62,6 +63,8 @@ export function Navbar() {
   const myTeam = useTeamTags(user ? [user.id] : []).get(user?.id);
   const [scrolled, setScrolled] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
+  const [notifications, setNotifications] = useState(false);
+  const closeNotifications = useCallback(() => setNotifications(false), []);
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 12);
@@ -159,7 +162,10 @@ export function Navbar() {
             {/* Zone de largeur fixe pendant le chargement : évite que la barre ne saute. */}
             <div className="hidden min-w-[9rem] justify-end sm:flex">
               {loading ? null : user ? (
-                <UserMenu user={user} />
+                <>
+                  <UserMenu user={user} onNotifications={() => setNotifications(true)} />
+                  <NotificationDialog open={notifications} onClose={closeNotifications} />
+                </>
               ) : (
                 <Button size="sm" onClick={() => signInWithDiscord()}>
                   <FaDiscord aria-hidden className="h-4 w-4" />
@@ -274,10 +280,17 @@ export function Navbar() {
                       <LuIdCard aria-hidden className="h-4 w-4" />
                       Mes cartes de visite
                     </Link>
-                    <Link href="/cod/profile#notifications" className={MOBILE_ITEM}>
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setMobileOpen(false);
+                        setNotifications(true);
+                      }}
+                      className={`${MOBILE_ITEM} w-full text-left`}
+                    >
                       <LuBell aria-hidden className="h-4 w-4" />
                       Mes notifications
-                    </Link>
+                    </button>
                     <Link href="/calendrier" className={MOBILE_ITEM}>
                       <LuCalendarDays aria-hidden className="h-4 w-4" />
                       Calendrier
@@ -371,7 +384,7 @@ function MenuItem({ href, icon: Icon, children }) {
  * Avatar + pseudo, avec un menu déroulant : carte du joueur (rang, points, niveau, équipe), rappel de l'identifiant
  * Activision, match en cours, les trois modes, le compte, les pages utiles, l'administration, la déconnexion.
  */
-function UserMenu({ user }) {
+function UserMenu({ user, onNotifications }) {
   const myTeam = useTeamTags([user.id]).get(user.id);
   const active = useActiveMatch();
   const profile = user.profile ?? null;
@@ -508,9 +521,18 @@ function UserMenu({ user }) {
               <MenuItem href="/cod/pass" icon={LuTicket}>
                 Pass de saison
               </MenuItem>
-              <MenuItem href="/cod/profile#notifications" icon={LuBell}>
+              <button
+                type="button"
+                role="menuitem"
+                onClick={() => {
+                  setOpen(false);
+                  onNotifications();
+                }}
+                className="flex w-full items-center gap-2.5 px-4 py-2 text-left text-sm text-white/75 transition-colors hover:bg-white/5 hover:text-gold"
+              >
+                <LuBell aria-hidden className="h-4 w-4" />
                 Mes notifications
-              </MenuItem>
+              </button>
               {MY_MATCHES_ENABLED ? (
                 <MenuItem href="/cod/matchs" icon={LuSwords}>
                   Mes matchs

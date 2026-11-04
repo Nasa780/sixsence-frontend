@@ -1,10 +1,11 @@
 import { useEffect, useState } from "react";
 import { FaDiscord } from "react-icons/fa6";
-import { LuBell, LuBellOff, LuLoaderCircle } from "react-icons/lu";
+import { LuBell, LuBellOff, LuLoaderCircle, LuX } from "react-icons/lu";
 import { api } from "../../lib/api";
 import { cn } from "../../lib/cn";
 import { disablePush, enablePush, isPushEnabled, pushSupport } from "../../lib/push";
 import { Notice } from "../ui/Feedback";
+import { Portal } from "../ui/Portal";
 
 /** Catégories que le joueur peut couper (mêmes clés que services/notificationPrefs.ts du backend). */
 const CATEGORIES = [
@@ -133,5 +134,38 @@ export function NotificationSettings() {
       {error ? <Notice tone="error">{error}</Notice> : null}
       <p className="text-xs text-white/40">Les messages importants (sanctions, décisions sur ton compte ou ton équipe, messages de l&apos;équipe SixSence) arrivent toujours.</p>
     </div>
+  );
+}
+
+/** Fenêtre « Mes notifications », ouverte depuis le menu du profil, sans quitter la page. */
+export function NotificationDialog({ open, onClose }) {
+  useEffect(() => {
+    if (!open) return undefined;
+    const onKeyDown = (event) => event.key === "Escape" && onClose();
+    document.addEventListener("keydown", onKeyDown);
+    return () => document.removeEventListener("keydown", onKeyDown);
+  }, [open, onClose]);
+  if (!open) return null;
+  return (
+    <Portal>
+      <div className="fixed inset-0 z-[95] overflow-y-auto bg-ink/90 backdrop-blur-sm sm:p-6" onMouseDown={(event) => event.target === event.currentTarget && onClose()}>
+        <div role="dialog" aria-modal="true" aria-labelledby="titre-notifications" className="mx-auto min-h-full max-w-2xl border-gold/30 bg-ink-800 shadow-2xl shadow-black/60 sm:mt-10 sm:min-h-0 sm:border">
+          <div className="sticky top-0 z-10 flex items-start justify-between gap-4 border-b border-white/10 bg-ink-800 px-5 py-4 sm:px-7">
+            <div>
+              <h2 id="titre-notifications" className="font-display text-3xl font-black uppercase leading-none">
+                Mes notifications
+              </h2>
+              <p className="mt-1.5 text-sm text-white/55">Choisis ce que tu reçois en notification et en message privé Discord.</p>
+            </div>
+            <button type="button" onClick={onClose} className="p-1 text-white/50 hover:text-white" aria-label="Fermer">
+              <LuX aria-hidden className="h-6 w-6" />
+            </button>
+          </div>
+          <div className="p-5 sm:p-7">
+            <NotificationSettings />
+          </div>
+        </div>
+      </div>
+    </Portal>
   );
 }
