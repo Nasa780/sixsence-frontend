@@ -1,5 +1,6 @@
 import Head from "next/head";
 import { useRouter } from "next/router";
+import { ActivityPanel } from "../components/admin/ActivityPanel";
 import { CasesPanel, DisputesPanel, OverviewPanel, PlayersPanel, SeasonPanel } from "../components/admin/AdminPanels";
 import { CrudPanel } from "../components/admin/CrudPanel";
 import { CorrectionsPanel, MatchesPanel } from "../components/admin/MatchesPanels";
@@ -22,6 +23,7 @@ const REFEREES = ["admin", "staff", "arbitre"];
 const MODERATORS = ["admin", "staff"];
 const ALL_TABS = [
   { key: "overview", label: "Tableau de bord", roles: REFEREES },
+  { key: "activite", label: "Activité" },
   { key: "disputes", label: "Contestations", roles: REFEREES },
   { key: "arbitrages", label: "Arbitrages", roles: REFEREES },
   { key: "matchs", label: "Matchs", roles: REFEREES },
@@ -82,6 +84,7 @@ export default function AdminPage() {
             </p>
           ) : null}
           {tab === "overview" ? <OverviewPanel onNavigate={go} role={user.role} /> : null}
+          {tab === "activite" ? <ActivityPanel /> : null}
           {tab === "disputes" ? <DisputesPanel /> : null}
           {tab === "arbitrages" ? <CasesPanel key="arbitrations" kind="arbitrations" /> : null}
           {tab === "matchs" ? <MatchesPanel role={user.role} userId={user.id} /> : null}
