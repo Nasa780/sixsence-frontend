@@ -6,6 +6,14 @@
 export const RELEASES = [
   {
     date: "2026-11-04",
+    title: "Nouvelles commandes Discord",
+    items: [
+      { tag: "Discord", text: "/defi : un Leader défie une équipe directement depuis Discord et choisit ses joueurs." },
+      { tag: "Discord", text: "/rappel : le bot t'envoie un message privé 2 h avant la prochaine coupe." },
+    ],
+  },
+  {
+    date: "2026-11-04",
     title: "Clips Medal sur le site",
     items: [
       { tag: "Site", text: "Les clips Medal se regardent maintenant directement sur SixSence, avec leur miniature, sans passer par Medal.", href: "/clips" },
