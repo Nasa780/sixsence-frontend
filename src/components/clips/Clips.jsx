@@ -1,7 +1,7 @@
 import { AnimatePresence, motion } from "framer-motion";
 import Link from "next/link";
 import { useEffect, useState } from "react";
-import { LuExternalLink, LuFlag, LuFlame, LuLink2, LuLoaderCircle, LuPlay, LuPlus, LuTrash2, LuX } from "react-icons/lu";
+import { LuFlag, LuFlame, LuLink2, LuLoaderCircle, LuPlay, LuPlus, LuTrash2, LuX } from "react-icons/lu";
 import useUser from "../../hooks/useUser";
 import { api } from "../../lib/api";
 import { signInWithDiscord } from "../../lib/auth";
@@ -26,14 +26,20 @@ export const MODE_STYLE = {
 const PROVIDERS = { youtube: "YouTube", twitch: "Twitch", medal: "Medal", tiktok: "TikTok" };
 const REPORT_REASONS = { contenu: "Contenu choquant ou haineux", triche: "Triche ou glitch", spam: "Spam ou publicité", autre: "Autre" };
 
-/** Lecteur intégré d'un clip (null : Medal, ouvert dans un nouvel onglet). */
+/** Lecteur intégré d'un clip, chargé au clic. */
 function embedUrl(clip) {
   if (clip.provider === "youtube") return `https://www.youtube-nocookie.com/embed/${clip.videoId}?autoplay=1&rel=0`;
   if (clip.provider === "twitch") return `https://clips.twitch.tv/embed?clip=${clip.videoId}&parent=${window.location.hostname}&autoplay=true`;
-  if (clip.provider === "tiktok") return `https://www.tiktok.com/embed/v2/${clip.videoId}`;
+  if (clip.provider === "medal") return `https://medal.tv/clip/${clip.videoId}?autoplay=1&cta=0`;
+  return `https://www.tiktok.com/embed/v2/${clip.videoId}`;
+}
+
+/** Miniature de la carte : YouTube directement, Medal par /api/clip-miniature (adresse signée qui expire). */
+function thumbnail(clip) {
+  if (clip.provider === "youtube") return `https://i.ytimg.com/vi/${clip.videoId}/hqdefault.jpg`;
+  if (clip.provider === "medal") return `/api/clip-miniature?id=${encodeURIComponent(clip.videoId)}`;
   return null;
 }
-const thumbnail = (clip) => (clip.provider === "youtube" ? `https://i.ytimg.com/vi/${clip.videoId}/hqdefault.jpg` : null);
 
 export function ClipCard({ clip, onRemoved = null, highlight = false }) {
   const user = useUser();
@@ -43,6 +49,7 @@ export function ClipCard({ clip, onRemoved = null, highlight = false }) {
   const [pending, setPending] = useState(false);
   const [reporting, setReporting] = useState(false);
   const [error, setError] = useState(null);
+  const [noThumb, setNoThumb] = useState(false);
   const mode = clip.mode ? MODE_STYLE[clip.mode] : null;
   const own = user?.id === clip.author.id;
   const canRemove = own || isModerator(user?.role);
@@ -74,11 +81,6 @@ export function ClipCard({ clip, onRemoved = null, highlight = false }) {
     }
   }
 
-  const play = () => {
-    if (clip.provider === "medal") window.open(clip.url, "_blank", "noopener,noreferrer");
-    else setPlaying(true);
-  };
-
   return (
     <article
       id={`clip-${clip.id}`}
@@ -94,16 +96,16 @@ export function ClipCard({ clip, onRemoved = null, highlight = false }) {
             className="absolute inset-0 h-full w-full"
           />
         ) : (
-          <button type="button" onClick={play} className="absolute inset-0 block w-full" aria-label={`Lire « ${clip.title} »`}>
-            {thumbnail(clip) ? (
+          <button type="button" onClick={() => setPlaying(true)} className="absolute inset-0 block w-full" aria-label={`Lire « ${clip.title} »`}>
+            {thumbnail(clip) && !noThumb ? (
               // eslint-disable-next-line @next/next/no-img-element
-              <img src={thumbnail(clip)} alt="" className="absolute inset-0 h-full w-full object-cover transition-transform duration-500 group-hover:scale-105" />
+              <img src={thumbnail(clip)} alt="" loading="lazy" onError={() => setNoThumb(true)} className="absolute inset-0 h-full w-full object-cover transition-transform duration-500 group-hover:scale-105" />
             ) : (
               <span className="absolute inset-0 bg-[radial-gradient(ellipse_at_30%_20%,rgba(231,192,90,0.18),transparent_60%),linear-gradient(135deg,#17140d,#060606)]" />
             )}
             <span className="absolute inset-0 bg-linear-to-t from-black/70 via-transparent to-black/20" />
             <span className="absolute left-1/2 top-1/2 grid h-14 w-14 -translate-x-1/2 -translate-y-1/2 place-items-center rounded-full bg-gold/90 text-ink shadow-[0_0_30px_rgba(231,192,90,0.5)] transition-transform group-hover:scale-110">
-              {clip.provider === "medal" ? <LuExternalLink className="h-6 w-6" /> : <LuPlay className="ml-0.5 h-6 w-6" />}
+              <LuPlay className="ml-0.5 h-6 w-6" />
             </span>
             <span className="absolute left-3 top-3 bg-black/70 px-2 py-0.5 font-tech text-[9px] uppercase tracking-[0.2em] text-white/80">{PROVIDERS[clip.provider]}</span>
             {mode ? (
