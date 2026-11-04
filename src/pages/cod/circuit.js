@@ -15,6 +15,24 @@ import { cn } from "../../lib/cn";
  * 8e du circuit contre les 2 meilleures de la Division), ou reviennent directement à la Division sans play-in.
  */
 const MEDALS = { winner: ["1re place", "#d4af37"], finalist: ["2e place", "#c0c7d0"], third: ["3e place", "#c97b4b"] };
+
+/** Podiums et nombre de coupes d'une équipe du circuit : sous son nom sur téléphone, à sa droite sur ordinateur. */
+function RowPodiums({ row, className }) {
+  return (
+    <span className={cn("items-center gap-2", className)}>
+      {Object.entries(MEDALS).map(([key, [, color]]) =>
+        row.podiums[key] ? (
+          <span key={key} className="inline-flex items-center gap-0.5 text-xs text-white/60">
+            <LuTrophy aria-hidden className="h-3.5 w-3.5" style={{ color }} />×{row.podiums[key]}
+          </span>
+        ) : null,
+      )}
+      <span className="text-xs text-white/45">
+        {row.cups} coupe{row.cups > 1 ? "s" : ""}
+      </span>
+    </span>
+  );
+}
 const dateFr = (iso) => new Date(iso).toLocaleDateString("fr-FR", { weekday: "short", day: "numeric", month: "short" });
 
 export default function CircuitPage() {
@@ -103,7 +121,7 @@ export function CircuitView({ data, error = null }) {
 
             {data.playIn ? <PlayIn playIn={data.playIn} spots={data.circuitSpots} /> : null}
 
-            <div className="grid gap-8 lg:grid-cols-[1fr_1.6fr]">
+            <div className="grid grid-cols-1 gap-8 lg:grid-cols-[minmax(0,1fr)_minmax(0,1.6fr)]">
               <div className="space-y-8">
                 {/* Barème */}
                 <section aria-labelledby="titre-bareme">
@@ -171,19 +189,11 @@ export function CircuitView({ data, error = null }) {
                         >
                           <span className={cn("w-6 font-display text-lg font-black tabular-nums", i < 3 ? "text-gold" : "text-white/50")}>{i + 1}</span>
                           <TeamCrest team={row.team} size={32} />
-                          <span className="min-w-0 flex-1 truncate font-semibold">{row.team.name}</span>
-                          <span className="hidden gap-1 sm:flex">
-                            {Object.entries(MEDALS).map(([key, [, color]]) =>
-                              row.podiums[key] ? (
-                                <span key={key} className="inline-flex items-center gap-0.5 text-xs text-white/60">
-                                  <LuTrophy aria-hidden className="h-3.5 w-3.5" style={{ color }} />×{row.podiums[key]}
-                                </span>
-                              ) : null,
-                            )}
+                          <span className="min-w-0 flex-1">
+                            <span className="block truncate font-semibold">{row.team.name}</span>
+                            <RowPodiums row={row} className="mt-0.5 flex sm:hidden" />
                           </span>
-                          <span className="hidden text-xs text-white/45 sm:inline">
-                            {row.cups} coupe{row.cups > 1 ? "s" : ""}
-                          </span>
+                          <RowPodiums row={row} className="hidden sm:flex" />
                           <span className="w-16 text-right font-display text-xl font-black tabular-nums">{row.points}</span>
                         </Link>
                       </Fragment>

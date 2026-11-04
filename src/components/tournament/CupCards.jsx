@@ -153,10 +153,10 @@ export function CupList({ cups, now }) {
 }
 
 const TAB_ITEMS = [
-  { id: null, label: "Toutes les coupes", short: "Toutes", sub: "Calendrier et résultats", icon: LuLayoutGrid },
-  { id: "horus", label: "Coupe Horus", short: "Horus", sub: "En équipe · trophées", icon: LuUsers, art: "/images/trophees/horus-or.png" },
-  { id: "anubis", label: "Coupe Anubis", short: "Anubis", sub: "En solo · médailles", icon: LuUser, art: "/images/trophees/anubis-or.png" },
-  { id: "saison", label: "Fin de saison", short: "Saison", sub: "Les meilleures du circuit", icon: LuCrown },
+  { id: null, label: "Toutes les coupes", sub: "Calendrier et résultats", icon: LuLayoutGrid },
+  { id: "horus", label: "Coupe Horus", sub: "En équipe · trophées", icon: LuUsers, art: "/images/trophees/horus-or.png" },
+  { id: "anubis", label: "Coupe Anubis", sub: "En solo · médailles", icon: LuUser, art: "/images/trophees/anubis-or.png" },
+  { id: "saison", label: "Fin de saison", sub: "Les meilleures du circuit", icon: LuCrown },
 ];
 
 /** Prochaine échéance d'un onglet d'après la liste des coupes : en cours, date de la prochaine, ou nombre à venir. */
@@ -172,13 +172,13 @@ function tabNext(id, cups) {
 }
 
 /**
- * Onglets des tournois : cartes de compétition sur ordinateur (visuel, type de coupe, prochaine date), barre HUD
- * soulignée sur téléphone. `active` : null (toutes), horus, anubis ou saison ; `extra` : onglet ponctuel (play-in).
+ * Onglets des tournois : cartes de compétition (visuel, type de coupe, prochaine date), quatre sur ordinateur,
+ * deux par deux sur téléphone. `active` : null (toutes), horus, anubis ou saison ; `extra` : onglet ponctuel (play-in).
  */
 export function CupTabs({ active, cups, onChange, extra = null }) {
   return (
     <div role="tablist" aria-label="Tournois">
-      <div className="hidden grid-cols-4 gap-3 md:grid">
+      <div className="grid grid-cols-2 gap-2 md:grid-cols-4 md:gap-3">
         {TAB_ITEMS.map((item) => {
           const on = active === item.id;
           const Icon = item.icon;
@@ -191,42 +191,29 @@ export function CupTabs({ active, cups, onChange, extra = null }) {
               aria-selected={on}
               onClick={() => onChange(item.id)}
               className={cn(
-                "clip-tactical group relative flex h-24 items-center gap-3 overflow-hidden px-4 text-left transition [--cut:14px]",
+                "clip-tactical group relative flex h-[76px] items-center gap-2 overflow-hidden px-2.5 text-left transition [--cut:14px] md:h-24 md:gap-3 md:px-4",
                 on ? "bg-linear-to-br from-gold/30 via-gold/10 to-black" : "bg-white/[0.04] hover:bg-white/[0.07]",
               )}
             >
               {on ? <span className="absolute inset-x-0 top-0 h-0.5 bg-gold shadow-[0_0_12px_var(--color-gold)]" /> : null}
               {item.art ? (
                 // eslint-disable-next-line @next/next/no-img-element
-                <img src={item.art} alt="" className={cn("h-16 w-16 shrink-0 object-contain transition", on ? "drop-shadow-[0_0_14px_rgba(229,72,77,0.5)]" : "opacity-60 grayscale-[40%] group-hover:opacity-90")} />
+                <img src={item.art} alt="" className={cn("h-10 w-10 shrink-0 object-contain transition max-[379px]:hidden md:h-16 md:w-16", on ? "drop-shadow-[0_0_14px_rgba(229,72,77,0.5)]" : "opacity-60 grayscale-[40%] group-hover:opacity-90")} />
               ) : (
-                <span className={cn("grid h-16 w-16 shrink-0 place-items-center", on ? "text-gold-light" : "text-white/35")}>
+                <span className={cn("hidden h-16 w-16 shrink-0 place-items-center md:grid", on ? "text-gold-light" : "text-white/35")}>
                   <Icon aria-hidden className="h-8 w-8" />
                 </span>
               )}
-              <span className="min-w-0">
-                <span className={cn("block truncate font-display text-lg font-black uppercase leading-none", on ? "text-white" : "text-white/70")}>{item.label}</span>
-                <span className="mt-1 block truncate text-[11px] text-white/45">{item.sub}</span>
+              <span className="min-w-0 flex-1">
+                <span className={cn("block truncate font-display text-[15px] font-black uppercase leading-none md:text-lg", on ? "text-white" : "text-white/70")}>{item.label}</span>
+                <span className="mt-1 block truncate text-[10px] text-white/45 md:text-[11px]">{item.sub}</span>
                 {next ? (
-                  <span className={cn("mt-1.5 inline-flex items-center gap-1 font-tech text-[9px] uppercase tracking-[0.2em]", on ? "text-gold-light" : "text-white/35")}>
-                    <LuCalendarDays aria-hidden className="h-3 w-3" />
-                    {next}
+                  <span className={cn("mt-1 flex items-center gap-1 text-[10px] md:mt-1.5 md:font-tech md:text-[9px] md:uppercase md:tracking-[0.2em]", on ? "text-gold-light" : "text-white/50 md:text-white/35")}>
+                    <LuCalendarDays aria-hidden className="hidden h-3 w-3 shrink-0 md:block" />
+                    <span className="truncate">{next}</span>
                   </span>
                 ) : null}
               </span>
-            </button>
-          );
-        })}
-      </div>
-      <div className="flex overflow-x-auto border-b border-white/10 md:hidden">
-        {TAB_ITEMS.map((item) => {
-          const on = active === item.id;
-          const Icon = item.icon;
-          return (
-            <button key={item.label} type="button" role="tab" aria-selected={on} onClick={() => onChange(item.id)} className="relative flex flex-1 shrink-0 items-center justify-center gap-1.5 px-3 py-3.5">
-              <Icon aria-hidden className={cn("h-4 w-4", on ? "text-gold-light" : "text-white/35")} />
-              <span className={cn("font-display text-sm font-bold uppercase tracking-[0.12em]", on ? "text-white" : "text-white/50")}>{item.short}</span>
-              {on ? <span className="absolute inset-x-0 -bottom-px h-0.5 bg-gold shadow-[0_0_12px_var(--color-gold)]" /> : null}
             </button>
           );
         })}

@@ -10,6 +10,7 @@ export const RELEASES = [
     items: [
       { tag: "Site", text: "Une barre d'onglets toujours sous le pouce : Accueil, Jouer, Clips, Pass et Menu. Le menu a été refait, et il se ferme en le faisant glisser." },
       { tag: "Site", text: "Des pastilles te signalent ce qui t'attend : invitation d'équipe, défi reçu, nouvelle carte, résultat à confirmer." },
+      { tag: "Site", text: "Tu retrouves aussi sur téléphone le statut des matchs de coupe, les podiums du circuit, l'affiche et les dates des coupes." },
     ],
   },
   {
