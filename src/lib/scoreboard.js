@@ -1,3 +1,4 @@
+import { MAPS } from "./maps";
 import { GLYPHS, GLYPH_HEIGHT, GLYPH_WIDTH } from "./scoreboardGlyphs";
 
 /**
@@ -243,7 +244,7 @@ export function matchPlayers(rows, players) {
 
 // --- Lecture complète -------------------------------------------------------------------------
 
-function toCanvas(image, left, top, width, height, threshold, scale = 1) {
+function toCanvas(image, left, top, width, height, threshold, scale = 1, invert = false) {
   const canvas = document.createElement("canvas");
   canvas.width = Math.round(width * scale);
   canvas.height = Math.round(height * scale);
@@ -252,7 +253,8 @@ function toCanvas(image, left, top, width, height, threshold, scale = 1) {
     for (let x = 0; x < canvas.width; x += 1) {
       const sx = Math.min(image.width - 1, left + Math.floor(x / scale));
       const sy = Math.min(image.height - 1, top + Math.floor(y / scale));
-      const value = image.lum[sy * image.width + sx] > threshold ? 0 : 255; // texte noir sur blanc
+      const light = image.lum[sy * image.width + sx] > threshold;
+      const value = light !== invert ? 0 : 255; // texte noir sur blanc
       const offset = (y * canvas.width + x) * 4;
       out.data[offset] = value;
       out.data[offset + 1] = value;
@@ -262,6 +264,29 @@ function toCanvas(image, left, top, width, height, threshold, scale = 1) {
   }
   canvas.getContext("2d").putImageData(out, 0, 0);
   return canvas;
+}
+
+/** Map écrite sur la capture (en haut de l'écran de fin de partie), ou null si elle n'y figure pas. */
+export function detectMap(text) {
+  const plain = (value) => value.normalize("NFD").replace(/\p{M}/gu, "").toUpperCase();
+  const seen = plain(text);
+  return MAPS.find((map) => seen.includes(plain(map.name)))?.name ?? null;
+}
+
+/** Map en haut à droite de l'écran : écrite en foncé sur une étiquette claire, d'où la lecture inversée. */
+async function readMapName(worker, image, tableTop) {
+  const left = Math.round(image.width * 0.55);
+  const height = Math.max(0, Math.round(tableTop));
+  if (height < 20) return null;
+  const { data } = await worker.recognize(toCanvas(image, left, 0, image.width - left, height, 150, 1, true));
+  return detectMap(data.text);
+}
+
+/** Grand titre « MANCHE GAGNÉE » ou « MANCHE PERDUE » en haut à gauche : la partie n'est pas finie. */
+async function isMidGame(worker, image) {
+  const scale = Math.min(1, 1000 / image.width);
+  const { data } = await worker.recognize(toCanvas(image, 0, 0, Math.round(image.width * 0.5), Math.round(image.height * 0.22), 170, scale));
+  return /MANCHE|GAGN[EÉ]E|PERDUE/i.test(data.text);
 }
 
 /** Colonnes du tableau d'après les en-têtes SCORE et POSES des deux équipes. */
@@ -278,7 +303,10 @@ async function findTable(worker, image) {
     const scores = find(/^S?CORE/);
     const poses = find(/^P?OSES/);
     if (scores.length === 2 && poses.length === 2) {
-      return scores.map((box, index) => ({ x: box.x0, centerY: (box.y0 + box.y1) / 2, pitch: (poses[index].x0 - box.x0) / 2 }));
+      return {
+        columns: scores.map((box, index) => ({ x: box.x0, centerY: (box.y0 + box.y1) / 2, pitch: (poses[index].x0 - box.x0) / 2 })),
+        text: words.map((word) => word.text).join(" "),
+      };
     }
   }
   return null;
@@ -298,7 +326,7 @@ async function readName(worker, image, column, centerY, rowHeight) {
 }
 
 /**
- * Lit une capture. Renvoie { rows: [{ column, name, userId, score, kills, plants, defuses, readable }] }, ou null
+ * Lit une capture. Renvoie { rows: [{ column, name, userId, score, kills, plants, defuses, readable }], mapSeen }, ou null
  * si le tableau n'est pas trouvé. `players` : joueurs du match ({ id, activision, username, side }).
  */
 export async function readScoreboard(file, players, onProgress = () => {}) {
@@ -315,8 +343,12 @@ export async function readScoreboard(file, players, onProgress = () => {}) {
   const worker = await createWorker("eng", 1, { logger: () => {} });
   try {
     onProgress("Recherche du tableau…");
-    const columns = await findTable(worker, image);
-    if (!columns) return null;
+    const table = await findTable(worker, image);
+    if (!table) return null;
+    const { columns } = table;
+
+    const mapSeen = detectMap(table.text) ?? (await readMapName(worker, image, columns[0].centerY));
+    const midGame = /MANCHE/i.test(table.text) || (await isMidGame(worker, image));
 
     onProgress("Lecture des chiffres…");
     const rows = [];
@@ -344,7 +376,7 @@ export async function readScoreboard(file, players, onProgress = () => {}) {
       // Le texte qui ressemble le plus à un joueur du match ; sinon le premier lu.
       row.name = candidates.sort((a, b) => Math.max(...players.map((p) => nameSimilarity(b, p.activision ?? p.username))) - Math.max(...players.map((p) => nameSimilarity(a, p.activision ?? p.username))))[0];
     }
-    return { rows: matchPlayers(rows, players).map(({ centerY, rowHeight, ...row }) => row) };
+    return { rows: matchPlayers(rows, players).map(({ centerY, rowHeight, ...row }) => row), mapSeen, midGame };
   } finally {
     await worker.terminate();
   }
