@@ -5,6 +5,7 @@ import { LuCrosshair, LuCrown, LuShield, LuTrophy } from "react-icons/lu";
 import { LeaderboardView } from "./LeaderboardView";
 import { ActiveMatchBanner } from "./ActiveMatchBanner";
 import { HubActions } from "./HubActions";
+import { TwitchLive } from "./TwitchLive";
 import { MySeason } from "./MySeason";
 import { OnboardingPanel } from "./OnboardingPanel";
 import { Reveal } from "../effects/Reveal";
@@ -190,6 +191,8 @@ export function ModesHub() {
             </Reveal>
           ))}
         </div>
+
+        <TwitchLive bare />
 
         {/* Premiers pas : compte, puis parcours Classé ou Division (onglets). */}
         <OnboardingPanel user={user} />

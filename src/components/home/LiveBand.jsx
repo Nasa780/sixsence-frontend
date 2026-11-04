@@ -1,5 +1,6 @@
 import { motion, useReducedMotion } from "framer-motion";
 import Link from "next/link";
+import { FaTwitch } from "react-icons/fa6";
 import { LuClock, LuCrosshair, LuCrown, LuGamepad2, LuShield, LuSwords, LuTrophy } from "react-icons/lu";
 import useLive from "../../hooks/useLive";
 import { cn } from "../../lib/cn";
@@ -57,6 +58,10 @@ function itemsOf(live) {
       href: CUP_PAGE[kind] ?? "/cod/tournoi",
     };
     (phase === "registration" ? calm : hot).push(item);
+  }
+  if (live.streams?.length) {
+    const [first, ...others] = live.streams;
+    hot.push({ key: "twitch", icon: FaTwitch, color: "#bf94ff", label: "Twitch · en direct", value: others.length ? `${others.length + 1} joueurs en direct` : first.player.username, sub: others.length ? null : plural(first.viewers, "spectateur"), href: "/#twitch" });
   }
   if (live.gta) {
     const { id, title, startsAt, live: now, registered } = live.gta;
