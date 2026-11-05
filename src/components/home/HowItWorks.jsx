@@ -18,7 +18,7 @@ const STEPS = [
   {
     icon: LuTrophy,
     title: "Laisse ton empreinte",
-    text: "Matchs intenses, classements disputés, événements exclusifs : impose ton style, forge ta renommée et laisse ton empreinte sur SixSence.",
+    text: "Matchs intenses, classements disputés, événements exclusifs : impose ton style et forge ta renommée sur SixSence.",
   },
 ];
 
