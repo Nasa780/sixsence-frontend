@@ -36,10 +36,11 @@ export function CardPicker({ open, onClose, player, points, onEquipped }) {
     setError(null);
     api("/cod/cards")
       .then((result) => {
+        // Même si la fenêtre a déjà été refermée : serveur lent au réveil, le joueur l'a bien ouverte.
+        if (result.newCount > 0) api("/cod/cards/seen", { method: "POST" }).then(refreshPending, () => {});
         if (!active) return;
         setData(result);
         setSelected(result.equipped);
-        if (result.newCount > 0) api("/cod/cards/seen", { method: "POST" }).then(refreshPending, () => {});
       })
       .catch((caught) => active && setError(caught.message));
     const onKey = (event) => event.key === "Escape" && onClose();

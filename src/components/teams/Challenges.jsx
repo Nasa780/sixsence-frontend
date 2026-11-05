@@ -10,6 +10,7 @@ import { Chip, Notice } from "../ui/Feedback";
 import { Portal } from "../ui/Portal";
 import { TacticalCard } from "../ui/TacticalCard";
 import { Eyebrow } from "../ui/Typography";
+import { refreshPending } from "../../hooks/usePending";
 import { TeamCrest, fieldClass, labelClass } from "./TeamParts";
 
 const when = (iso) => new Date(iso).toLocaleString("fr-FR", { weekday: "short", day: "numeric", month: "short", hour: "2-digit", minute: "2-digit" });
@@ -271,6 +272,7 @@ export function ChallengesPanel() {
       setData(await action());
       setAnswering(null);
       setRoster([]);
+      refreshPending();
     } catch (caught) {
       setError(caught.message);
     } finally {

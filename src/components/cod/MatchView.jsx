@@ -3,6 +3,7 @@ import { useRouter } from "next/router";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { LuBan, LuCheck, LuCopy, LuCrown, LuFlag, LuHouse, LuImagePlus, LuLoaderCircle, LuLock, LuMap, LuPencil, LuRotateCcw, LuSend, LuShieldAlert, LuStar, LuSwords, LuUserX, LuX } from "react-icons/lu";
 import useCountdown from "../../hooks/useCountdown";
+import { refreshPending } from "../../hooks/usePending";
 import useSession from "../../hooks/useSession";
 import useUser from "../../hooks/useUser";
 import { api } from "../../lib/api";
@@ -274,6 +275,7 @@ export function MatchView({ matchId }) {
     try {
       await api(`/cod/matches/${matchId}/${action}`, { method: "POST", body });
       await load();
+      refreshPending();
     } catch (caught) {
       setError(caught.message);
     } finally {
@@ -701,6 +703,7 @@ function KickoffBlock({ data, userId, myTeam, hostName, playerById, onDone }) {
     try {
       await api(`/cod/matches/${match.id}/${path}`, { method: "POST", body });
       await onDone();
+      refreshPending();
       return true;
     } catch (caught) {
       setError(caught.message);

@@ -102,7 +102,12 @@ export function ProfileView({ userId, editable = false, ownUser = null, nameAsTi
   const closePicker = useCallback(() => {
     setPicking(false);
     setNewCards(0);
-  }, []);
+    // Sans ça, le lien du menu « Mes cartes de visite » ne rouvrirait plus la fenêtre.
+    if (router.query.cartes) {
+      const { cartes: _, ...query } = router.query;
+      router.replace({ pathname: router.pathname, query }, undefined, { shallow: true });
+    }
+  }, [router]);
 
   /** Copie le lien public du profil : collé sur Discord, il affiche la carte du joueur. */
   async function shareProfile() {

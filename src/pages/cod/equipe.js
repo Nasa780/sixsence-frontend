@@ -19,6 +19,7 @@ import { TacticalCard } from "../../components/ui/TacticalCard";
 import { Eyebrow, PageHeader } from "../../components/ui/Typography";
 import useSession from "../../hooks/useSession";
 import { api } from "../../lib/api";
+import { refreshPending } from "../../hooks/usePending";
 import { inviteUrl } from "../../lib/invites";
 import { cn } from "../../lib/cn";
 import { rankFor, rankGradient } from "../../lib/ranks";
@@ -105,6 +106,7 @@ function NoTeam({ state, reload }) {
     try {
       await api(path, options);
       await reload();
+      refreshPending();
     } catch (caught) {
       setError(caught.message);
     } finally {
@@ -511,6 +513,7 @@ function Recruitment({ team, state, reload }) {
       await api(path, options);
       if (done) setSent(done);
       await reload();
+      refreshPending();
     } catch (caught) {
       setError(caught.message);
     } finally {

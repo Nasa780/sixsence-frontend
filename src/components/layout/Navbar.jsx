@@ -57,7 +57,7 @@ function isActive(pathname, href) {
 
 /** Barre de navigation fixe : transparente en haut de page, opaque dès qu'on défile. */
 export function Navbar() {
-  const { pathname } = useRouter();
+  const { pathname, asPath } = useRouter();
   const { loading } = useSession();
   const user = useUser();
   // Raccourci « Mon équipe » seulement pour les joueurs qui ont une équipe.
@@ -75,10 +75,10 @@ export function Navbar() {
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
 
-  // Le menu mobile se referme à chaque changement de page.
+  // Le menu mobile se referme à chaque changement d'adresse (aussi ?cartes=1 depuis son propre profil).
   useEffect(() => {
     setMobileOpen(false);
-  }, [pathname]);
+  }, [asPath]);
 
   // Menu ouvert : la page derrière ne défile plus.
   useEffect(() => {
@@ -583,7 +583,7 @@ function UserMenu({ user, onNotifications }) {
   const rank = rankFor(points);
   const [open, setOpen] = useState(false);
   const container = useRef(null);
-  const { pathname } = useRouter();
+  const { pathname, asPath } = useRouter();
 
   useEffect(() => {
     setOpen(false);
