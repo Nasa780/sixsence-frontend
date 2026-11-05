@@ -92,6 +92,7 @@ export function OverviewPanel({ onNavigate, role = "admin" }) {
       {admin ? <DiscordRulesPublish /> : null}
       {admin ? <MapPoolsPanel /> : null}
       {admin ? <DiscordTicketsPanel /> : null}
+      {admin ? <DiscordNotifyPanel /> : null}
       {admin ? <DiscordAnnouncements /> : null}
     </div>
   );
@@ -178,6 +179,35 @@ function DiscordTicketsPanel() {
       </div>
       <Button size="sm" variant="outline" onClick={publish} disabled={pending !== null}>
         {pending === "tickets" ? <LuLoaderCircle aria-hidden className="h-4 w-4 animate-spin" /> : null}
+        Publier le panneau
+      </Button>
+    </TacticalCard>
+  );
+}
+
+/** Publie (ou met à jour) le panneau Discord où chaque membre choisit ses notifications. */
+function DiscordNotifyPanel() {
+  const [result, setResult] = useState(null);
+  const { pending, error, run } = useAction();
+
+  const publish = () =>
+    run("notify", async () => {
+      const { action } = await api("/admin/discord/notify-panel", { method: "POST" });
+      setResult(action === "updated" ? "Panneau des notifications mis à jour sur Discord." : "Panneau des notifications publié sur Discord.");
+    });
+
+  return (
+    <TacticalCard cut={16} innerClassName="flex flex-col gap-3 p-5 sm:flex-row sm:items-center sm:justify-between">
+      <div>
+        <p className="font-display text-xl font-black uppercase leading-none">Notifications Discord</p>
+        <p className="mt-1 text-sm text-white/55">
+          Le bot publie le panneau « Choisis tes notifications » dans le salon prévu. Chaque bouton ajoute ou retire un rôle 🔔 ; un nouveau clic met à jour le même message.
+        </p>
+        {result ? <p className="mt-1 text-sm text-win">{result}</p> : null}
+        {error ? <p className="mt-1 text-sm text-loss">{error}</p> : null}
+      </div>
+      <Button size="sm" variant="outline" onClick={publish} disabled={pending !== null}>
+        {pending === "notify" ? <LuLoaderCircle aria-hidden className="h-4 w-4 animate-spin" /> : null}
         Publier le panneau
       </Button>
     </TacticalCard>
