@@ -6,6 +6,13 @@
 export const RELEASES = [
   {
     date: "2026-11-05",
+    title: "Du nouveau sur le Discord",
+    items: [
+      { tag: "Discord", text: "Quand un joueur lance un direct sur Call of Duty ou GTA, le bot l'annonce sur le serveur." },
+    ],
+  },
+  {
+    date: "2026-11-05",
     title: "Le site sur téléphone, comme une appli",
     items: [
       { tag: "Site", text: "Une barre d'onglets toujours sous le pouce : Accueil, Jouer, Clips, Pass et Menu. Le menu a été refait, et il se ferme en le faisant glisser." },
