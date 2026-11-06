@@ -2,7 +2,7 @@ import { motion } from "framer-motion";
 import Head from "next/head";
 import Link from "next/link";
 import { useEffect, useState } from "react";
-import { LuCrown, LuFlame, LuMedal, LuStar, LuTrophy, LuZap } from "react-icons/lu";
+import { LuCrown, LuFlame, LuMedal, LuStar, LuTarget, LuTrophy, LuZap } from "react-icons/lu";
 import { ClipCard } from "../components/clips/Clips";
 import { PlayerOfWeek } from "../components/cod/HubHighlights";
 import { TeamCrest } from "../components/teams/TeamParts";
@@ -48,6 +48,7 @@ export default function RenownPage() {
         ["peak", "Plus haut sommet", LuZap, (v) => `${v.toLocaleString("fr-FR")} pts`],
         ["xp", "Plus d'expérience", LuStar, (v) => `${v.toLocaleString("fr-FR")} XP`],
         ["wins", "Victoires cette saison", LuTrophy, (v) => `${v} victoires`],
+        ["objectives", "Poses + désam. cette saison", LuTarget, (v) => `${String(v).replace(".", ",")} par map`],
       ].filter(([key]) => data.records[key])
     : [];
 
@@ -102,7 +103,7 @@ export default function RenownPage() {
             {records.length ? (
               <section aria-labelledby="titre-records">
                 <SectionTitle id="titre-records" eyebrow="De tous les temps" title="Records" />
-                <ul className="mt-6 grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4">
+                <ul className="mt-6 grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-5">
                   {records.map(([key, label, Icon, format], index) => {
                     const record = data.records[key];
                     return (
