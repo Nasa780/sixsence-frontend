@@ -13,7 +13,7 @@ export function CaptureBar({ reminder, univers, onClose }) {
       <div data-univers={univers} className="fixed inset-x-0 top-16 z-40 border-y border-gold/40 bg-ink/95 backdrop-blur">
         <Container>
           <div className="flex h-10 items-center justify-between gap-3">
-            <Link href={`${matchHref(reminder.kind, reminder.id)}#capture`} onClick={onClose} className="group flex min-w-0 flex-1 items-center justify-between gap-3">
+            <Link href={`${matchHref(reminder.kind, reminder.id)}#capture`} className="group flex min-w-0 flex-1 items-center justify-between gap-3">
               <span className="flex min-w-0 items-center gap-2.5 text-sm">
                 <LuImagePlus aria-hidden className="h-4 w-4 shrink-0 text-gold" />
                 <span className="truncate font-display font-black uppercase tracking-wide text-gold">{reminder.text}</span>
@@ -36,7 +36,7 @@ export function CaptureBar({ reminder, univers, onClose }) {
 
 /**
  * Rappel de capture sur toutes les pages, feuille de match comprise : dernier match terminé depuis moins de 24 h
- * s'il manque une capture. Une seule fois par match : il disparaît une fois fermé, suivi ou la capture envoyée.
+ * s'il manque une capture. Il reste tant qu'une map manque ; fermé à la croix, il ne revient plus pour ce match.
  */
 export function CaptureReminderBar() {
   const { pathname } = useRouter();

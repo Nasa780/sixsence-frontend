@@ -32,7 +32,7 @@ export function refreshCaptureReminder() {
   if (signedIn) lookup().catch(() => {});
 }
 
-/** Rappel vu : une seule fois par match, fermé ou suivi. */
+/** Rappel fermé à la croix : il ne revient plus pour ce match. */
 export function dismissCaptureReminder(id) {
   try {
     localStorage.setItem(seenKey(id), "1");
