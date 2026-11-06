@@ -193,7 +193,7 @@ function ChallengeDialog({ target, mine, onClose }) {
               <>
                 <div className="grid gap-2 sm:grid-cols-2">
                   {[
-                    [true, "Amical", "Sans points ni bilan : pour s'entraîner."],
+                    [true, "Amical", "Sans points, XP ni stats : pour s'entraîner."],
                     [false, "Officiel", officialAt ? `Un par semaine : le prochain ${when(officialAt)}.` : "Points et bilan de la Division. Un par semaine."],
                   ].map(([value, label, hint]) => {
                     const locked = value === false && Boolean(officialAt);

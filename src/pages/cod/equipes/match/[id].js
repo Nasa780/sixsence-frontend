@@ -24,6 +24,7 @@ import { refreshPending } from "../../../../hooks/usePending";
 import { STAFF_CHAT } from "../../../../lib/roles";
 import { roundsToWin } from "../../../../lib/matchRules";
 import { usePageUnivers } from "../../../../lib/univers";
+import { MatchArbitration } from "../../../../components/cod/MatchArbitration";
 import { MatchStats, ProofUpload } from "../../../../components/cod/MatchStats";
 
 const mapsWon = (scores, side) => scores.filter(([a, b]) => (side === "A" ? a > b : b > a)).length;
@@ -135,6 +136,18 @@ export default function TeamMatchPage() {
         {match.viewer?.canConfirm ? <ConfirmBlock match={match} name={name} onDone={load} /> : null}
         {match.viewer?.canResolve ? <ResolveForm match={match} onDone={load} /> : null}
         {match.viewer?.canCorrect ? <CorrectionForm key={match.correctedAt ?? "initial"} match={match} onDone={load} /> : null}
+        {match.viewer?.canArbitrate || match.viewer?.arbitrations?.length ? (
+          <TacticalCard innerClassName="space-y-4 p-6">
+            <Eyebrow>Arbitrage</Eyebrow>
+            <MatchArbitration
+              path={`/teams/matches/${match.id}`}
+              canAsk={match.viewer.canArbitrate}
+              hoursLeft={match.status === "completed" ? 24 - (Date.now() - new Date(match.completedAt).getTime()) / 3_600_000 : null}
+              requests={match.viewer.arbitrations ?? []}
+              onSent={load}
+            />
+          </TacticalCard>
+        ) : null}
 
         <MatchStats kind="division" matchId={match.id} status={match.status} />
 
@@ -645,8 +658,8 @@ function Roster({ match, side, userId }) {
   );
 }
 
-/** Preuve simple : seulement en cas de litige (résultat contesté ou forfait déclaré), pour les deux équipes. */
-const canUploadProof = (match) => Boolean(match.viewer?.canProve) && ["disputed", "forfeit_claimed"].includes(match.status);
+/** Preuve simple : seulement en cas de litige (résultat contesté, forfait déclaré, demande d'arbitrage ouverte), pour les deux équipes. */
+const canUploadProof = (match) => Boolean(match.viewer?.canProve) && (["disputed", "forfeit_claimed"].includes(match.status) || Boolean(match.viewer.disputeOpen));
 
 /** Captures du tableau des scores : envoyées par les joueurs du match, visibles des joueurs du match et des arbitres. */
 function Proofs({ match, onDone }) {
@@ -690,6 +703,13 @@ function CorrectionForm({ match, onDone }) {
   const [error, setError] = useState(null);
   const need = Math.ceil(match.bestOf / 2);
   const filled = scores.filter(Boolean);
+  // Demandes de correction ou d'arbitrage encore ouvertes pour ce match.
+  const [requests, setRequests] = useState([]);
+  useEffect(() => {
+    api(`/admin/arbitrations?status=open&match=${match.id}`)
+      .then((data) => setRequests(data.items ?? []))
+      .catch(() => setRequests([]));
+  }, [match.id]);
 
   async function submit() {
     setPending(true);
@@ -709,6 +729,12 @@ function CorrectionForm({ match, onDone }) {
   return (
     <TacticalCard innerClassName="space-y-4 p-6">
       <Eyebrow>Corriger le résultat</Eyebrow>
+      {requests.map((request) => (
+        <p key={request.id} className="border-l-2 border-gold/40 bg-white/[0.03] px-3 py-2 text-sm text-white/70">
+          Demande de {request.user_name ?? "un joueur"} : {request.reason_label}
+          {request.details ? ` — « ${request.details} »` : ""}
+        </p>
+      ))}
       <p className="text-sm text-white/55">
         {match.tournament
           ? "Mauvaise déclaration ? Saisis les bons scores. Le vainqueur ne peut changer que si aucune des deux équipes n'a joué la rencontre suivante : le tableau est alors refait."

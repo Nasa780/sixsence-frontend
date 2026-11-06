@@ -9,7 +9,7 @@ import useUser from "../../hooks/useUser";
 import { api } from "../../lib/api";
 import { READY_REQUIRED } from "../../lib/config";
 import { cn } from "../../lib/cn";
-import { ARBITRATION_REASONS, REPORT_REASONS } from "../../lib/moderation";
+import { REPORT_REASONS } from "../../lib/moderation";
 import { groupLabel, rankFor, rankGradient } from "../../lib/ranks";
 import { STAFF_CHAT, isReferee } from "../../lib/roles";
 import { supabase } from "../../lib/supabase";
@@ -31,6 +31,7 @@ import { RankEmblem } from "./RankEmblem";
 import { RankUpOverlay } from "./RankUpOverlay";
 import { MatchResultOverlay } from "./MatchResultOverlay";
 import { Eyebrow } from "../ui/Typography";
+import { MatchArbitration, formatHours } from "./MatchArbitration";
 import { MatchStats, ProofUpload } from "./MatchStats";
 
 const STATUS_LABEL = {
@@ -46,12 +47,6 @@ const PLATFORM_LABEL = { pc: "PC", playstation: "PlayStation", xbox: "Xbox" };
 
 const signed = (value) => (value > 0 ? `+${value}` : value === 0 ? "±0" : `${value}`);
 const teamLabel = (team) => (team === "A" ? "Équipe 1" : "Équipe 2");
-/** Durée lisible : « 23 h 41 », « 45 min ». */
-const formatHours = (hours) => {
-  const minutes = Math.max(0, Math.floor(hours * 60));
-  return minutes >= 60 ? `${Math.floor(minutes / 60)} h ${String(minutes % 60).padStart(2, "0")}` : `${minutes} min`;
-};
-
 /**
  * Correction d'un match terminé par l'équipe (mauvais clic, erreur de déclaration) : inverser le
  * vainqueur ou annuler, motif obligatoire, confirmation avec les points du match.
@@ -203,7 +198,7 @@ export function MatchView({ matchId }) {
   // Écran « Victoire » / « Défaite » fermé (ou rien à montrer) : l'écran « Promotion » peut suivre.
   const [resultDone, setResultDone] = useState(false);
   const [me, setMe] = useState({ myVote: null, arbitrations: [] });
-  const [dialog, setDialog] = useState(null); // { kind: "arbitration" } | { kind: "report", target } | { kind: "confirm", … }
+  const [dialog, setDialog] = useState(null); // { kind: "report", target } | { kind: "confirm", … }
 
   const loadMe = useCallback(async () => {
     try {
@@ -562,33 +557,14 @@ export function MatchView({ matchId }) {
         ) : null}
 
         {/* Demande d'arbitrage : pendant le match, ou correction pendant 24 h après la validation. */}
-        {canArbitrate ? (
-          <div className="flex flex-col gap-3 border-t border-white/10 pt-4 sm:flex-row sm:items-center sm:justify-between">
-            <p className="text-sm text-white/55">
-              {canRequestCorrection
-                ? `Le résultat est faux (mauvais clic, erreur de déclaration) ? Tu peux demander une correction pendant encore ${formatHours(24 - hoursSinceEnd)}.`
-                : "Un problème pendant le match (triche, joueur absent, partie impossible…) ?"}
-            </p>
-            <Button variant="outline" size="sm" onClick={() => setDialog({ kind: "arbitration" })}>
-              {canRequestCorrection ? <LuFlag aria-hidden className="h-4 w-4" /> : <LuShieldAlert aria-hidden className="h-4 w-4" />}
-              {canRequestCorrection ? "Demander une correction" : "Demander un arbitrage"}
-            </Button>
-          </div>
-        ) : null}
-        {me.arbitrations.length > 0 ? (
-          <ul className="space-y-2">
-            {me.arbitrations.map((request) => (
-              <li key={request.id} className="flex flex-wrap items-center gap-2 border-l-2 border-gold/40 bg-white/[0.03] px-3 py-2 text-sm text-white/70">
-                <LuShieldAlert aria-hidden className="h-4 w-4 text-gold" />
-                Ta demande « {ARBITRATION_REASONS[request.reason] ?? request.reason} » :
-                <span className={cn("font-semibold", request.status === "open" ? "text-gold" : request.status === "resolved" ? "text-win" : "text-white/60")}>
-                  {request.status === "open" ? "en attente d'un arbitre" : request.status === "resolved" ? "traitée" : "classée sans suite"}
-                </span>
-                {request.resolution ? <span className="text-white/50">— {request.resolution}</span> : null}
-              </li>
-            ))}
-          </ul>
-        ) : null}
+        <MatchArbitration
+          path={`/cod/matches/${matchId}`}
+          canAsk={canArbitrate}
+          hoursLeft={canRequestCorrection ? 24 - hoursSinceEnd : null}
+          requests={me.arbitrations}
+          onSent={loadMe}
+          className="border-t border-white/10 pt-4"
+        />
       </div>
 
       {/* --- Vote du MVP (24 h après la fin du match) ---------------------- */}
@@ -629,18 +605,6 @@ export function MatchView({ matchId }) {
           <p>Aucun point ne sera appliqué et les joueurs seront prévenus.</p>
         )}
       </ConfirmDialog>
-      <ReasonDialog
-        open={dialog?.kind === "arbitration"}
-        onClose={() => setDialog(null)}
-        title="Demander un arbitrage"
-        intro="Un admin est prévenu et peut consulter le tchat et les captures du match. Tu pourras ajouter une capture juste après."
-        reasons={ARBITRATION_REASONS}
-        submitLabel="Envoyer la demande"
-        onSubmit={async ({ reason, details }) => {
-          await api(`/cod/matches/${matchId}/arbitration`, { method: "POST", body: { reason, details } });
-          await loadMe();
-        }}
-      />
       <ReasonDialog
         open={dialog?.kind === "report"}
         onClose={() => setDialog(null)}
