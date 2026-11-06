@@ -138,7 +138,7 @@ export default function TeamMatchPage() {
 
         <MatchStats kind="division" matchId={match.id} status={match.status} />
 
-        {match.proofs?.length || match.viewer?.canProve ? <Proofs match={match} onDone={load} /> : null}
+        {match.proofs?.length || canUploadProof(match) ? <Proofs match={match} onDone={load} /> : null}
 
         {open && !match.tournament ? (
           <TacticalCard innerClassName="p-6">
@@ -466,7 +466,7 @@ function ReportForm({ match, onDone }) {
       </div>
       {error ? <Notice tone="error">{error}</Notice> : null}
       <div className="flex flex-wrap items-center justify-between gap-3">
-        <p className="text-xs text-white/45">L&apos;équipe adverse devra confirmer. Ajoute une capture du tableau des scores plus bas en cas de doute.</p>
+        <p className="text-xs text-white/45">L&apos;équipe adverse devra confirmer. En cas de litige, tu pourras ajouter une capture comme preuve.</p>
         <Button disabled={!complete || pending} onClick={() => setConfirming(true)}>
           Déclarer le résultat
         </Button>
@@ -645,6 +645,9 @@ function Roster({ match, side, userId }) {
   );
 }
 
+/** Preuve simple : seulement en cas de litige (résultat contesté ou forfait déclaré), pour les deux équipes. */
+const canUploadProof = (match) => Boolean(match.viewer?.canProve) && ["disputed", "forfeit_claimed"].includes(match.status);
+
 /** Captures du tableau des scores : envoyées par les joueurs du match, visibles des joueurs du match et des arbitres. */
 function Proofs({ match, onDone }) {
   const proofs = match.proofs ?? [];
@@ -658,7 +661,7 @@ function Proofs({ match, onDone }) {
           </h2>
         </div>
       </div>
-      {match.viewer?.canProve ? <ProofUpload kind="division" matchId={match.id} onDone={onDone} /> : null}
+      {canUploadProof(match) ? <ProofUpload kind="division" matchId={match.id} onDone={onDone} /> : null}
       {proofs.length > 0 ? (
       <ul className="mt-6 grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4">
         {proofs.map((proof) => (

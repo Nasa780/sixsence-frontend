@@ -2,7 +2,6 @@ import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
 import {
   LuArrowDown,
-  LuArrowUp,
   LuBan,
   LuCheck,
   LuChevronDown,
@@ -237,8 +236,8 @@ export function RulesConduct() {
 const OPEN_RULES = "sixsence:ouvrir-regles";
 
 /**
- * Lien « Réglages de la partie » du lancement du match : va jusqu'au bloc des règles et l'ouvre. Flèche vers le bas sur
- * téléphone (bloc en bas de la feuille), vers le haut sur ordinateur (bloc juste au-dessus du lancement).
+ * Lien « Voir les réglages » du lancement du match, sur téléphone seulement : descend jusqu'au bloc des règles, en bas de la
+ * feuille, et l'ouvre. Sur ordinateur, ce bloc est juste au-dessus du lancement.
  */
 export function RulesLink({ className }) {
   return (
@@ -246,14 +245,13 @@ export function RulesLink({ className }) {
       type="button"
       onClick={() => window.dispatchEvent(new Event(OPEN_RULES))}
       className={cn(
-        "group/regles clip-slant inline-flex items-center gap-2 bg-gold/15 px-4 py-2 font-display text-sm font-bold uppercase tracking-[0.12em] text-gold transition-colors hover:bg-gold hover:text-ink",
+        "group/regles clip-slant inline-flex items-center gap-2 bg-gold/15 md:hidden px-4 py-2 font-display text-sm font-bold uppercase tracking-[0.12em] text-gold transition-colors hover:bg-gold hover:text-ink",
         className,
       )}
     >
       <LuSettings2 aria-hidden className="h-4 w-4" />
       Voir les réglages
-      <LuArrowDown aria-hidden className="h-4 w-4 transition-transform group-hover/regles:translate-y-0.5 md:hidden" />
-      <LuArrowUp aria-hidden className="hidden h-4 w-4 transition-transform group-hover/regles:-translate-y-0.5 md:block" />
+      <LuArrowDown aria-hidden className="h-4 w-4 transition-transform group-hover/regles:translate-y-0.5" />
     </button>
   );
 }
