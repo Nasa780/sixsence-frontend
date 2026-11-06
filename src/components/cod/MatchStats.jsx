@@ -492,10 +492,10 @@ export function PlayerCaptureStats({ playerId, initial = null }) {
     <section aria-labelledby="titre-stats-capture">
       <Eyebrow>Sur le terrain</Eyebrow>
       <h2 id="titre-stats-capture" className="mt-3 font-display text-4xl font-black uppercase leading-none">
-        Stats perso
+        Stats perso de la saison
       </h2>
       <p className="mt-2 text-sm text-white/55">
-        Cette saison, sur {stats.maps} map{stats.maps > 1 ? "s" : ""} enregistrée{stats.maps > 1 ? "s" : ""} par capture de fin de match.
+        Sur {stats.maps} map{stats.maps > 1 ? "s" : ""} enregistrée{stats.maps > 1 ? "s" : ""} par capture de fin de match.
       </p>
       <dl className="mt-6 grid grid-cols-2 gap-3 sm:grid-cols-5">
         {tiles.map(([label, value]) => (
