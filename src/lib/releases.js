@@ -6,6 +6,13 @@
 export const RELEASES = [
   {
     date: "2026-11-06",
+    title: "Nouvelle carte de résultat sur Discord",
+    items: [
+      { tag: "Discord", text: "La carte affiche les points, les logos d'équipe et le tour de coupe. Le meilleur joueur a son bandeau avec ses stats, et le score du Classé s'ajoute avec la capture." },
+    ],
+  },
+  {
+    date: "2026-11-06",
     title: "Correction en Division, amicaux vraiment amicaux",
     items: [
       { tag: "Division", text: "Comme en Classé, un joueur du match peut demander un arbitrage, ou une correction pendant 24 h après la validation. Valable aussi en coupe." },
