@@ -10,7 +10,7 @@ const HEIGHT = 500;
 /** Un code couleur par mode : Classé vert, Division cyan, Tournoi rouge. */
 const COLORS = { classe: "#34d399", division: "#22d3ee", tournoi: "#e5484d" };
 const clip = (value, max) => [...(value ?? "")].slice(0, max).join("");
-const points = (value) => (/^[+-]\d{1,3}( à [+-]\d{1,3})?$/.test(value ?? "") ? value : null);
+const points = (value) => (/^[+-]\d{1,3}$/.test(value ?? "") ? value : null);
 
 /** Image d'un tiers : seulement Supabase, Discord ou le site, en PNG ou JPEG (next/og ne lit ni le WebP ni le GIF). */
 function safeImage(value, origin) {

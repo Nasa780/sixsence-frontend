@@ -8,7 +8,7 @@ export const RELEASES = [
     date: "2026-11-06",
     title: "Nouvelle carte de résultat sur Discord",
     items: [
-      { tag: "Discord", text: "La carte affiche les points, les logos d'équipe et le tour de coupe. Le meilleur joueur a son bandeau avec ses stats, et le score du Classé s'ajoute avec la capture." },
+      { tag: "Discord", text: "La carte affiche les logos d'équipe, le tour de coupe et les points en Division. Le meilleur joueur a son bandeau avec ses stats, et le score du Classé s'ajoute avec la capture." },
     ],
   },
   {
