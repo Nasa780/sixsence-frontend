@@ -11,7 +11,7 @@ export const RELEASES = [
       { tag: "Site", text: "Un joueur manque sur ta capture ? Complète la map avec une autre capture, sans repartir de zéro." },
       { tag: "Site", text: "Tes chiffres apparaissent sur chaque match de ton historique, en Classé, en Division et en tournoi." },
       { tag: "Site", text: "Une ligne fausse sur une feuille de match ? Signale-la : l'équipe la vérifie sur la capture et la corrige." },
-      { tag: "Site", text: "Nouveau record à la Renommée : le plus de poses et de désamorçages par map sur la saison, à partir de 10 maps." },
+      { tag: "Site", text: "Nouveaux records à la Renommée : le plus d'élim. et le plus gros score sur une map, et le plus de poses et de désamorçages par map sur la saison, à partir de 10 maps." },
     ],
   },
   {
