@@ -9,6 +9,7 @@ export const RELEASES = [
     title: "Du nouveau sur le Discord",
     items: [
       { tag: "Discord", text: "Quand un joueur lance un direct sur Call of Duty ou GTA, le bot l'annonce sur le serveur." },
+      { tag: "Discord", text: "La commande /profil affiche maintenant ta carte de joueur en grand : rang, points, classement et bilan." },
     ],
   },
   {
