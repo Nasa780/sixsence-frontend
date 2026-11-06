@@ -2,7 +2,7 @@ import Head from "next/head";
 import Link from "next/link";
 import { useRouter } from "next/router";
 import { useCallback, useEffect, useRef, useState } from "react";
-import { LuCheck, LuCopy, LuCrown, LuFlag, LuGamepad2, LuHouse, LuImagePlus, LuLoaderCircle, LuPencil, LuSend, LuX } from "react-icons/lu";
+import { LuCheck, LuCopy, LuCrown, LuFlag, LuGamepad2, LuHouse, LuLoaderCircle, LuPencil, LuSend, LuX } from "react-icons/lu";
 import { RankEmblem } from "../../../../components/cod/RankEmblem";
 import { TeamCrest, fieldClass, labelClass } from "../../../../components/teams/TeamParts";
 import { Avatar } from "../../../../components/ui/Avatar";
@@ -24,7 +24,7 @@ import { refreshPending } from "../../../../hooks/usePending";
 import { STAFF_CHAT } from "../../../../lib/roles";
 import { roundsToWin } from "../../../../lib/matchRules";
 import { usePageUnivers } from "../../../../lib/univers";
-import { MatchStats } from "../../../../components/cod/MatchStats";
+import { MatchStats, ProofUpload } from "../../../../components/cod/MatchStats";
 
 const mapsWon = (scores, side) => scores.filter(([a, b]) => (side === "A" ? a > b : b > a)).length;
 
@@ -138,7 +138,7 @@ export default function TeamMatchPage() {
 
         <MatchStats kind="division" matchId={match.id} status={match.status} />
 
-        {match.proofs?.length ? <Proofs match={match} /> : null}
+        {match.proofs?.length || match.viewer?.canProve ? <Proofs match={match} onDone={load} /> : null}
 
         {open && !match.tournament ? (
           <TacticalCard innerClassName="p-6">
@@ -645,10 +645,9 @@ function Roster({ match, side, userId }) {
   );
 }
 
-const PROOF_TYPES = { "image/png": "png", "image/jpeg": "jpg", "image/webp": "webp" };
-
 /** Captures du tableau des scores : envoyées par les joueurs du match, visibles des joueurs du match et des arbitres. */
-function Proofs({ match }) {
+function Proofs({ match, onDone }) {
+  const proofs = match.proofs ?? [];
   return (
     <section aria-labelledby="titre-preuves">
       <div className="flex flex-wrap items-end justify-between gap-4">
@@ -659,8 +658,10 @@ function Proofs({ match }) {
           </h2>
         </div>
       </div>
+      {match.viewer?.canProve ? <ProofUpload kind="division" matchId={match.id} onDone={onDone} /> : null}
+      {proofs.length > 0 ? (
       <ul className="mt-6 grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4">
-        {match.proofs.map((proof) => (
+        {proofs.map((proof) => (
           <li key={proof.id}>
               <a href={proof.url} target="_blank" rel="noopener noreferrer" className="group block border border-white/10 bg-white/[0.03] hover:border-gold">
                 {/* eslint-disable-next-line @next/next/no-img-element */}
@@ -672,6 +673,7 @@ function Proofs({ match }) {
             </li>
           ))}
       </ul>
+      ) : null}
     </section>
   );
 }

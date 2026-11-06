@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { useRouter } from "next/router";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { LuBan, LuCheck, LuCopy, LuCrown, LuFlag, LuHouse, LuImagePlus, LuLoaderCircle, LuLock, LuMap, LuPencil, LuRotateCcw, LuSend, LuShieldAlert, LuStar, LuSwords, LuUserX, LuX } from "react-icons/lu";
+import { LuBan, LuCheck, LuCopy, LuCrown, LuFlag, LuHouse, LuLoaderCircle, LuLock, LuMap, LuPencil, LuRotateCcw, LuSend, LuShieldAlert, LuStar, LuSwords, LuUserX, LuX } from "react-icons/lu";
 import useCountdown from "../../hooks/useCountdown";
 import { refreshPending } from "../../hooks/usePending";
 import useSession from "../../hooks/useSession";
@@ -31,7 +31,7 @@ import { RankEmblem } from "./RankEmblem";
 import { RankUpOverlay } from "./RankUpOverlay";
 import { MatchResultOverlay } from "./MatchResultOverlay";
 import { Eyebrow } from "../ui/Typography";
-import { MatchStats } from "./MatchStats";
+import { MatchStats, ProofUpload } from "./MatchStats";
 
 const STATUS_LABEL = {
   ready_check: "En attente des joueurs",
@@ -647,9 +647,7 @@ export function MatchView({ matchId }) {
       {privateAccess ? (
         <>
           {/* --- Preuves (captures du tableau des scores) -------------------- */}
-          {(proofs || []).length > 0 ? (
-            <MatchProofs proofs={proofs} />
-          ) : null}
+          {canProve || (proofs || []).length > 0 ? <MatchProofs matchId={match.id} proofs={proofs || []} canUpload={canProve} onUploaded={load} /> : null}
 
           {/* --- Chat ----------------------------------------------------------- */}
           <MatchChat matchId={match.id} messages={messages || []} canWrite={Boolean(myTeam) || isReferee(user?.role)} currentUserId={userId} />
@@ -1312,7 +1310,7 @@ function ReadyCheckBlock({ match, isPlayer, iAmReady, pending, onAccept, signedI
  * Le fichier part directement dans Supabase Storage (dossier <match>/<joueur>/),
  * puis le backend l'enregistre (5 captures maximum par joueur).
  */
-function MatchProofs({ proofs }) {
+function MatchProofs({ matchId, proofs, canUpload, onUploaded }) {
   return (
     <section aria-labelledby="titre-preuves">
       <div className="flex flex-wrap items-end justify-between gap-4">
@@ -1323,6 +1321,7 @@ function MatchProofs({ proofs }) {
           </h2>
         </div>
       </div>
+      {canUpload ? <ProofUpload kind="classe" matchId={matchId} onDone={onUploaded} /> : null}
       {proofs.length > 0 ? (
         <ul className="mt-6 grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4">
           {proofs.map((proof) => (

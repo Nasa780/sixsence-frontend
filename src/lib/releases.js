@@ -6,6 +6,14 @@
 export const RELEASES = [
   {
     date: "2026-11-06",
+    title: "Rappel de capture sur le site",
+    items: [
+      { tag: "Site", text: "Un bandeau te rappelle d'ajouter ta capture dès la fin du match, à la place du message privé." },
+      { tag: "Site", text: "Le bouton « Ajouter une capture » revient sur les feuilles de match : une preuve pour l'arbitre, sans effet sur tes stats." },
+    ],
+  },
+  {
+    date: "2026-11-06",
     title: "Carte de résultat sur Discord",
     items: [
       { tag: "Discord", text: "Chaque résultat s'affiche maintenant en image : équipes, score, maps, et meilleur joueur dès qu'une capture arrive." },
