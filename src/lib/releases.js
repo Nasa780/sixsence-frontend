@@ -5,6 +5,15 @@
  */
 export const RELEASES = [
   {
+    date: "2026-11-06",
+    title: "Stats perso plus fiables",
+    items: [
+      { tag: "Site", text: "Un joueur manque sur ta capture ? Complète la map avec une autre capture, sans repartir de zéro." },
+      { tag: "Site", text: "Tes chiffres apparaissent sur chaque match de ton historique, en Classé, en Division et en tournoi." },
+      { tag: "Site", text: "Une ligne fausse sur une feuille de match ? Signale-la : l'équipe la vérifie sur la capture et la corrige." },
+    ],
+  },
+  {
     date: "2026-11-05",
     title: "Du nouveau sur le Discord",
     items: [

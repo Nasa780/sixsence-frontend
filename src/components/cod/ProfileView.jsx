@@ -78,6 +78,7 @@ export function ProfileView({ userId, editable = false, ownUser = null, nameAsTi
   // Profil public : le pseudo est le titre principal de la page (h1, pour les moteurs de recherche).
   const NameTag = nameAsTitle ? "h1" : "h2";
   const [historyTab, setHistoryTab] = useState("classe");
+  const [captureStats, setCaptureStats] = useState(null);
   const team = useTeamTags([userId]).get(userId);
   const [data, setData] = useState(null);
   const [notFound, setNotFound] = useState(false);
@@ -89,6 +90,16 @@ export function ProfileView({ userId, editable = false, ownUser = null, nameAsTi
   // Cartes de visite (son propre profil) : fenêtre de choix, point doré s'il y a des nouveautés.
   const [picking, setPicking] = useState(false);
   const [newCards, setNewCards] = useState(0);
+
+  // Stats perso : le bloc du profil et les chiffres de chaque ligne de l'historique.
+  useEffect(() => {
+    let alive = true;
+    setCaptureStats(null);
+    api(`/cod/players/${userId}/stats`).then((result) => alive && setCaptureStats(result), () => {});
+    return () => {
+      alive = false;
+    };
+  }, [userId]);
 
   useEffect(() => {
     if (!editable) return;
@@ -329,7 +340,7 @@ export function ProfileView({ userId, editable = false, ownUser = null, nameAsTi
         <PerformancePanel history={history} userId={player.id} points={profile.points} seasonId={activeSeason?.id ?? null} seasonLabel={seasonLabel} />
       </section>
 
-      <PlayerCaptureStats playerId={player.id} />
+      {captureStats ? <PlayerCaptureStats playerId={player.id} initial={captureStats} /> : null}
 
       {/* --- Analyse : place sur le site, ratio 30 j, face à face, adversaires, activité, équipes */}
       <PlayerInsights playerId={player.id} />
@@ -365,7 +376,7 @@ export function ProfileView({ userId, editable = false, ownUser = null, nameAsTi
             </div>
           ) : null}
           {historyTab === "division" || historyTab === "tournoi" ? (
-            <DivisionHistory key={historyTab} playerId={player.id} tournament={historyTab === "tournoi"} />
+            <DivisionHistory key={historyTab} playerId={player.id} tournament={historyTab === "tournoi"} stats={captureStats?.matches} />
           ) : (
           <div className="mt-6">
             {history.length === 0 ? (
@@ -384,7 +395,7 @@ export function ProfileView({ userId, editable = false, ownUser = null, nameAsTi
             ) : (
               <ul className="space-y-2">
                 {history.slice(0, 20).map((match) => (
-                  <HistoryRow key={match.id} match={match} playerId={player.id} />
+                  <HistoryRow key={match.id} match={match} playerId={player.id} stats={captureStats?.matches?.[match.id]} />
                 ))}
               </ul>
             )}
@@ -446,7 +457,13 @@ export function ProfileView({ userId, editable = false, ownUser = null, nameAsTi
 
 /** Matchs de Division joués par le joueur (joueur du match) : équipe, adversaire, maps, points de l'équipe, XP. */
 /** Matchs d'équipe du joueur : Division (hors coupes) ou Tournoi (coupes Horus, Anubis et tournoi de saison). */
-function DivisionHistory({ playerId, tournament = false }) {
+/** Chiffres de capture d'un match, toutes maps additionnées. */
+function statsLine(stats) {
+  const plural = (count, word) => `${count} ${word}${count > 1 ? "s" : ""}`;
+  return `${stats.kills} élim. · ${plural(stats.plants, "pose")} · ${stats.defuses} désam.`;
+}
+
+function DivisionHistory({ playerId, tournament = false, stats = null }) {
   const [matches, setMatches] = useState(null);
   useEffect(() => {
     let alive = true;
@@ -496,6 +513,7 @@ function DivisionHistory({ playerId, tournament = false }) {
                   {match.forfeit ? " · par forfait" : ""}
                   {" · "}{new Date(match.date).toLocaleDateString("fr-FR", { day: "numeric", month: "short" })}
                 </p>
+                {stats?.[match.id] ? <p className="mt-1 truncate text-xs tabular-nums text-white/70">{statsLine(stats[match.id])}</p> : null}
                 {done && !match.forfeit ? <MapScoreChips scores={match.mapScores} className="mt-1.5" /> : null}
               </div>
               {done ? (
@@ -518,7 +536,7 @@ function DivisionHistory({ playerId, tournament = false }) {
 }
 
 /** Une ligne de l'historique : résultat, carte, mode, variation de points, date. */
-function HistoryRow({ match, playerId }) {
+function HistoryRow({ match, playerId, stats = null }) {
   const team = match.team_a.includes(playerId) ? "A" : "B";
   const delta = match.points_changes?.[playerId];
 
@@ -556,6 +574,7 @@ function HistoryRow({ match, playerId }) {
             {match.mode} · {match.team_size}v{match.team_size} ·{" "}
             {new Date(match.created_at).toLocaleDateString("fr-FR", { day: "numeric", month: "short" })}
           </p>
+          {stats ? <p className="mt-1 truncate text-xs tabular-nums text-white/70">{statsLine(stats)}</p> : null}
         </div>
         {typeof delta === "number" ? (
           <p className={cn("shrink-0 font-tech text-base font-bold tabular-nums", delta > 0 ? "text-win" : delta < 0 ? "text-loss" : "text-white/40")}>
