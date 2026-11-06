@@ -245,6 +245,13 @@ export function MatchView({ matchId }) {
     if (isPlayer) loadMe();
   }, [isPlayer, loadMe, data?.match?.status]);
 
+  // Demande d'arbitrage de l'adversaire : pas de temps réel sur cette table privée, relue toutes les 30 s.
+  useEffect(() => {
+    if (!isPlayer) return undefined;
+    const timer = setInterval(() => document.visibilityState === "visible" && loadMe(), 30000);
+    return () => clearInterval(timer);
+  }, [isPlayer, loadMe]);
+
   // Match annulé (absent au « Prêt ? », match abandonné, arbitre) : les joueurs du match repartent vers la file au lieu
   // de rester sur une feuille annulée. Absent au « Prêt ? » : les joueurs prêts y sont déjà remis en tête ; sinon la
   // recherche est relancée dans le même format (?rejoindre=). Seulement juste après l'annulation (vue en direct ou
@@ -323,6 +330,8 @@ export function MatchView({ matchId }) {
   // Captures : pendant le match, et 24 h après la validation pour appuyer une demande de correction.
   const canProve = Boolean(myTeam) && (["in_progress", "awaiting_confirmation", "disputed"].includes(match.status) || canRequestCorrection);
   const canArbitrate = canProve;
+  // Preuve simple : seulement en cas de litige, pour les deux camps.
+  const canUploadProof = canProve && (match.status === "disputed" || Boolean(me.disputeOpen));
   const canReport = Boolean(userId);
   const mvpVotes = data.mvpVotes || {};
   const mvpIds = mvpWinners(mvpVotes, data.mvpVotesFromOthers || {});
@@ -624,7 +633,7 @@ export function MatchView({ matchId }) {
         open={dialog?.kind === "arbitration"}
         onClose={() => setDialog(null)}
         title="Demander un arbitrage"
-        intro="Un admin est prévenu et peut consulter le tchat et les captures du match. Ajoute une capture si tu en as une."
+        intro="Un admin est prévenu et peut consulter le tchat et les captures du match. Tu pourras ajouter une capture juste après."
         reasons={ARBITRATION_REASONS}
         submitLabel="Envoyer la demande"
         onSubmit={async ({ reason, details }) => {
@@ -647,7 +656,7 @@ export function MatchView({ matchId }) {
       {privateAccess ? (
         <>
           {/* --- Preuves (captures du tableau des scores) -------------------- */}
-          {canProve || (proofs || []).length > 0 ? <MatchProofs matchId={match.id} proofs={proofs || []} canUpload={canProve} onUploaded={load} /> : null}
+          {canUploadProof || (proofs || []).length > 0 ? <MatchProofs matchId={match.id} proofs={proofs || []} canUpload={canUploadProof} onUploaded={load} /> : null}
 
           {/* --- Chat ----------------------------------------------------------- */}
           <MatchChat matchId={match.id} messages={messages || []} canWrite={Boolean(myTeam) || isReferee(user?.role)} currentUserId={userId} />
