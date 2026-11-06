@@ -5,6 +5,7 @@ import { Inter, Orbitron, Saira_Condensed } from "next/font/google";
 import { Footer } from "../components/layout/Footer";
 import { Navbar } from "../components/layout/Navbar";
 import { ActiveMatchBar } from "../components/layout/ActiveMatchBar";
+import { CaptureReminderBar } from "../components/layout/CaptureReminderBar";
 import { RouteLoader } from "../components/layout/RouteLoader";
 import { ErrorBoundary } from "../components/ui/ErrorBoundary";
 import { PageFade } from "../components/effects/PageFade";
@@ -110,6 +111,7 @@ export default function App({ Component, pageProps }) {
           </a>
           <Navbar />
           <ActiveMatchBar />
+          <CaptureReminderBar />
           <main id="contenu" className="flex-1">
             <ErrorBoundary resetKey={asPath}>
               {/* Fondu court à chaque changement de page. */}

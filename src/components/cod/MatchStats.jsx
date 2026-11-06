@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { LuCheck, LuExternalLink, LuFlag, LuImagePlus, LuLoaderCircle, LuPencil, LuTrash2, LuX } from "react-icons/lu";
 import useUser from "../../hooks/useUser";
+import { refreshCaptureReminder } from "../../hooks/useCaptureReminder";
 import { api } from "../../lib/api";
 import { cn } from "../../lib/cn";
 import { mapId } from "../../lib/maps";
@@ -44,6 +45,42 @@ async function saveProof(kind, matchId, userId, source) {
   if (error) throw new Error("Envoi de l'image impossible. Réessaie dans un instant.");
   await api(PROOFS[kind].route(matchId), { method: "POST", body: { path } });
   return path;
+}
+
+/** Capture simple, sans lecture des stats : une preuve pour un arbitre (5 par joueur). */
+export function ProofUpload({ kind, matchId, onDone }) {
+  const user = useUser();
+  const [pending, setPending] = useState(false);
+  const [error, setError] = useState(null);
+  const input = useRef(null);
+
+  async function send(event) {
+    const file = event.target.files?.[0];
+    event.target.value = "";
+    if (!file) return;
+    setPending(true);
+    setError(null);
+    try {
+      await saveProof(kind, matchId, user.id, file);
+      await onDone();
+    } catch (caught) {
+      setError(caught.message);
+    } finally {
+      setPending(false);
+    }
+  }
+
+  return (
+    <div className="mt-4 space-y-3">
+      <input ref={input} type="file" accept="image/png,image/jpeg,image/webp" className="sr-only" tabIndex={-1} aria-hidden onChange={send} />
+      <Button variant="outline" size="sm" onClick={() => input.current?.click()} disabled={pending || !user}>
+        {pending ? <LuLoaderCircle aria-hidden className="h-4 w-4 animate-spin" /> : <LuImagePlus aria-hidden className="h-4 w-4" />}
+        Ajouter une capture
+      </Button>
+      <p className="text-sm text-white/55">Une preuve pour l&apos;arbitre en cas de contestation, sans effet sur tes stats.</p>
+      {error ? <Notice tone="error">{error}</Notice> : null}
+    </div>
+  );
 }
 
 /** Lignes d'une map, équipe par équipe, meilleur score d'abord. `onEdit` : crayon de l'arbitre sur chaque ligne. */
@@ -227,7 +264,7 @@ function Preview({ reading, players, expectedMap, roundsToWin, completing, pendi
 }
 
 /**
- * Capture de fin de match, seul endroit où déposer une image : le site la lit dans le navigateur (lib/scoreboard.js),
+ * Capture de fin de match : le site la lit dans le navigateur (lib/scoreboard.js),
  * le joueur valide d'un clic, les stats sont enregistrées et l'image gardée comme preuve. Illisible : preuve seule.
  * Les stats s'affichent à la fin du match. `kind` : classe ou division ; `status` : relit à chaque changement du match.
  */
@@ -250,6 +287,7 @@ export function MatchStats({ kind, matchId, status = null, initial = null }) {
   const load = useCallback(() => {
     if (initial) return;
     api(`/cod/stats/${kind}/${matchId}`).then(setData, () => setData(null));
+    refreshCaptureReminder();
   }, [kind, matchId, initial]);
   useEffect(load, [load, status, user?.id]);
 
@@ -308,6 +346,7 @@ export function MatchStats({ kind, matchId, status = null, initial = null }) {
         .then((path) => api(`/cod/stats/${kind}/${matchId}/${readingMap}/proof`, { method: "POST", body: { path } }))
         .then(setData)
         .catch(() => setNotice("Stats enregistrées, mais l'image n'a pas pu être gardée comme preuve."));
+      refreshCaptureReminder();
       reset();
     } catch (caught) {
       setError(caught.message);
@@ -365,6 +404,7 @@ export function MatchStats({ kind, matchId, status = null, initial = null }) {
   }
 
   return (
+    <div id="capture" className="scroll-mt-32">
     <TacticalCard cut={18} highlight={data.canSubmit && nothingYet} innerClassName="space-y-5 p-5 sm:p-6">
       <div>
         <Eyebrow>Capture de fin de match</Eyebrow>
@@ -466,6 +506,7 @@ export function MatchStats({ kind, matchId, status = null, initial = null }) {
         )
       ) : null}
     </TacticalCard>
+    </div>
   );
 }
 
