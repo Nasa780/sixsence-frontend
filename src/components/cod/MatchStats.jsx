@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useRef, useState } from "react";
-import { LuCheck, LuFlag, LuImagePlus, LuLoaderCircle, LuTrash2, LuX } from "react-icons/lu";
+import { LuCheck, LuExternalLink, LuFlag, LuImagePlus, LuLoaderCircle, LuPencil, LuTrash2, LuX } from "react-icons/lu";
 import useUser from "../../hooks/useUser";
 import { api } from "../../lib/api";
 import { cn } from "../../lib/cn";
@@ -11,6 +11,7 @@ import { TacticalCard } from "../ui/TacticalCard";
 import { Eyebrow } from "../ui/Typography";
 
 const HEAD = ["Score", "Élim.", "Poses", "Désam."];
+const FIELDS = [["score", "Score"], ["kills", "Élim."], ["plants", "Poses"], ["defuses", "Désam."]];
 const MAX_BYTES = 5 * 1024 * 1024;
 const TYPES = { "image/png": "png", "image/jpeg": "jpg", "image/webp": "webp" };
 const PROOFS = {
@@ -42,10 +43,11 @@ async function saveProof(kind, matchId, userId, source) {
   const { error } = await supabase.storage.from(PROOFS[kind].bucket).upload(path, file, { contentType: file.type });
   if (error) throw new Error("Envoi de l'image impossible. Réessaie dans un instant.");
   await api(PROOFS[kind].route(matchId), { method: "POST", body: { path } });
+  return path;
 }
 
-/** Lignes d'une map, équipe par équipe, meilleur score d'abord. */
-function StatsTable({ rows, players }) {
+/** Lignes d'une map, équipe par équipe, meilleur score d'abord. `onEdit` : crayon de l'arbitre sur chaque ligne. */
+function StatsTable({ rows, players, onEdit = null }) {
   const name = (id) => players.find((player) => player.id === id)?.username ?? "Joueur";
   const sideOf = (id) => players.find((player) => player.id === id)?.side;
   return (
@@ -60,6 +62,7 @@ function StatsTable({ rows, players }) {
                 {HEAD.map((label) => (
                   <th key={label} scope="col" className="py-1.5 text-right font-normal">{label}</th>
                 ))}
+                {onEdit ? <th scope="col"><span className="sr-only">Corriger</span></th> : null}
               </tr>
             </thead>
             <tbody>
@@ -70,6 +73,13 @@ function StatsTable({ rows, players }) {
                   <td className="py-1.5 text-right font-semibold">{row.kills}</td>
                   <td className="py-1.5 text-right">{row.plants}</td>
                   <td className="py-1.5 text-right">{row.defuses}</td>
+                  {onEdit ? (
+                    <td className="w-8 py-1.5 text-right">
+                      <button type="button" onClick={() => onEdit(row)} aria-label={`Corriger la ligne de ${name(row.userId)}`} className="inline-flex text-white/40 hover:text-gold">
+                        <LuPencil aria-hidden className="h-3.5 w-3.5" />
+                      </button>
+                    </td>
+                  ) : null}
                 </tr>
               ))}
             </tbody>
@@ -96,8 +106,81 @@ function captureProblem(reading, usable, players, expectedMap, roundsToWin) {
   return covered ? null : "On ne retrouve pas assez de joueurs de ce match sur cette capture.";
 }
 
+/** Correction d'une ligne par un arbitre, la capture ouverte à côté. */
+function CorrectionForm({ row, name, pending, onSave, onCancel }) {
+  const [values, setValues] = useState(row);
+  return (
+    <form
+      className="space-y-3 border border-gold/30 bg-gold/[0.04] p-4"
+      onSubmit={(event) => {
+        event.preventDefault();
+        onSave(values);
+      }}
+    >
+      <p className="text-sm font-semibold text-white/85">Corriger la ligne de {name}</p>
+      <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
+        {FIELDS.map(([key, label]) => (
+          <label key={key} className="text-xs text-white/55">
+            {label}
+            <input
+              type="number"
+              min="0"
+              step={key === "score" ? 5 : 1}
+              required
+              value={values[key]}
+              onChange={(event) => setValues((current) => ({ ...current, [key]: Number(event.target.value) }))}
+              className="mt-1 w-full border border-white/15 bg-ink px-2 py-1.5 text-sm text-white tabular-nums"
+            />
+          </label>
+        ))}
+      </div>
+      <div className="flex flex-wrap gap-2">
+        <Button size="sm" type="submit" disabled={pending}>
+          {pending ? <LuLoaderCircle aria-hidden className="h-4 w-4 animate-spin" /> : <LuCheck aria-hidden className="h-4 w-4" />}
+          Enregistrer
+        </Button>
+        <Button size="sm" variant="outline" type="button" onClick={onCancel} disabled={pending}>
+          Annuler
+        </Button>
+      </div>
+    </form>
+  );
+}
+
+/** Signalement d'un joueur : la map et la ligne concernées, pour que l'équipe regarde au bon endroit. */
+function ReportForm({ rows, maps, players, onSend, onCancel }) {
+  const [mapNo, setMapNo] = useState(rows[0]?.mapNo ?? 1);
+  const lines = rows.filter((row) => row.mapNo === mapNo);
+  const [userId, setUserId] = useState("");
+  const name = (id) => players.find((player) => player.id === id)?.username ?? "Joueur";
+  return (
+    <div className="flex flex-wrap items-center gap-2 text-sm">
+      {maps.length > 1 ? (
+        <select aria-label="Map" className="border border-white/15 bg-ink px-2 py-1.5 text-sm" value={mapNo} onChange={(event) => { setMapNo(Number(event.target.value)); setUserId(""); }}>
+          {maps.map((no) => (
+            <option key={no} value={no}>Map {no}</option>
+          ))}
+        </select>
+      ) : null}
+      <select aria-label="Joueur concerné" className="border border-white/15 bg-ink px-2 py-1.5 text-sm" value={userId} onChange={(event) => setUserId(event.target.value)}>
+        <option value="">Quelle ligne est fausse ?</option>
+        {lines.map((row) => (
+          <option key={row.userId} value={row.userId}>{name(row.userId)}</option>
+        ))}
+      </select>
+      <Button size="sm" variant="outline" onClick={() => onSend(mapNo, userId)} disabled={!userId}>
+        <LuFlag aria-hidden className="h-4 w-4" />
+        Signaler
+      </Button>
+      <button type="button" onClick={onCancel} className="px-2 text-xs text-white/50 underline underline-offset-4 hover:text-white">
+        Annuler
+      </button>
+    </div>
+  );
+}
+
 /** Résultat de la lecture : le joueur vérifie d'un coup d'œil et valide. Il ne tape rien. */
-function Preview({ reading, players, expectedMap, roundsToWin, pending, onChoose, onConfirm, onCancel, onProofOnly }) {
+function Preview({ reading, players, expectedMap, roundsToWin, completing, pending, onChoose, onConfirm, onCancel, onProofOnly }) {
   const usable = reading.rows.filter((row) => row.readable && row.userId);
   const free = players.filter((player) => !reading.rows.some((row) => row.userId === player.id));
   const unknown = reading.rows.filter((row) => row.readable && !row.userId);
@@ -107,6 +190,7 @@ function Preview({ reading, players, expectedMap, roundsToWin, pending, onChoose
   return (
     <div className="space-y-4 border border-gold/30 bg-gold/[0.04] p-4">
       <p className="text-sm font-semibold text-white/85">Vérifie, puis valide.</p>
+      {completing ? <p className="text-xs text-white/55">Seuls les joueurs qui manquent sur cette map seront ajoutés.</p> : null}
       <StatsTable rows={usable} players={players} />
       {unknown.map((row) => (
         <label key={`${row.column}-${row.score}-${row.kills}`} className="flex flex-wrap items-center gap-3 text-sm text-white/70">
@@ -159,6 +243,8 @@ export function MatchStats({ kind, matchId, status = null, initial = null }) {
   const [notice, setNotice] = useState(null);
   const [pending, setPending] = useState(false);
   const [reported, setReported] = useState(false);
+  const [reporting, setReporting] = useState(false);
+  const [editing, setEditing] = useState(null);
   const input = useRef(null);
 
   const load = useCallback(() => {
@@ -170,13 +256,16 @@ export function MatchStats({ kind, matchId, status = null, initial = null }) {
   if (!data) return null;
   const mapRows = (no) => data.rows.filter((row) => row.mapNo === no);
   const allMaps = Array.from({ length: data.maps }, (_, index) => index + 1);
-  const missingMaps = allMaps.filter((no) => !data.sentMaps.includes(no));
+  // Maps sans capture, ou à compléter parce que des joueurs manquent.
+  const missingMaps = data.openMaps ?? allMaps.filter((no) => !data.sentMaps.includes(no));
   if (data.rows.length === 0 && !data.canSubmit) return null;
   const target = missingMaps.includes(mapNo) ? mapNo : missingMaps[0];
   const nothingYet = data.sentMaps.length === 0;
   // BO3, BO5 : la map lue sur la capture désigne la map du match, sans rien choisir.
   const seenIndex = reading?.mapSeen ? data.mapNames.findIndex((name) => mapId(name) === mapId(reading.mapSeen)) + 1 : 0;
   const readingMap = missingMaps.includes(seenIndex) ? seenIndex : target;
+  const nameOf = (id) => data.players.find((player) => player.id === id)?.username ?? "Joueur";
+  const capturesOf = (no) => (data.captures ?? []).filter((capture) => capture.mapNo === no);
 
   function reset() {
     setReading(null);
@@ -215,7 +304,10 @@ export function MatchStats({ kind, matchId, status = null, initial = null }) {
       const rows = reading.rows.filter((row) => row.readable && row.userId).map(({ userId, score, kills, plants, defuses }) => ({ userId, score, kills, plants, defuses }));
       const hash = await fingerprint(file);
       setData(await api(`/cod/stats/${kind}/${matchId}`, { method: "POST", body: { mapNo: readingMap, rows, hash } }));
-      await saveProof(kind, matchId, user.id, file).catch(() => setNotice("Stats enregistrées, mais l'image n'a pas pu être gardée comme preuve."));
+      await saveProof(kind, matchId, user.id, file)
+        .then((path) => api(`/cod/stats/${kind}/${matchId}/${readingMap}/proof`, { method: "POST", body: { path } }))
+        .then(setData)
+        .catch(() => setNotice("Stats enregistrées, mais l'image n'a pas pu être gardée comme preuve."));
       reset();
     } catch (caught) {
       setError(caught.message);
@@ -238,13 +330,27 @@ export function MatchStats({ kind, matchId, status = null, initial = null }) {
     }
   }
 
-  async function report() {
+  async function report(no, userId) {
     setError(null);
     try {
-      await api(`/cod/stats/${kind}/${matchId}/report`, { method: "POST", body: {} });
+      await api(`/cod/stats/${kind}/${matchId}/report`, { method: "POST", body: { mapNo: no, userId } });
       setReported(true);
+      setReporting(false);
     } catch (caught) {
       setError(caught.message);
+    }
+  }
+
+  async function saveCorrection({ userId, score, kills, plants, defuses }) {
+    setPending(true);
+    setError(null);
+    try {
+      setData(await api(`/cod/stats/${kind}/${matchId}/${editing.mapNo}/${userId}`, { method: "PATCH", body: { score, kills, plants, defuses } }));
+      setEditing(null);
+    } catch (caught) {
+      setError(caught.message);
+    } finally {
+      setPending(false);
     }
   }
 
@@ -274,14 +380,23 @@ export function MatchStats({ kind, matchId, status = null, initial = null }) {
           <div key={no} className="space-y-2">
             <div className="flex items-center justify-between gap-3">
               {data.maps > 1 ? <p className="font-tech text-[10px] uppercase tracking-[0.2em] text-gold">Map {no}</p> : <span />}
-              {data.canRemove ? (
-                <button type="button" onClick={() => remove(no)} className="inline-flex items-center gap-1 text-xs text-white/40 hover:text-loss">
-                  <LuTrash2 aria-hidden className="h-3.5 w-3.5" />
-                  Retirer
-                </button>
-              ) : null}
+              <div className="flex items-center gap-3">
+                {capturesOf(no).map((capture, index) => (
+                  <a key={capture.url} href={capture.url} target="_blank" rel="noreferrer" className="inline-flex items-center gap-1 text-xs text-white/50 hover:text-gold">
+                    <LuExternalLink aria-hidden className="h-3.5 w-3.5" />
+                    {index === 0 ? "Voir la capture" : `Capture ${index + 1}`}
+                  </a>
+                ))}
+                {data.canRemove ? (
+                  <button type="button" onClick={() => remove(no)} className="inline-flex items-center gap-1 text-xs text-white/40 hover:text-loss">
+                    <LuTrash2 aria-hidden className="h-3.5 w-3.5" />
+                    Retirer
+                  </button>
+                ) : null}
+              </div>
             </div>
-            <StatsTable rows={mapRows(no)} players={data.players} />
+            <StatsTable rows={mapRows(no)} players={data.players} onEdit={data.canRemove ? (row) => setEditing(row) : null} />
+            {editing?.mapNo === no ? <CorrectionForm key={editing.userId} row={editing} name={nameOf(editing.userId)} pending={pending} onSave={saveCorrection} onCancel={() => setEditing(null)} /> : null}
           </div>
         ))}
 
@@ -310,6 +425,7 @@ export function MatchStats({ kind, matchId, status = null, initial = null }) {
           players={data.players}
           expectedMap={data.mapNames[readingMap - 1]}
           roundsToWin={data.roundsToWin}
+          completing={data.sentMaps.includes(readingMap)}
           pending={pending}
           onChoose={choose}
           onConfirm={confirm}
@@ -332,7 +448,7 @@ export function MatchStats({ kind, matchId, status = null, initial = null }) {
           <input ref={input} type="file" accept="image/png,image/jpeg,image/webp" className="hidden" onChange={pick} />
           <Button size="sm" onClick={() => input.current?.click()} disabled={Boolean(progress)}>
             {progress ? <LuLoaderCircle aria-hidden className="h-4 w-4 animate-spin" /> : <LuImagePlus aria-hidden className="h-4 w-4" />}
-            {progress ?? "Ajouter la capture de fin de match"}
+            {progress ?? (data.sentMaps.includes(target) ? "Compléter avec une autre capture" : "Ajouter la capture de fin de match")}
           </Button>
         </div>
       ) : null}
@@ -340,8 +456,10 @@ export function MatchStats({ kind, matchId, status = null, initial = null }) {
       {data.canReport ? (
         reported ? (
           <p className="text-xs text-white/50">Signalement envoyé à l&apos;équipe.</p>
+        ) : reporting ? (
+          <ReportForm rows={data.rows} maps={[...new Set(data.rows.map((row) => row.mapNo))]} players={data.players} onSend={report} onCancel={() => setReporting(false)} />
         ) : (
-          <button type="button" onClick={report} className="inline-flex items-center gap-1.5 text-xs text-white/45 hover:text-white">
+          <button type="button" onClick={() => setReporting(true)} className="inline-flex items-center gap-1.5 text-xs text-white/45 hover:text-white">
             <LuFlag aria-hidden className="h-3.5 w-3.5" />
             Signaler une erreur
           </button>
