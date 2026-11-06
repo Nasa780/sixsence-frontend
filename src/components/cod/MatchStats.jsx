@@ -341,7 +341,7 @@ export function MatchStats({ kind, matchId, status = null, initial = null }) {
     try {
       const rows = reading.rows.filter((row) => row.readable && row.userId).map(({ userId, score, kills, plants, defuses }) => ({ userId, score, kills, plants, defuses }));
       const hash = await fingerprint(file);
-      setData(await api(`/cod/stats/${kind}/${matchId}`, { method: "POST", body: { mapNo: readingMap, rows, hash } }));
+      setData(await api(`/cod/stats/${kind}/${matchId}`, { method: "POST", body: { mapNo: readingMap, rows, hash, rounds: reading.rounds } }));
       await saveProof(kind, matchId, user.id, file)
         .then((path) => api(`/cod/stats/${kind}/${matchId}/${readingMap}/proof`, { method: "POST", body: { path } }))
         .then(setData)
