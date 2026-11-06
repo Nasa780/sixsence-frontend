@@ -6,6 +6,13 @@
 export const RELEASES = [
   {
     date: "2026-11-06",
+    title: "Carte de résultat sur Discord",
+    items: [
+      { tag: "Discord", text: "Chaque résultat s'affiche maintenant en image : équipes, score, maps, et meilleur joueur dès qu'une capture arrive." },
+    ],
+  },
+  {
+    date: "2026-11-06",
     title: "Classement des stats et meilleur joueur des coupes",
     items: [
       { tag: "Site", text: "Un classement des stats perso sur la saison : élim., score, poses et désamorçages par map, à partir de 10 maps.", href: "/cod/leaderboard" },
