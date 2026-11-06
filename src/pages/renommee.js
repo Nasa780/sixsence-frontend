@@ -2,7 +2,7 @@ import { motion } from "framer-motion";
 import Head from "next/head";
 import Link from "next/link";
 import { useEffect, useState } from "react";
-import { LuCrown, LuFlame, LuMedal, LuStar, LuTarget, LuTrophy, LuZap } from "react-icons/lu";
+import { LuCrosshair, LuCrown, LuFlame, LuGauge, LuMedal, LuStar, LuTarget, LuTrophy, LuZap } from "react-icons/lu";
 import { ClipCard } from "../components/clips/Clips";
 import { PlayerOfWeek } from "../components/cod/HubHighlights";
 import { TeamCrest } from "../components/teams/TeamParts";
@@ -49,6 +49,8 @@ export default function RenownPage() {
         ["xp", "Plus d'expérience", LuStar, (v) => `${v.toLocaleString("fr-FR")} XP`],
         ["wins", "Victoires cette saison", LuTrophy, (v) => `${v} victoires`],
         ["objectives", "Poses + désam. cette saison", LuTarget, (v) => `${String(v).replace(".", ",")} par map`],
+        ["mapKills", "Plus d'élim. sur une map", LuCrosshair, (v) => `${v} élim.`],
+        ["mapScore", "Plus gros score sur une map", LuGauge, (v) => `${v.toLocaleString("fr-FR")} pts`],
       ].filter(([key]) => data.records[key])
     : [];
 
@@ -103,7 +105,7 @@ export default function RenownPage() {
             {records.length ? (
               <section aria-labelledby="titre-records">
                 <SectionTitle id="titre-records" eyebrow="De tous les temps" title="Records" />
-                <ul className="mt-6 grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-5">
+                <ul className="mt-6 grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4">
                   {records.map(([key, label, Icon, format], index) => {
                     const record = data.records[key];
                     return (
@@ -116,6 +118,11 @@ export default function RenownPage() {
                             <Avatar full src={record.avatarUrl} name={record.username} size={30} />
                             <span className="truncate text-sm font-semibold">{record.username}</span>
                           </Link>
+                          {record.matchPath ? (
+                            <Link href={record.matchPath} className="relative mt-3 inline-block text-xs text-white/50 underline underline-offset-4 hover:text-gold">
+                              Voir le match
+                            </Link>
+                          ) : null}
                         </TacticalCard>
                       </motion.li>
                     );
