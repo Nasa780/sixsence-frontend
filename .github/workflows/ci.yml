@@ -1,5 +1,5 @@
 # Vérification automatique de chaque PR et de chaque commit sur main :
-# le site doit s'installer et se construire sans erreur.
+# le site doit s'installer, passer ESLint et les tests, et se construire sans erreur.
 name: CI
 
 on:
@@ -17,5 +17,9 @@ jobs:
           node-version: 22
           cache: npm
       - run: npm ci
+      - name: ESLint
+        run: npm run lint
+      - name: Tests
+        run: npm test
       - name: Construction du site
         run: npm run build

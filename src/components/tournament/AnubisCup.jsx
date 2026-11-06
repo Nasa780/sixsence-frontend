@@ -140,7 +140,7 @@ export function SoloRegistration({ tournament, userId, checkInOpen, onDone }) {
       </div>
     );
   } else {
-    content = <p className="text-sm text-white/55">La coupe est complète, liste d'attente comprise.</p>;
+    content = <p className="text-sm text-white/55">La coupe est complète, liste d&apos;attente comprise.</p>;
   }
   return (
     <div className="space-y-3">

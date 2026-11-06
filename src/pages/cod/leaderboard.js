@@ -5,6 +5,7 @@ import { RanksGrid } from "../../components/cod/RanksGrid";
 import { SeasonArchive } from "../../components/cod/SeasonArchive";
 import { SeasonCountdown } from "../../components/cod/SeasonCountdown";
 import { SeasonRewards } from "../../components/cod/SeasonRewards";
+import { StatsLeaderboard } from "../../components/cod/StatsLeaderboard";
 import { ButtonLink } from "../../components/ui/Button";
 import { Container } from "../../components/ui/Container";
 import { PageHeader } from "../../components/ui/Typography";
@@ -59,6 +60,7 @@ export default function LeaderboardPage() {
           {archived ? null : <SeasonCountdown mode="classe" />}
           {archived ? <SeasonArchive season={archived} currentUserId={userId} /> : <LeaderboardView limit={200} currentUserId={userId} />}
         </div>
+        {archived ? null : <StatsLeaderboard currentUserId={userId} />}
         {archived ? null : <SeasonRewards seasonId={active?.id} label={label} />}
         <RanksGrid highlight={user?.profile ? rankFor(user.profile.points).name : null} />
       </Container>

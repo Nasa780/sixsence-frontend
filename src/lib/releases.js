@@ -6,6 +6,14 @@
 export const RELEASES = [
   {
     date: "2026-11-06",
+    title: "Classement des stats et meilleur joueur des coupes",
+    items: [
+      { tag: "Site", text: "Un classement des stats perso sur la saison : élim., score, poses et désamorçages par map, à partir de 10 maps.", href: "/cod/leaderboard" },
+      { tag: "Tournoi", text: "Chaque coupe met en avant son meilleur joueur, d'après les captures de ses matchs." },
+    ],
+  },
+  {
+    date: "2026-11-06",
     title: "Stats perso plus fiables",
     items: [
       { tag: "Site", text: "Un joueur manque sur ta capture ? Complète la map avec une autre capture, sans repartir de zéro." },
