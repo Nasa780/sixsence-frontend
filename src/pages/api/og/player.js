@@ -251,7 +251,7 @@ function Footer({ streak, mvpMonths, text }) {
     <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginTop: 10, fontFamily: text, fontSize: 18, fontWeight: 500, color: "rgba(255,255,255,0.6)" }}>
       <div style={{ display: "flex", gap: 24 }}>
         <span style={{ display: "flex", gap: 6 }}>
-          <span style={{ color: "#fff", fontWeight: 700 }}>Record</span> : {streak} victoire{streak > 1 ? "s" : ""} d'affilée
+          <span style={{ color: "#fff", fontWeight: 700 }}>Record</span> : {streak} victoire{streak > 1 ? "s" : ""} d&apos;affilée
         </span>
         {mvpMonths > 0 ? <span style={{ color: goldLight }}>MVP du mois ×{mvpMonths}</span> : null}
       </div>

@@ -17,7 +17,9 @@ L'API vit dans un dépôt séparé : `Nasa780/sixsence-backend` (Express + WebSo
 ```bash
 npm install
 npm run dev     # http://localhost:3000
-npm run build   # à lancer avant chaque PR (pas de tests ni de linter)
+npm run lint    # ESLint : aucune erreur attendue, les avertissements restent à reprendre
+npm test        # tests des fonctions de src/lib (Vitest)
+npm run build   # à lancer avant chaque PR
 ```
 
 ## Identité visuelle

@@ -177,6 +177,7 @@ export function CupFiche({ tournament: t, userId, now, onDone, cups = null }) {
     <div className="space-y-10">
       <FicheHero t={t} now={now} phase={phase} cta={cta} />
       {t.status === "completed" && t.winner ? <CupPodium t={t} playersOf={playersOf} /> : null}
+      {t.bestPlayer ? <CupBestPlayer best={t.bestPlayer} /> : null}
       {phase === -1 ? <Notice tone="error">{t.kind === "anubis" ? "Cette coupe a été annulée : pas assez de joueurs présents au check-in." : t.kind === "horus" ? "Cette coupe a été annulée : pas assez d'équipes présentes au check-in." : "Ce tournoi a été annulé."}</Notice> : null}
       {phase !== -1 ? (
         <CommandBand t={t} now={now} phase={phase} bracket={bracket} teams={teams} myTeam={myTeam} myNext={myNext} stateOf={stateOf} viewer={viewer} cups={cups} jump={jump} />
@@ -435,6 +436,26 @@ function CupPodium({ t, playersOf }) {
           );
         })}
       </ol>
+    </section>
+  );
+}
+
+/** Meilleur joueur de la coupe : le plus gros score cumulé sur les captures de ses matchs. */
+function CupBestPlayer({ best }) {
+  return (
+    <section aria-label="Meilleur joueur de la coupe">
+      <TacticalCard cut={20} innerClassName="flex flex-wrap items-center gap-4 p-5">
+        <Avatar full src={best.avatarUrl} name={best.username} size={52} />
+        <div className="min-w-0 flex-1">
+          <p className="font-tech text-[10px] uppercase tracking-[0.24em] text-gold">Meilleur joueur de la coupe</p>
+          <Link href={`/cod/profile/${best.id}`} className="mt-1 block truncate font-display text-3xl font-black uppercase leading-none hover:text-gold">
+            {best.username}
+          </Link>
+        </div>
+        <p className="w-full text-sm tabular-nums text-white/70 sm:w-auto">
+          {best.score.toLocaleString("fr-FR")} pts · {best.kills} élim. · {best.maps} map{best.maps > 1 ? "s" : ""}
+        </p>
+      </TacticalCard>
     </section>
   );
 }

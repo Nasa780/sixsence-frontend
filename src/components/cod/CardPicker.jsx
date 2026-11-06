@@ -136,7 +136,7 @@ export function CardPicker({ open, onClose, player, points, onEquipped }) {
                         </>
                       )}
                     </p>
-                    <span className="text-xs text-white/40">Clique sur une carte débloquée pour l'équiper.</span>
+                    <span className="text-xs text-white/40">Clique sur une carte débloquée pour l&apos;équiper.</span>
                   </div>
                 </div>
 
