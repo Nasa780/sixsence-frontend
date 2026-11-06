@@ -22,6 +22,9 @@ export const FAQ = [
   { id: "notifications", theme: "compte", q: "Comment recevoir l'alerte « Match trouvé » site fermé ?", a: "Active les notifications depuis « Premiers pas » sur la page MW4. Sur Android et ordinateur, ça marche directement dans le navigateur ; sur iPhone, installe d'abord l'appli." },
   { id: "carte-visite", theme: "compte", q: "Comment changer ma carte de visite ?", a: "Sur ton profil, « Changer de carte ». Les cartes se débloquent en jouant : rangs, succès, MVP, saisons." },
 
+  { id: "stats-perso", theme: "compte", q: "Comment marchent les stats perso ?", a: "Envoie le tableau des scores en plein écran sur la feuille de match, jusqu'à 24 h après : le site lit le score, les éliminations, les poses et les désamorçages. Une capture lisible suffit pour tous les joueurs qu'elle montre ; en Division et en coupe, il en faut une par map. Aucun effet sur les points." },
+  { id: "stats-non-comptees", theme: "compte", q: "Quels matchs comptent dans les stats perso ?", a: "Tous les matchs terminés de Classé, de Division et de coupe. Un forfait, un match amical ou un match annulé ne compte pas." },
+
   // --- Classé ---
   { id: "points-victoire", theme: "classe", q: "Combien de points je gagne ?", a: "Entre +40 et +60 par victoire selon le niveau des adversaires (+50 à niveau égal). Pendant tes 10 premiers matchs de la saison, les victoires comptent double." },
   { id: "points-defaite", theme: "classe", q: "Pourquoi j'ai perdu plus de points qu'un coéquipier ?", a: "La défaite dépend de ton rang : -15 en Bronze, -20 en Argent, -25 en Or, -30 en Platine, -35 en Diamant, -50 dès Maître, ajustée de ±30 % selon l'équipe adverse." },
@@ -41,9 +44,9 @@ export const FAQ = [
   { id: "effectif", theme: "division", q: "Combien de joueurs dans une équipe ?", a: "8 au plus. Un Leader choisit les 4 joueurs de chaque match parmi l'effectif." },
   { id: "roles", theme: "division", q: "Qui fait quoi dans l'équipe ?", a: "Les Leaders lancent les matchs, invitent et gèrent l'effectif. Le créateur porte la couronne : il nomme les Leaders et peut la transmettre." },
   { id: "changer-equipe", theme: "division", q: "Je peux changer d'équipe quand je veux ?", a: "Oui, 24 h après avoir quitté la précédente. Les transferts sont bloqués pendant le tournoi de saison et les 7 derniers jours de la saison." },
-  { id: "deroule", theme: "division", q: "Comment se passe un match de Division ?", a: "BO3 en 6 manches gagnantes par map, maps tirées au sort. L'équipe hôte, tirée au sort, donne le code de la partie dans le tchat de la feuille de match." },
+  { id: "deroule", theme: "division", q: "Comment se passe un match de Division ?", a: "BO3 en 6 manches gagnantes par map, maps tirées au sort. L'équipe hôte, tirée au sort, donne le code de la partie dans le champ dédié de la feuille de match." },
   { id: "programmer", theme: "division", q: "Comment programmer un match ce soir ?", a: "Un Leader choisit un créneau au quart d'heure, jusqu'à 48 h. Rappel 30 minutes avant ; l'adversaire est dévoilé 5 minutes avant." },
-  { id: "defis", theme: "division", q: "Quelle différence entre un défi amical et officiel ?", a: "L'amical ne compte pas. L'officiel rapporte des points de Division : un seul par équipe sur 7 jours." },
+  { id: "defis", theme: "division", q: "Quelle différence entre un défi amical et officiel ?", a: "L'amical ne compte pas : ni points, ni XP, ni stats perso. L'officiel rapporte des points de Division : un seul par équipe sur 7 jours." },
   { id: "forfait", theme: "division", q: "Que se passe-t-il en cas de forfait ?", a: "L'équipe forfait perd le match. Plus de 3 forfaits perdus en 7 jours : recherche bloquée 24 h." },
 
   // --- Tournois ---
@@ -58,8 +61,8 @@ export const FAQ = [
   { id: "roles-discord", theme: "discord", q: "Comment j'obtiens mon rôle de rang ?", a: "Automatiquement après chaque match classé, selon ton rang." },
 
   // --- Un souci ---
-  { id: "erreur-resultat", theme: "souci", q: "Je me suis trompé de résultat.", a: "Demande une correction depuis la feuille de match dans les 24 h (motif « Erreur de déclaration ») : un arbitre corrige." },
-  { id: "contester", theme: "souci", q: "L'autre équipe a déclaré un faux résultat.", a: "Conteste depuis la feuille de match et ajoute tes captures : un arbitre tranche." },
-  { id: "triche", theme: "souci", q: "Un joueur triche ou ne respecte pas les règles.", a: "Signale-le depuis la feuille de match avec une capture, ou ouvre un ticket « Signalement » sur Discord." },
+  { id: "erreur-resultat", theme: "souci", q: "Je me suis trompé de résultat.", a: "Demande une correction depuis la feuille de match dans les 24 h (motif « Erreur de déclaration ») : un arbitre corrige. Valable en Classé, en Division et en coupe, pas pour un match amical." },
+  { id: "contester", theme: "souci", q: "L'autre équipe a déclaré un faux résultat.", a: "Conteste depuis la feuille de match, puis ajoute ta capture avec le bouton qui apparaît : un arbitre tranche." },
+  { id: "triche", theme: "souci", q: "Un joueur triche ou ne respecte pas les règles.", a: "Demande un arbitrage depuis la feuille de match (motif « Triche suspectée ») puis ajoute ta capture, ou ouvre un ticket « Signalement » sur Discord." },
   { id: "bug", theme: "souci", q: "J'ai trouvé un bug.", a: "Ouvre un ticket « Bug » sur Discord avec une capture et ce que tu faisais : on corrige vite." },
 ].filter(Boolean);

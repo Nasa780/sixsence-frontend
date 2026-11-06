@@ -112,8 +112,13 @@ function DIVISION_SECTIONS() {
             map jouée. L&apos;équipe adverse confirme ou conteste une seule fois ; sans réponse sous 15 minutes, les scores sont validés automatiquement.
           </li>
           <li>
-            En cas de contestation, ajoute une capture du tableau des scores sur la feuille de match (5 par joueur du match) : un arbitre
-            tranche. Un match sans résultat au bout de 3 heures est annulé.
+            En cas de litige (résultat contesté, forfait déclaré ou demande d&apos;arbitrage), le bouton « Ajouter une capture » apparaît sur la
+            feuille de match pour les deux équipes (5 par joueur du match) : un arbitre tranche. Un match sans résultat au bout de 3 heures est
+            annulé.
+          </li>
+          <li>
+            Erreur de déclaration (mauvais clic) : un joueur du match peut demander une <strong>correction</strong> depuis la feuille pendant
+            24 heures après la validation. Valable aussi en coupe, pas pour un match amical.
           </li>
           <li>
             <strong>Points d&apos;équipe</strong> : +20 à +30 en victoire, -20 à -30 en défaite selon le niveau de l&apos;adversaire (+25 / -25 à
@@ -166,7 +171,7 @@ function DIVISION_SECTIONS() {
       content: (
         <ul>
           <li>
-            Un Leader peut <strong>défier</strong> une autre équipe depuis sa fiche : BO3 <strong>amical</strong> (aucun point, aucun bilan) ou
+            Un Leader peut <strong>défier</strong> une autre équipe depuis sa fiche : BO3 <strong>amical</strong> (ni points, ni XP, ni bilan, ni stats perso, et un forfait n&apos;y compte pas) ou
             <strong> officiel</strong> (points de Division normaux), maintenant ou à une heure fixée (jusqu&apos;à 7 jours). Mêmes règles que les
             matchs de la Division ; sans réponse, le défi expire après 24 h.
           </li>
@@ -193,8 +198,9 @@ function DIVISION_SECTIONS() {
       content: (
         <ul>
           <li>
-            Un Leader <strong>inscrit son équipe</strong> dès l&apos;ouverture de la coupe et peut la désinscrire jusqu&apos;au check-in. Places
-            limitées (4, 8 ou 16 équipes).
+            Un Leader <strong>inscrit son équipe</strong> dès l&apos;ouverture de la coupe et peut la désinscrire jusqu&apos;à 15 minutes avant le
+            début. Places limitées (4, 8 ou 16 équipes). Une fois les places prises, une équipe peut s&apos;inscrire comme{" "}
+            <strong>remplaçante</strong> : dans l&apos;ordre d&apos;inscription, elle prend la place d&apos;une équipe absente au check-in.
           </li>
           <li>
             Check-in par n&apos;importe quel joueur de l&apos;équipe entre <strong>2 h et 15 minutes</strong> avant le début. Moins de 4 équipes présentes : coupe annulée. Le
@@ -205,7 +211,7 @@ function DIVISION_SECTIONS() {
             élimination (une 2e défaite élimine, grande finale en un seul match).
           </li>
           <li>
-            Récompenses : trophée or, argent ou bronze sur la fiche d&apos;équipe, <strong>+150 / +100 / +75 points</strong> de Division
+            Récompenses : trophée or, argent ou bronze sur la fiche d&apos;équipe et le profil des joueurs du check-in, <strong>+150 / +100 / +75 points</strong> de Division
             pour le podium et +50 pour les autres équipes présentes ; rôle Discord du vainqueur gardé jusqu&apos;à la coupe suivante.
           </li>
         </ul>
@@ -219,19 +225,19 @@ function DIVISION_SECTIONS() {
         <ul>
           <li>
             Chaque joueur <strong>s&apos;inscrit seul</strong> (identifiant Activision requis, sans exclusion en cours) et peut se
-            désinscrire jusqu&apos;au début.
+            désinscrire jusqu&apos;à 15 minutes avant le début. Une fois les places prises, il rejoint la <strong>liste d&apos;attente</strong> : il
+            prend la place d&apos;un joueur absent au check-in.
           </li>
           <li>
             Check-in individuel entre <strong>2 h et 15 minutes</strong> avant le début : seuls les joueurs présents sont répartis, et les équipes sont dévoilées 15 minutes avant les premiers matchs.
           </li>
           <li>
-            Les équipes sont <strong>tirées au sort</strong> à la taille annoncée (2 à 5 joueurs). Le joueur le mieux classé de chaque
-            équipe est capitaine ; les joueurs en trop deviennent remplaçants (un par équipe au plus), le capitaine peut les faire entrer
-            entre deux matchs. Moins de 4 équipes complètes : coupe annulée.
+            Les équipes sont <strong>tirées au sort</strong> à la taille annoncée (2 à 5 joueurs), sans remplaçant : une fois les équipes tirées,
+            plus aucun changement. Le joueur le mieux classé de chaque équipe est capitaine. Moins de 4 équipes complètes : coupe annulée.
           </li>
           <li>Même format et même déroulé que la Coupe Horus ; aucun point d&apos;équipe en jeu.</li>
           <li>
-            Récompenses : <strong>médaille</strong> or, argent ou bronze sur le profil de chaque joueur du podium (remplaçants compris) et
+            Récompenses : <strong>médaille</strong> or, argent ou bronze sur le profil de chaque joueur du podium et
             rôle Discord du vainqueur gardé jusqu&apos;à la Coupe Anubis suivante.
           </li>
         </ul>
@@ -329,6 +335,26 @@ const SECTIONS = [
           Tu es prévenu en message privé Discord.
         </p>
       </>
+    ),
+  },
+  {
+    id: "stats-perso",
+    group: "Général",
+    title: "Capture de fin de match et stats perso",
+    content: (
+      <ul>
+        <li>
+          Le tableau des scores en plein écran, envoyé sur la feuille de match pendant le match ou dans les <strong>24 heures</strong> après,
+          donne le score, les éliminations, les poses et les désamorçages de chaque joueur. En Division et en coupe, il faut une capture par map
+          jouée. Une seule capture lisible suffit pour tous les joueurs qu&apos;elle montre.
+        </li>
+        <li>
+          Les stats s&apos;affichent à la fin du match et n&apos;ont <strong>aucun effet sur les points</strong>. Un forfait, un match amical ou
+          un match annulé ne compte pas dans les stats perso.
+        </li>
+        <li>Une ligne fausse se signale sur la feuille de match : un arbitre la corrige en regardant la capture, ou retire la capture.</li>
+        <li>Une capture modifiée ou reprise d&apos;un autre match est une fausse déclaration, sanctionnée comme telle.</li>
+      </ul>
     ),
   },
   {
@@ -435,8 +461,9 @@ const SECTIONS = [
         <li>À la fin de la partie, n&apos;importe quel joueur du match déclare l&apos;équipe gagnante.</li>
         <li>L&apos;équipe adverse confirme ou conteste. Sans réponse sous 15 minutes, le résultat est validé automatiquement.</li>
         <li>
-          En cas de contestation, ajoute une <strong>capture du tableau des scores</strong> dans le salon : un arbitre SixSence tranche
-          (victoire d&apos;une équipe ou annulation). Sa décision est définitive.
+          En cas de litige (résultat contesté ou demande d&apos;arbitrage), le bouton « Ajouter une capture » apparaît sur la feuille de match
+          pour les deux équipes : ajoute une <strong>capture du tableau des scores</strong>, un arbitre SixSence tranche (victoire d&apos;une
+          équipe ou annulation). Sa décision est définitive.
         </li>
         <li>
           Erreur de déclaration (mauvais clic) : tu peux demander une <strong>correction</strong> depuis le salon pendant 24 heures après
@@ -532,7 +559,7 @@ export default function RulesPage() {
       eyebrow="Fair-play"
       title="Règlement"
       description={MATCH_TEAM_ENABLED ? "Les règles de SixSence : général, classé, Division, tournoi et événements GTA 6." : "Les règles du classé SixSence : file d'attente, sanctions, déroulement des matchs, points et saisons."}
-      updated="27 octobre 2026"
+      updated="6 novembre 2026"
       sections={ORDERED}
     />
   );

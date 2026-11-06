@@ -6,6 +6,15 @@
 export const RELEASES = [
   {
     date: "2026-11-06",
+    title: "Correction en Division, amicaux vraiment amicaux",
+    items: [
+      { tag: "Division", text: "Comme en Classé, un joueur du match peut demander un arbitrage, ou une correction pendant 24 h après la validation. Valable aussi en coupe." },
+      { tag: "Division", text: "Un match amical ne donne plus d'XP ni de stats perso, et un forfait en amical ne pénalise plus l'équipe." },
+      { tag: "Site", text: "Plus de capture demandée après un forfait. Règlement et FAQ remis à jour." },
+    ],
+  },
+  {
+    date: "2026-11-06",
     title: "Rappel de capture sur le site",
     items: [
       { tag: "Site", text: "Un bandeau te rappelle d'ajouter ta capture dès la fin du match, à la place du message privé." },
