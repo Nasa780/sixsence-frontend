@@ -60,11 +60,14 @@ function isFontFile(data) {
   return tag === "\0\u0001\0\0" || tag === "OTTO" || tag === "true" || tag === "wOFF";
 }
 
-/** Requête vers Google Fonts, refaite une fois en cas d'échec réseau ou de réponse en erreur (hors 400). */
+/** Panne de Google Fonts : erreur de son serveur ou trop de demandes. Une 400 veut dire « caractères absents de cette famille ». */
+const outage = (res) => res.status >= 500 || res.status === 429;
+
+/** Requête vers Google Fonts, refaite une fois en cas d'échec réseau ou de panne. */
 async function fetchTwice(url) {
   try {
     const first = await fetch(url);
-    if (first.ok || first.status === 400) return first;
+    if (!outage(first)) return first;
   } catch {
     // Nouvel essai ci-dessous.
   }
@@ -75,22 +78,20 @@ export async function loadFallbackFonts(text) {
   // Caractères hors ASCII uniquement : le reste est couvert par les polices du site.
   const special = [...new Set([...String(text || "")].filter((char) => char.codePointAt(0) > 0x7f))].join("");
   if (!special) return [];
-  // Une famille sans ces caractères est normale ; une réponse ratée de Google Fonts, non : l'image est alors incomplète.
+  // Une famille sans ces caractères est normale (réponse 400) ; une panne de Google Fonts, non : l'image est alors incomplète.
   let incomplete = false;
   const fonts = await Promise.all(
     FALLBACK_FAMILIES.map(async (family, index) => {
       try {
         const cssRes = await fetchTwice(`https://fonts.googleapis.com/css2?family=${family}&text=${encodeURIComponent(special)}`);
-        if (!cssRes.ok && cssRes.status !== 400) incomplete = true;
+        if (outage(cssRes)) incomplete = true;
         const css = await cssRes.text();
         const url = /src:\s*url\(([^)]+)\)\s*format\('(?:truetype|opentype)'\)/.exec(css)?.[1];
         if (!url) return null;
         const res = await fetchTwice(url);
+        if (outage(res)) incomplete = true;
         const data = res.ok ? await res.arrayBuffer() : null;
-        if (!isFontFile(data)) {
-          incomplete = true;
-          return null;
-        }
+        if (!isFontFile(data)) return null;
         return { name: `Secours${index}`, data, weight: 400, style: "normal" };
       } catch {
         incomplete = true;
