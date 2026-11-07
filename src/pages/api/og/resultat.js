@@ -1,7 +1,7 @@
 import { ImageResponse } from "next/og";
 import { SUPABASE_URL } from "../../../lib/config";
 import { mapImage } from "../../../lib/maps";
-import { OG_COLORS, dataUrl, loadFallbackFonts, loadFonts } from "../../../lib/og";
+import { OG_COLORS, dataUrl, loadFallbackFonts, loadFonts, ogCache } from "../../../lib/og";
 
 export const config = { runtime: "edge" };
 
@@ -139,6 +139,6 @@ export default async function handler(request) {
         )}
       </div>
     ),
-    { width: WIDTH, height: HEIGHT, fonts: [...fonts, ...fallbackFonts], headers: { "Cache-Control": "public, s-maxage=31536000, immutable" } },
+    { width: WIDTH, height: HEIGHT, fonts: [...fonts, ...fallbackFonts], headers: { "Cache-Control": ogCache("public, s-maxage=31536000, immutable", fonts, fallbackFonts) } },
   );
 }

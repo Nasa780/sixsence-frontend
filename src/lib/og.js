@@ -60,26 +60,53 @@ function isFontFile(data) {
   return tag === "\0\u0001\0\0" || tag === "OTTO" || tag === "true" || tag === "wOFF";
 }
 
+/** Requête vers Google Fonts, refaite une fois en cas d'échec réseau ou de réponse en erreur (hors 400). */
+async function fetchTwice(url) {
+  try {
+    const first = await fetch(url);
+    if (first.ok || first.status === 400) return first;
+  } catch {
+    // Nouvel essai ci-dessous.
+  }
+  return fetch(url);
+}
+
 export async function loadFallbackFonts(text) {
   // Caractères hors ASCII uniquement : le reste est couvert par les polices du site.
   const special = [...new Set([...String(text || "")].filter((char) => char.codePointAt(0) > 0x7f))].join("");
   if (!special) return [];
+  // Une famille sans ces caractères est normale ; une réponse ratée de Google Fonts, non : l'image est alors incomplète.
+  let incomplete = false;
   const fonts = await Promise.all(
     FALLBACK_FAMILIES.map(async (family, index) => {
       try {
-        const css = await (await fetch(`https://fonts.googleapis.com/css2?family=${family}&text=${encodeURIComponent(special)}`)).text();
+        const cssRes = await fetchTwice(`https://fonts.googleapis.com/css2?family=${family}&text=${encodeURIComponent(special)}`);
+        if (!cssRes.ok && cssRes.status !== 400) incomplete = true;
+        const css = await cssRes.text();
         const url = /src:\s*url\(([^)]+)\)\s*format\('(?:truetype|opentype)'\)/.exec(css)?.[1];
         if (!url) return null;
-        const res = await fetch(url);
-        if (!res.ok) return null;
-        const data = await res.arrayBuffer();
-        return isFontFile(data) ? { name: `Secours${index}`, data, weight: 400, style: "normal" } : null;
+        const res = await fetchTwice(url);
+        const data = res.ok ? await res.arrayBuffer() : null;
+        if (!isFontFile(data)) {
+          incomplete = true;
+          return null;
+        }
+        return { name: `Secours${index}`, data, weight: 400, style: "normal" };
       } catch {
+        incomplete = true;
         return null;
       }
     }),
   );
-  return fonts.filter(Boolean);
+  return Object.assign(fonts.filter(Boolean), { incomplete });
+}
+
+/**
+ * En-tête de cache d'une image : `value` si tout s'est bien chargé, sinon aucun cache (polices du site absentes ou
+ * police de secours ratée), pour que la prochaine demande refasse l'image au lieu de garder des carrés à la place d'un pseudo.
+ */
+export function ogCache(value, fonts, fallbackFonts) {
+  return fonts.length === 0 || fallbackFonts?.incomplete ? "no-store" : value;
 }
 
 /** Image distante -> data URL (null si indisponible). */
