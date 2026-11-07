@@ -1,5 +1,5 @@
 import { ImageResponse } from "next/og";
-import { OG_COLORS, dataUrl, discordAvatarPng, loadFallbackFonts, loadFonts, supabaseRest } from "../../../lib/og";
+import { OG_COLORS, dataUrl, discordAvatarPng, loadFallbackFonts, loadFonts, ogCache, supabaseRest } from "../../../lib/og";
 import { emblemDataUrl } from "../../../lib/rankEmblem";
 import { cardInfo } from "../../../lib/cards";
 import { RANKS, levelFor, nextRank, rankFor } from "../../../lib/ranks";
@@ -186,7 +186,7 @@ export default async function handler(request) {
       width: 1200,
       height: 630,
       fonts: [...fonts, ...fallbackFonts],
-      headers: { "Cache-Control": "public, max-age=600, s-maxage=604800, stale-while-revalidate=86400" },
+      headers: { "Cache-Control": ogCache("public, max-age=600, s-maxage=604800, stale-while-revalidate=86400", fonts, fallbackFonts) },
     },
   );
 }

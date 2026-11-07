@@ -1,5 +1,5 @@
 import { ImageResponse } from "next/og";
-import { OG_COLORS, dataUrl, loadFallbackFonts, loadFonts } from "../../../lib/og";
+import { OG_COLORS, dataUrl, loadFallbackFonts, loadFonts, ogCache } from "../../../lib/og";
 
 export const config = { runtime: "edge" };
 
@@ -59,6 +59,6 @@ export default async function handler(request) {
         </div>
       </div>
     ),
-    { width: WIDTH, height: HEIGHT, fonts: [...fonts, ...fallbackFonts] },
+    { width: WIDTH, height: HEIGHT, fonts: [...fonts, ...fallbackFonts], headers: { "Cache-Control": ogCache("public, s-maxage=86400", fonts, fallbackFonts) } },
   );
 }
