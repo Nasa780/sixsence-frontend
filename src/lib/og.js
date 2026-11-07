@@ -60,6 +60,17 @@ function isFontFile(data) {
   return tag === "\0\u0001\0\0" || tag === "OTTO" || tag === "true" || tag === "wOFF";
 }
 
+/** Requête vers Google Fonts, refaite une fois en cas d'échec réseau ou de réponse en erreur (hors 400). */
+async function fetchTwice(url) {
+  try {
+    const first = await fetch(url);
+    if (first.ok || first.status === 400) return first;
+  } catch {
+    // Nouvel essai ci-dessous.
+  }
+  return fetch(url);
+}
+
 export async function loadFallbackFonts(text) {
   // Caractères hors ASCII uniquement : le reste est couvert par les polices du site.
   const special = [...new Set([...String(text || "")].filter((char) => char.codePointAt(0) > 0x7f))].join("");
@@ -69,12 +80,12 @@ export async function loadFallbackFonts(text) {
   const fonts = await Promise.all(
     FALLBACK_FAMILIES.map(async (family, index) => {
       try {
-        const cssRes = await fetch(`https://fonts.googleapis.com/css2?family=${family}&text=${encodeURIComponent(special)}`);
+        const cssRes = await fetchTwice(`https://fonts.googleapis.com/css2?family=${family}&text=${encodeURIComponent(special)}`);
         if (!cssRes.ok && cssRes.status !== 400) incomplete = true;
         const css = await cssRes.text();
         const url = /src:\s*url\(([^)]+)\)\s*format\('(?:truetype|opentype)'\)/.exec(css)?.[1];
         if (!url) return null;
-        const res = await fetch(url);
+        const res = await fetchTwice(url);
         const data = res.ok ? await res.arrayBuffer() : null;
         if (!isFontFile(data)) {
           incomplete = true;
