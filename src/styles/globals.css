@@ -435,3 +435,8 @@
 @media (prefers-reduced-motion: reduce) {
   .lux-rays, .lux-float { animation: none; }
 }
+
+/* Traits lumineux dorés autour du slogan de l'accueil (Hero). */
+.gold-line {
+  box-shadow: 0 0 10px rgba(241, 215, 122, 0.55);
+}

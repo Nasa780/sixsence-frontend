@@ -62,15 +62,24 @@ export function Hero() {
             </span>
           </div>
 
-          <h1
-            style={step(1).style}
-            className="hero-in mt-6 font-display text-[clamp(4.25rem,17vw,12.5rem)] font-black uppercase leading-[0.8] tracking-tight"
-          >
-            Six<span className="text-gold-gradient">Sence</span>
+          {/* Titre : logo chromé en image (fond transparent). */}
+          <h1 style={step(1).style} className="hero-in mt-6">
+            <span className="sr-only">SixSence</span>
+            <Image
+              src="/images/accueil/titre-chrome.webp"
+              alt=""
+              width={1360}
+              height={196}
+              priority
+              sizes="(min-width: 1024px) 760px, 92vw"
+              className="h-auto w-full max-w-[760px]"
+            />
           </h1>
 
-          <p style={step(2).style} className="hero-in mt-6 font-display text-2xl font-bold uppercase tracking-[0.12em] text-white/90 sm:text-3xl">
-            Le sixième sens du jeu compétitif
+          <p style={step(2).style} className="hero-in mt-5 flex max-w-3xl items-center gap-4">
+            <span aria-hidden className="gold-line h-[2px] w-8 shrink-0 bg-linear-to-l from-gold-light to-gold/0 sm:w-14" />
+            <span className="font-tech text-[11px] font-medium uppercase tracking-[0.32em] text-gold-light sm:text-sm">Le sixième sens du jeu compétitif</span>
+            <span aria-hidden className="gold-line h-[2px] max-w-56 flex-1 bg-linear-to-r from-gold-light to-gold/0" />
           </p>
 
           <p style={step(3).style} className="hero-in mt-4 max-w-xl text-base leading-relaxed text-white/60 sm:text-lg">

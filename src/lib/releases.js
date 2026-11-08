@@ -8,7 +8,7 @@ export const RELEASES = [
     date: "2026-11-08",
     title: "Nouvel accueil et carte Participant S1",
     items: [
-      { tag: "Site", text: "La page d'accueil s'habille de nouvelles photos : la porte de l'arène en ouverture et la foule des joueurs en bas de page." },
+      { tag: "Site", text: "Nouvel accueil : titre SixSence chromé, slogan doré, la porte de l'arène en fond et la foule des joueurs en bas de page." },
       { tag: "Tournoi", text: "Nouvelle image pour la carte Participant S1 : un scarabée doré, symbole du départ de la saison." },
     ],
   },
