@@ -6,6 +6,13 @@
 export const RELEASES = [
   {
     date: "2026-11-08",
+    title: "Nouvelles images MVP",
+    items: [
+      { tag: "Classé", text: "MVP du mois et MVP ×10 ont une nouvelle illustration, plus réaliste." },
+    ],
+  },
+  {
+    date: "2026-11-08",
     title: "Toutes les cartes de visite sont illustrées",
     items: [
       { tag: "Site", text: "Les cartes Éclaireur, Sentinelle, Gardien et Pharaon du pass de saison ont maintenant leur illustration." },
