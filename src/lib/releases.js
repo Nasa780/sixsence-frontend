@@ -6,9 +6,9 @@
 export const RELEASES = [
   {
     date: "2026-11-08",
-    title: "Nouvelles images MVP, circuit et Éclaireur",
+    title: "Nouvelles images MVP, circuit, Éclaireur et Champion S1",
     items: [
-      { tag: "Classé", text: "MVP du mois, MVP ×10, Vainqueur du circuit S1 et Éclaireur ont une nouvelle illustration, plus réaliste." },
+      { tag: "Classé", text: "MVP du mois, MVP ×10, Vainqueur du circuit S1, Éclaireur et Champion S1 ont une nouvelle illustration, plus réaliste." },
     ],
   },
   {
