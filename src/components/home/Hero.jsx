@@ -1,3 +1,4 @@
+import Image from "next/image";
 import { FaDiscord } from "react-icons/fa6";
 import { LuArrowRight, LuChevronRight } from "react-icons/lu";
 import useSession from "../../hooks/useSession";
@@ -9,7 +10,7 @@ import { MATCH_TEAM_ENABLED } from "../../lib/config";
 import { LiveBand } from "./LiveBand";
 
 /**
- * Écran d'accueil : particules dorées, grand titre, appel à la connexion Discord ; en bas, la bande « En direct »
+ * Écran d'accueil : photo de la porte de l'arène à droite, particules dorées, grand titre, appel à la connexion Discord ; en bas, la bande « En direct »
  * qui défile (activité du moment, sinon ce qui arrive).
  */
 export function Hero() {
@@ -22,6 +23,12 @@ export function Hero() {
   return (
     <section className="relative isolate flex min-h-svh items-center overflow-hidden pt-28 pb-32">
       {/* --- Décor --------------------------------------------------------- */}
+      {/* Photo : porte de l'arène qui s'ouvre (tiers gauche sombre, sous le texte), fondue dans le noir sur les bords. */}
+      <div aria-hidden className="absolute inset-0 -z-40">
+        <Image src="/images/accueil/porte-arene.webp" alt="" fill priority sizes="100vw" className="object-cover object-[76%_center] opacity-55 sm:object-[70%_center] sm:opacity-60" />
+        <div className="absolute inset-0 bg-linear-to-b from-ink/90 via-ink/75 to-ink/20 sm:bg-linear-to-r sm:from-ink sm:via-ink/70 sm:to-transparent" />
+        <div className="absolute inset-x-0 top-0 h-40 bg-linear-to-b from-ink to-transparent" />
+      </div>
       <div aria-hidden className="absolute inset-0 -z-30 bg-[radial-gradient(ellipse_at_70%_20%,rgba(212,175,55,0.16),transparent_55%)]" />
       <div aria-hidden className="absolute inset-0 -z-30 bg-grid mask-fade" />
       <GoldParticles id="particules-hero" density={90} className="-z-20" />
@@ -55,15 +62,24 @@ export function Hero() {
             </span>
           </div>
 
-          <h1
-            style={step(1).style}
-            className="hero-in mt-6 font-display text-[clamp(4.25rem,17vw,12.5rem)] font-black uppercase leading-[0.8] tracking-tight"
-          >
-            Six<span className="text-gold-gradient">Sence</span>
+          {/* Titre : logo chromé en image (fond transparent). */}
+          <h1 style={step(1).style} className="hero-in mt-6">
+            <span className="sr-only">SixSence</span>
+            <Image
+              src="/images/accueil/titre-chrome.webp"
+              alt=""
+              width={1360}
+              height={196}
+              priority
+              sizes="(min-width: 1024px) 760px, 92vw"
+              className="h-auto w-full max-w-[760px]"
+            />
           </h1>
 
-          <p style={step(2).style} className="hero-in mt-6 font-display text-2xl font-bold uppercase tracking-[0.12em] text-white/90 sm:text-3xl">
-            Le sixième sens du jeu compétitif
+          <p style={step(2).style} className="hero-in mt-5 flex max-w-3xl items-center gap-4">
+            <span aria-hidden className="gold-line h-[2px] w-8 shrink-0 bg-linear-to-l from-gold-light to-gold/0 sm:w-14" />
+            <span className="font-tech text-[11px] font-medium uppercase tracking-[0.32em] text-gold-light sm:text-sm">Le sixième sens du jeu compétitif</span>
+            <span aria-hidden className="gold-line h-[2px] max-w-56 flex-1 bg-linear-to-r from-gold-light to-gold/0" />
           </p>
 
           <p style={step(3).style} className="hero-in mt-4 max-w-xl text-base leading-relaxed text-white/60 sm:text-lg">
