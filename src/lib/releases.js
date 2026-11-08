@@ -6,6 +6,13 @@
 export const RELEASES = [
   {
     date: "2026-11-08",
+    title: "Cartes MVP illustrées",
+    items: [
+      { tag: "Classé", text: "Les cartes MVP du mois et MVP ×10 ont maintenant leur illustration." },
+    ],
+  },
+  {
+    date: "2026-11-08",
     title: "Sept cartes de visite illustrées",
     items: [
       { tag: "Classé", text: "Premier sang, Domination, Vétéran, Indestructible, Esprit d'équipe, Loup solitaire et Polyvalent ont maintenant leur illustration." },
