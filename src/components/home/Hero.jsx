@@ -66,10 +66,10 @@ export function Hero() {
           <h1 style={step(1).style} className="hero-in mt-6">
             <span className="sr-only">SixSence</span>
             <Image
-              src="/images/accueil/titre-sixsence-chrome.webp"
+              src="/images/accueil/titre-chrome.webp"
               alt=""
               width={1360}
-              height={194}
+              height={196}
               priority
               sizes="(min-width: 1024px) 760px, 92vw"
               className="h-auto w-full max-w-[760px]"
