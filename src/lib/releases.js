@@ -8,7 +8,7 @@ export const RELEASES = [
     date: "2026-11-08",
     title: "Cartes du pass de saison illustrées",
     items: [
-      { tag: "Site", text: "Les cartes Éclaireur, Sentinelle et Gardien du pass de saison ont maintenant leur illustration." },
+      { tag: "Site", text: "Les cartes Éclaireur, Sentinelle, Gardien et Pharaon du pass de saison ont maintenant leur illustration." },
     ],
   },
   {
