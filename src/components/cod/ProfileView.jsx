@@ -50,6 +50,8 @@ const STAFF_BADGES = {
 
 function badgesFor(profile, seasons) {
   const played = profile.wins + profile.losses;
+  const cardArt = cardInfo(profile.calling_card).art;
+  const illustratedCard = Boolean(cardArt.image || cardArt.video || cardArt.season);
   const staff = (profile.badges || [])
     .filter((key) => STAFF_BADGES[key])
     .map((key) => ({ key, ...STAFF_BADGES[key], unlocked: true }));
@@ -202,10 +204,10 @@ export function ProfileView({ userId, editable = false, ownUser = null, nameAsTi
       ) : null}
 
       {/* --- Identité et rang --------------------------------------------- */}
-      {/* Cartes de saison : sans les lignes dorées « holo » par-dessus l'image. */}
-      <TacticalCard highlight cut={28} innerClassName={cn(!cardInfo(profile.calling_card).art.season && "holo", "overflow-hidden p-6 sm:p-10")}>
+      {/* Carte illustrée (image, vidéo) ou de saison : ni lignes « holo » ni bande diagonale par-dessus, pour garder les vraies couleurs (elles prenaient la teinte du mode, vert en Classé). */}
+      <TacticalCard highlight cut={28} innerClassName={cn(!illustratedCard && "holo", "overflow-hidden p-6 sm:p-10")}>
         <CardBackdrop cardKey={profile.calling_card} />
-        <div aria-hidden className="absolute -right-10 top-0 h-full w-40 -skew-x-[24deg] bg-linear-to-b from-gold/14 to-transparent" />
+        {!illustratedCard ? <div aria-hidden className="absolute -right-10 top-0 h-full w-40 -skew-x-[24deg] bg-linear-to-b from-gold/14 to-transparent" /> : null}
         <div className="relative flex flex-col gap-8 lg:flex-row lg:items-center lg:justify-between">
           <div className="flex items-start gap-5 sm:items-center">
             {/* Sur mobile, le tag d'équipe passe au-dessus de l'avatar, à la hauteur du pseudo : le pseudo garde toute la largeur. */}
