@@ -43,9 +43,9 @@ const CARDS = {
   "rang-champion": { rarity: "legendaire", art: { type: "rank", rank: "Champion", title: "#f0a6e8", image: "/images/cartes/champion.webp", og: "/images/cartes/og/champion.jpg", position: "center 60%", mobilePosition: "22% center", light: true } },
   "rang-legende": { rarity: "legendaire", art: { type: "rank", rank: "Légende", title: "#ff8a3d", video: "/images/cartes/legende.mp4", poster: "/images/cartes/legende-poster.webp", cover: true, position: "center", mobilePosition: "40% center", og: "/images/cartes/og/legende.jpg", light: true } },
   // Pass de la saison 1 : dessins provisoires, remplacés par art.image quand les illustrations existent.
-  "pass-s1-eclaireur": { rarity: "commune", art: { type: "glyph", glyph: "5", color: "#d4af37" } },
-  "pass-s1-sentinelle": { rarity: "rare", art: { type: "glyph", glyph: "15", color: "#5cc8ff" } },
-  "pass-s1-gardien": { rarity: "epique", art: { type: "illustration", glyph: "25", hue: "#8b5cf6" } },
+  "pass-s1-eclaireur": { rarity: "commune", art: { type: "illustration", glyph: "5", hue: "#d4af37", image: "/images/cartes/pass-s1-eclaireur.webp", og: "/images/cartes/og/pass-s1-eclaireur.jpg", position: "center 10%", mobilePosition: "62% center" } },
+  "pass-s1-sentinelle": { rarity: "rare", art: { type: "illustration", glyph: "15", hue: "#5cc8ff", image: "/images/cartes/pass-s1-sentinelle.webp", og: "/images/cartes/og/pass-s1-sentinelle.jpg", position: "center 10%", mobilePosition: "62% center" } },
+  "pass-s1-gardien": { rarity: "epique", art: { type: "illustration", glyph: "25", hue: "#8b5cf6", image: "/images/cartes/pass-s1-gardien.webp", og: "/images/cartes/og/pass-s1-gardien.jpg", position: "center 0%", mobilePosition: "62% center" } },
   "pass-s1-pharaon": { rarity: "legendaire", art: { type: "illustration", glyph: "30", hue: "#f5b83d" } },
   "premier-sang": { rarity: "commune", art: { type: "illustration", glyph: "1", hue: "#f87171", image: "/images/cartes/premier-sang.webp", og: "/images/cartes/og/premier-sang.jpg", position: "center 35%", mobilePosition: "62% center" } },
   domination: { rarity: "commune", art: { type: "illustration", glyph: "10", hue: "#d4af37", image: "/images/cartes/domination.webp", og: "/images/cartes/og/domination.jpg", position: "center 25%", mobilePosition: "62% center" } },
