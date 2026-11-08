@@ -62,15 +62,16 @@ const CARDS = {
   beta: { rarity: "rare", art: { type: "glyph", glyph: "β", color: "#5cc8ff", video: "/images/cartes/beta.mp4", og: "/images/cartes/og/beta.jpg", poster: "/images/cartes/beta-poster.webp" } },
   partenaire: { rarity: "rare", art: { type: "illustration", glyph: "P", hue: "#ff9a5c", image: "/images/cartes/partenaire.webp", og: "/images/cartes/og/partenaire.jpg", position: "center 35%", mobilePosition: "62% center" } },
   "staff-6": { rarity: "rare", art: { type: "illustration", glyph: "6", hue: "#d4af37", image: "/images/cartes/staff-6.webp", og: "/images/cartes/og/staff-6.jpg", position: "center", mobilePosition: "62% center" } },
-  "premiere-viree": { rarity: "commune", art: { type: "sunset", color: "#ff9a5c" } },
-  habitue: { rarity: "rare", art: { type: "sunset", glyph: "×5", color: "#ff5f8a" } },
+  "premiere-viree": { rarity: "commune", art: { type: "illustration", glyph: "1", hue: "#ff9a5c", image: "/images/cartes/premiere-viree.webp", og: "/images/cartes/og/premiere-viree.jpg", position: "center 50%", mobilePosition: "70% center" } },
+  habitue: { rarity: "rare", art: { type: "illustration", glyph: "×5", hue: "#ff5f8a", image: "/images/cartes/habitue.webp", og: "/images/cartes/og/habitue.jpg", position: "center 50%", mobilePosition: "62% center" } },
 };
 
 /** Illustrations propres à une saison (même clé que la carte, ex. « s1-champion »). */
 const SEASON_ART = {
   "s1-participant": { image: "/images/cartes/s1/participant.webp", og: "/images/cartes/og/s1-participant.jpg", position: "center", mobilePosition: "center" },
-  // Top 10 S1 : dessin de base en attendant une nouvelle illustration (l'ancienne est dans references/cartes/reserve).
+  "s1-top10": { image: "/images/cartes/s1/top10.webp", og: "/images/cartes/og/s1-top10.jpg", position: "center 30%", mobilePosition: "62% center" },
   "s1-champion": { image: "/images/cartes/s1/champion.webp", og: "/images/cartes/og/s1-champion.jpg", position: "center", mobilePosition: "center" },
+  "s1-circuit": { image: "/images/cartes/s1/circuit.webp", og: "/images/cartes/og/s1-circuit.jpg", position: "center 10%", mobilePosition: "62% center" },
 };
 
 /**
