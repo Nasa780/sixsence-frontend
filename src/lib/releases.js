@@ -6,9 +6,9 @@
 export const RELEASES = [
   {
     date: "2026-11-08",
-    title: "Six cartes de visite illustrées",
+    title: "Sept cartes de visite illustrées",
     items: [
-      { tag: "Classé", text: "Premier sang, Domination, Vétéran, Indestructible, Esprit d'équipe et Loup solitaire ont maintenant leur illustration." },
+      { tag: "Classé", text: "Premier sang, Domination, Vétéran, Indestructible, Esprit d'équipe, Loup solitaire et Polyvalent ont maintenant leur illustration." },
     ],
   },
   {

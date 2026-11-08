@@ -53,7 +53,7 @@ const CARDS = {
   indestructible: { rarity: "rare", art: { type: "illustration", glyph: "×5", hue: "#5cc8ff", image: "/images/cartes/indestructible.webp", og: "/images/cartes/og/indestructible.jpg", position: "center", mobilePosition: "62% center" } },
   "esprit-equipe": { rarity: "rare", art: { type: "illustration", glyph: "25", hue: "#4fd1b0", image: "/images/cartes/esprit-equipe.webp", og: "/images/cartes/og/esprit-equipe.jpg", position: "center", mobilePosition: "62% center" } },
   "loup-solitaire": { rarity: "rare", art: { type: "illustration", glyph: "25", hue: "#cbd5e1", image: "/images/cartes/loup-solitaire.webp", og: "/images/cartes/og/loup-solitaire.jpg", position: "center", mobilePosition: "62% center" } },
-  polyvalent: { rarity: "rare", art: { type: "glyph", glyph: "4F", color: "#93c5fd" } },
+  polyvalent: { rarity: "rare", art: { type: "illustration", glyph: "4F", hue: "#93c5fd", image: "/images/cartes/polyvalent.webp", og: "/images/cartes/og/polyvalent.jpg", position: "center", mobilePosition: "62% center" } },
   centurion: { rarity: "epique", art: { type: "illustration", glyph: "100", hue: "#a855f7", video: "/images/cartes/centurion.mp4", poster: "/images/cartes/centurion-poster.webp", cover: true, position: "center", mobilePosition: "41% center", og: "/images/cartes/og/centurion.jpg" } },
   invaincu: { rarity: "epique", art: { type: "illustration", glyph: "×10", hue: "#c084fc", image: "/images/cartes/invaincu.webp", og: "/images/cartes/og/invaincu.jpg", position: "45% center", mobilePosition: "36% center" } },
   "mvp-du-mois": { rarity: "legendaire", art: { type: "illustration", glyph: "MVP", hue: "#facc15" } },
