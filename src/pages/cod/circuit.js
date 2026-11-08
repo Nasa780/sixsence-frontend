@@ -129,7 +129,7 @@ export function CircuitView({ data, error = null }) {
                     Points par Coupe Horus
                   </p>
                   <div className="mt-3 space-y-2">
-                    {[...Object.entries(MEDALS).map(([key, [label, color]]) => [label, data.points[key], color]), ["Autres équipes présentes", data.points.present, null]].map(([label, value, color]) => (
+                    {[...Object.entries(MEDALS).map(([key, [label, color]]) => [label, data.points[key], color]), ...(data.points.fourth ? [["4e place", data.points.fourth, null]] : []), ["Autres équipes présentes", data.points.present, null]].map(([label, value, color]) => (
                       <div key={label} className="flex items-center justify-between bg-white/[0.03] px-4 py-3">
                         <span className="flex items-center gap-2">
                           {color ? <LuTrophy aria-hidden className="h-4 w-4" style={{ color }} /> : null}

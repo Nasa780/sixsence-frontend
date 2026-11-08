@@ -961,7 +961,7 @@ function SchedulesTab() {
       </TacticalCard>
 
       <div className="flex flex-wrap items-center justify-between gap-3">
-        <p className="text-sm text-white/60">Récompenses : Coupe Horus 1er +150, 2e +100, 3e +75, autres présentes +50 (points de Division) ; Coupe Anubis médailles sur le profil.</p>
+        <p className="text-sm text-white/60">Récompenses : Coupe Horus 1er +150, 2e +100, 3e +75, 4e +40, autres présentes +25 (points de Division) ; Coupe Anubis médailles sur le profil.</p>
         {editing === "new" ? null : <Button onClick={() => setEditing("new")}>Nouveau rendez-vous</Button>}
       </div>
       {error ? <Notice tone="error">{error}</Notice> : null}

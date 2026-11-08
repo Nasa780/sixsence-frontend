@@ -103,12 +103,14 @@ export function cardInfo(key) {
       : {};
     return { key, rarity, art: { type: "rank", rank, season: `Saison ${id}`, ...art } };
   }
-  const season = /^s(\d+)-(participant|top10|champion)$/.exec(key ?? "");
+  const season = /^s(\d+)-(participant|top10|champion|circuit)$/.exec(key ?? "");
   if (season) {
     const [, id, kind] = season;
     const extra = SEASON_ART[key];
     if (kind === "participant") return { key, rarity: "commune", art: { type: "glyph", glyph: `S${id}`, color: "#d4af37", ...extra } };
     if (kind === "top10") return { key, rarity: "epique", art: { type: "illustration", glyph: "10", hue: "#8b5cf6", ...extra } };
+    // Vainqueur du circuit : dessin de base aux couleurs du Tournoi, en attendant une illustration.
+    if (kind === "circuit") return { key, rarity: "legendaire", art: { type: "illustration", glyph: "GF", hue: "#e5484d", ...extra } };
     return { key, rarity: "legendaire", art: { type: "illustration", glyph: "N°1", hue: "#f5b83d", ...extra } };
   }
   return { key: DEFAULT_CARD, ...CARDS[DEFAULT_CARD] };
