@@ -6,9 +6,10 @@
 export const RELEASES = [
   {
     date: "2026-11-08",
-    title: "Cartes du pass de saison illustrées",
+    title: "Toutes les cartes de visite sont illustrées",
     items: [
-      { tag: "Site", text: "Les cartes Éclaireur, Sentinelle et Gardien du pass de saison ont maintenant leur illustration." },
+      { tag: "Site", text: "Les cartes Éclaireur, Sentinelle, Gardien et Pharaon du pass de saison ont maintenant leur illustration." },
+      { tag: "Tournoi", text: "Top 10 S1 et Vainqueur du circuit S1 ont la leur, comme Première virée et Habitué côté GTA 6." },
     ],
   },
   {
