@@ -204,10 +204,10 @@ export function ProfileView({ userId, editable = false, ownUser = null, nameAsTi
       ) : null}
 
       {/* --- Identité et rang --------------------------------------------- */}
-      {/* Carte illustrée (image, vidéo) ou de saison : ni lignes « holo » ni bande diagonale par-dessus, pour garder les vraies couleurs (elles prenaient la teinte du mode, vert en Classé). */}
+      {/* Carte illustrée (image, vidéo) ou de saison : pas de lignes « holo » par-dessus, pour garder les vraies couleurs (elles prenaient la teinte du mode, vert en Classé). La bande diagonale de droite reste. */}
       <TacticalCard highlight cut={28} innerClassName={cn(!illustratedCard && "holo", "overflow-hidden p-6 sm:p-10")}>
         <CardBackdrop cardKey={profile.calling_card} />
-        {!illustratedCard ? <div aria-hidden className="absolute -right-10 top-0 h-full w-40 -skew-x-[24deg] bg-linear-to-b from-gold/14 to-transparent" /> : null}
+        <div aria-hidden className="absolute -right-10 top-0 h-full w-40 -skew-x-[24deg] bg-linear-to-b from-gold/14 to-transparent" />
         <div className="relative flex flex-col gap-8 lg:flex-row lg:items-center lg:justify-between">
           <div className="flex items-start gap-5 sm:items-center">
             {/* Sur mobile, le tag d'équipe passe au-dessus de l'avatar, à la hauteur du pseudo : le pseudo garde toute la largeur. */}
