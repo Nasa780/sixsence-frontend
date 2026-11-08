@@ -48,10 +48,14 @@ const STAFF_BADGES = {
   mvp: { label: "MVP", description: "Distingué par l'équipe pour ses performances." },
 };
 
+/** Carte illustrée (image, vidéo) ou de saison : pas de lignes « holo » par-dessus. */
+function isIllustratedCard(key) {
+  const art = cardInfo(key).art;
+  return Boolean(art.image || art.video || art.season);
+}
+
 function badgesFor(profile, seasons) {
   const played = profile.wins + profile.losses;
-  const cardArt = cardInfo(profile.calling_card).art;
-  const illustratedCard = Boolean(cardArt.image || cardArt.video || cardArt.season);
   const staff = (profile.badges || [])
     .filter((key) => STAFF_BADGES[key])
     .map((key) => ({ key, ...STAFF_BADGES[key], unlocked: true }));
@@ -205,7 +209,7 @@ export function ProfileView({ userId, editable = false, ownUser = null, nameAsTi
 
       {/* --- Identité et rang --------------------------------------------- */}
       {/* Carte illustrée (image, vidéo) ou de saison : pas de lignes « holo » par-dessus, pour garder les vraies couleurs (elles prenaient la teinte du mode, vert en Classé). La bande diagonale de droite reste. */}
-      <TacticalCard highlight cut={28} innerClassName={cn(!illustratedCard && "holo", "overflow-hidden p-6 sm:p-10")}>
+      <TacticalCard highlight cut={28} innerClassName={cn(!isIllustratedCard(profile.calling_card) && "holo", "overflow-hidden p-6 sm:p-10")}>
         <CardBackdrop cardKey={profile.calling_card} />
         <div aria-hidden className="absolute -right-10 top-0 h-full w-40 -skew-x-[24deg] bg-linear-to-b from-gold/14 to-transparent" />
         <div className="relative flex flex-col gap-8 lg:flex-row lg:items-center lg:justify-between">
