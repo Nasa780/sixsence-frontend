@@ -5,6 +5,15 @@
  */
 export const RELEASES = [
   {
+    date: "2026-11-08",
+    title: "Circuit : la 4e place compte, une carte pour le vainqueur",
+    items: [
+      { tag: "Tournoi", text: "En Coupe Horus, la 4e place rapporte maintenant +40 pts de Division et 25 pts de circuit. Les autres équipes présentes gagnent +25 pts de Division." },
+      { tag: "Tournoi", text: "Sur la fiche d'une Coupe Horus, chaque équipe affiche sa place au circuit et celle qu'elle aurait en gagnant." },
+      { tag: "Tournoi", text: "Nouvelle carte de visite légendaire « Vainqueur du circuit » pour les joueurs de l'équipe qui gagne la grande finale." },
+    ],
+  },
+  {
     date: "2026-11-06",
     title: "Nouvelle carte de résultat sur Discord",
     items: [

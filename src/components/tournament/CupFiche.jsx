@@ -939,6 +939,7 @@ function TeamGrid({ t, teams, stateOf, myTeamId }) {
                     ))}
                   </ul>
                 ) : null}
+                {team.circuit ? <CircuitLine circuit={team.circuit} /> : null}
                 {mine ? <p className="relative mt-3 font-tech text-[9px] uppercase tracking-[0.24em] text-gold-light">Ton équipe</p> : null}
               </div>
             </motion.li>
@@ -946,6 +947,22 @@ function TeamGrid({ t, teams, stateOf, myTeamId }) {
         })}
       </ul>
     </div>
+  );
+}
+
+/** Place au circuit d'une équipe inscrite (Coupe Horus à venir ou en cours) et place en cas de victoire. */
+function CircuitLine({ circuit }) {
+  const gain = circuit.rank === null || circuit.ifWin < circuit.rank;
+  return (
+    <Link href="/cod/circuit" className="relative mt-3 block border-t border-white/[0.06] pt-3 text-[12px] text-white/55 hover:text-white/80">
+      <span className="flex items-center gap-1.5">
+        <LuTrophy aria-hidden className="h-3.5 w-3.5 shrink-0 text-white/40" />
+        <span className="truncate">Circuit : {circuit.rank === null ? "pas encore classée" : `${circuit.rank}${circuit.rank === 1 ? "re" : "e"} · ${circuit.points} pts`}</span>
+      </span>
+      <span className={cn("mt-1 block pl-5 font-tech text-[9px] uppercase tracking-[0.18em]", gain ? "text-gold-light" : "text-white/40")}>
+        {gain ? `${circuit.ifWin}${circuit.ifWin === 1 ? "re" : "e"} en cas de victoire` : "Reste 1re en cas de victoire"}
+      </span>
+    </Link>
   );
 }
 
@@ -1003,8 +1020,15 @@ function RewardCards({ t }) {
       </ul>
       <div className="flex flex-col gap-2 border border-white/10 bg-white/[0.02] px-5 py-4 text-sm text-white/60 sm:flex-row sm:items-center sm:justify-between">
         {horus && r ? (
-          <span>
-            Autres équipes présentes au check-in : <span className="text-white/85">+{r.division.present} pts de Division · +{r.circuit.present} pts de circuit</span>
+          <span className="space-y-1">
+            {r.division.fourth ? (
+              <span className="block">
+                4e place : <span className="text-white/85">+{r.division.fourth} pts de Division · +{r.circuit.fourth} pts de circuit</span>
+              </span>
+            ) : null}
+            <span className="block">
+              Autres équipes présentes au check-in : <span className="text-white/85">+{r.division.present} pts de Division · +{r.circuit.present} pts de circuit</span>
+            </span>
           </span>
         ) : (
           <span>{anubis ? "Pas de points de Division : la Coupe Anubis se joue pour les médailles." : "Pas de points de Division en jeu."}</span>

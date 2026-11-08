@@ -139,7 +139,7 @@ function DIVISION_SECTIONS() {
         <ul>
           <li>
             C&apos;est la <strong>grande finale</strong> du <Link href="/cod/circuit">circuit SixSence</Link> : chaque Coupe Horus de la saison
-            rapporte des points (1re 100, 2e 70, 3e 50, autres équipes présentes 15). Sont qualifiées les premières du circuit, et les{" "}
+            rapporte des points (1re 100, 2e 70, 3e 50, 4e 25, autres équipes présentes 15). Sont qualifiées les premières du circuit, et les{" "}
             <strong>2 dernières places</strong> se jouent au <strong>play-in</strong>, la veille : les 2 équipes suivantes du circuit affrontent en BO3
             les 2 meilleures équipes de la Division pas encore qualifiées (au moins <strong>25 matchs</strong>), les gagnantes sont qualifiées. Sans
             play-in, ces 2 places reviennent directement à la Division. Sans Coupe Horus jouée dans la saison, la qualification se fait au classement
@@ -212,7 +212,7 @@ function DIVISION_SECTIONS() {
           </li>
           <li>
             Récompenses : trophée or, argent ou bronze sur la fiche d&apos;équipe et le profil des joueurs du check-in, <strong>+150 / +100 / +75 points</strong> de Division
-            pour le podium et +50 pour les autres équipes présentes ; rôle Discord du vainqueur gardé jusqu&apos;à la coupe suivante.
+            pour le podium, +40 pour la 4e place et +25 pour les autres équipes présentes ; rôle Discord du vainqueur gardé jusqu&apos;à la coupe suivante.
           </li>
         </ul>
       ),
