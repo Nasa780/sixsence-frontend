@@ -6,9 +6,9 @@
 export const RELEASES = [
   {
     date: "2026-11-08",
-    title: "Nouvelles images MVP",
+    title: "Nouvelles images MVP et circuit",
     items: [
-      { tag: "Classé", text: "MVP du mois et MVP ×10 ont une nouvelle illustration, plus réaliste." },
+      { tag: "Classé", text: "MVP du mois, MVP ×10 et Vainqueur du circuit S1 ont une nouvelle illustration, plus réaliste." },
     ],
   },
   {
