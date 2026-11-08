@@ -60,8 +60,8 @@ const CARDS = {
   "mvp-10": { rarity: "rare", art: { type: "illustration", glyph: "MVP", hue: "#facc15", image: "/images/cartes/mvp-10.webp", og: "/images/cartes/og/mvp-10.jpg", position: "center 25%", mobilePosition: "62% center" } },
   fondateur: { rarity: "legendaire", art: { type: "illustration", glyph: "F", hue: "#e8c26a", video: "/images/cartes/fondateur.mp4", og: "/images/cartes/og/fondateur.jpg", poster: "/images/cartes/fondateur-poster.webp", aspect: "480/546" } },
   beta: { rarity: "rare", art: { type: "glyph", glyph: "β", color: "#5cc8ff", video: "/images/cartes/beta.mp4", og: "/images/cartes/og/beta.jpg", poster: "/images/cartes/beta-poster.webp" } },
-  partenaire: { rarity: "rare", art: { type: "glyph", glyph: "P", color: "#ff9a5c" } },
-  "staff-6": { rarity: "rare", art: { type: "glyph", glyph: "6", color: "#d4af37" } },
+  partenaire: { rarity: "rare", art: { type: "illustration", glyph: "P", hue: "#ff9a5c", image: "/images/cartes/partenaire.webp", og: "/images/cartes/og/partenaire.jpg", position: "center 35%", mobilePosition: "62% center" } },
+  "staff-6": { rarity: "rare", art: { type: "illustration", glyph: "6", hue: "#d4af37", image: "/images/cartes/staff-6.webp", og: "/images/cartes/og/staff-6.jpg", position: "center", mobilePosition: "62% center" } },
   "premiere-viree": { rarity: "commune", art: { type: "sunset", color: "#ff9a5c" } },
   habitue: { rarity: "rare", art: { type: "sunset", glyph: "×5", color: "#ff5f8a" } },
 };
