@@ -62,18 +62,11 @@ export function Hero() {
             </span>
           </div>
 
-          {/* Titre : logo chromé en image (fond transparent). */}
-          <h1 style={step(1).style} className="hero-in mt-6">
-            <span className="sr-only">SixSence</span>
-            <Image
-              src="/images/accueil/titre-chrome.webp"
-              alt=""
-              width={1360}
-              height={196}
-              priority
-              sizes="(min-width: 1024px) 760px, 92vw"
-              className="h-auto w-full max-w-[760px]"
-            />
+          <h1
+            style={step(1).style}
+            className="hero-in mt-6 font-display text-[clamp(4.25rem,17vw,12.5rem)] font-black uppercase leading-[0.8] tracking-tight"
+          >
+            Six<span className="text-gold-gradient">Sence</span>
           </h1>
 
           <p style={step(2).style} className="hero-in mt-5 flex max-w-3xl items-center gap-4">
