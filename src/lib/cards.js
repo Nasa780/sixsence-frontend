@@ -71,7 +71,7 @@ const SEASON_ART = {
   "s1-participant": { image: "/images/cartes/s1/participant.webp", og: "/images/cartes/og/s1-participant.jpg", position: "center", mobilePosition: "center" },
   "s1-top10": { image: "/images/cartes/s1/top10.webp", og: "/images/cartes/og/s1-top10.jpg", position: "center 30%", mobilePosition: "62% center" },
   "s1-champion": { image: "/images/cartes/s1/champion.webp", og: "/images/cartes/og/s1-champion.jpg", position: "center", mobilePosition: "center" },
-  "s1-circuit": { image: "/images/cartes/s1/circuit.webp", og: "/images/cartes/og/s1-circuit.jpg", position: "center 10%", mobilePosition: "62% center" },
+  "s1-circuit": { image: "/images/cartes/s1/circuit.webp", og: "/images/cartes/og/s1-circuit.jpg", position: "center 0%", mobilePosition: "62% center" },
 };
 
 /**
