@@ -6,6 +6,13 @@
 export const RELEASES = [
   {
     date: "2026-11-08",
+    title: "Six cartes de visite illustrées",
+    items: [
+      { tag: "Classé", text: "Premier sang, Domination, Vétéran, Indestructible, Esprit d'équipe et Loup solitaire ont maintenant leur illustration." },
+    ],
+  },
+  {
+    date: "2026-11-08",
     title: "Circuit : la 4e place compte, une carte pour le vainqueur",
     items: [
       { tag: "Tournoi", text: "En Coupe Horus, la 4e place rapporte maintenant +40 pts de Division et 25 pts de circuit. Les autres équipes présentes gagnent +25 pts de Division." },
