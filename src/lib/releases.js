@@ -6,6 +6,14 @@
 export const RELEASES = [
   {
     date: "2026-11-08",
+    title: "Nouvel accueil et carte Participant S1",
+    items: [
+      { tag: "Site", text: "La page d'accueil s'habille de nouvelles photos : la porte de l'arène en ouverture et la foule des joueurs en bas de page." },
+      { tag: "Tournoi", text: "Nouvelle image pour la carte Participant S1 : un scarabée doré, symbole du départ de la saison." },
+    ],
+  },
+  {
+    date: "2026-11-08",
     title: "Nouvelles images MVP, circuit, Éclaireur et Champion S1",
     items: [
       { tag: "Classé", text: "MVP du mois, MVP ×10, Vainqueur du circuit S1, Éclaireur et Champion S1 ont une nouvelle illustration, plus réaliste." },

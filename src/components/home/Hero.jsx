@@ -1,3 +1,4 @@
+import Image from "next/image";
 import { FaDiscord } from "react-icons/fa6";
 import { LuArrowRight, LuChevronRight } from "react-icons/lu";
 import useSession from "../../hooks/useSession";
@@ -9,7 +10,7 @@ import { MATCH_TEAM_ENABLED } from "../../lib/config";
 import { LiveBand } from "./LiveBand";
 
 /**
- * Écran d'accueil : particules dorées, grand titre, appel à la connexion Discord ; en bas, la bande « En direct »
+ * Écran d'accueil : photo de la porte de l'arène à droite, particules dorées, grand titre, appel à la connexion Discord ; en bas, la bande « En direct »
  * qui défile (activité du moment, sinon ce qui arrive).
  */
 export function Hero() {
@@ -22,6 +23,12 @@ export function Hero() {
   return (
     <section className="relative isolate flex min-h-svh items-center overflow-hidden pt-28 pb-32">
       {/* --- Décor --------------------------------------------------------- */}
+      {/* Photo : porte de l'arène qui s'ouvre (tiers gauche sombre, sous le texte), fondue dans le noir sur les bords. */}
+      <div aria-hidden className="absolute inset-0 -z-40">
+        <Image src="/images/accueil/porte-arene.webp" alt="" fill priority sizes="100vw" className="object-cover object-[76%_center] opacity-55 sm:object-[70%_center] sm:opacity-60" />
+        <div className="absolute inset-0 bg-linear-to-b from-ink/90 via-ink/75 to-ink/20 sm:bg-linear-to-r sm:from-ink sm:via-ink/70 sm:to-transparent" />
+        <div className="absolute inset-x-0 top-0 h-40 bg-linear-to-b from-ink to-transparent" />
+      </div>
       <div aria-hidden className="absolute inset-0 -z-30 bg-[radial-gradient(ellipse_at_70%_20%,rgba(212,175,55,0.16),transparent_55%)]" />
       <div aria-hidden className="absolute inset-0 -z-30 bg-grid mask-fade" />
       <GoldParticles id="particules-hero" density={90} className="-z-20" />

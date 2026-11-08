@@ -1,3 +1,4 @@
+import Image from "next/image";
 import { FaDiscord, FaTiktok } from "react-icons/fa6";
 import { LuArrowRight } from "react-icons/lu";
 import useSession from "../../hooks/useSession";
@@ -8,7 +9,7 @@ import { Button, ButtonLink } from "../ui/Button";
 import { Container } from "../ui/Container";
 import { TacticalCard } from "../ui/TacticalCard";
 
-/** Bandeau final : dernier appel à la connexion (ou à la file, si déjà connecté). */
+/** Bandeau final, sur la photo de la foule qui entre dans l'arène : dernier appel à la connexion (ou à la file, si déjà connecté). */
 export function CallToAction() {
   const { session } = useSession();
 
@@ -17,6 +18,8 @@ export function CallToAction() {
       <Container>
         <Reveal>
           <TacticalCard highlight cut={32} innerClassName="holo overflow-hidden px-6 py-14 text-center sm:px-12 sm:py-20">
+            <Image src="/images/accueil/entree-foule.webp" alt="" fill sizes="(min-width: 1280px) 1200px, 100vw" className="object-cover object-[70%_center] opacity-35" />
+            <div aria-hidden className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,rgba(10,10,10,0.75),rgba(10,10,10,0.35)_70%)]" />
             <div aria-hidden className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,rgba(212,175,55,0.18),transparent_65%)]" />
             <div aria-hidden className="absolute inset-0 bg-grid opacity-50" />
             <div className="relative">
