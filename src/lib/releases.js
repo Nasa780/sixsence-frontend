@@ -5,13 +5,6 @@
  */
 export const RELEASES = [
   {
-    date: "2026-11-09",
-    title: "GTA 6 : une page pour la sortie",
-    items: [
-      { tag: "GTA 6", text: "Nouvelle page GTA 6 : grand compte à rebours jusqu'au 19 novembre, prochain événement mis en avant et programme filtrable par catégorie." },
-    ],
-  },
-  {
     date: "2026-11-08",
     title: "Nouvel accueil et carte Participant S1",
     items: [
