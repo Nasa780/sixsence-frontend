@@ -14,14 +14,15 @@ const GoldParticlesCanvas = dynamic(() => import("./GoldParticlesCanvas"), { ssr
  * id      : identifiant unique du canvas (un par instance sur une même page)
  * density : nombre de particules sur grand écran (réduit sur mobile)
  * linked  : relie les particules proches par un fil doré
+ * palette : "or" (par défaut) ou "gta" (coucher de soleil)
  */
-export function GoldParticles({ id, density = 80, linked = true, className = "" }) {
+export function GoldParticles({ id, density = 80, linked = true, palette = "or", className = "" }) {
   const reduceMotion = useReducedMotion();
   if (reduceMotion) return null;
 
   return (
     <div aria-hidden className={cn("pointer-events-none absolute inset-0", className)}>
-      <GoldParticlesCanvas id={id} density={density} linked={linked} />
+      <GoldParticlesCanvas id={id} density={density} linked={linked} palette={palette} />
     </div>
   );
 }

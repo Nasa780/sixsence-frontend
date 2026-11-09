@@ -24,7 +24,13 @@ function initEngine() {
   return enginePromise;
 }
 
-export default function GoldParticlesCanvas({ id, density, linked }) {
+/** Couleurs des particules et des fils : or SixSence, ou coucher de soleil pour GTA 6. */
+const PALETTES = {
+  or: { colors: ["#d4af37", "#f1d77a", "#f8ecc0", "#ffffff"], link: "#d4af37" },
+  gta: { colors: ["#ff6a3d", "#ff9a5c", "#ffd29a", "#ffffff"], link: "#ff6a3d" },
+};
+
+export default function GoldParticlesCanvas({ id, density, linked, palette = "or" }) {
   const [ready, setReady] = useState(false);
 
   useEffect(() => {
@@ -38,6 +44,7 @@ export default function GoldParticlesCanvas({ id, density, linked }) {
   }, []);
 
   const options = useMemo(() => {
+    const colors = PALETTES[palette] || PALETTES.or;
     const small = typeof window !== "undefined" && window.innerWidth < 768;
     return {
       fullScreen: { enable: false },
@@ -47,7 +54,7 @@ export default function GoldParticlesCanvas({ id, density, linked }) {
       pauseOnOutsideViewport: true,
       particles: {
         number: { value: small ? Math.round(density * 0.45) : density, density: { enable: true } },
-        color: { value: ["#d4af37", "#f1d77a", "#f8ecc0", "#ffffff"] },
+        color: { value: colors.colors },
         shape: { type: "circle" },
         opacity: {
           value: { min: 0.08, max: 0.75 },
@@ -56,7 +63,7 @@ export default function GoldParticlesCanvas({ id, density, linked }) {
         size: { value: { min: 0.5, max: 2.4 } },
         links: {
           enable: linked,
-          color: "#d4af37",
+          color: colors.link,
           distance: 130,
           opacity: 0.14,
           width: 1,
@@ -81,7 +88,7 @@ export default function GoldParticlesCanvas({ id, density, linked }) {
         },
       },
     };
-  }, [density, linked]);
+  }, [density, linked, palette]);
 
   if (!ready) return null;
   return <Particles id={id} options={options} className="h-full w-full" />;
