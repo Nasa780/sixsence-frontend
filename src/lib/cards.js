@@ -39,15 +39,15 @@ const CARDS = {
   "rang-platine": { rarity: "rare", art: { type: "rank", rank: "Platine", season: "Saison 1", image: "/images/cartes/s1/platine.webp", mobileImage: "/images/cartes/s1/platine-mobile.webp", og: "/images/cartes/og/s1-platine.jpg", position: "center" } },
   "rang-diamant": { rarity: "rare", art: { type: "rank", rank: "Diamant", season: "Saison 1", image: "/images/cartes/s1/diamant.webp", mobileImage: "/images/cartes/s1/diamant-mobile.webp", og: "/images/cartes/og/s1-diamant.jpg", position: "center" } },
   "rang-maitre": { rarity: "epique", art: { type: "rank", rank: "Maître", title: "#a78bfa", image: "/images/cartes/maitre.webp", og: "/images/cartes/og/maitre.jpg", position: "center", mobilePosition: "50% center", light: true } },
-  "rang-grand-maitre": { rarity: "epique", art: { type: "rank", rank: "Grand Maître", title: "#e05cc6", image: "/images/cartes/grand-maitre.webp", og: "/images/cartes/og/grand-maitre.jpg", position: "45% center", mobilePosition: "24% center" } },
+  "rang-grand-maitre": { rarity: "epique", art: { type: "rank", rank: "Grand Maître", title: "#e05cc6", image: "/images/cartes/grand-maitre.webp", og: "/images/cartes/og/grand-maitre.jpg", position: "45% center", mobilePosition: "40% center" } },
   "rang-champion": { rarity: "legendaire", art: { type: "rank", rank: "Champion", title: "#f0a6e8", image: "/images/cartes/champion.webp", og: "/images/cartes/og/champion.jpg", position: "center 60%", mobilePosition: "22% center", light: true } },
   "rang-legende": { rarity: "legendaire", art: { type: "rank", rank: "Légende", title: "#ff8a3d", video: "/images/cartes/legende.mp4", poster: "/images/cartes/legende-poster.webp", cover: true, position: "center", mobilePosition: "40% center", og: "/images/cartes/og/legende.jpg", light: true } },
   // Pass de la saison 1 : dessins provisoires, remplacés par art.image quand les illustrations existent.
-  "pass-s1-eclaireur": { rarity: "commune", art: { type: "illustration", glyph: "5", hue: "#d4af37", image: "/images/cartes/pass-s1-eclaireur.webp", og: "/images/cartes/og/pass-s1-eclaireur.jpg", position: "center 30%", mobilePosition: "62% center" } },
-  "pass-s1-sentinelle": { rarity: "rare", art: { type: "illustration", glyph: "15", hue: "#5cc8ff", image: "/images/cartes/pass-s1-sentinelle.webp", og: "/images/cartes/og/pass-s1-sentinelle.jpg", position: "center 10%", mobilePosition: "62% center" } },
-  "pass-s1-gardien": { rarity: "epique", art: { type: "illustration", glyph: "25", hue: "#8b5cf6", image: "/images/cartes/pass-s1-gardien.webp", og: "/images/cartes/og/pass-s1-gardien.jpg", position: "center 0%", mobilePosition: "62% center" } },
+  "pass-s1-eclaireur": { rarity: "commune", art: { type: "illustration", glyph: "5", hue: "#d4af37", image: "/images/cartes/pass-s1-eclaireur.webp", og: "/images/cartes/og/pass-s1-eclaireur.jpg", position: "center 30%", mobilePosition: "88% center" } },
+  "pass-s1-sentinelle": { rarity: "rare", art: { type: "illustration", glyph: "15", hue: "#5cc8ff", image: "/images/cartes/pass-s1-sentinelle.webp", og: "/images/cartes/og/pass-s1-sentinelle.jpg", position: "center 10%", mobilePosition: "90% center" } },
+  "pass-s1-gardien": { rarity: "epique", art: { type: "illustration", glyph: "25", hue: "#8b5cf6", image: "/images/cartes/pass-s1-gardien.webp", og: "/images/cartes/og/pass-s1-gardien.jpg", position: "center 0%", mobilePosition: "90% center" } },
   "pass-s1-pharaon": { rarity: "legendaire", art: { type: "illustration", glyph: "30", hue: "#f5b83d", image: "/images/cartes/pass-s1-pharaon.webp", og: "/images/cartes/og/pass-s1-pharaon.jpg", position: "center 15%", mobilePosition: "62% center" } },
-  "premier-sang": { rarity: "commune", art: { type: "illustration", glyph: "1", hue: "#f87171", image: "/images/cartes/premier-sang.webp", og: "/images/cartes/og/premier-sang.jpg", position: "center 35%", mobilePosition: "62% center" } },
+  "premier-sang": { rarity: "commune", art: { type: "illustration", glyph: "1", hue: "#f87171", image: "/images/cartes/premier-sang.webp", og: "/images/cartes/og/premier-sang.jpg", position: "center 35%", mobilePosition: "78% center" } },
   domination: { rarity: "commune", art: { type: "illustration", glyph: "10", hue: "#d4af37", image: "/images/cartes/domination.webp", og: "/images/cartes/og/domination.jpg", position: "center 25%", mobilePosition: "62% center" } },
   veteran: { rarity: "commune", art: { type: "illustration", glyph: "50", hue: "#b8c2cf", image: "/images/cartes/veteran.webp", og: "/images/cartes/og/veteran.jpg", position: "center 45%", mobilePosition: "62% center" } },
   indestructible: { rarity: "rare", art: { type: "illustration", glyph: "×5", hue: "#5cc8ff", image: "/images/cartes/indestructible.webp", og: "/images/cartes/og/indestructible.jpg", position: "center 25%", mobilePosition: "62% center" } },
@@ -61,14 +61,14 @@ const CARDS = {
   fondateur: { rarity: "legendaire", art: { type: "illustration", glyph: "F", hue: "#e8c26a", video: "/images/cartes/fondateur.mp4", og: "/images/cartes/og/fondateur.jpg", poster: "/images/cartes/fondateur-poster.webp", aspect: "480/546" } },
   beta: { rarity: "rare", art: { type: "glyph", glyph: "β", color: "#5cc8ff", video: "/images/cartes/beta.mp4", og: "/images/cartes/og/beta.jpg", poster: "/images/cartes/beta-poster.webp" } },
   partenaire: { rarity: "rare", art: { type: "illustration", glyph: "P", hue: "#ff9a5c", image: "/images/cartes/partenaire.webp", og: "/images/cartes/og/partenaire.jpg", position: "center 35%", mobilePosition: "62% center" } },
-  "staff-6": { rarity: "rare", art: { type: "illustration", glyph: "6", hue: "#d4af37", image: "/images/cartes/staff-6.webp", og: "/images/cartes/og/staff-6.jpg", position: "center", mobilePosition: "62% center" } },
+  "staff-6": { rarity: "rare", art: { type: "illustration", glyph: "6", hue: "#d4af37", image: "/images/cartes/staff-6.webp", og: "/images/cartes/og/staff-6.jpg", position: "center", mobilePosition: "72% center" } },
   "premiere-viree": { rarity: "commune", art: { type: "illustration", glyph: "1", hue: "#ff9a5c", image: "/images/cartes/premiere-viree.webp", og: "/images/cartes/og/premiere-viree.jpg", position: "center 50%", mobilePosition: "70% center" } },
-  habitue: { rarity: "rare", art: { type: "illustration", glyph: "×5", hue: "#ff5f8a", image: "/images/cartes/habitue.webp", og: "/images/cartes/og/habitue.jpg", position: "center 50%", mobilePosition: "62% center" } },
+  habitue: { rarity: "rare", art: { type: "illustration", glyph: "×5", hue: "#ff5f8a", image: "/images/cartes/habitue.webp", og: "/images/cartes/og/habitue.jpg", position: "center 50%", mobilePosition: "80% center" } },
 };
 
 /** Illustrations propres à une saison (même clé que la carte, ex. « s1-champion »). */
 const SEASON_ART = {
-  "s1-participant": { image: "/images/cartes/s1/participant.webp", og: "/images/cartes/og/s1-participant.jpg", position: "center 25%", mobilePosition: "68% center" },
+  "s1-participant": { image: "/images/cartes/s1/participant.webp", og: "/images/cartes/og/s1-participant.jpg", position: "center 25%", mobilePosition: "80% center" },
   "s1-top10": { image: "/images/cartes/s1/top10.webp", og: "/images/cartes/og/s1-top10.jpg", position: "center 30%", mobilePosition: "62% center" },
   "s1-champion": { image: "/images/cartes/s1/champion.webp", og: "/images/cartes/og/s1-champion.jpg", position: "center 30%", mobilePosition: "72% center" },
   "s1-circuit": { image: "/images/cartes/s1/circuit.webp", og: "/images/cartes/og/s1-circuit.jpg", position: "center 0%", mobilePosition: "62% center" },
