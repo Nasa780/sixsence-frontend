@@ -34,11 +34,18 @@ const SHOW_MW4_SUBMENU = true;
 /** Sous-menu des modes affiché : les raccourcis Classé et Division du menu du compte feraient doublon. */
 const MODE_SUBMENU = SHOW_MW4_SUBMENU && MATCH_TEAM_ENABLED;
 
+/** Pages des classements : le lien Classements s'allume dessus (et MW4 s'éteint). */
+function isRankingPage(pathname) {
+  return pathname.startsWith("/cod/leaderboard") || pathname === "/cod/equipes" || pathname.startsWith("/renommee");
+}
+
+// Fondateurs et Partenaires ont quitté le menu le 2026-11-09 : ils restent dans le pied de page et le menu mobile (Infos).
 const LINKS = [
   { href: "/", label: "Accueil" },
   {
     href: "/cod",
     label: "MW4",
+    active: (pathname) => isActive(pathname, "/cod") && !isRankingPage(pathname),
     // Les trois sections COD (seulement si la Division est active).
     children: SHOW_MW4_SUBMENU && MATCH_TEAM_ENABLED && [
       { href: "/cod/ranked", label: "Classé", univers: "classe", icon: LuCrosshair, color: "#34d399" },
@@ -47,8 +54,18 @@ const LINKS = [
     ],
   },
   { href: "/gta6", label: "GTA 6", univers: "gta" },
-  { href: "/founders", label: "Fondateurs" },
-  { href: "/partners", label: "Partenaires" },
+  {
+    href: "/cod/leaderboard",
+    label: "Classements",
+    active: isRankingPage,
+    // Joueurs (classé), équipes (Division, si le mode est ouvert) et Renommée.
+    children: [
+      { href: "/cod/leaderboard", label: "Joueurs", icon: LuCrosshair, color: "#34d399", current: (pathname) => pathname.startsWith("/cod/leaderboard") },
+      ...(MATCH_TEAM_ENABLED ? [{ href: "/cod/equipes", label: "Équipes", icon: LuShield, color: "#22d3ee", current: (pathname) => pathname === "/cod/equipes" }] : []),
+      { href: "/renommee", label: "Renommée", icon: LuCrown, color: "#d4af37", current: (pathname) => pathname.startsWith("/renommee") },
+    ],
+  },
+  { href: "/clips", label: "Clips" },
 ];
 
 function isActive(pathname, href) {
@@ -106,7 +123,7 @@ export function Navbar() {
 
           <nav aria-label="Navigation principale" className="hidden items-center lg:flex">
             {LINKS.map((link) => {
-              const active = isActive(pathname, link.href);
+              const active = link.active ? link.active(pathname) : isActive(pathname, link.href);
               const item = (
                 <Link
                   key={link.href}
@@ -137,7 +154,7 @@ export function Navbar() {
                     <div data-univers="or" className="clip-tactical w-80 bg-gold/40 p-px [--cut:14px]">
                       <div className="clip-tactical space-y-1 bg-ink-800/95 p-2 backdrop-blur-md [--cut:14px]">
                         {link.children.map((child) => {
-                          const current = (child.href === "/cod/ranked" && mode === "classe") || (child.href === "/cod/division" && mode === "team") || (child.href === "/cod/tournoi" && mode === "tournoi");
+                          const current = child.current ? child.current(pathname) : (child.href === "/cod/ranked" && mode === "classe") || (child.href === "/cod/division" && mode === "team") || (child.href === "/cod/tournoi" && mode === "tournoi");
                           const Icon = child.icon;
                           return (
                             <Link

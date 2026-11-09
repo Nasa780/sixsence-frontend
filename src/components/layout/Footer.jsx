@@ -24,6 +24,13 @@ const COLUMNS = [
       { href: "/faq", label: "FAQ" },
     ],
   },
+  {
+    title: "L'équipe",
+    links: [
+      { href: "/founders", label: "Fondateurs" },
+      { href: "/partners", label: "Partenaires" },
+    ],
+  },
 ];
 
 export function Footer() {
@@ -31,7 +38,7 @@ export function Footer() {
     <footer className="relative mt-24 border-t border-white/10 bg-ink-800">
       <div aria-hidden className="absolute inset-x-0 top-0 h-px bg-linear-to-r from-transparent via-gold/60 to-transparent" />
 
-      <Container className="grid gap-12 py-14 md:grid-cols-[1.4fr_1fr_1fr]">
+      <Container className="grid gap-12 py-14 md:grid-cols-[1.4fr_1fr_1fr_1fr]">
         <div>
           <Logo />
           <p className="mt-4 max-w-sm text-sm leading-relaxed text-white/55">
