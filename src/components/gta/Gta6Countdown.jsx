@@ -36,12 +36,33 @@ const releaseDay = new Date(RELEASE).toLocaleDateString("fr-FR", { day: "numeric
 
 /**
  * Compteur de la sortie de GTA 6, aux couleurs coucher de soleil (dans un parent data-univers="gta").
- * `compact` : une ligne pour la carte de l'accueil ; sinon grandes cases pour la page GTA 6.
+ * `compact` : une ligne pour la carte de l'accueil ; `hero` : les quatre grandes cases seules, pour le premier écran
+ * de la page GTA 6 ; sinon le bloc complet avec titre.
  */
-export function Gta6Countdown({ compact = false }) {
+export function Gta6Countdown({ compact = false, hero = false }) {
   const parts = useCountdown();
   const out = parts === null;
   const cells = parts || UNITS.map(([label]) => ({ label, value: null }));
+
+  if (hero) {
+    if (out) {
+      return <p className="font-tech text-xs uppercase tracking-[0.24em] text-gold">Disponible depuis le {releaseDay}</p>;
+    }
+    return (
+      <div role="timer" aria-label="Compte à rebours de la sortie de GTA 6" className="grid max-w-xl grid-cols-4 gap-2 sm:gap-3">
+        {cells.map((cell) => (
+          <div key={cell.label} className="clip-tactical bg-gold/40 p-px [--cut:12px]">
+            <div className="clip-tactical bg-ink/85 px-2 py-4 text-center backdrop-blur-sm [--cut:12px] sm:py-5">
+              <p className="font-display text-5xl font-black tabular-nums leading-none text-gold-gradient sm:text-7xl">
+                {cell.value === null ? "–" : String(cell.value).padStart(2, "0")}
+              </p>
+              <p className="mt-2 font-tech text-[10px] uppercase tracking-[0.24em] text-white/60 sm:text-[11px]">{cell.label}</p>
+            </div>
+          </div>
+        ))}
+      </div>
+    );
+  }
 
   if (compact) {
     return (

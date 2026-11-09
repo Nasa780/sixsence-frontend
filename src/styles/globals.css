@@ -311,6 +311,15 @@
   animation: hero-in 0.7s cubic-bezier(0.22, 1, 0.36, 1) both;
 }
 
+/* Image de fond qui zoome lentement, aller-retour (premier écran de la page GTA 6). */
+@keyframes ken-burns {
+  from { transform: scale(1); }
+  to { transform: scale(1.1); }
+}
+.ken-burns {
+  animation: ken-burns 24s ease-in-out infinite alternate;
+}
+
 /* Accessibilité : on coupe les animations pour qui le demande au niveau du système. */
 @media (prefers-reduced-motion: reduce) {
   *,
