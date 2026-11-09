@@ -5,6 +5,14 @@
  */
 export const RELEASES = [
   {
+    date: "2026-11-09",
+    title: "Un menu plus utile",
+    items: [
+      { tag: "Site", text: "Le menu du haut affiche maintenant Classements (joueurs, équipes, Renommée) et Clips. Fondateurs et Partenaires passent dans le pied de page." },
+      { tag: "Site", text: "Quand le serveur est très sollicité, les pages réessaient toutes seules au lieu d'afficher une erreur." },
+    ],
+  },
+  {
     date: "2026-11-08",
     title: "Nouvel accueil et carte Participant S1",
     items: [
