@@ -27,7 +27,7 @@ function safeImage(value, origin) {
 
 /**
  * Carte de résultat du bot Discord (backend services/resultCardPolicy.ts), 1200 x 500 : mode, tour de coupe, équipes, logos,
- * points, score, maps et meilleur joueur.
+ * points, score, maps (ou nom de la map jouée, en Classé) et meilleur joueur.
  * /api/og/resultat?k=division&l=<libellé>&ph=<tour>&a=<équipe>&b=<équipe>&w=A&s=2-1&m=Plaza:6-4,Mumbai:2-6&map=Plaza&pa=&pb=&ga=+25&gb=-25&la=&lb=&f=1&best=&bs=&bk=
  * Meilleur joueur : bandeau en bas (ba=<avatar>&bp=<poses>&bd=<désam.>).
  */
@@ -48,6 +48,8 @@ export default async function handler(request) {
     .map((item) => item.match(/^(.{1,24}):(\d{1,2})-(\d{1,2})$/))
     .filter(Boolean)
     .slice(0, 5);
+  // Map jouée (Classé, BO1) : son nom s'affiche quand il n'y a pas de score par map (Division, tournoi).
+  const mapName = maps.length ? "" : clip(searchParams.get("map"), 24);
   const best = clip(searchParams.get("best"), 28);
   const bestScore = Number(searchParams.get("bs")) || 0;
   const bestKills = Number(searchParams.get("bk")) || 0;
@@ -106,6 +108,15 @@ export default async function handler(request) {
             );
           })}
         </div>
+
+        {mapName ? (
+          <div style={{ display: "flex", justifyContent: "center", marginBottom: 14 }}>
+            <div style={{ display: "flex", alignItems: "center", gap: 12, padding: "7px 18px", background: "rgba(255,255,255,0.08)", borderLeft: `3px solid ${color}` }}>
+              <span style={{ display: "flex", fontFamily: display, fontWeight: 800, fontSize: 16, letterSpacing: 4, color: "rgba(255,255,255,0.6)" }}>MAP</span>
+              <span style={{ display: "flex", fontFamily: display, fontWeight: 900, fontSize: 24, letterSpacing: 2, textTransform: "uppercase" }}>{mapName}</span>
+            </div>
+          </div>
+        ) : null}
 
         {maps.length ? (
           <div style={{ display: "flex", gap: 10, justifyContent: "center", marginBottom: 14 }}>
