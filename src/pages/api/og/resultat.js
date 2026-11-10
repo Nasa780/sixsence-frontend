@@ -77,6 +77,12 @@ export default async function handler(request) {
         {background ? <img src={background} width={WIDTH} height={HEIGHT} style={{ position: "absolute", left: 0, top: 0, objectFit: "cover" }} /> : null}
         <div style={{ position: "absolute", left: 0, top: 0, width: WIDTH, height: HEIGHT, display: "flex", background: "linear-gradient(180deg, rgba(7,6,4,0.7), rgba(7,6,4,0.9))" }} />
         <div style={{ position: "absolute", left: 0, top: 0, width: 8, height: HEIGHT, display: "flex", background: color }} />
+        {/* Nom de la map, en haut au centre (Classé). */}
+        {mapName ? (
+          <div style={{ position: "absolute", left: 0, top: 34, width: WIDTH, display: "flex", justifyContent: "center", fontFamily: display, fontWeight: 800, fontSize: 24, letterSpacing: 4, textTransform: "uppercase", color: "rgba(255,255,255,0.85)" }}>
+            {mapName}
+          </div>
+        ) : null}
 
         <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", fontFamily: display, fontWeight: 800, fontSize: 24, letterSpacing: 4, textTransform: "uppercase" }}>
           <span style={{ color }}>{label}</span>
@@ -108,15 +114,6 @@ export default async function handler(request) {
             );
           })}
         </div>
-
-        {mapName ? (
-          <div style={{ display: "flex", justifyContent: "center", marginBottom: 14 }}>
-            <div style={{ display: "flex", alignItems: "center", gap: 12, padding: "7px 18px", background: "rgba(255,255,255,0.08)", borderLeft: `3px solid ${color}` }}>
-              <span style={{ display: "flex", fontFamily: display, fontWeight: 800, fontSize: 16, letterSpacing: 4, color: "rgba(255,255,255,0.6)" }}>MAP</span>
-              <span style={{ display: "flex", fontFamily: display, fontWeight: 900, fontSize: 24, letterSpacing: 2, textTransform: "uppercase" }}>{mapName}</span>
-            </div>
-          </div>
-        ) : null}
 
         {maps.length ? (
           <div style={{ display: "flex", gap: 10, justifyContent: "center", marginBottom: 14 }}>
