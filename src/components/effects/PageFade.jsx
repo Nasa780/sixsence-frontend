@@ -5,7 +5,7 @@ import { useEffect, useState } from "react";
  * Effet de changement de page. En local seulement, la page /dev-animations permet d'en essayer un autre (choix gardé
  * dans le navigateur) ; en ligne, c'est toujours celui-ci.
  */
-export const PAGE_TRANSITION = "biais";
+export const PAGE_TRANSITION = "rideau";
 export const PAGE_TRANSITIONS = {
   biais: "Balayage en biais",
   rideau: "Rideau doré",
