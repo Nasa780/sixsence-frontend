@@ -33,6 +33,11 @@
   --color-win: #6ee7a0;
   --color-loss: #f87171;
 
+  /* Rouge braise : accent de l'accueil (bande En direct, étiquettes), jamais à la place de l'or. */
+  --color-ember: #ff4d2e;
+  --color-ember-light: #ff7a4a;
+  --color-ember-dark: #c2261a;
+
   --animate-sheen: sheen 3.5s linear infinite;
   --animate-scan: scan 7s linear infinite;
   --animate-pulse-gold: pulse-gold 2.2s ease-in-out infinite;
