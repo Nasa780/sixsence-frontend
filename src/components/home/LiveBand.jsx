@@ -10,7 +10,8 @@ import { FEED, ago } from "../cod/HubHighlights";
 
 /**
  * Bande « En direct » sous le premier écran de l'accueil (GET /live, hooks/useLive), comme un bandeau d'info
- * sportive, en rouge braise depuis le 2026-11-11 (accueil « affiche ») : défile en continu, s'arrête au survol. Ce qui se passe maintenant d'abord (Classé, Division, coupe,
+ * sportive, posée en bas du premier écran (accueil « accordéon des modes », 2026-11-11) : fond sombre, étiquette rouge
+ * braise, chaque info dans la couleur de son mode ; défile en continu, s'arrête au survol. Ce qui se passe maintenant d'abord (Classé, Division, coupe,
  * GTA 6, point qui pulse), puis ce qui est toujours vrai (fin de saison, leaders, dernier match, file ouverte) :
  * jamais vide, jamais de zéro. Étiquette toujours « En direct » (2026-11-11 ; avant : « À venir » quand rien n'était en
  * cours) ; le point ne pulse que si quelque chose se passe maintenant.
@@ -19,10 +20,10 @@ const COLORS = { classe: "#34d399", division: "#22d3ee", tournoi: "#e5484d", gta
 const CUP_PAGE = { horus: "/cod/tournoi", anubis: "/cod/tournoi?coupe=anubis", saison: "/cod/tournoi?coupe=saison", playin: "/cod/tournoi?coupe=playin" };
 const DAY = 86_400_000;
 /** Nombre à la française avec une espace insécable normale : l’espace fine du format fr-FR n’existe pas dans la police des titres. */
-const num = (n) => n.toLocaleString("fr-FR").replace(/ /g, " ");
-const plural = (n, word) => `${n} ${word}${n > 1 ? "s" : ""}`;
+export const num = (n) => n.toLocaleString("fr-FR").replace(/ /g, " ");
+export const plural = (n, word) => `${n} ${word}${n > 1 ? "s" : ""}`;
 const hour = (iso) => new Date(iso).toLocaleTimeString("fr-FR", { hour: "2-digit", minute: "2-digit" });
-const day = (iso) => {
+export const day = (iso) => {
   const date = new Date(iso);
   const today = new Date();
   if (date.toDateString() === today.toDateString()) return `ce soir ${hour(iso)}`;
@@ -106,19 +107,21 @@ function itemsOf(live) {
 function Item({ item }) {
   const Icon = item.icon;
   return (
-    <Link href={item.href} className="group flex shrink-0 items-center gap-2 border-r border-black/15 px-4 py-3 transition-colors hover:bg-black/10 sm:gap-3 sm:px-8 sm:py-4">
+    <Link href={item.href} className="group flex shrink-0 items-center gap-2 border-r border-white/10 px-4 py-3 transition-colors hover:bg-white/[0.05] sm:gap-3 sm:px-7 sm:py-3.5">
       <span className="relative">
-        <Icon aria-hidden className="h-4 w-4 sm:h-5 sm:w-5" />
-        {item.live ? <span aria-hidden className="absolute -right-1 -top-1 h-2 w-2 animate-ping rounded-full bg-ink" /> : null}
+        <Icon aria-hidden className="h-4 w-4 sm:h-[18px] sm:w-[18px]" style={{ color: item.color }} />
+        {item.live ? <span aria-hidden className="absolute -right-1 -top-1 h-2 w-2 animate-ping rounded-full" style={{ background: item.color }} /> : null}
       </span>
-      <span className="font-tech text-[9px] font-bold uppercase tracking-[0.18em] text-black/60 sm:text-[10px] sm:tracking-[0.22em]">{item.label}</span>
-      <span className={cn("whitespace-nowrap font-display text-base font-black uppercase leading-none sm:text-2xl", item.long && "normal-case")}>{item.value}</span>
-      {item.sub ? <span className="whitespace-nowrap text-[11px] font-medium text-black/55 sm:text-xs">{item.sub}</span> : null}
+      <span className="font-tech text-[9px] uppercase tracking-[0.18em] sm:text-[10px] sm:tracking-[0.22em]" style={{ color: item.color }}>
+        {item.label}
+      </span>
+      <span className={cn("whitespace-nowrap font-display text-base font-black uppercase leading-none sm:text-lg", item.long && "normal-case")}>{item.value}</span>
+      {item.sub ? <span className="whitespace-nowrap text-[11px] text-white/40 sm:text-xs">{item.sub}</span> : null}
     </Link>
   );
 }
 
-export function LiveBand({ initialData = null }) {
+export function LiveBand({ initialData = null, floating = false }) {
   const live = useLive(initialData);
   const reduceMotion = useReducedMotion();
   if (!live) return null;
@@ -133,11 +136,11 @@ export function LiveBand({ initialData = null }) {
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       transition={{ duration: 0.7, delay: 0.5, ease: [0.22, 1, 0.36, 1] }}
-      className="relative z-10 bg-ember text-[#130503]"
+      className={cn("z-10 border-t border-gold/35 bg-ink/85 backdrop-blur-md", floating ? "absolute inset-x-0 bottom-16 lg:bottom-0" : "relative")}
     >
       <div className="flex items-stretch">
-        <span className="z-10 my-2 ml-2 flex shrink-0 items-center gap-2 bg-ink pl-3 pr-5 font-tech text-[9px] font-bold uppercase tracking-[0.22em] text-white [clip-path:polygon(0_0,100%_0,calc(100%-10px)_100%,0_100%)] sm:my-2.5 sm:ml-5 sm:pl-5 sm:pr-7 sm:text-[11px]">
-          <span aria-hidden className={cn("h-2 w-2 rounded-full bg-ember", on && "animate-pulse")} />
+        <span className="z-10 flex shrink-0 items-center gap-2 bg-ember px-3 font-tech text-[9px] font-bold uppercase tracking-[0.22em] text-[#130503] shadow-[8px_0_24px_rgba(0,0,0,0.5)] sm:px-5 sm:text-[11px]">
+          <span aria-hidden className={cn("h-2 w-2 rounded-full bg-[#130503]", on && "animate-pulse")} />
           En direct
         </span>
         <div className="group/band relative flex-1 overflow-hidden">
@@ -158,8 +161,8 @@ export function LiveBand({ initialData = null }) {
               ))}
             </div>
           )}
-          <div aria-hidden className="pointer-events-none absolute inset-y-0 left-0 w-6 bg-linear-to-r from-ember to-transparent" />
-          <div aria-hidden className="pointer-events-none absolute inset-y-0 right-0 w-10 bg-linear-to-l from-ember to-transparent sm:w-16" />
+          <div aria-hidden className="pointer-events-none absolute inset-y-0 left-0 w-6 bg-linear-to-r from-ink to-transparent" />
+          <div aria-hidden className="pointer-events-none absolute inset-y-0 right-0 w-10 bg-linear-to-l from-ink to-transparent sm:w-16" />
         </div>
       </div>
     </motion.aside>
