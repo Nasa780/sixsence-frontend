@@ -12,7 +12,8 @@ import { FEED, ago } from "../cod/HubHighlights";
  * Bande « En direct » sous le premier écran de l'accueil (GET /live, hooks/useLive), comme un bandeau d'info
  * sportive, en rouge braise depuis le 2026-11-11 (accueil « affiche ») : défile en continu, s'arrête au survol. Ce qui se passe maintenant d'abord (Classé, Division, coupe,
  * GTA 6, point qui pulse), puis ce qui est toujours vrai (fin de saison, leaders, dernier match, file ouverte) :
- * jamais vide, jamais de zéro. Étiquette « En direct » ou « À venir ».
+ * jamais vide, jamais de zéro. Étiquette toujours « En direct » (2026-11-11 ; avant : « À venir » quand rien n'était en
+ * cours) ; le point ne pulse que si quelque chose se passe maintenant.
  */
 const COLORS = { classe: "#34d399", division: "#22d3ee", tournoi: "#e5484d", gta: "#ff6a3d", or: "#d4af37" };
 const CUP_PAGE = { horus: "/cod/tournoi", anubis: "/cod/tournoi?coupe=anubis", saison: "/cod/tournoi?coupe=saison", playin: "/cod/tournoi?coupe=playin" };
@@ -128,7 +129,7 @@ export function LiveBand({ initialData = null }) {
   const duration = Math.max(18, items.length * 5);
   return (
     <motion.aside
-      aria-label={on ? "En direct sur SixSence" : "À venir sur SixSence"}
+      aria-label="En direct sur SixSence"
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       transition={{ duration: 0.7, delay: 0.5, ease: [0.22, 1, 0.36, 1] }}
@@ -137,7 +138,7 @@ export function LiveBand({ initialData = null }) {
       <div className="flex items-stretch">
         <span className="z-10 my-2 ml-2 flex shrink-0 items-center gap-2 bg-ink pl-3 pr-5 font-tech text-[9px] font-bold uppercase tracking-[0.22em] text-white [clip-path:polygon(0_0,100%_0,calc(100%-10px)_100%,0_100%)] sm:my-2.5 sm:ml-5 sm:pl-5 sm:pr-7 sm:text-[11px]">
           <span aria-hidden className={cn("h-2 w-2 rounded-full bg-ember", on && "animate-pulse")} />
-          {on ? "En direct" : "À venir"}
+          En direct
         </span>
         <div className="group/band relative flex-1 overflow-hidden">
           {reduceMotion ? (
