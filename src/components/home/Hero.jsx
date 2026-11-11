@@ -136,7 +136,7 @@ export function Hero() {
       </h1>
 
       {/* --- Ordinateur : les bandes des modes ------------------------------- */}
-      <div className="absolute inset-x-0 bottom-12 top-0 -z-10 hidden lg:flex">
+      <div className="absolute inset-0 -z-10 hidden lg:flex">
         {MODES.map((mode, index) => {
           const on = hover === mode.key;
           return (
@@ -166,19 +166,19 @@ export function Hero() {
               {/* Nom du mode (bande fermée), puis son info du moment (bande ouverte) */}
               <span
                 aria-hidden
-                className={cn("absolute bottom-24 left-1/2 -translate-x-1/2 whitespace-nowrap font-display text-2xl font-black uppercase tracking-[0.2em] transition-opacity duration-300 [text-shadow:0_2px_12px_rgba(0,0,0,0.9)]", on && "opacity-0")}
+                className={cn("absolute bottom-36 left-1/2 -translate-x-1/2 whitespace-nowrap font-display text-2xl font-black uppercase tracking-[0.2em] transition-opacity duration-300 [text-shadow:0_2px_12px_rgba(0,0,0,0.9)]", on && "opacity-0")}
                 style={{ color: mode.text }}
               >
                 {mode.label}
               </span>
-              <span className={cn("absolute bottom-12 left-[8%] right-[8%] transition-all delay-200 duration-500", on ? "translate-y-0 opacity-100" : "translate-y-4 opacity-0")}>
+              <span className={cn("absolute bottom-24 left-[8%] right-[8%] transition-all delay-200 duration-500", on ? "translate-y-0 opacity-100" : "translate-y-4 opacity-0")}>
                 <span className="block font-display text-5xl font-black uppercase leading-[0.9]">{infos[mode.key].big}</span>
                 <span className="mt-2.5 flex items-center gap-2 font-tech text-[11px] uppercase tracking-[0.24em] text-white/75">
                   <span aria-hidden className="h-2 w-2 animate-pulse rounded-full" style={{ background: mode.color, boxShadow: `0 0 10px ${mode.color}` }} />
                   {infos[mode.key].small}
                 </span>
               </span>
-              <span aria-hidden className={cn("absolute inset-x-0 bottom-0 h-1 origin-center transition-transform duration-500", on ? "scale-x-100" : "scale-x-[0.3]")} style={{ background: mode.color }} />
+              <span aria-hidden className={cn("absolute inset-x-0 bottom-[3.25rem] h-1 origin-center transition-transform duration-500", on ? "scale-x-100" : "scale-x-[0.3]")} style={{ background: mode.color }} />
             </Link>
           );
         })}
