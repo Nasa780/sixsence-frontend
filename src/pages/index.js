@@ -1,31 +1,40 @@
 import { CallToAction } from "../components/home/CallToAction";
+import { Casting } from "../components/home/Casting";
 import { Features } from "../components/home/Features";
 import { Hero } from "../components/home/Hero";
 import { HomeCalendar } from "../components/home/HomeCalendar";
 import { HowItWorks } from "../components/home/HowItWorks";
+import { LiveBand } from "../components/home/LiveBand";
 import { LiveBoard } from "../components/home/LiveBoard";
 import { RightNow } from "../components/home/RightNow";
+import { ViceCity } from "../components/home/ViceCity";
 import { TwitchLive } from "../components/cod/TwitchLive";
-import { Universes } from "../components/home/Universes";
 
-/** Bloc « Comment ça marche » (les deux jeux, MW4 et GTA 6), au-dessus d'En direct : false pour le retirer. */
-const SHOW_HOW_IT_WORKS = true;
-
-/** Page d'accueil publique. Chaque section vit dans src/components/home. */
+/** Bloc « Comment ça marche » (les deux jeux, MW4 et GTA 6) retiré de l'accueil le 2026-11-11, gardé de côté : true pour le remettre. */
+const SHOW_HOW_IT_WORKS = false;
+/** Bloc « Pensé pour la compétition » (fonctionnalités) retiré de l'accueil le 2026-11-11, gardé de côté : true pour le remettre. */
+const SHOW_FEATURES = false;
 /** Bloc « Qui mène la danse » (En ce moment) retiré de l'accueil le 2026-10-29, gardé de côté : true pour le remettre. */
 const SHOW_RIGHT_NOW = false;
 
+/**
+ * Page d'accueil publique, façon affiche (2026-11-11) : l'affiche (Hero), la bande En direct en rouge braise, Vice City
+ * (GTA 6), « Choisis ton rôle » (les modes), puis En direct, Twitch, le calendrier et l'appel final. Chaque section vit
+ * dans src/components/home ; l'ancien « Choisis ton terrain » (Universes) reste dans le dossier.
+ */
 export default function HomePage() {
   return (
     <>
       <Hero />
-      <Universes />
+      <LiveBand />
+      <ViceCity />
+      <Casting />
       {SHOW_HOW_IT_WORKS ? <HowItWorks /> : null}
       <LiveBoard />
       <TwitchLive />
       {SHOW_RIGHT_NOW ? <RightNow /> : null}
       <HomeCalendar />
-      <Features />
+      {SHOW_FEATURES ? <Features /> : null}
       <CallToAction />
     </>
   );

@@ -9,10 +9,11 @@ import { MAPS } from "../../lib/maps";
 import { FEED, ago } from "../cod/HubHighlights";
 
 /**
- * Bande « En direct » en bas du premier écran de l'accueil (GET /live, hooks/useLive), comme un bandeau d'info
- * sportive : défile en continu, s'arrête au survol. Ce qui se passe maintenant d'abord (Classé, Division, coupe,
+ * Bande « En direct » sous le premier écran de l'accueil (GET /live, hooks/useLive), comme un bandeau d'info
+ * sportive, en rouge braise depuis le 2026-11-11 (accueil « affiche ») : défile en continu, s'arrête au survol. Ce qui se passe maintenant d'abord (Classé, Division, coupe,
  * GTA 6, point qui pulse), puis ce qui est toujours vrai (fin de saison, leaders, dernier match, file ouverte) :
- * jamais vide, jamais de zéro. Étiquette « En direct » ou « À venir ».
+ * jamais vide, jamais de zéro. Étiquette toujours « En direct » (2026-11-11 ; avant : « À venir » quand rien n'était en
+ * cours) ; le point ne pulse que si quelque chose se passe maintenant.
  */
 const COLORS = { classe: "#34d399", division: "#22d3ee", tournoi: "#e5484d", gta: "#ff6a3d", or: "#d4af37" };
 const CUP_PAGE = { horus: "/cod/tournoi", anubis: "/cod/tournoi?coupe=anubis", saison: "/cod/tournoi?coupe=saison", playin: "/cod/tournoi?coupe=playin" };
@@ -105,16 +106,14 @@ function itemsOf(live) {
 function Item({ item }) {
   const Icon = item.icon;
   return (
-    <Link href={item.href} className="group flex shrink-0 items-center gap-2 border-r border-white/10 px-4 py-3 transition-colors hover:bg-white/[0.05] sm:gap-3 sm:px-8 sm:py-4">
+    <Link href={item.href} className="group flex shrink-0 items-center gap-2 border-r border-black/15 px-4 py-3 transition-colors hover:bg-black/10 sm:gap-3 sm:px-8 sm:py-4">
       <span className="relative">
-        <Icon aria-hidden className="h-4 w-4 sm:h-5 sm:w-5" style={{ color: item.color }} />
-        {item.live ? <span aria-hidden className="absolute -right-1 -top-1 h-2 w-2 animate-ping rounded-full" style={{ background: item.color }} /> : null}
+        <Icon aria-hidden className="h-4 w-4 sm:h-5 sm:w-5" />
+        {item.live ? <span aria-hidden className="absolute -right-1 -top-1 h-2 w-2 animate-ping rounded-full bg-ink" /> : null}
       </span>
-      <span className="font-tech text-[9px] uppercase tracking-[0.18em] sm:text-[10px] sm:tracking-[0.22em]" style={{ color: item.color }}>
-        {item.label}
-      </span>
-      <span className={cn("whitespace-nowrap font-display text-base font-black uppercase leading-none sm:text-xl", item.long && "normal-case")}>{item.value}</span>
-      {item.sub ? <span className="whitespace-nowrap text-[11px] text-white/40 sm:text-xs">{item.sub}</span> : null}
+      <span className="font-tech text-[9px] font-bold uppercase tracking-[0.18em] text-black/60 sm:text-[10px] sm:tracking-[0.22em]">{item.label}</span>
+      <span className={cn("whitespace-nowrap font-display text-base font-black uppercase leading-none sm:text-2xl", item.long && "normal-case")}>{item.value}</span>
+      {item.sub ? <span className="whitespace-nowrap text-[11px] font-medium text-black/55 sm:text-xs">{item.sub}</span> : null}
     </Link>
   );
 }
@@ -130,16 +129,16 @@ export function LiveBand({ initialData = null }) {
   const duration = Math.max(18, items.length * 5);
   return (
     <motion.aside
-      aria-label={on ? "En direct sur SixSence" : "À venir sur SixSence"}
-      initial={{ opacity: 0, y: 30 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.7, delay: 0.6, ease: [0.22, 1, 0.36, 1] }}
-      className="absolute inset-x-0 bottom-0 z-10 border-y border-white/10 bg-[#1d1d21]/95 backdrop-blur-md"
+      aria-label="En direct sur SixSence"
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      transition={{ duration: 0.7, delay: 0.5, ease: [0.22, 1, 0.36, 1] }}
+      className="relative z-10 bg-ember text-[#130503]"
     >
       <div className="flex items-stretch">
-        <span className="z-10 flex shrink-0 items-center gap-1.5 bg-gold px-3 font-display text-xs font-black uppercase tracking-[0.12em] text-ink shadow-[8px_0_24px_rgba(0,0,0,0.5)] sm:gap-2 sm:px-6 sm:text-lg sm:tracking-[0.14em]">
-          <span aria-hidden className={cn("h-2 w-2", on ? "animate-pulse bg-[#0f5132]" : "bg-ink")} />
-          {on ? "En direct" : "À venir"}
+        <span className="z-10 my-2 ml-2 flex shrink-0 items-center gap-2 bg-ink pl-3 pr-5 font-tech text-[9px] font-bold uppercase tracking-[0.22em] text-white [clip-path:polygon(0_0,100%_0,calc(100%-10px)_100%,0_100%)] sm:my-2.5 sm:ml-5 sm:pl-5 sm:pr-7 sm:text-[11px]">
+          <span aria-hidden className={cn("h-2 w-2 rounded-full bg-ember", on && "animate-pulse")} />
+          En direct
         </span>
         <div className="group/band relative flex-1 overflow-hidden">
           {reduceMotion ? (
@@ -159,8 +158,8 @@ export function LiveBand({ initialData = null }) {
               ))}
             </div>
           )}
-          <div aria-hidden className="pointer-events-none absolute inset-y-0 left-0 w-6 bg-linear-to-r from-[#1d1d21] to-transparent" />
-          <div aria-hidden className="pointer-events-none absolute inset-y-0 right-0 w-10 bg-linear-to-l from-[#1d1d21] to-transparent sm:w-16" />
+          <div aria-hidden className="pointer-events-none absolute inset-y-0 left-0 w-6 bg-linear-to-r from-ember to-transparent" />
+          <div aria-hidden className="pointer-events-none absolute inset-y-0 right-0 w-10 bg-linear-to-l from-ember to-transparent sm:w-16" />
         </div>
       </div>
     </motion.aside>

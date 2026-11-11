@@ -21,8 +21,11 @@ function remaining(now) {
   });
 }
 
-/** Compte à rebours de la sortie de GTA 6, calculé après l'affichage (pas d'écart entre serveur et navigateur). */
-function useCountdown() {
+/**
+ * Compte à rebours de la sortie de GTA 6, calculé après l'affichage (pas d'écart entre serveur et navigateur) :
+ * undefined avant le premier calcul, null une fois le jeu sorti, sinon jours, heures, minutes, secondes.
+ */
+export function useGta6Countdown() {
   const [parts, setParts] = useState(undefined);
   useEffect(() => {
     const tick = () => setParts(remaining(Date.now()));
@@ -33,7 +36,7 @@ function useCountdown() {
   return parts;
 }
 
-const releaseDay = new Date(RELEASE).toLocaleDateString("fr-FR", { day: "numeric", month: "long", year: "numeric", timeZone: "Europe/Paris" });
+export const releaseDay = new Date(RELEASE).toLocaleDateString("fr-FR", { day: "numeric", month: "long", year: "numeric", timeZone: "Europe/Paris" });
 
 /**
  * Compteur de la sortie de GTA 6, aux couleurs coucher de soleil (dans un parent data-univers="gta").
@@ -41,7 +44,7 @@ const releaseDay = new Date(RELEASE).toLocaleDateString("fr-FR", { day: "numeric
  * de la page GTA 6 ; sinon le bloc complet avec titre.
  */
 export function Gta6Countdown({ compact = false, hero = false }) {
-  const parts = useCountdown();
+  const parts = useGta6Countdown();
   const out = parts === null;
   const cells = parts || UNITS.map(([label]) => ({ label, value: null }));
 
