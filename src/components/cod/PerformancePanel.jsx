@@ -117,7 +117,7 @@ export function PerformancePanel({ history, userId, points, seasonId, seasonLabe
         <Kpi label="Points" value={<CountUp value={values[lastIndex]} />} hint={pointsHint ?? current.name} hintColor={ranks ? current.color : undefined} accent />
         <Kpi
           label="Variation"
-          value={<CountUp value={stats.change} format={signed} delay={150} />}
+          value={<CountUp value={stats.change} signed delay={150} />}
           tone={stats.change > 0 ? "win" : stats.change < 0 ? "loss" : null}
           icon={stats.change >= 0 ? LuTrendingUp : LuTrendingDown}
           hint={`sur ${entries.length} match${entries.length > 1 ? "s" : ""}`}
@@ -281,7 +281,7 @@ function Kpi({ label, value, hint, hintColor, tone = null, accent = false, icon:
       <dd
         className={cn(
           "mt-2 flex items-center gap-2 font-display text-4xl font-black leading-none tabular-nums",
-          accent && "text-gold-gradient",
+          accent && "text-gold-light",
           tone === "win" && "text-win",
           tone === "loss" && "text-loss",
         )}

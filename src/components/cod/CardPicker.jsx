@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { refreshPending } from "../../hooks/usePending";
 import { LuCheck, LuChevronDown, LuLoaderCircle, LuX } from "react-icons/lu";
 import { api } from "../../lib/api";
+import { celebrate } from "../../lib/celebrate";
 import { RARITY } from "../../lib/cards";
 import { cn } from "../../lib/cn";
 import { rankFor, rankGradient } from "../../lib/ranks";
@@ -37,7 +38,11 @@ export function CardPicker({ open, onClose, player, points, onEquipped }) {
     api("/cod/cards")
       .then((result) => {
         // Même si la fenêtre a déjà été refermée : serveur lent au réveil, le joueur l'a bien ouverte.
-        if (result.newCount > 0) api("/cod/cards/seen", { method: "POST" }).then(refreshPending, () => {});
+        if (result.newCount > 0) {
+          api("/cod/cards/seen", { method: "POST" }).then(refreshPending, () => {});
+          // Nouvelle carte débloquée depuis la dernière ouverture : petite pluie de paillettes.
+          if (active) setTimeout(() => celebrate("petit"), 350);
+        }
         if (!active) return;
         setData(result);
         setSelected(result.equipped);

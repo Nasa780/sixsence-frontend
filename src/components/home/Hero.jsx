@@ -8,6 +8,7 @@ import { Button, ButtonLink } from "../ui/Button";
 import { Container } from "../ui/Container";
 import { MATCH_TEAM_ENABLED } from "../../lib/config";
 import { LiveBand } from "./LiveBand";
+import { ScrambleText } from "../effects/ScrambleText";
 
 /**
  * Écran d'accueil : photo de la porte de l'arène à droite, particules dorées, grand titre, appel à la connexion Discord ; en bas, la bande « En direct »
@@ -66,7 +67,10 @@ export function Hero() {
             style={step(1).style}
             className="hero-in mt-6 font-display text-[clamp(4.25rem,17vw,12.5rem)] font-black uppercase leading-[0.8] tracking-tight"
           >
-            Six<span className="text-gold-gradient">Sence</span>
+            <ScrambleText text="Six" fromBlank={false} delay={0.25} duration={0.9} />
+            <span className="text-gold-gradient">
+              <ScrambleText text="Sence" fromBlank={false} delay={0.4} duration={1} />
+            </span>
           </h1>
 
           <p style={step(2).style} className="hero-in mt-5 flex max-w-3xl items-center gap-4">

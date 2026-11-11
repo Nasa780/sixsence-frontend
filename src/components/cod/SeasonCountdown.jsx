@@ -3,11 +3,11 @@ import { LuClock, LuLock } from "react-icons/lu";
 import useSeasons from "../../hooks/useSeasons";
 import { cn } from "../../lib/cn";
 import { supabase } from "../../lib/supabase";
+import { Ticker } from "../effects/Ticker";
 
 const DAY = 86_400_000;
 /** Transferts verrouillés pendant les 7 derniers jours de la saison (TEAM_TRANSFER_LOCK_DAYS du backend). */
 const TRANSFER_LOCK_DAYS = 7;
-const pad = (n) => String(n).padStart(2, "0");
 
 /**
  * Bandeau de saison en tête des classements : compte à rebours jusqu'à la fin prévue (seasons.ends_at, fixée dans
@@ -46,8 +46,8 @@ export function SeasonCountdown({ mode = "classe" }) {
   const lockAt = end ? end - TRANSFER_LOCK_DAYS * DAY : null;
   const parts = left === null ? null : [
     [Math.floor(left / DAY), left >= 2 * DAY ? "jours" : "jour"],
-    [pad(Math.floor((left % DAY) / 3_600_000)), "h"],
-    [pad(Math.floor((left % 3_600_000) / 60_000)), "min"],
+    [Math.floor((left % DAY) / 3_600_000), "h"],
+    [Math.floor((left % 3_600_000) / 60_000), "min"],
   ];
 
   return (
@@ -64,7 +64,9 @@ export function SeasonCountdown({ mode = "classe" }) {
           <div className="flex gap-2" role="timer" aria-label={`Fin de saison dans ${parts.map(([v, u]) => `${v} ${u}`).join(" ")}`}>
             {parts.map(([value, unit]) => (
               <div key={unit} className={cn("min-w-14 border bg-ink/60 px-2 py-1.5 text-center", urgent ? "border-loss/50" : "border-white/10")}>
-                <p className={cn("font-tech text-2xl font-black tabular-nums leading-none", urgent && "text-loss")}>{value}</p>
+                <p className={cn("font-tech text-2xl font-black tabular-nums leading-none", urgent && "text-loss")}>
+                  <Ticker value={value} pad={unit === "h" || unit === "min" ? 2 : 1} />
+                </p>
                 <p className="mt-1 font-tech text-[9px] uppercase tracking-[0.2em] text-white/40">{unit}</p>
               </div>
             ))}

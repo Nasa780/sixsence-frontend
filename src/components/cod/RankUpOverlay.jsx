@@ -1,7 +1,9 @@
 import { AnimatePresence, motion } from "framer-motion";
 import { useEffect, useState } from "react";
 import { LuArrowRight } from "react-icons/lu";
+import { celebrate } from "../../lib/celebrate";
 import { rankFor, rankGradient, rankLevel } from "../../lib/ranks";
+import { ScrambleText } from "../effects/ScrambleText";
 import { Portal } from "../ui/Portal";
 import { RankEmblem } from "./RankEmblem";
 
@@ -29,6 +31,13 @@ export function RankUpOverlay({ matchId, points, delta, completedAt }) {
     }
     setOpen(true);
   }, [promoted, matchId]);
+
+  // Paillettes aux couleurs du nouveau rang, au moment où l'emblème arrive.
+  useEffect(() => {
+    if (!open) return undefined;
+    const timer = setTimeout(() => celebrate("promotion", [after.light, after.color, after.dark, "#f1d77a", "#ffffff"]), 450);
+    return () => clearTimeout(timer);
+  }, [open, after.light, after.color, after.dark]);
 
   useEffect(() => {
     if (!open) return undefined;
@@ -89,7 +98,7 @@ export function RankUpOverlay({ matchId, points, delta, completedAt }) {
                 className="mt-6 bg-clip-text font-display text-6xl font-black uppercase leading-none text-transparent sm:text-7xl"
                 style={{ backgroundImage: rankGradient(after) }}
               >
-                {after.name}
+                <ScrambleText text={after.name} delay={0.7} duration={1.1} />
               </motion.p>
 
               <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.95 }}>

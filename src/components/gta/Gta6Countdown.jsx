@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { GTA6_RELEASE } from "../../lib/config";
+import { Ticker } from "../effects/Ticker";
 
 const RELEASE = new Date(GTA6_RELEASE).getTime();
 const UNITS = [
@@ -53,8 +54,8 @@ export function Gta6Countdown({ compact = false, hero = false }) {
         {cells.map((cell) => (
           <div key={cell.label} className="clip-tactical bg-gold/40 p-px [--cut:12px]">
             <div className="clip-tactical bg-ink/85 px-2 py-4 text-center backdrop-blur-sm [--cut:12px] sm:py-5">
-              <p className="font-display text-5xl font-black tabular-nums leading-none text-gold-gradient sm:text-7xl">
-                {cell.value === null ? "–" : String(cell.value).padStart(2, "0")}
+              <p className="font-display text-5xl font-black tabular-nums leading-none text-gold-light [text-shadow:0_0_24px_color-mix(in_srgb,var(--color-gold)_45%,transparent)] sm:text-7xl">
+                <Ticker value={cell.value} />
               </p>
               <p className="mt-2 font-tech text-[10px] uppercase tracking-[0.24em] text-white/60 sm:text-[11px]">{cell.label}</p>
             </div>
@@ -73,7 +74,7 @@ export function Gta6Countdown({ compact = false, hero = false }) {
         ) : (
           cells.slice(0, 3).map((cell) => (
             <span key={cell.label}>
-              <span className="font-display text-lg font-bold tabular-nums tracking-normal text-white">{cell.value ?? "–"}</span> {cell.label}
+              <span className="font-display text-lg font-bold tabular-nums tracking-normal text-white"><Ticker value={cell.value} pad={1} /></span> {cell.label}
             </span>
           ))
         )}
@@ -104,8 +105,8 @@ export function Gta6Countdown({ compact = false, hero = false }) {
           <div className="grid grid-cols-4 gap-2 sm:gap-3" role="timer">
             {cells.map((cell) => (
               <div key={cell.label} className="min-w-[4.25rem] border border-white/10 bg-black/40 px-2 py-3 text-center sm:min-w-[5.5rem] sm:py-4">
-                <p className="font-display text-4xl font-black tabular-nums leading-none text-gold-gradient sm:text-5xl">
-                  {cell.value === null ? "–" : String(cell.value).padStart(2, "0")}
+                <p className="font-display text-4xl font-black tabular-nums leading-none text-gold-light sm:text-5xl">
+                  <Ticker value={cell.value} />
                 </p>
                 <p className="mt-2 font-tech text-[10px] uppercase tracking-[0.24em] text-white/50">{cell.label}</p>
               </div>
