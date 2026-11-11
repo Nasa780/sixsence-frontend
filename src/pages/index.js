@@ -18,7 +18,7 @@ const SHOW_RIGHT_NOW = false;
 
 /**
  * Page d'accueil publique (2026-11-11) : premier écran en accordéon des modes avec la bande En direct en bas (Hero),
- * Vice City (GTA 6), « Choisis ton rôle » (les modes), puis En direct, Twitch, le calendrier et l'appel final. Chaque section vit
+ * Vice City (GTA 6), puis En direct, Twitch, le calendrier, l'appel final et « Choisis ton rôle » (les modes) tout en bas. Chaque section vit
  * dans src/components/home ; l'ancien « Choisis ton terrain » (Universes) reste dans le dossier.
  */
 export default function HomePage() {
@@ -26,7 +26,6 @@ export default function HomePage() {
     <>
       <Hero />
       <ViceCity />
-      <Casting />
       {SHOW_HOW_IT_WORKS ? <HowItWorks /> : null}
       <LiveBoard />
       <TwitchLive />
@@ -34,6 +33,8 @@ export default function HomePage() {
       <HomeCalendar />
       {SHOW_FEATURES ? <Features /> : null}
       <CallToAction />
+      {/* « Choisis ton rôle » tout en bas depuis le 2026-11-12 (le premier écran présente déjà les modes). */}
+      <Casting />
     </>
   );
 }
