@@ -4,7 +4,6 @@ import { Features } from "../components/home/Features";
 import { Hero } from "../components/home/Hero";
 import { HomeCalendar } from "../components/home/HomeCalendar";
 import { HowItWorks } from "../components/home/HowItWorks";
-import { LiveBand } from "../components/home/LiveBand";
 import { LiveBoard } from "../components/home/LiveBoard";
 import { RightNow } from "../components/home/RightNow";
 import { ViceCity } from "../components/home/ViceCity";
@@ -18,15 +17,14 @@ const SHOW_FEATURES = false;
 const SHOW_RIGHT_NOW = false;
 
 /**
- * Page d'accueil publique, façon affiche (2026-11-11) : l'affiche (Hero), la bande En direct en rouge braise, Vice City
- * (GTA 6), « Choisis ton rôle » (les modes), puis En direct, Twitch, le calendrier et l'appel final. Chaque section vit
+ * Page d'accueil publique (2026-11-11) : premier écran en accordéon des modes avec la bande En direct en bas (Hero),
+ * Vice City (GTA 6), « Choisis ton rôle » (les modes), puis En direct, Twitch, le calendrier et l'appel final. Chaque section vit
  * dans src/components/home ; l'ancien « Choisis ton terrain » (Universes) reste dans le dossier.
  */
 export default function HomePage() {
   return (
     <>
       <Hero />
-      <LiveBand />
       <ViceCity />
       <Casting />
       {SHOW_HOW_IT_WORKS ? <HowItWorks /> : null}
