@@ -28,8 +28,10 @@ import { FillBar, FloatingMedal, HexAvatar, RegisteredPlayers, SoloRegistration 
 import { BracketBoard, bracketMatches } from "./BracketBoard";
 import { OrganisationMessages } from "./TournamentViews";
 import { api } from "../../lib/api";
+import { celebrate } from "../../lib/celebrate";
 import { cn } from "../../lib/cn";
 import { roundsToWin } from "../../lib/matchRules";
+import { Clock } from "../effects/Ticker";
 
 /**
  * Fiche d'un tournoi (Coupe Horus, Coupe Anubis, tournoi de fin de saison, play-in), d'un seul tenant :
@@ -137,6 +139,26 @@ export function CupFiche({ tournament: t, userId, now, onDone, cups = null }) {
   const teams = anubis ? (t.squads ?? []).map((squad) => ({ ...squad.team, players: squad.starters, captain: squad.captain, forfeit: squad.forfeit })) : t.teams;
   const playersOf = (teamId) => teams.find((team) => team.id === teamId)?.players ?? [];
   const placeOf = (teamId) => METALS.find((m) => idOf(t[m.key]) === teamId) ?? null;
+
+  // Coupe gagnée par le joueur (son équipe, ou son équipe tirée au sort en Anubis) : pluie de paillettes à la première
+  // visite de la fiche dans les 3 jours qui suivent (gardé dans le navigateur).
+  const winnerId = idOf(t.winner);
+  const iWon =
+    t.status === "completed" &&
+    Boolean(winnerId) &&
+    (myTeamId === winnerId || (Boolean(userId) && playersOf(winnerId).some((player) => (player.id ?? player.userId) === userId)));
+  useEffect(() => {
+    if (!iWon || !t.completedAt || Date.now() - ms(t.completedAt) > 3 * 86_400_000) return undefined;
+    try {
+      const key = `sixsence:coupe-gagnee:${t.id}`;
+      if (window.localStorage.getItem(key)) return undefined;
+      window.localStorage.setItem(key, "1");
+    } catch {
+      return undefined;
+    }
+    const timer = setTimeout(() => celebrate("victoire"), 900);
+    return () => clearTimeout(timer);
+  }, [iWon, t.id, t.completedAt]);
 
   const stateOf = (team) => {
     if (team.forfeit) return { label: "Forfait", tone: "loss", out: true };
@@ -353,7 +375,7 @@ function FicheHero({ t, now, phase, cta }) {
               {timer ? (
                 <div>
                   <p className="font-tech text-[9px] uppercase tracking-[0.3em] text-white/45">{timer[0]}</p>
-                  <p className="mt-1 font-tech text-3xl font-black tabular-nums text-white">{countdown(timer[1], now)}</p>
+                  <p className="mt-1 font-tech text-3xl font-black tabular-nums text-white"><Clock target={timer[1]} now={now} /></p>
                 </div>
               ) : null}
             </div>
@@ -856,7 +878,7 @@ function DrawTeaser({ t, now, cancelled }) {
               ? "À la fin du check-in, les présents sont répartis au hasard en équipes, puis le tableau est tiré au sort et dévoilé à tous."
               : "À la fin du check-in, les équipes présentes sont placées au hasard dans le tableau, dévoilé à tous."}
         </p>
-        {!cancelled ? <p className="mt-5 font-tech text-2xl font-black tabular-nums text-white">{countdown(closesAt, now)}</p> : null}
+        {!cancelled ? <p className="mt-5 font-tech text-2xl font-black tabular-nums text-white"><Clock target={closesAt} now={now} /></p> : null}
       </div>
     </div>
   );

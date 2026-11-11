@@ -129,7 +129,7 @@ export function MatchResultOverlay({ matchId, won, delta, points, map, completed
                 className="mt-8 flex items-center justify-center gap-6"
               >
                 <p className="font-display text-6xl font-black tabular-nums leading-none sm:text-7xl" style={{ color }}>
-                  <CountUp value={delta} delay={950} duration={1300} format={signed} />
+                  <CountUp value={delta} delay={950} duration={1300} signed />
                   <span className="ml-2 text-2xl text-white/45">pts</span>
                 </p>
               </motion.div>

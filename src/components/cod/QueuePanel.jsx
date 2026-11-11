@@ -29,6 +29,8 @@ import { AppPanel } from "./AppPanel";
 import { PointsAtStake } from "./PointsAtStake";
 import { mapImage } from "../../lib/maps";
 import { PartyPanel } from "./PartyPanel";
+import { ScrambleText } from "../effects/ScrambleText";
+import { Ticker } from "../effects/Ticker";
 import { GROUPS_ENABLED, READY_REQUIRED } from "../../lib/config";
 
 const FORMAT_KEY = "sixsence:format";
@@ -595,7 +597,10 @@ export function ReadyCheckOverlay({ check, started, userId }) {
               <>
                 <p className="font-tech text-xs uppercase tracking-[0.4em] text-gold">{READY_REQUIRED ? "Tout le monde est prêt" : "Lancement"}</p>
                 <p className="mt-4 font-display text-7xl font-black uppercase leading-[0.85] sm:text-9xl">
-                  C&apos;est <span className="text-gold-gradient">parti</span>
+                  <ScrambleText text="C'est" duration={0.8} />{" "}
+                  <span className="text-gold-gradient">
+                    <ScrambleText text="parti" duration={0.9} delay={0.15} />
+                  </span>
                 </p>
                 <p className="mt-8 flex items-center justify-center gap-2.5 text-sm text-white/55">
                   <LuLoaderCircle aria-hidden className="h-4 w-4 animate-spin text-gold" />
@@ -606,7 +611,10 @@ export function ReadyCheckOverlay({ check, started, userId }) {
               <>
                 <p className="font-tech text-xs uppercase tracking-[0.4em] text-gold">Équipes formées{check.format ? ` · ${check.format}` : ""}</p>
                 <p className="mt-4 font-display text-7xl font-black uppercase leading-[0.85] sm:text-9xl">
-                  Match <span className="text-gold-gradient">trouvé</span>
+                  <ScrambleText text="Match" duration={0.9} delay={0.15} />{" "}
+                  <span className="text-gold-gradient">
+                    <ScrambleText text="trouvé" duration={1.1} delay={0.3} />
+                  </span>
                 </p>
                 <p className="mt-6 inline-flex flex-wrap items-center justify-center gap-x-3 gap-y-1 font-display text-2xl font-bold uppercase tracking-[0.14em] text-white/85">
                   <LuMap aria-hidden className="h-6 w-6 text-gold" />
@@ -621,7 +629,7 @@ export function ReadyCheckOverlay({ check, started, userId }) {
                 <div className="mx-auto mt-8 max-w-md">
                   {READY_REQUIRED ? null : <p className="mb-2 font-tech text-[11px] uppercase tracking-[0.3em] text-white/50">Lancement dans</p>}
                   <p className="font-display text-6xl font-black tabular-nums leading-none" aria-live="polite">
-                    {Math.ceil(left)}
+                    <Ticker value={Math.ceil(left)} pad={1} />
                     <span className="ml-1 text-2xl text-white/40">s</span>
                   </p>
                   <div aria-hidden className="mt-3 h-1.5 w-full bg-white/10">

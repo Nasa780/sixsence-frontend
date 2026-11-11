@@ -9,6 +9,7 @@ import { TeamCrest } from "../teams/TeamParts";
 import { Avatar } from "../ui/Avatar";
 import { TacticalCard } from "../ui/TacticalCard";
 import { Eyebrow } from "../ui/Typography";
+import { CountUp } from "../effects/CountUp";
 import { RankEmblem } from "./RankEmblem";
 
 /** Fil d'activité : icône et couleur par type d'événement. */
@@ -72,31 +73,6 @@ export function HubHighlights() {
 }
 
 /** Nombre qui défile de 0 à `value` quand il apparaît (désactivé si l'utilisateur réduit les animations). */
-function CountUpInView({ value, delay = 0 }) {
-  const reduce = useReducedMotion();
-  const ref = useRef(null);
-  const seen = useInView(ref, { once: true, margin: "-60px" });
-  const [shown, setShown] = useState(reduce ? value : 0);
-  useEffect(() => {
-    if (reduce || !seen) return undefined;
-    let frame;
-    const timer = setTimeout(() => {
-      const t0 = performance.now();
-      const tick = (now) => {
-        const k = Math.min(1, (now - t0) / 1200);
-        setShown(Math.round(value * (1 - (1 - k) ** 3)));
-        if (k < 1) frame = requestAnimationFrame(tick);
-      };
-      frame = requestAnimationFrame(tick);
-    }, delay);
-    return () => {
-      clearTimeout(timer);
-      cancelAnimationFrame(frame);
-    };
-  }, [seen, value, delay, reduce]);
-  return <span ref={ref}>{shown.toLocaleString("fr-FR")}</span>;
-}
-
 /**
  * Carte « Joueur de la semaine » (aussi sur la page Renommée). Entrée en scène à l'apparition : reflet doré qui balaie la
  * carte (puis revient de temps en temps), « MVP » qui glisse en fond, avatar dans un cadre doré qui respire et couronne,
@@ -175,7 +151,7 @@ export function PlayerOfWeek({ player }) {
           </motion.p>
           <motion.div {...appear(0.3)} className="mt-4 flex flex-wrap items-center gap-x-6 gap-y-3">
             <span className="font-display text-4xl font-black text-gold tabular-nums">
-              +<CountUpInView value={player.net} delay={400} /> pts
+              <CountUp value={player.net} delay={400} signed /> pts
             </span>
             <span className="inline-flex items-center gap-2 text-sm text-white/70">
               <RankEmblem rank={rank} size={26} />

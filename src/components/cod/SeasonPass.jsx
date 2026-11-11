@@ -1,10 +1,13 @@
 import { motion, useReducedMotion } from "framer-motion";
 import Link from "next/link";
+import { useEffect } from "react";
 import { FaDiscord } from "react-icons/fa6";
 import { LuAward, LuCheck, LuIdCard, LuLock } from "react-icons/lu";
 import { signInWithDiscord } from "../../lib/auth";
 import { RARITY, cardInfo } from "../../lib/cards";
+import { celebrate } from "../../lib/celebrate";
 import { cn } from "../../lib/cn";
+import { CountUp } from "../effects/CountUp";
 import { Reveal } from "../effects/Reveal";
 import { Button } from "../ui/Button";
 import { TacticalCard } from "../ui/TacticalCard";
@@ -22,12 +25,27 @@ function Progress({ data }) {
   const inTier = me ? me.xp - level * tierXp : 0;
   const percent = done ? 100 : Math.round((inTier / tierXp) * 100);
 
+  // Nouveau palier depuis la dernière visite : petite pluie de paillettes (palier gardé dans le navigateur).
+  useEffect(() => {
+    if (!me) return;
+    try {
+      const key = `sixsence:pass:${season.id ?? "saison"}`;
+      const before = Number(window.localStorage.getItem(key));
+      window.localStorage.setItem(key, String(level));
+      if (before > 0 && level > before) setTimeout(() => celebrate("petit"), 700);
+    } catch {
+      // Sans stockage : pas de célébration.
+    }
+  }, [me, level, season.id]);
+
   return (
     <TacticalCard cut={22} highlight innerClassName="relative overflow-hidden p-6 sm:p-8">
       <div aria-hidden className="pointer-events-none absolute -right-16 -top-20 h-64 w-64 rounded-full bg-gold/15 blur-3xl" />
       <div className="relative grid items-center gap-6 lg:grid-cols-[auto_1fr]">
         <div className="flex items-baseline gap-3">
-          <span className="font-display text-8xl font-black leading-none tabular-nums text-gold-gradient">{level}</span>
+          <span className="font-display text-8xl font-black leading-none tabular-nums text-gold">
+            <CountUp value={level} delay={200} />
+          </span>
           <span className="font-tech text-xs uppercase tracking-[0.2em] text-white/50">
             palier
             <br />
@@ -39,7 +57,7 @@ function Progress({ data }) {
             <span className="text-white/70">{done ? "Pass terminé, bravo !" : `Palier ${level + 1}`}</span>
             {me && !done ? (
               <span className="font-tech text-xs tabular-nums text-white/55">
-                {inTier} / {tierXp} XP
+                <CountUp value={inTier} delay={300} /> / {tierXp} XP
               </span>
             ) : null}
           </div>

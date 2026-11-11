@@ -1,41 +1,36 @@
-import { useInView, useReducedMotion } from "framer-motion";
+import NumberFlow from "@number-flow/react";
+import { useInView } from "framer-motion";
 import { useEffect, useRef, useState } from "react";
 
 /**
- * Nombre qui défile jusqu'à sa valeur quand il apparaît à l'écran (depuis `from`), puis depuis l'ancienne valeur
- * quand elle change (temps réel). Valeur directe si l'utilisateur réduit les animations.
+ * Nombre qui roule jusqu'à sa valeur, chiffre par chiffre comme un compteur mécanique (NumberFlow, 2026-11-11), quand
+ * il apparaît à l'écran (depuis `from`), puis depuis l'ancienne valeur quand elle change (temps réel). Valeur directe
+ * si l'utilisateur réduit les animations (géré par NumberFlow).
+ *   signed : affiche le signe (+50, −25, ±0), pour une variation de points.
  */
-export function CountUp({ value, from = 0, delay = 0, duration = 1100, format = (n) => n.toLocaleString("fr-FR") }) {
-  const reduce = useReducedMotion();
+export function CountUp({ value, from = 0, delay = 0, duration = 1100, signed = false, className }) {
   const ref = useRef(null);
   const seen = useInView(ref, { once: true, margin: "-40px" });
-  const [shown, setShown] = useState(reduce ? value : from);
-  const last = useRef(from);
+  const [shown, setShown] = useState(from);
 
   useEffect(() => {
-    if (reduce) {
-      last.current = value;
-      return setShown(value);
-    }
-    if (!seen) return undefined;
-    const start = last.current;
-    last.current = value;
-    if (start === value) return setShown(value);
-    let frame;
-    const timer = setTimeout(() => {
-      const t0 = performance.now();
-      const tick = (now) => {
-        const k = Math.min(1, (now - t0) / duration);
-        setShown(Math.round(start + (value - start) * (1 - (1 - k) ** 3)));
-        if (k < 1) frame = requestAnimationFrame(tick);
-      };
-      frame = requestAnimationFrame(tick);
-    }, delay);
-    return () => {
-      clearTimeout(timer);
-      cancelAnimationFrame(frame);
-    };
-  }, [seen, value, delay, duration, reduce]);
+    if (!seen || typeof value !== "number") return undefined;
+    const timer = setTimeout(() => setShown(value), delay);
+    return () => clearTimeout(timer);
+  }, [seen, value, delay]);
 
-  return <span ref={ref}>{format(shown)}</span>;
+  const timing = { duration, easing: "cubic-bezier(0.22, 1, 0.36, 1)" };
+  return (
+    <span ref={ref} className={className}>
+      {signed && shown === 0 ? "±" : null}
+      <NumberFlow
+        value={shown}
+        locales="fr-FR"
+        format={signed ? { signDisplay: "exceptZero" } : undefined}
+        transformTiming={timing}
+        spinTiming={timing}
+        willChange
+      />
+    </span>
+  );
 }
