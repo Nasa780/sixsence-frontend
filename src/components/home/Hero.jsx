@@ -130,7 +130,7 @@ export function Hero() {
   const target = current ?? { href: "/cod", cta: "Jouer maintenant" };
 
   return (
-    <section aria-labelledby="titre-accueil" className="relative isolate flex min-h-[max(100svh,44rem)] flex-col items-center justify-center overflow-hidden bg-black pb-36 pt-24 lg:pb-24">
+    <section aria-labelledby="titre-accueil" className="relative isolate flex min-h-[max(100svh,44rem)] flex-col items-center justify-center overflow-hidden bg-black pb-24 pt-32 lg:pb-24 lg:pt-24">
       <h1 id="titre-accueil" className="sr-only">
         SixSence, compétition Call of Duty et événements GTA 6
       </h1>
