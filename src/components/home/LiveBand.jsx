@@ -11,7 +11,7 @@ import { FEED, ago } from "../cod/HubHighlights";
 /**
  * Bande « En direct » sous le premier écran de l'accueil (GET /live, hooks/useLive), comme un bandeau d'info
  * sportive, posée en bas du premier écran (accueil « accordéon des modes », 2026-11-11) : fond sombre, étiquette rouge
- * braise, chaque info dans la couleur de son mode ; défile en continu, s'arrête au survol. Ce qui se passe maintenant d'abord (Classé, Division, coupe,
+ * braise, fond gris (2026-11-12), chaque info dans la couleur de son mode ; défile en continu, s'arrête au survol. Ce qui se passe maintenant d'abord (Classé, Division, coupe,
  * GTA 6, point qui pulse), puis ce qui est toujours vrai (fin de saison, leaders, dernier match, file ouverte) :
  * jamais vide, jamais de zéro. Étiquette toujours « En direct » (2026-11-11 ; avant : « À venir » quand rien n'était en
  * cours) ; le point ne pulse que si quelque chose se passe maintenant.
@@ -136,7 +136,7 @@ export function LiveBand({ initialData = null, floating = false }) {
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       transition={{ duration: 0.7, delay: 0.5, ease: [0.22, 1, 0.36, 1] }}
-      className={cn("z-10 border-t border-gold/35 bg-ink/85 backdrop-blur-md", floating ? "absolute inset-x-0 bottom-16 lg:bottom-0" : "relative")}
+      className={cn("z-10 border-t border-gold/35 bg-[#3a3a42]/95 backdrop-blur-md", floating ? "absolute inset-x-0 bottom-16 lg:bottom-0" : "relative")}
     >
       <div className="flex items-stretch">
         <span className="z-10 flex shrink-0 items-center gap-2 bg-ember px-3 font-tech text-[9px] font-bold uppercase tracking-[0.22em] text-[#130503] shadow-[8px_0_24px_rgba(0,0,0,0.5)] sm:px-5 sm:text-[11px]">
@@ -161,8 +161,8 @@ export function LiveBand({ initialData = null, floating = false }) {
               ))}
             </div>
           )}
-          <div aria-hidden className="pointer-events-none absolute inset-y-0 left-0 w-6 bg-linear-to-r from-ink to-transparent" />
-          <div aria-hidden className="pointer-events-none absolute inset-y-0 right-0 w-10 bg-linear-to-l from-ink to-transparent sm:w-16" />
+          <div aria-hidden className="pointer-events-none absolute inset-y-0 left-0 w-6 bg-linear-to-r from-[#3a3a42] to-transparent" />
+          <div aria-hidden className="pointer-events-none absolute inset-y-0 right-0 w-10 bg-linear-to-l from-[#3a3a42] to-transparent sm:w-16" />
         </div>
       </div>
     </motion.aside>
