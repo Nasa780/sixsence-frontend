@@ -212,8 +212,9 @@ export function Hero() {
         </span>
         <Logo current={current} />
         <div className="hero-in pointer-events-auto mt-9 flex w-full max-w-md gap-3 sm:mt-11 sm:w-auto sm:max-w-none" style={{ animationDelay: "1.4s" }}>
-          {/* Tant que la session n'est pas lue, le bouton connecte (cas le plus fréquent) puis mène au mode. */}
-          {!loading && session ? (
+          {/* Jouer demande la connexion (tant que la session n'est pas lue, le bouton connecte puis mène au mode) ; GTA 6 et
+              les tournois se consultent sans compte. */}
+          {(!loading && session) || current?.key === "gta" || current?.key === "tournoi" ? (
             <ButtonLink href={target.href} size="lg" className="flex-1 sm:flex-none">
               {target.cta}
               <LuArrowRight aria-hidden className="h-5 w-5" />
@@ -224,12 +225,6 @@ export function Hero() {
               {target.cta}
             </Button>
           )}
-          {/* Pas de second bouton quand le Tournoi est en avant (le premier y mène déjà). */}
-          {MATCH_TEAM_ENABLED && current?.key !== "tournoi" ? (
-            <ButtonLink href="/cod/tournoi" variant="outline" size="lg" className="flex-1 sm:flex-none">
-              Les tournois
-            </ButtonLink>
-          ) : null}
         </div>
 
         {/* Téléphone : les modes en liste, avec leur info du moment */}
