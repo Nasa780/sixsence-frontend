@@ -116,7 +116,7 @@ function Item({ item }) {
     <Link
       href={item.href}
       className={cn(
-        "group relative flex shrink-0 items-center gap-2 border-r border-white/10 px-4 py-1.5 transition-[opacity,background-color] duration-300 hover:bg-white/[0.05] hover:opacity-100 group-hover/band:opacity-40 sm:gap-3 sm:px-7 sm:py-2",
+        "group relative flex shrink-0 items-center gap-2 border-r border-white/10 px-4 py-1.5 transition-[opacity,background-color] duration-300 hover:bg-white/[0.05] hover:opacity-100 group-hover/band:opacity-40 sm:gap-3 sm:px-7 sm:py-2 lg:py-2.5",
         item.fresh && "bg-ember/10",
       )}
     >
@@ -178,7 +178,7 @@ export function LiveBand({ initialData = null, floating = false }) {
       {fresh?.chip ? <span key={fresh.at} aria-hidden className="band-flash pointer-events-none absolute inset-0 z-20" /> : null}
       <div className="flex items-stretch">
         {/* Voyant « En direct » façon plateau télé : cadre rouge braise lumineux */}
-        <span className="z-10 flex shrink-0 items-center gap-2.5 border-r border-white/10 py-1 pl-2.5 pr-2 sm:py-1 sm:pl-5 sm:pr-4">
+        <span className="z-10 flex shrink-0 items-center gap-2.5 border-r border-white/10 py-1 pl-2.5 pr-2 sm:py-1 sm:pl-5 sm:pr-4 lg:py-1.5">
           <span className="band-onair flex items-center gap-2 rounded-md border-2 border-ember px-2.5 py-0.5 font-tech text-[9px] font-black uppercase tracking-[0.26em] text-[#ffd3c6] shadow-[0_0_18px_rgba(255,77,46,0.45),inset_0_0_12px_rgba(255,77,46,0.35)] [text-shadow:0_0_10px_var(--color-ember)] sm:gap-2.5 sm:px-3.5 sm:py-1 sm:text-[11px]">
             <span aria-hidden className="relative h-2 w-2 rounded-full bg-ember shadow-[0_0_10px_var(--color-ember)] sm:h-2.5 sm:w-2.5">
               <span className="band-radar absolute -inset-0.5 rounded-full border-2 border-ember" />
