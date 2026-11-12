@@ -21,7 +21,6 @@ const ROLES = [
   { key: "gta", univers: "gta", game: "Grand Theft Auto VI", title: "GTA 6", word: null, text: "Sessions, courses et braquages avec la communauté.", cta: "Le programme", href: "/gta6", image: "/images/gta/braquage-portrait.webp", x: "50%" },
 ];
 
-const COUNT = { 3: "Trois", 4: "Quatre" };
 
 /** Mot vertical de la carte GTA 6 : « J-8 » avant la sortie, « VI » ensuite (et avant le premier calcul). */
 function useGtaWord() {
@@ -84,8 +83,9 @@ export function Casting() {
     setCurrent(Math.min(ROLES.length - 1, Math.round(rail.scrollLeft / (card.getBoundingClientRect().width + 12))));
   };
 
+  // Pas sur téléphone (2026-11-12) : le premier écran liste déjà les modes.
   return (
-    <section id="univers" aria-labelledby="titre-casting" className="scroll-mt-20 py-20 sm:py-28 lg:py-32">
+    <section id="univers" aria-labelledby="titre-casting" className="hidden scroll-mt-20 py-20 sm:py-28 md:block lg:py-32">
       <Container>
         <Reveal className="flex flex-col gap-5 lg:flex-row lg:items-end lg:justify-between">
           <div>
@@ -96,9 +96,6 @@ export function Casting() {
               <span className="text-gold-gradient">ton rôle</span>
             </h2>
           </div>
-          <p className="max-w-sm text-[15px] leading-relaxed text-white/60 sm:text-[17px] lg:pb-3">
-            {COUNT[ROLES.length] ?? ROLES.length} façons de jouer, chacune avec sa couleur. Tu peux toutes les tenter dans la même saison.
-          </p>
         </Reveal>
       </Container>
 

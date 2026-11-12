@@ -32,9 +32,10 @@ export default function HomePage() {
       {SHOW_RIGHT_NOW ? <RightNow /> : null}
       <HomeCalendar />
       {SHOW_FEATURES ? <Features /> : null}
-      <CallToAction />
-      {/* « Choisis ton rôle » tout en bas depuis le 2026-11-12 (le premier écran présente déjà les modes). */}
+      {/* « Choisis ton rôle » en bas depuis le 2026-11-12 (le premier écran présente déjà les modes). */}
       <Casting />
+      {/* « Prêt à faire tes preuves ? » tout en bas depuis le 2026-11-12 */}
+      <CallToAction />
     </>
   );
 }
