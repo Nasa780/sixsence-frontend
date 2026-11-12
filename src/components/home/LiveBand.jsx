@@ -13,7 +13,7 @@ import { FEED, ago } from "../cod/HubHighlights";
  * Bande « En direct » sous le premier écran de l'accueil (GET /live, hooks/useLive), comme un bandeau d'info
  * sportive, posée en bas du premier écran (accueil « accordéon des modes », 2026-11-11) : fond sombre, étiquette rouge
  * braise avec voyant radar et vu-mètre, fond gris translucide, éclat doré sur le filet (2026-11-12), chaque info dans la couleur de son mode ; défile en continu, s’arrête au survol (l’info visée ressort, les autres s’estompent) ; une activité arrivée pendant la visite passe en tête avec un éclair et « Nouveau » ; les valeurs roulent quand elles changent. Ce qui se passe maintenant d'abord (Classé, Division, coupe,
- * GTA 6, point qui pulse), puis ce qui est toujours vrai (connectés, saison, leaders, équipes actives, tournois,
+ * GTA 6, point qui pulse), puis ce qui est toujours vrai (connectés, saison, leaders, équipes actives,
  * sortie de GTA 6, dernier match, 3 dernières activités de la semaine, file ouverte) :
  * jamais vide, jamais de zéro. Étiquette toujours « En direct » (2026-11-11 ; avant : « À venir » quand rien n'était en
  * cours).
@@ -90,9 +90,6 @@ function itemsOf(live, fresh = null) {
   }
   if (MATCH_TEAM_ENABLED && !live.division && live.activeTeams > 0) {
     calm.push({ key: "equipes", icon: LuShield, color: COLORS.division, label: "Division", value: `${plural(live.activeTeams, "équipe")} ${live.activeTeams > 1 ? "actives" : "active"}`, sub: "4v4 · défis directs", href: "/cod/division" });
-  }
-  if (MATCH_TEAM_ENABLED && !live.cup) {
-    calm.push({ key: "tournois", icon: LuTrophy, color: COLORS.tournoi, label: "Tournois", value: "Coupe Horus · Coupe Anubis", sub: "en équipe et en solo", href: "/cod/tournoi" });
   }
   const release = new Date(GTA6_RELEASE).getTime();
   if (!live.gta && release > Date.now()) {
@@ -186,7 +183,7 @@ export function LiveBand({ initialData = null, floating = false }) {
       animate={{ opacity: 1 }}
       transition={{ duration: 0.7, delay: 0.5, ease: [0.22, 1, 0.36, 1] }}
       className={cn(
-        "z-10 border-gold/35 bg-[#3a3a42]/10 backdrop-blur-md",
+        "z-10 border-gold/35 bg-[#3a3a42]/5 backdrop-blur-md",
         // Posée dans le premier écran : tout en haut sous le menu sur téléphone, en bas sur ordinateur.
         floating ? "absolute inset-x-0 top-16 border-b lg:top-auto lg:bottom-0 lg:border-b-0 lg:border-t" : "relative border-t",
       )}
@@ -227,8 +224,8 @@ export function LiveBand({ initialData = null, floating = false }) {
               ))}
             </div>
           )}
-          <div aria-hidden className="pointer-events-none absolute inset-y-0 left-0 w-6 bg-linear-to-r from-[#3a3a42]/10 to-transparent" />
-          <div aria-hidden className="pointer-events-none absolute inset-y-0 right-0 w-10 bg-linear-to-l from-[#3a3a42]/10 to-transparent sm:w-16" />
+          <div aria-hidden className="pointer-events-none absolute inset-y-0 left-0 w-6 bg-linear-to-r from-[#3a3a42]/5 to-transparent" />
+          <div aria-hidden className="pointer-events-none absolute inset-y-0 right-0 w-10 bg-linear-to-l from-[#3a3a42]/5 to-transparent sm:w-16" />
         </div>
       </div>
     </motion.aside>
