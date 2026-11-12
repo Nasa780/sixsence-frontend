@@ -9,6 +9,7 @@ import useSiteStats, { formatCount } from "../../hooks/useSiteStats";
 import useTopPlayers from "../../hooks/useTopPlayers";
 import { rankFor } from "../../lib/ranks";
 import { Reveal } from "../effects/Reveal";
+import { SectionTrace } from "../effects/SectionTrace";
 import { Container } from "../ui/Container";
 import { TacticalCard } from "../ui/TacticalCard";
 import { SectionHeading } from "../ui/Typography";
@@ -45,7 +46,8 @@ export function LiveBoard() {
   }, []);
 
   return (
-    <section className="py-20 sm:py-28">
+    <section className="relative py-20 sm:py-28">
+      <SectionTrace />
       <Container className="grid grid-cols-1 gap-10 lg:grid-cols-[1fr_1.1fr] lg:items-start">
         <Reveal>
           <SectionHeading

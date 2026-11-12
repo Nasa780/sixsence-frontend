@@ -5,6 +5,7 @@ import useSession from "../../hooks/useSession";
 import { signInWithDiscord } from "../../lib/auth";
 import { DISCORD_INVITE_URL, TIKTOK_URL } from "../../lib/config";
 import { Reveal } from "../effects/Reveal";
+import { SectionTrace } from "../effects/SectionTrace";
 import { Button, ButtonLink } from "../ui/Button";
 import { Container } from "../ui/Container";
 import { TacticalCard } from "../ui/TacticalCard";
@@ -14,7 +15,9 @@ export function CallToAction() {
   const { session } = useSession();
 
   return (
-    <section className="pb-8">
+    <section className="relative pb-8">
+      {/* Dans la marge basse de la section précédente, qui n’en laisse aucune ici. */}
+      <SectionTrace className="-top-10 sm:-top-14" />
       <Container>
         <Reveal>
           <TacticalCard highlight cut={32} innerClassName="holo overflow-hidden px-6 py-14 text-center sm:px-12 sm:py-20">

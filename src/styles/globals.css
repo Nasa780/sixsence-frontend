@@ -322,6 +322,31 @@
   .band-energy, .band-radar, .band-onair, .band-vu, .band-flash, .band-roll { animation: none; }
   .band-radar, .band-flash { display: none; }
 }
+/* Accueil : filet doré qui se trace entre deux sections (components/effects/SectionTrace) */
+.section-trace {
+  height: 2px;
+  transform: scaleX(0);
+  transition: transform 1.1s cubic-bezier(0.22, 1, 0.36, 1);
+  background: linear-gradient(90deg, transparent, #d4af37 30%, #f8ecc0 50%, #d4af37 70%, transparent);
+}
+.section-trace.vu { transform: scaleX(1); }
+.section-trace::after {
+  content: "";
+  position: absolute;
+  inset: -6px 0;
+  background: radial-gradient(ellipse at center, rgba(248, 236, 192, 0.8), transparent 60%);
+  opacity: 0;
+}
+.section-trace.vu::after { animation: section-trace-flash 1.4s ease-out 0.9s both; }
+@keyframes section-trace-flash {
+  0% { opacity: 0; }
+  30% { opacity: 1; }
+  100% { opacity: 0; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .section-trace { transform: none; transition: none; }
+  .section-trace.vu::after { animation: none; }
+}
 @keyframes rank-sheen {
   0% { background-position: 160% 0; }
   45%, 100% { background-position: -60% 0; }
