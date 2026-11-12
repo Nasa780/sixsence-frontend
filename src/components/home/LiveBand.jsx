@@ -137,7 +137,7 @@ export function LiveBand({ initialData = null, floating = false }) {
       animate={{ opacity: 1 }}
       transition={{ duration: 0.7, delay: 0.5, ease: [0.22, 1, 0.36, 1] }}
       className={cn(
-        "z-10 border-gold/35 bg-[#3a3a42]/30 backdrop-blur-md",
+        "z-10 border-gold/35 bg-[#3a3a42]/20 backdrop-blur-md",
         // Posée dans le premier écran : tout en haut sous le menu sur téléphone, en bas sur ordinateur.
         floating ? "absolute inset-x-0 top-16 border-b lg:top-auto lg:bottom-0 lg:border-b-0 lg:border-t" : "relative border-t",
       )}
@@ -168,8 +168,8 @@ export function LiveBand({ initialData = null, floating = false }) {
               ))}
             </div>
           )}
-          <div aria-hidden className="pointer-events-none absolute inset-y-0 left-0 w-6 bg-linear-to-r from-[#3a3a42]/25 to-transparent" />
-          <div aria-hidden className="pointer-events-none absolute inset-y-0 right-0 w-10 bg-linear-to-l from-[#3a3a42]/25 to-transparent sm:w-16" />
+          <div aria-hidden className="pointer-events-none absolute inset-y-0 left-0 w-6 bg-linear-to-r from-[#3a3a42]/15 to-transparent" />
+          <div aria-hidden className="pointer-events-none absolute inset-y-0 right-0 w-10 bg-linear-to-l from-[#3a3a42]/15 to-transparent sm:w-16" />
         </div>
       </div>
     </motion.aside>
