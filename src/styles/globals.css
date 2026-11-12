@@ -322,6 +322,15 @@
   .band-energy, .band-radar, .band-onair, .band-vu, .band-flash, .band-roll { animation: none; }
   .band-radar, .band-flash { display: none; }
 }
+/* Accueil : voyant « en ligne » du bloc Discord (components/home/DiscordLive) */
+.discord-dot { animation: discord-dot 1.6s ease-out infinite; }
+@keyframes discord-dot {
+  0% { box-shadow: 0 0 0 0 rgba(52, 211, 153, 0.7); }
+  100% { box-shadow: 0 0 0 10px rgba(52, 211, 153, 0); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .discord-dot { animation: none; }
+}
 /* Accueil, jour J de GTA 6 (components/home/LaunchHero) : halo qui respire, « Disponible » qui jaillit */
 .launch-glow { animation: launch-glow 3s ease-in-out infinite; }
 @keyframes launch-glow {

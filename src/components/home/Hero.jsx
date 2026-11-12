@@ -1,7 +1,7 @@
 import Head from "next/head";
 import Image from "next/image";
 import Link from "next/link";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { FaDiscord } from "react-icons/fa6";
 import { LuArrowRight, LuChevronRight } from "react-icons/lu";
 import useLive from "../../hooks/useLive";
@@ -74,15 +74,19 @@ function infosOf(live, gta) {
   };
 }
 
-/** Le logo, en or puis dans la couleur du mode (fondu entre des calques), tranché à l'arrivée puis traversé d'un reflet. */
-function Logo({ current }) {
+/**
+ * Le logo, en or puis dans la couleur du mode (fondu entre des calques), tranché à l'arrivée puis traversé d'un reflet.
+ * Sur ordinateur, il s'incline vers la souris et un éclat la suit (2026-11-12) : `logoRef` et `glareRef`, pilotés par Hero.
+ */
+function Logo({ current, logoRef, glareRef }) {
   const layers = [GOLD, ...MODES];
   const color = current?.color ?? GOLD.color;
   return (
     <div
+      ref={logoRef}
       role="img"
       aria-label="SixSence"
-      className="relative aspect-[1899/306] w-[min(1000px,88vw)] transition-[filter] duration-500"
+      className="relative aspect-[1899/306] w-[min(1000px,88vw)] transition-[filter,transform] duration-300 ease-out"
       style={{ filter: LOGO_STYLE === "blanc" ? `drop-shadow(0 0 18px ${color}) drop-shadow(0 0 50px ${color}80)` : "drop-shadow(0 10px 30px rgba(0,0,0,0.6))" }}
     >
       {LOGO_STYLE === "blanc" ? (
@@ -97,6 +101,7 @@ function Logo({ current }) {
         ))
       )}
       <span className="hero-logo-sheen absolute inset-0" style={MASK} />
+      <span ref={glareRef} aria-hidden className="pointer-events-none absolute inset-0 opacity-0 mix-blend-overlay transition-opacity duration-500" style={MASK} />
     </div>
   );
 }
@@ -115,10 +120,14 @@ export function Hero() {
   const [hover, setHover] = useState(null);
   const [wide, setWide] = useState(null);
   const [tick, setTick] = useState(0);
+  const logoRef = useRef(null);
+  const glareRef = useRef(null);
+  const still = useRef(true);
 
   // Ordinateur ou téléphone (le survol n'existe que sur ordinateur), lu après l'affichage.
   useEffect(() => {
     const query = window.matchMedia("(min-width: 1024px)");
+    still.current = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
     const update = () => setWide(query.matches);
     update();
     query.addEventListener("change", update);
@@ -131,13 +140,31 @@ export function Hero() {
     return () => clearInterval(timer);
   }, [wide]);
 
+  // Ordinateur : le logo s'incline vers la souris (14° au plus) et un éclat blanc la suit, plus vif près du logo.
+  const tilt = (event) => {
+    const logo = logoRef.current;
+    const glare = glareRef.current;
+    if (!wide || still.current || !logo || !glare) return;
+    const box = logo.getBoundingClientRect();
+    const x = (event.clientX - box.left) / box.width;
+    const y = (event.clientY - box.top) / box.height;
+    const near = Math.max(0, 1 - Math.hypot(x - 0.5, (y - 0.5) * 0.4) / 1.4);
+    logo.style.transform = `perspective(900px) rotateY(${(x - 0.5) * 14}deg) rotateX(${(0.5 - y) * 10}deg)`;
+    glare.style.background = `radial-gradient(circle at ${x * 100}% ${y * 100}%, rgba(255,255,255,0.95), rgba(255,255,255,0.25) 18%, transparent 38%)`;
+    glare.style.opacity = String(0.4 + near * 0.6);
+  };
+  const untilt = () => {
+    if (logoRef.current) logoRef.current.style.transform = "";
+    if (glareRef.current) glareRef.current.style.opacity = "0";
+  };
+
   const cycle = [null, ...MODES];
   const current = wide === false ? cycle[tick % cycle.length] : MODES.find((mode) => mode.key === hover) ?? null;
   const infos = infosOf(live, gta);
   const target = current ?? { href: "/cod", cta: "Jouer maintenant" };
 
   return (
-    <section aria-labelledby="titre-accueil" className="relative isolate flex min-h-[max(100svh,44rem)] flex-col items-center justify-center overflow-hidden bg-black pb-24 pt-32 lg:pb-24 lg:pt-24">
+    <section aria-labelledby="titre-accueil" onMouseMove={tilt} onMouseLeave={untilt} className="relative isolate flex min-h-[max(100svh,44rem)] flex-col items-center justify-center overflow-hidden bg-black pb-24 pt-32 lg:pb-24 lg:pt-24">
       {/* Le grand logo est le plus gros élément du premier écran : téléchargé avant tout le reste. */}
       <Head>
         <link key="logo-accueil" rel="preload" as="image" href={LOGO} fetchPriority="high" />
@@ -222,7 +249,7 @@ export function Hero() {
           <span aria-hidden>●</span>
           {current ? current.label : `${season} · MW4 + GTA VI`}
         </span>
-        <Logo current={current} />
+        <Logo current={current} logoRef={logoRef} glareRef={glareRef} />
         <div className="hero-in pointer-events-auto mt-9 flex w-full max-w-md gap-3 sm:mt-11 sm:w-auto sm:max-w-none" style={{ animationDelay: "1.4s" }}>
           {/* Jouer demande la connexion (tant que la session n'est pas lue, le bouton connecte puis mène au mode) ; GTA 6 et
               les tournois se consultent sans compte. */}
