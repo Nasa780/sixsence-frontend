@@ -24,13 +24,19 @@ const MASK = { WebkitMask: `url(${LOGO}) center / contain no-repeat`, mask: `url
 
 const GOLD = { key: "or", color: "#d4af37", grad: "linear-gradient(100deg,#9c7c1c,#d4af37 30%,#f8ecc0 50%,#d4af37 70%,#9c7c1c)" };
 
-/** Les modes, dans leur couleur. `text` : couleur lisible du nom sur fond sombre ; `position` : cadrage de l'image. */
+/** Image du téléphone quand aucun mode n'est mis en avant (l'or). */
+const GOLD_IMAGE = "/images/accueil/mw4-park.webp";
+
+/**
+ * Les modes, dans leur couleur. `text` : couleur lisible du nom sur fond sombre ; `position` : cadrage de l'image ;
+ * `tall` : image verticale (affiches MW4, 2026-11-12), plein écran sur téléphone ; sinon (16:9) seulement le haut.
+ */
 const MODES = [
-  { key: "classe", label: "Classé", color: "#34d399", text: "#34d399", grad: "linear-gradient(100deg,#047857,#34d399 30%,#d1fae5 50%,#34d399 70%,#047857)", image: "/images/modes/classe.webp", href: "/cod/ranked", cta: "Jouer en Classé" },
+  { key: "classe", label: "Classé", color: "#34d399", text: "#34d399", grad: "linear-gradient(100deg,#047857,#34d399 30%,#d1fae5 50%,#34d399 70%,#047857)", image: "/images/accueil/mw4-valeria.webp", tall: true, href: "/cod/ranked", cta: "Jouer en Classé" },
   ...(MATCH_TEAM_ENABLED
     ? [
-        { key: "division", label: "Division", color: "#22d3ee", text: "#22d3ee", grad: "linear-gradient(100deg,#0e7490,#22d3ee 30%,#cffafe 50%,#22d3ee 70%,#0e7490)", image: "/images/modes/division.jpg", href: "/cod/division", cta: "Jouer en Division" },
-        { key: "tournoi", label: "Tournoi", color: "#e5484d", text: "#f87171", grad: "linear-gradient(100deg,#991b1b,#e5484d 30%,#fecaca 50%,#e5484d 70%,#991b1b)", image: "/images/modes/tournoi.webp", href: "/cod/tournoi", cta: "Voir les tournois" },
+        { key: "division", label: "Division", color: "#22d3ee", text: "#22d3ee", grad: "linear-gradient(100deg,#0e7490,#22d3ee 30%,#cffafe 50%,#22d3ee 70%,#0e7490)", image: "/images/accueil/mw4-price.webp", tall: true, href: "/cod/division", cta: "Jouer en Division" },
+        { key: "tournoi", label: "Tournoi", color: "#e5484d", text: "#f87171", grad: "linear-gradient(100deg,#991b1b,#e5484d 30%,#fecaca 50%,#e5484d 70%,#991b1b)", image: "/images/accueil/mw4-ghost.webp", tall: true, href: "/cod/tournoi", cta: "Voir les tournois" },
       ]
     : []),
   { key: "gta", label: "GTA 6", color: "#ff6a3d", text: "#ff9a5c", grad: "linear-gradient(100deg,#d6246e,#ff6a3d 30%,#ffd29a 50%,#ff6a3d 70%,#d6246e)", image: "/images/gta6.webp", href: "/gta6", cta: "Voir GTA 6", position: "62% 20%" },
@@ -184,21 +190,19 @@ export function Hero() {
         })}
       </div>
 
-      {/* --- Téléphone : l'image du mode mis en avant, en fondu --------------- */}
+      {/* --- Téléphone : l'image du mode mis en avant (ou celle de l'or), en fondu ---------------
+          Images verticales : plein écran ; images en 16:9 : le haut de l'écran seulement, pour ne pas être zoomées ×4. */}
       <div aria-hidden className="absolute inset-0 -z-10 lg:hidden">
-        {MODES.map((mode) => (
-          <Image
+        {[{ key: "or", image: GOLD_IMAGE, tall: true }, ...MODES].map((mode) => (
+          <div
             key={mode.key}
-            src={mode.image}
-            alt=""
-            fill
-            sizes="1280px"
-            className={cn("object-cover transition-opacity duration-1000", current?.key === mode.key ? "opacity-75" : "opacity-0")}
-            style={{ objectPosition: mode.position ?? "center 20%" }}
-          />
+            className={cn("absolute inset-x-0 top-0 transition-opacity duration-1000", mode.tall ? "h-full" : "h-[62%]", (current?.key ?? "or") === mode.key ? "opacity-75" : "opacity-0")}
+          >
+            <Image src={mode.image} alt="" fill sizes="100vw" className="object-cover" style={{ objectPosition: mode.tall ? "center 20%" : mode.position ?? "center" }} />
+            {mode.tall ? null : <span className="absolute inset-x-0 bottom-0 h-1/2 bg-linear-to-b from-transparent to-black" />}
+          </div>
         ))}
-        <span className={cn("absolute inset-0 bg-[radial-gradient(ellipse_at_50%_35%,rgba(212,175,55,0.18),transparent_65%)] transition-opacity duration-1000", current ? "opacity-0" : "opacity-100")} />
-        <span className="absolute inset-0 bg-linear-to-b from-black/70 via-black/35 to-black" />
+        <span className="absolute inset-0 bg-linear-to-b from-black/65 via-black/35 to-black/85" />
       </div>
 
       {/* --- Logo, étiquette, boutons ---------------------------------------- */}
