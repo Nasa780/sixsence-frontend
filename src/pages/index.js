@@ -1,4 +1,5 @@
 import { CallToAction } from "../components/home/CallToAction";
+import { ClipSpotlight } from "../components/home/ClipSpotlight";
 import { Casting } from "../components/home/Casting";
 import { Features } from "../components/home/Features";
 import { Hero } from "../components/home/Hero";
@@ -29,6 +30,7 @@ export default function HomePage() {
       {SHOW_HOW_IT_WORKS ? <HowItWorks /> : null}
       <LiveBoard />
       <TwitchLive />
+      <ClipSpotlight />
       {SHOW_RIGHT_NOW ? <RightNow /> : null}
       <HomeCalendar />
       {SHOW_FEATURES ? <Features /> : null}
