@@ -184,21 +184,25 @@ export function Hero() {
         })}
       </div>
 
-      {/* --- Téléphone : l'image du mode mis en avant, en fondu --------------- */}
+      {/* --- Téléphone : l'image du mode mis en avant, en fondu ---------------
+          Images en 16:9 : limitées au haut de l'écran (et non tout l'écran vertical) pour ne pas être zoomées ×4. */}
       <div aria-hidden className="absolute inset-0 -z-10 lg:hidden">
-        {MODES.map((mode) => (
-          <Image
-            key={mode.key}
-            src={mode.image}
-            alt=""
-            fill
-            sizes="1280px"
-            className={cn("object-cover transition-opacity duration-1000", current?.key === mode.key ? "opacity-75" : "opacity-0")}
-            style={{ objectPosition: mode.position ?? "center 20%" }}
-          />
-        ))}
+        <div className="absolute inset-x-0 top-0 h-[62%]">
+          {MODES.map((mode) => (
+            <Image
+              key={mode.key}
+              src={mode.image}
+              alt=""
+              fill
+              sizes="1280px"
+              className={cn("object-cover transition-opacity duration-1000", current?.key === mode.key ? "opacity-75" : "opacity-0")}
+              style={{ objectPosition: mode.mobilePosition ?? mode.position ?? "center" }}
+            />
+          ))}
+          <span className="absolute inset-x-0 bottom-0 h-1/2 bg-linear-to-b from-transparent to-black" />
+        </div>
         <span className={cn("absolute inset-0 bg-[radial-gradient(ellipse_at_50%_35%,rgba(212,175,55,0.18),transparent_65%)] transition-opacity duration-1000", current ? "opacity-0" : "opacity-100")} />
-        <span className="absolute inset-0 bg-linear-to-b from-black/70 via-black/35 to-black" />
+        <span className="absolute inset-0 bg-linear-to-b from-black/60 via-black/25 to-black/70" />
       </div>
 
       {/* --- Logo, étiquette, boutons ---------------------------------------- */}
