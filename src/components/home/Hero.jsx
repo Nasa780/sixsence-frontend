@@ -1,3 +1,4 @@
+import Head from "next/head";
 import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useState } from "react";
@@ -137,6 +138,10 @@ export function Hero() {
 
   return (
     <section aria-labelledby="titre-accueil" className="relative isolate flex min-h-[max(100svh,44rem)] flex-col items-center justify-center overflow-hidden bg-black pb-24 pt-32 lg:pb-24 lg:pt-24">
+      {/* Le grand logo est le plus gros élément du premier écran : téléchargé avant tout le reste. */}
+      <Head>
+        <link key="logo-accueil" rel="preload" as="image" href={LOGO} fetchPriority="high" />
+      </Head>
       <h1 id="titre-accueil" className="sr-only">
         SixSence, compétition Call of Duty et événements GTA 6
       </h1>
@@ -161,7 +166,9 @@ export function Hero() {
                 src={mode.image}
                 alt=""
                 fill
-                priority
+                // Pas de priority (son préchargement partait aussi sur téléphone, où ces bandes sont cachées) : en
+                // différé, une image cachée n’est jamais téléchargée ; sur ordinateur elle part dès l’affichage.
+                loading={wide ? "eager" : "lazy"}
                 sizes="1280px"
                 className={cn("object-cover transition-[filter] duration-700", on ? "" : "brightness-[0.45] grayscale-[0.6]")}
                 style={{ objectPosition: mode.position ?? "center 25%" }}
@@ -191,14 +198,15 @@ export function Hero() {
       </div>
 
       {/* --- Téléphone : l'image du mode mis en avant (ou celle de l'or), en fondu ---------------
-          Images verticales : plein écran ; images en 16:9 : le haut de l'écran seulement, pour ne pas être zoomées ×4. */}
+          Images verticales : plein écran ; images en 16:9 : le haut de l'écran seulement, pour ne pas être zoomées ×4.
+          Chargement (2026-11-12) : seulement l'image affichée et la suivante, les autres au fil du défilement. */}
       <div aria-hidden className="absolute inset-0 -z-10 lg:hidden">
-        {[{ key: "or", image: GOLD_IMAGE, tall: true }, ...MODES].map((mode) => (
+        {[{ key: "or", image: GOLD_IMAGE, tall: true }, ...MODES].map((mode, index) => (
           <div
             key={mode.key}
             className={cn("absolute inset-x-0 top-0 transition-opacity duration-1000", mode.tall ? "h-full" : "h-[62%]", (current?.key ?? "or") === mode.key ? "opacity-75" : "opacity-0")}
           >
-            <Image src={mode.image} alt="" fill sizes="100vw" className="object-cover" style={{ objectPosition: mode.tall ? "center 20%" : mode.position ?? "center" }} />
+            {index <= tick + 1 ? <Image src={mode.image} alt="" fill sizes="100vw" className="object-cover" style={{ objectPosition: mode.tall ? "center 20%" : mode.position ?? "center" }} /> : null}
             {mode.tall ? null : <span className="absolute inset-x-0 bottom-0 h-1/2 bg-linear-to-b from-transparent to-black" />}
           </div>
         ))}
