@@ -27,7 +27,7 @@ export default function EventsPage() {
         <title>Événements GTA 6 — SixSence</title>
       </Head>
       <PageHeader
-        image="/images/gta6.webp"
+        image="/images/gta/lock-paysage.webp"
         eyebrow="GTA 6"
         title={
           <>

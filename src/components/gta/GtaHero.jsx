@@ -1,9 +1,10 @@
-import Image from "next/image";
+import { GTA_IMAGES } from "../../lib/gtaImages";
 import { LuCalendarDays, LuChevronDown } from "react-icons/lu";
 import { GTA6_RELEASE } from "../../lib/config";
 import { GoldParticles } from "../effects/GoldParticles";
 import { ButtonLink } from "../ui/Button";
 import { Container } from "../ui/Container";
+import { GtaArt } from "./GtaArt";
 import { Gta6Countdown } from "./Gta6Countdown";
 
 const releaseDay = new Date(GTA6_RELEASE).toLocaleDateString("fr-FR", { day: "numeric", month: "long", year: "numeric", timeZone: "Europe/Paris" });
@@ -21,7 +22,7 @@ export function GtaHero() {
     <section className="relative isolate flex min-h-svh items-center overflow-hidden pt-28 pb-24">
       {/* --- Décor --------------------------------------------------------- */}
       <div aria-hidden className="absolute inset-0 -z-40 overflow-hidden">
-        <Image src="/images/gta6.webp" alt="" fill priority sizes="100vw" className="ken-burns object-cover object-center opacity-70" />
+        <GtaArt mobile={GTA_IMAGES.duo.portrait} desktop={GTA_IMAGES.duo.paysage} breakpoint={640} priority className="ken-burns object-cover object-center opacity-70" />
         <div className="absolute inset-0 bg-linear-to-b from-ink/90 via-ink/70 to-ink/40 sm:bg-linear-to-r sm:from-ink sm:via-ink/75 sm:to-ink/10" />
         <div className="absolute inset-x-0 top-0 h-40 bg-linear-to-b from-ink to-transparent" />
       </div>

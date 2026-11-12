@@ -34,7 +34,7 @@ const UNIVERSES = [
     href: "/gta6",
     index: "02",
     game: "GTA 6",
-    image: "/images/gta6.webp",
+    image: "/images/gta/lock-paysage.webp",
     // Palette coucher de soleil (voir globals.css), comme sur les pages GTA 6.
     univers: "gta",
     title: "Événements",

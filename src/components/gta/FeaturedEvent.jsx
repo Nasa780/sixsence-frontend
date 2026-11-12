@@ -21,7 +21,7 @@ export function FeaturedEvent({ event, registered = false }) {
       <TacticalCard interactive highlight cut={30} innerClassName="holo flex flex-col lg:flex-row">
         {/* Visuel avec la pastille calendrier */}
         <div className="relative min-h-60 lg:w-[46%] lg:shrink-0">
-          <Image src="/images/gta6.webp" alt="" fill sizes="(min-width: 1024px) 46vw, 100vw" className="object-cover" />
+          <Image src="/images/gta/braquage-paysage.webp" alt="" fill sizes="(min-width: 1024px) 46vw, 100vw" className="object-cover" />
           <div aria-hidden className="absolute inset-0 bg-linear-to-t from-ink-800 via-ink-800/10 to-transparent lg:bg-linear-to-r lg:from-transparent lg:via-ink-800/10 lg:to-ink-800" />
           <div className="absolute left-5 top-5 border border-gold/50 bg-ink/80 px-4 py-3 text-center backdrop-blur-sm">
             <p className="font-display text-5xl font-black leading-none text-gold">{day}</p>

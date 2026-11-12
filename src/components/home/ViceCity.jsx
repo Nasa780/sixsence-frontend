@@ -1,4 +1,5 @@
-import Image from "next/image";
+import { GTA_IMAGES } from "../../lib/gtaImages";
+import { GtaArt } from "../gta/GtaArt";
 import { LuArrowRight } from "react-icons/lu";
 import { Reveal } from "../effects/Reveal";
 import { Ticker } from "../effects/Ticker";
@@ -23,7 +24,7 @@ export function ViceCity() {
     <section data-univers="gta" aria-labelledby="titre-vice-city" className="relative isolate overflow-hidden bg-[#0d0412]">
       {/* Illustration : en haut sur téléphone, sur toute la hauteur à droite sur ordinateur */}
       <div aria-hidden className="absolute inset-x-0 top-0 -z-20 h-[27rem] sm:h-[34rem] lg:inset-y-0 lg:h-auto">
-        <Image src="/images/gta6.webp" alt="" fill sizes="100vw" className="object-cover object-[62%_0%] lg:object-[right_top]" />
+        <GtaArt mobile={GTA_IMAGES.rooftop.carre} desktop={GTA_IMAGES.rooftop.paysage} className="object-cover object-[50%_0%] lg:object-[right_top]" />
         {/* Téléphone et tablette : l'image se fond vers le bas, sous le titre */}
         <span className="absolute inset-0 bg-[linear-gradient(180deg,rgba(10,10,10,0.3)_0%,rgba(13,4,18,0)_22%,rgba(13,4,18,0.8)_68%,#0d0412_100%)] lg:hidden" />
       </div>
