@@ -277,6 +277,51 @@
 @keyframes band-scroll {
   to { transform: translateX(-50%); }
 }
+/* Bande « En direct », animations (2026-11-12) : éclat doré sur le filet, voyant radar, vu-mètre, grésillement du
+   voyant, éclair d'une nouvelle info, valeurs qui roulent quand elles changent. */
+.band-energy {
+  background: linear-gradient(90deg, transparent, #f8ecc0, #d4af37, transparent) 0 0 / 22% 100% no-repeat;
+  filter: drop-shadow(0 0 6px #d4af37);
+  animation: band-energy 3.2s linear infinite;
+}
+@keyframes band-energy {
+  from { background-position: -30% 0; }
+  to { background-position: 130% 0; }
+}
+.band-radar { animation: band-radar 1.8s ease-out infinite; }
+@keyframes band-radar {
+  from { transform: scale(1); opacity: 0.9; }
+  to { transform: scale(3.4); opacity: 0; }
+}
+.band-onair { animation: band-onair 6s steps(1) infinite; }
+@keyframes band-onair {
+  0%, 100% { opacity: 1; }
+  92% { opacity: 0.55; }
+  94% { opacity: 1; }
+  96% { opacity: 0.7; }
+}
+.band-vu { animation: band-vu 1s ease-in-out infinite; }
+@keyframes band-vu {
+  0%, 100% { height: 30%; }
+  50% { height: 100%; }
+}
+.band-flash {
+  background: linear-gradient(90deg, transparent, rgba(255, 77, 46, 0.55), transparent) 0 0 / 40% 100% no-repeat;
+  animation: band-flash 1.1s ease-out forwards;
+}
+@keyframes band-flash {
+  from { background-position: -40% 0; }
+  to { background-position: 140% 0; }
+}
+.band-roll { animation: band-roll 0.6s cubic-bezier(0.22, 1, 0.36, 1) both; }
+@keyframes band-roll {
+  from { transform: translateY(100%); }
+  to { transform: none; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .band-energy, .band-radar, .band-onair, .band-vu, .band-flash, .band-roll { animation: none; }
+  .band-radar, .band-flash { display: none; }
+}
 @keyframes rank-sheen {
   0% { background-position: 160% 0; }
   45%, 100% { background-position: -60% 0; }
