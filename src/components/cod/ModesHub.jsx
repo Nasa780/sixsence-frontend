@@ -8,6 +8,7 @@ import { HubActions } from "./HubActions";
 import { TwitchLive } from "./TwitchLive";
 import { MySeason } from "./MySeason";
 import { OnboardingPanel } from "./OnboardingPanel";
+import { GoldParticles } from "../effects/GoldParticles";
 import { Reveal } from "../effects/Reveal";
 import { TiltCard } from "../effects/TiltCard";
 import { ButtonLink } from "../ui/Button";
@@ -130,6 +131,9 @@ export function ModesHub() {
         actions={<HubActions user={user} hasActiveMatch={Boolean(activeMatch)} />}
       />
 
+      {/* Fond de particules dorées qui se relient à la souris, comme sur les files Classé et Division (2026-11-12). */}
+      <div className="relative isolate">
+        <GoldParticles id="particules-mw4" density={60} className="-z-10 mask-fade" />
       <Container className="space-y-16 py-12">
         {session && disputed && !extra.activeMatchId ? (
           <Notice>
@@ -211,6 +215,7 @@ export function ModesHub() {
           <TopTeams label={seasonLabel} />
         </div>
       </Container>
+      </div>
     </>
   );
 }
