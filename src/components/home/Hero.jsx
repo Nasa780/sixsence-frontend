@@ -39,7 +39,7 @@ const MODES = [
         { key: "tournoi", label: "Tournoi", color: "#e5484d", text: "#f87171", grad: "linear-gradient(100deg,#991b1b,#e5484d 30%,#fecaca 50%,#e5484d 70%,#991b1b)", image: "/images/accueil/mw4-ghost.webp", tall: true, href: "/cod/tournoi", cta: "Voir les tournois" },
       ]
     : []),
-  { key: "gta", label: "GTA 6", color: "#ff6a3d", text: "#ff9a5c", grad: "linear-gradient(100deg,#d6246e,#ff6a3d 30%,#ffd29a 50%,#ff6a3d 70%,#d6246e)", image: "/images/gta6.webp", href: "/gta6", cta: "Voir GTA 6", position: "62% 20%" },
+  { key: "gta", label: "GTA 6", color: "#ff6a3d", text: "#ff9a5c", grad: "linear-gradient(100deg,#d6246e,#ff6a3d 30%,#ffd29a 50%,#ff6a3d 70%,#d6246e)", image: "/images/gta/lock-portrait.webp", tall: true, href: "/gta6", cta: "Voir GTA 6" },
 ];
 
 const CUP_PHASE = { checkin: "Check-in ouvert", drawn: "Tirage effectué", running: "En cours" };

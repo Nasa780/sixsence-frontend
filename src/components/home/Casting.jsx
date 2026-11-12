@@ -18,7 +18,7 @@ const ROLES = [
         { key: "tournoi", univers: "tournoi", game: "Call of Duty · MW4", title: "Tournoi", word: "Podium", text: "Coupe Horus en équipe, Coupe Anubis en solo. Trophées et podium.", cta: "Prochain tournoi", href: "/cod/tournoi", image: "/images/modes/tournoi.webp", x: "36%" },
       ]
     : []),
-  { key: "gta", univers: "gta", game: "Grand Theft Auto VI", title: "GTA 6", word: null, text: "Sessions, courses et braquages avec la communauté.", cta: "Le programme", href: "/gta6", image: "/images/gta6.webp", x: "38%", zoom: true },
+  { key: "gta", univers: "gta", game: "Grand Theft Auto VI", title: "GTA 6", word: null, text: "Sessions, courses et braquages avec la communauté.", cta: "Le programme", href: "/gta6", image: "/images/gta/braquage-portrait.webp", x: "50%" },
 ];
 
 const COUNT = { 3: "Trois", 4: "Quatre" };
@@ -38,9 +38,8 @@ function RoleCard({ role, index, word }) {
       data-univers={role.univers}
       className="clip-tactical group relative block h-[27rem] w-[78vw] max-w-[20rem] shrink-0 snap-start overflow-hidden outline-none [--cut:22px] focus-visible:brightness-110 sm:h-[34rem] lg:h-[38rem] lg:w-auto lg:max-w-none"
     >
-      {/* GTA 6 : image agrandie et calée sur Lucia, sous le logo du jeu */}
-      <span className={cn("absolute inset-x-0 transition-transform duration-[1400ms] ease-out group-hover:scale-[1.04]", role.zoom ? "top-[-64.5%] h-[175%]" : "inset-y-0")}>
-        <Image src={role.image} alt="" fill sizes={role.zoom ? "1920px" : "1280px"} className="object-cover" style={{ objectPosition: `${role.x} ${role.zoom ? "50%" : "0%"}` }} />
+      <span className="absolute inset-0 transition-transform duration-[1400ms] ease-out group-hover:scale-[1.04]">
+        <Image src={role.image} alt="" fill sizes="1280px" className="object-cover" style={{ objectPosition: `${role.x} 0%` }} />
       </span>
       <span aria-hidden className="absolute inset-0 bg-[linear-gradient(180deg,rgba(10,10,10,0.35)_0%,rgba(10,10,10,0)_30%,rgba(10,10,10,0.62)_60%,rgba(10,10,10,0.96)_100%)]" />
 
