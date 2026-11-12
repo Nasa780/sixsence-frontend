@@ -192,12 +192,14 @@ export function LiveBand({ initialData = null, floating = false }) {
       {fresh?.chip ? <span key={fresh.at} aria-hidden className="band-flash pointer-events-none absolute inset-0 z-20" /> : null}
       <div className="flex items-stretch">
         {/* Voyant « En direct » façon plateau télé : cadre rouge braise lumineux */}
-        <span className="z-10 flex shrink-0 items-center gap-2.5 border-r border-white/10 py-1 pl-2.5 pr-2 sm:py-1 sm:pl-5 sm:pr-4 lg:py-1.5">
-          <span className="band-onair flex items-center gap-2 rounded-md border-2 border-ember px-2.5 py-0.5 font-tech text-[9px] font-black uppercase tracking-[0.26em] text-[#ffd3c6] shadow-[0_0_18px_rgba(255,77,46,0.45),inset_0_0_12px_rgba(255,77,46,0.35)] [text-shadow:0_0_10px_var(--color-ember)] sm:gap-2.5 sm:px-3.5 sm:py-1 sm:text-[11px]">
+        <span className="z-10 flex shrink-0 items-center gap-2.5 border-r border-white/10 py-1 pl-2 pr-1.5 sm:py-1 sm:pl-5 sm:pr-4 lg:py-1.5">
+          <span className="band-onair flex items-center gap-1.5 rounded-md border-2 border-ember px-[7px] py-0.5 font-tech text-[9px] font-black uppercase tracking-[0.14em] text-[#ffd3c6] shadow-[0_0_18px_rgba(255,77,46,0.45),inset_0_0_12px_rgba(255,77,46,0.35)] [text-shadow:0_0_10px_var(--color-ember)] sm:gap-2.5 sm:px-3.5 sm:py-1 sm:text-[11px] sm:tracking-[0.26em]">
             <span aria-hidden className="relative h-2 w-2 rounded-full bg-ember shadow-[0_0_10px_var(--color-ember)] sm:h-2.5 sm:w-2.5">
               <span className="band-radar absolute -inset-0.5 rounded-full border-2 border-ember" />
             </span>
-            En direct
+            {/* Téléphone : « Direct » seul, pour laisser de la place aux infos */}
+            <span className="sm:hidden">Direct</span>
+            <span className="hidden sm:inline">En direct</span>
           </span>
           {/* Petit vu-mètre (ordinateur et tablette) */}
           <span aria-hidden className="hidden h-4 items-end gap-0.5 sm:flex">
