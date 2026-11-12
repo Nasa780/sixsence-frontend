@@ -322,6 +322,21 @@
   .band-energy, .band-radar, .band-onair, .band-vu, .band-flash, .band-roll { animation: none; }
   .band-radar, .band-flash { display: none; }
 }
+/* Accueil, jour J de GTA 6 (components/home/LaunchHero) : halo qui respire, « Disponible » qui jaillit */
+.launch-glow { animation: launch-glow 3s ease-in-out infinite; }
+@keyframes launch-glow {
+  0%, 100% { opacity: 0.55; }
+  50% { opacity: 1; }
+}
+.launch-flash { animation: launch-flash 1.2s ease-out both; }
+@keyframes launch-flash {
+  0% { opacity: 0; transform: scale(0.6); filter: blur(12px); }
+  40% { opacity: 1; filter: blur(0); }
+  100% { opacity: 1; transform: none; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .launch-glow, .launch-flash { animation: none; }
+}
 /* Accueil : filet doré qui se trace entre deux sections (components/effects/SectionTrace) */
 .section-trace {
   height: 2px;
