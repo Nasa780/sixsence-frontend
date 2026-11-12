@@ -4,6 +4,7 @@ import { useState } from "react";
 import { cn } from "../../lib/cn";
 import { MATCH_TEAM_ENABLED } from "../../lib/config";
 import { Reveal } from "../effects/Reveal";
+import { SectionTrace } from "../effects/SectionTrace";
 import { useGta6Countdown } from "../gta/Gta6Countdown";
 import { Container } from "../ui/Container";
 
@@ -85,7 +86,8 @@ export function Casting() {
 
   // Pas sur téléphone (2026-11-12) : le premier écran liste déjà les modes.
   return (
-    <section id="univers" aria-labelledby="titre-casting" className="hidden scroll-mt-20 py-20 sm:py-28 md:block lg:py-32">
+    <section id="univers" aria-labelledby="titre-casting" className="relative hidden scroll-mt-20 py-20 sm:py-28 md:block lg:py-32">
+      <SectionTrace />
       <Container>
         <Reveal className="flex flex-col gap-5 lg:flex-row lg:items-end lg:justify-between">
           <div>

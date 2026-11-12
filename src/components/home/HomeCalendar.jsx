@@ -2,6 +2,7 @@ import { useCallback, useEffect, useState } from "react";
 import { api } from "../../lib/api";
 import { CalendarView, mondayOf } from "../calendar/CalendarView";
 import { Reveal } from "../effects/Reveal";
+import { SectionTrace } from "../effects/SectionTrace";
 import { Container } from "../ui/Container";
 import { SectionHeading } from "../ui/Typography";
 
@@ -44,7 +45,8 @@ export function HomeCalendar() {
 
   if (!visible) return null;
   return (
-    <section className="py-20 sm:py-28">
+    <section className="relative py-20 sm:py-28">
+      <SectionTrace />
       <Container>
         <Reveal>
           <SectionHeading eyebrow="Calendrier" title="Les prochains rendez-vous" center />
