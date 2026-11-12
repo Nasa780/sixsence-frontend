@@ -2,10 +2,10 @@ import { motion, useReducedMotion } from "framer-motion";
 import { useEffect, useState } from "react";
 import Link from "next/link";
 import { FaTwitch } from "react-icons/fa6";
-import { LuClock, LuCrosshair, LuCrown, LuGamepad2, LuShield, LuSwords, LuTrophy } from "react-icons/lu";
+import { LuClock, LuCrosshair, LuCrown, LuGamepad2, LuShield, LuSwords, LuTrophy, LuUsers } from "react-icons/lu";
 import useLive from "../../hooks/useLive";
 import { cn } from "../../lib/cn";
-import { MATCH_TEAM_ENABLED } from "../../lib/config";
+import { GTA6_RELEASE, MATCH_TEAM_ENABLED } from "../../lib/config";
 import { MAPS } from "../../lib/maps";
 import { FEED, ago } from "../cod/HubHighlights";
 
@@ -13,7 +13,8 @@ import { FEED, ago } from "../cod/HubHighlights";
  * Bande « En direct » sous le premier écran de l'accueil (GET /live, hooks/useLive), comme un bandeau d'info
  * sportive, posée en bas du premier écran (accueil « accordéon des modes », 2026-11-11) : fond sombre, étiquette rouge
  * braise avec voyant radar et vu-mètre, fond gris translucide, éclat doré sur le filet (2026-11-12), chaque info dans la couleur de son mode ; défile en continu, s’arrête au survol (l’info visée ressort, les autres s’estompent) ; une activité arrivée pendant la visite passe en tête avec un éclair et « Nouveau » ; les valeurs roulent quand elles changent. Ce qui se passe maintenant d'abord (Classé, Division, coupe,
- * GTA 6, point qui pulse), puis ce qui est toujours vrai (fin de saison, leaders, dernier match, file ouverte) :
+ * GTA 6, point qui pulse), puis ce qui est toujours vrai (connectés, saison, leaders, équipes actives, tournois,
+ * sortie de GTA 6, dernier match, 3 dernières activités de la semaine, file ouverte) :
  * jamais vide, jamais de zéro. Étiquette toujours « En direct » (2026-11-11 ; avant : « À venir » quand rien n'était en
  * cours).
  */
@@ -72,9 +73,12 @@ function itemsOf(live, fresh = null) {
     const { id, title, startsAt, live: now, registered } = live.gta;
     (now ? hot : calm).push({ key: "gta", icon: LuGamepad2, color: COLORS.gta, label: now ? "GTA 6 · en cours" : "GTA 6", value: title, sub: now ? plural(registered, "inscrit") : day(startsAt), href: `/gta6/events/${id}` });
   }
+  if (live.online > 0) calm.push({ key: "online", icon: LuUsers, color: COLORS.or, label: "En ligne", value: plural(live.online, "joueur"), sub: "sur SixSence", href: "/cod" });
   if (live.season?.endsAt && new Date(live.season.endsAt).getTime() > Date.now()) {
     const days = Math.ceil((new Date(live.season.endsAt).getTime() - Date.now()) / DAY);
     calm.push({ key: "saison", icon: LuClock, color: COLORS.or, label: live.season.name ?? "Saison", value: days > 1 ? `Fin dans ${days} jours` : "Dernier jour", sub: "classement archivé, récompenses", href: "/cod/leaderboard" });
+  } else if (live.season) {
+    calm.push({ key: "saison", icon: LuClock, color: COLORS.or, label: live.season.name ?? "Saison", value: "En cours", sub: "classement de la saison", href: "/cod/leaderboard" });
   }
   if (live.leaders?.classe) {
     const p = live.leaders.classe;
@@ -83,6 +87,17 @@ function itemsOf(live, fresh = null) {
   if (MATCH_TEAM_ENABLED && live.leaders?.division) {
     const t = live.leaders.division;
     calm.push({ key: "leader-division", icon: LuCrown, color: COLORS.division, label: "Leader de la Division", value: `[${t.tag}] ${t.name}`, sub: `${num(t.points)} pts`, href: `/cod/equipes/${t.id}` });
+  }
+  if (MATCH_TEAM_ENABLED && !live.division && live.activeTeams > 0) {
+    calm.push({ key: "equipes", icon: LuShield, color: COLORS.division, label: "Division", value: `${plural(live.activeTeams, "équipe")} ${live.activeTeams > 1 ? "actives" : "active"}`, sub: "4v4 · défis directs", href: "/cod/division" });
+  }
+  if (MATCH_TEAM_ENABLED && !live.cup) {
+    calm.push({ key: "tournois", icon: LuTrophy, color: COLORS.tournoi, label: "Tournois", value: "Coupe Horus · Coupe Anubis", sub: "en équipe et en solo", href: "/cod/tournoi" });
+  }
+  const release = new Date(GTA6_RELEASE).getTime();
+  if (!live.gta && release > Date.now()) {
+    const days = Math.ceil((release - Date.now()) / DAY);
+    calm.push({ key: "gta-sortie", icon: LuGamepad2, color: COLORS.gta, label: "GTA 6", value: days > 1 ? `Sortie dans ${days} jours` : "Sortie demain", sub: `le ${new Date(GTA6_RELEASE).toLocaleDateString("fr-FR", { day: "numeric", month: "long" })} · le programme`, href: "/gta6" });
   }
   if (live.lastMatch) {
     const m = live.lastMatch;
@@ -97,16 +112,18 @@ function itemsOf(live, fresh = null) {
       href: m.href,
     });
   }
-  // Dernière action du fil, seulement si elle date de moins de 24 h (sinon le site paraîtrait à l'arrêt).
-  const recent = (live.feed ?? []).find((event) => Date.now() - new Date(event.at).getTime() < DAY);
+  // Fil : les 3 dernières actions de la semaine (plus ancien, le site paraîtrait à l'arrêt), sans répéter le dernier match.
   let first = null;
-  if (recent) {
-    const type = FEED[recent.type] ?? FEED.classe;
-    const item = { key: "fil", icon: type.icon, color: type.color, label: "Dernière activité", value: recent.text, sub: ago(recent.at), href: recent.href, long: true };
-    if (fresh && feedKey(recent) === fresh.key) first = { ...item, label: "À l'instant", fresh: fresh.chip };
-    else calm.push(item);
-  }
-  if (!live.classe) calm.push({ key: "file", icon: LuCrosshair, color: COLORS.classe, label: "Classé", value: "File ouverte", sub: "2v2 à 5v5", href: "/cod/ranked" });
+  (live.feed ?? [])
+    .filter((event) => Date.now() - new Date(event.at).getTime() < 7 * DAY && (event.href !== live.lastMatch?.href || feedKey(event) === fresh?.key))
+    .slice(0, 3)
+    .forEach((event) => {
+      const type = FEED[event.type] ?? FEED.classe;
+      const item = { key: `fil-${feedKey(event)}`, icon: type.icon, color: type.color, label: type.label, value: event.text, sub: ago(event.at), href: event.href, long: true };
+      if (fresh && feedKey(event) === fresh.key) first = { ...item, label: "À l'instant", fresh: fresh.chip };
+      else calm.push(item);
+    });
+  if (!live.classe) calm.push({ key: "file", icon: LuCrosshair, color: COLORS.classe, label: "Classé", value: "File ouverte", sub: "S&D Hardcore · en solo", href: "/cod/ranked" });
   return { hot, items: [...(first ? [first] : []), ...hot.map((item) => ({ ...item, live: true })), ...calm] };
 }
 
@@ -169,7 +186,7 @@ export function LiveBand({ initialData = null, floating = false }) {
       animate={{ opacity: 1 }}
       transition={{ duration: 0.7, delay: 0.5, ease: [0.22, 1, 0.36, 1] }}
       className={cn(
-        "z-10 border-gold/35 bg-[#3a3a42]/20 backdrop-blur-md",
+        "z-10 border-gold/35 bg-[#3a3a42]/10 backdrop-blur-md",
         // Posée dans le premier écran : tout en haut sous le menu sur téléphone, en bas sur ordinateur.
         floating ? "absolute inset-x-0 top-16 border-b lg:top-auto lg:bottom-0 lg:border-b-0 lg:border-t" : "relative border-t",
       )}
@@ -210,8 +227,8 @@ export function LiveBand({ initialData = null, floating = false }) {
               ))}
             </div>
           )}
-          <div aria-hidden className="pointer-events-none absolute inset-y-0 left-0 w-6 bg-linear-to-r from-[#3a3a42]/15 to-transparent" />
-          <div aria-hidden className="pointer-events-none absolute inset-y-0 right-0 w-10 bg-linear-to-l from-[#3a3a42]/15 to-transparent sm:w-16" />
+          <div aria-hidden className="pointer-events-none absolute inset-y-0 left-0 w-6 bg-linear-to-r from-[#3a3a42]/10 to-transparent" />
+          <div aria-hidden className="pointer-events-none absolute inset-y-0 right-0 w-10 bg-linear-to-l from-[#3a3a42]/10 to-transparent sm:w-16" />
         </div>
       </div>
     </motion.aside>
