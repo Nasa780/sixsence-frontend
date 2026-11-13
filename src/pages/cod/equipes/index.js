@@ -4,6 +4,8 @@ import { LuPlus, LuTrophy, LuUsers } from "react-icons/lu";
 import { SlantTab } from "../../../components/teams/TeamParts";
 import { TeamSeasonArchive } from "../../../components/teams/TeamSeasonArchive";
 import { TeamStandings } from "../../../components/teams/TeamStandings";
+import { RecruitingTeams } from "../../../components/teams/RecruitingTeams";
+import { DivisionSeasonBand } from "../../../components/teams/DivisionSeasonBand";
 import { ButtonLink } from "../../../components/ui/Button";
 import { SeasonCountdown } from "../../../components/cod/SeasonCountdown";
 import { Container } from "../../../components/ui/Container";
@@ -18,6 +20,8 @@ import { LEAGUES, LEAGUES_MIN_TEAMS } from "../../../lib/leagues";
 
 /** Places qualificatives par défaut, tant qu'aucun tournoi n'est prévu (sinon, celles du tournoi). */
 const QUALIFIED_SPOTS = 16;
+/** Bandeau de la saison (équipes, matchs joués, en tête, recrutent) : gardé de côté le 2026-11-13, true pour le montrer. */
+const SHOW_SEASON_BAND = false;
 
 /** Classement des équipes de la Division. Public. */
 export default function TeamsPage() {
@@ -134,6 +138,7 @@ export default function TeamsPage() {
               <EmptyState title="Aucune équipe pour l'instant">Crée la première équipe SixSence et invite tes coéquipiers.</EmptyState>
             ) : null}
 
+            {SHOW_SEASON_BAND && teams && teams.length > 0 ? <DivisionSeasonBand teams={teams} seasonStart={active?.starts_at ?? null} /> : null}
             {teams && teams.length > 0 ? (
               <>
                 <p className="mb-5 inline-flex items-center gap-2 text-xs text-gold">
@@ -173,10 +178,13 @@ export default function TeamsPage() {
 
             {teams && teams.length > 0 ? (
               <Notice className="mt-8">
-                Liseré : Équipe qualifiée pour le tournoi de fin de saison (Top {spots}, {TEAM_LIMITS.qualifyMatches} matchs min.). Toutes les équipes
-                débutent à 1 000 points.
+                Badge « Qualifiée » : équipe qualifiée pour le tournoi de fin de saison (top {spots}, {TEAM_LIMITS.qualifyMatches} matchs min.). Forme : les
+                5 derniers matchs, du plus récent au plus ancien. Toutes les équipes débutent à 1 000 points.
               </Notice>
             ) : null}
+
+            {/* Les équipes qui cherchent des joueurs (2026-11-13). */}
+            {teams && teams.length > 0 ? <RecruitingTeams teams={teams} /> : null}
           </>
         )}
       </Container>
