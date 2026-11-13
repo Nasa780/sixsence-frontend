@@ -5,6 +5,7 @@ import { SlantTab } from "../../../components/teams/TeamParts";
 import { TeamSeasonArchive } from "../../../components/teams/TeamSeasonArchive";
 import { TeamStandings } from "../../../components/teams/TeamStandings";
 import { RecruitingTeams } from "../../../components/teams/RecruitingTeams";
+import { RecentTeamMatches } from "../../../components/teams/RecentTeamMatches";
 import { DivisionSeasonBand } from "../../../components/teams/DivisionSeasonBand";
 import { ButtonLink } from "../../../components/ui/Button";
 import { SeasonCountdown } from "../../../components/cod/SeasonCountdown";
@@ -139,6 +140,8 @@ export default function TeamsPage() {
             ) : null}
 
             {SHOW_SEASON_BAND && teams && teams.length > 0 ? <DivisionSeasonBand teams={teams} seasonStart={active?.starts_at ?? null} /> : null}
+            {/* Les 6 derniers matchs de la saison, en cartes « A VS B » (2026-11-13). */}
+            {teams && teams.length > 0 ? <RecentTeamMatches teams={teams} seasonStart={active?.starts_at ?? null} /> : null}
             {teams && teams.length > 0 ? (
               <>
                 <p className="mb-5 inline-flex items-center gap-2 text-xs text-gold">
