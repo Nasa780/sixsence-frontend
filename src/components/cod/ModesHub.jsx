@@ -139,7 +139,6 @@ export function ModesHub() {
           user ? `Content de te revoir, ${user.username}. Classé, Division et Tournoi t'attendent.` : "Recherche & Destruction Hardcore : le classé en solo (2v2 à 5v5), la Division pour les équipes (BO3 4v4) et le tournoi de fin de saison."
         }
         actions={<HubActions user={user} hasActiveMatch={Boolean(activeMatch)} />}
-        live
       />
       <SectionMarks marks={MARKS} />
 

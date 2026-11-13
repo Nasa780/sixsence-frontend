@@ -65,7 +65,6 @@ export default function RankedPage() {
       </Head>
 
       <PageHeader
-        live
 
 
         image="/images/mw4.webp"

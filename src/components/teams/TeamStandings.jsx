@@ -11,7 +11,7 @@ import { TeamCrest } from "./TeamParts";
  * bannière de son équipe, n°2 et n°3 côte à côte), puis lignes aux couleurs de chaque équipe (liseré lumineux,
  * bannière en fondu), avec rang et places gagnées ou perdues en 24 h, forme sur les 5 derniers matchs, victoires et
  * défaites, points. Une équipe qui gagne des places pendant la visite s'éclaire (`.standings-row[data-climb]`, globals.css)
- * pendant que les lignes glissent ; podium vivant (reflet en boucle, couronne qui scintille, étincelles du n°1). Flèches, séries et forme reconstruites depuis les matchs de la saison (team_matches.points_changes) ;
+ * pendant que les lignes glissent ; anneau lumineux autour du blason au survol d'une ligne ; podium vivant (reflet en boucle, couronne qui scintille, étincelles du n°1). Flèches, séries et forme reconstruites depuis les matchs de la saison (team_matches.points_changes) ;
  * les lignes glissent quand le classement change (temps réel).
  */
 
@@ -344,7 +344,7 @@ export function TeamStandings({ teams, mineId = null, qualified, qualifiedSpots,
                       COLS,
                       isMine ? "bg-gold/[0.08]" : "bg-white/[0.03]",
                     )}
-                    style={{ backgroundImage: `linear-gradient(90deg, ${team.color}2e 0%, ${team.color}0d 28%, transparent 60%)` }}
+                    style={{ "--team": team.color, backgroundImage: `linear-gradient(90deg, ${team.color}2e 0%, ${team.color}0d 28%, transparent 60%)` }}
                   >
                     {/* Liseré de la couleur de l'équipe */}
                     <span aria-hidden className="absolute inset-y-0 left-0 w-[3px]" style={{ background: team.color, boxShadow: `0 0 12px ${team.color}` }} />
@@ -364,7 +364,10 @@ export function TeamStandings({ teams, mineId = null, qualified, qualifiedSpots,
                     </span>
 
                     <span className="relative flex min-w-0 items-center gap-3.5">
-                      <TeamCrest team={team} size={46} />
+                      {/* Au survol de la ligne, un anneau de la couleur de l'équipe tourne autour du blason (globals.css). */}
+                      <span className="standings-crest relative shrink-0">
+                        <TeamCrest team={team} size={46} />
+                      </span>
                       <span className="min-w-0">
                         <span className="block truncate font-display text-lg font-black uppercase leading-none tracking-wide transition-colors group-hover:text-gold lg:text-2xl">{team.name}</span>
                         <span className="mt-1.5 flex flex-wrap items-center gap-x-2.5 gap-y-1">

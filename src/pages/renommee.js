@@ -80,7 +80,6 @@ export default function RenownPage() {
           </>
         }
         description="Les champions, les vainqueurs de trophées et les records de SixSence. Ceux qui ont marqué l'histoire de la communauté."
-        live
       />
       <SectionMarks marks={MARKS} />
       {/* traced : filet doré entre les sections (pas au-dessus de la première). */}
