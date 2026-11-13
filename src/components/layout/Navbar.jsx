@@ -150,7 +150,7 @@ export function Navbar() {
               return (
                 <div key={link.href} className="group relative">
                   {item}
-                  <div className="invisible absolute left-0 top-full z-10 pt-3.5 opacity-0 transition duration-150 group-focus-within:visible group-focus-within:opacity-100 group-hover:visible group-hover:opacity-100">
+                  <div className="invisible absolute left-0 top-full z-10 pt-3.5 opacity-0 transition duration-150 group-has-[:focus-visible]:visible group-has-[:focus-visible]:opacity-100 group-hover:visible group-hover:opacity-100">
                     <div data-univers="or" className="clip-tactical w-80 bg-gold/40 p-px [--cut:14px]">
                       <div className="clip-tactical space-y-1 bg-ink-800/95 p-2 backdrop-blur-md [--cut:14px]">
                         {link.children.map((child) => {
