@@ -84,8 +84,13 @@ export function PageHeader({ eyebrow, title, description = null, actions = null,
         </Container>
       ) : null}
     </header>
-    {/* Bande « En direct » de l'accueil sous l'en-tête des pages COD principales (2026-11-13). */}
-    {live ? <LiveBand /> : null}
+    {/* Bande « En direct » de l'accueil sous l'en-tête des pages COD principales (2026-11-13), sur ordinateur et tablette
+        seulement : retirée des téléphones le 2026-11-13 (l'accueil garde la sienne). */}
+    {live ? (
+      <div className="hidden md:block">
+        <LiveBand />
+      </div>
+    ) : null}
     </>
   );
 }
