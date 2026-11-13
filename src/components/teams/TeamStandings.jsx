@@ -10,7 +10,8 @@ import { TeamCrest } from "./TeamParts";
  * Classement des équipes (version « premium » du 2026-11-13) : podium en bannières (le n°1 en grande affiche sur la
  * bannière de son équipe, n°2 et n°3 côte à côte), puis lignes aux couleurs de chaque équipe (liseré lumineux,
  * bannière en fondu), avec rang et places gagnées ou perdues en 24 h, forme sur les 5 derniers matchs, victoires et
- * défaites, points. Flèches, séries et forme reconstruites depuis les matchs de la saison (team_matches.points_changes) ;
+ * défaites, points. Une équipe qui gagne des places pendant la visite s'éclaire (`.standings-row[data-climb]`, globals.css)
+ * pendant que les lignes glissent ; podium vivant (reflet en boucle, couronne qui scintille, étincelles du n°1). Flèches, séries et forme reconstruites depuis les matchs de la saison (team_matches.points_changes) ;
  * les lignes glissent quand le classement change (temps réel).
  */
 
@@ -166,7 +167,7 @@ function Stat({ value, label, className }) {
 }
 
 /** Carte du podium : le n°1 en grande affiche, n°2 et n°3 plus petits ; bannière de l'équipe en fond. */
-function PodiumCard({ team, index, info, mine }) {
+function PodiumCard({ team, index, info, mine, climbed = false }) {
   const metal = METALS[index];
   const big = index === 0;
   const winRate = rate(team);
@@ -180,7 +181,9 @@ function PodiumCard({ team, index, info, mine }) {
     >
       <Link
         href={`/cod/equipes/${team.id}`}
-        className={cn("group clip-tactical relative block overflow-hidden border-t-2 bg-ink-800 [--cut:18px]", big ? "min-h-[17rem] sm:min-h-[21rem]" : "min-h-[13rem]")}
+        data-climb={climbed ? "" : undefined}
+        data-rank={index + 1}
+        className={cn("standings-podium group clip-tactical relative block overflow-hidden border-t-2 bg-ink-800 [--cut:18px]", big ? "min-h-[17rem] sm:min-h-[21rem]" : "min-h-[13rem]")}
         style={{ borderColor: metal.base }}
       >
         <TeamBackdrop team={team} strength={big ? 0.55 : 0.45} />
@@ -195,7 +198,7 @@ function PodiumCard({ team, index, info, mine }) {
         </span>
         <span className={cn("relative flex h-full flex-col justify-end", big ? "p-6 sm:p-9" : "p-5 sm:p-6")}>
           <span className="flex flex-wrap items-center gap-2 font-tech text-[10px] uppercase tracking-[0.3em]" style={{ color: metal.light }}>
-            {big ? <LuCrown aria-hidden className="h-4 w-4" /> : null}
+            {big ? <LuCrown aria-hidden className="standings-crown h-4 w-4" /> : null}
             <span className="sr-only">Position </span>#{index + 1} · {metal.label}
             {info.move ? <Move value={info.move} /> : null}
           </span>
@@ -269,9 +272,29 @@ function useDeltas(teams) {
   return deltas;
 }
 
+/** Équipes qui viennent de gagner des places (résultat arrivé pendant la visite), pendant 1,8 s : éclat sur leur ligne. */
+function useClimbs(teams) {
+  const previous = useRef(null);
+  const [climbs, setClimbs] = useState({});
+  useEffect(() => {
+    if (!teams) return;
+    const before = previous.current;
+    previous.current = Object.fromEntries(teams.map((team) => [team.id, team.position]));
+    if (!before) return;
+    const up = {};
+    for (const team of teams) if (before[team.id] !== undefined && team.position < before[team.id]) up[team.id] = true;
+    if (Object.keys(up).length === 0) return;
+    setClimbs(up);
+    const timer = setTimeout(() => setClimbs({}), 1800);
+    return () => clearTimeout(timer);
+  }, [teams]);
+  return climbs;
+}
+
 export function TeamStandings({ teams, mineId = null, qualified, qualifiedSpots, seasonStart = null }) {
   const { move, streak, form } = useStandingsHistory(teams, seasonStart);
   const deltas = useDeltas(teams);
+  const climbs = useClimbs(teams);
   const podium = teams.slice(0, 3);
   const rows = teams.slice(3);
   const lastQualified = teams.findLastIndex((team) => team.position <= qualifiedSpots);
@@ -281,7 +304,7 @@ export function TeamStandings({ teams, mineId = null, qualified, qualifiedSpots,
     <div>
       <ol className="grid grid-cols-1 gap-4 sm:grid-cols-2">
         {podium.map((team, index) => (
-          <PodiumCard key={team.id} team={team} index={index} info={info(team)} mine={team.id === mineId} />
+          <PodiumCard key={team.id} team={team} index={index} info={info(team)} mine={team.id === mineId} climbed={Boolean(climbs[team.id])} />
         ))}
       </ol>
       {lastQualified >= 0 && lastQualified < 2 && teams.length > lastQualified + 1 ? <QualificationLine spots={qualifiedSpots} /> : null}
@@ -315,8 +338,9 @@ export function TeamStandings({ teams, mineId = null, qualified, qualifiedSpots,
                 >
                   <Link
                     href={`/cod/equipes/${team.id}`}
+                    data-climb={climbs[team.id] ? "" : undefined}
                     className={cn(
-                      "group relative grid items-center gap-x-4 overflow-hidden px-4 py-3.5 transition duration-300 hover:-translate-y-0.5 sm:px-5 [clip-path:polygon(0_0,100%_0,100%_calc(100%-12px),calc(100%-12px)_100%,0_100%)]",
+                      "standings-row group relative grid items-center gap-x-4 overflow-hidden px-4 py-3.5 transition duration-300 hover:-translate-y-0.5 sm:px-5 [clip-path:polygon(0_0,100%_0,100%_calc(100%-12px),calc(100%-12px)_100%,0_100%)]",
                       COLS,
                       isMine ? "bg-gold/[0.08]" : "bg-white/[0.03]",
                     )}
