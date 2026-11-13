@@ -1,3 +1,5 @@
+import { SectionTrace } from "../../components/effects/SectionTrace";
+import { SectionMarks } from "../../components/home/SectionMarks";
 import Head from "next/head";
 import { useState } from "react";
 import { LeaderboardView } from "../../components/cod/LeaderboardView";
@@ -17,6 +19,14 @@ import { rankFor } from "../../lib/ranks";
 import { MATCH_TEAM_ENABLED } from "../../lib/config";
 
 /** Classement COD complet, en direct, avec les archives des saisons passées. Public. */
+/** Repères à droite (ordinateur), dans l'ordre de la page (2026-11-13). */
+const MARKS = [
+  { id: "classement", label: "Classement" },
+  { id: "stats", label: "Stats" },
+  { id: "recompenses", label: "Récompenses" },
+  { id: "rangs", label: "Les rangs" },
+];
+
 export default function LeaderboardPage() {
   const { userId } = useSession();
   const user = useUser();
@@ -42,9 +52,12 @@ export default function LeaderboardPage() {
         }
         description="Les meilleurs joueurs du classé Call of Duty, mis à jour en direct après chaque match confirmé."
         actions={<ButtonLink href="/cod/ranked">Rejoindre la file</ButtonLink>}
+        live
       />
-      <Container className="space-y-20 py-12">
-        <div>
+      <SectionMarks marks={MARKS} />
+      {/* traced : filet doré entre les sections (pas au-dessus de la première ni d'une section vide). */}
+      <Container className="traced space-y-20 py-12">
+        <div id="classement" className="relative">
           {past.length > 0 ? (
             <div role="tablist" aria-label="Saison affichée" className="mb-8 flex flex-wrap gap-2">
               <SeasonTab active={selected === "live"} onClick={() => setSelected("live")}>
@@ -60,9 +73,22 @@ export default function LeaderboardPage() {
           {archived ? null : <SeasonCountdown mode="classe" />}
           {archived ? <SeasonArchive season={archived} currentUserId={userId} /> : <LeaderboardView limit={200} currentUserId={userId} />}
         </div>
-        {archived ? null : <StatsLeaderboard currentUserId={userId} />}
-        {archived ? null : <SeasonRewards seasonId={active?.id} label={label} />}
-        <RanksGrid highlight={user?.profile ? rankFor(user.profile.points).name : null} />
+        {archived ? null : (
+          <div id="stats" className="relative">
+            <SectionTrace className="-top-10" />
+            <StatsLeaderboard currentUserId={userId} />
+          </div>
+        )}
+        {archived ? null : (
+          <div id="recompenses" className="relative">
+            <SectionTrace className="-top-10" />
+            <SeasonRewards seasonId={active?.id} label={label} />
+          </div>
+        )}
+        <div id="rangs" className="relative">
+          <SectionTrace className="-top-10" />
+          <RanksGrid highlight={user?.profile ? rankFor(user.profile.points).name : null} />
+        </div>
       </Container>
     </>
   );

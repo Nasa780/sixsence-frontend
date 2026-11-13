@@ -351,8 +351,12 @@
   height: 2px;
   transform: scaleX(0);
   transition: transform 1.1s cubic-bezier(0.22, 1, 0.36, 1);
-  background: linear-gradient(90deg, transparent, #d4af37 30%, #f8ecc0 50%, #d4af37 70%, transparent);
+  background: linear-gradient(90deg, transparent, var(--color-gold) 30%, var(--color-gold-pale) 50%, var(--color-gold) 70%, transparent);
 }
+/* Pages à sections (`traced`, 2026-11-13) : pas de filet au-dessus de la première section ; une section vide (rien
+   d'autre que son filet) disparaît, sans laisser d'espace. */
+.traced > :first-child > .section-trace { display: none; }
+.traced > :has(> .section-trace):not(:has(> :not(.section-trace))) { display: none; }
 .section-trace.vu { transform: scaleX(1); }
 .section-trace::after {
   content: "";

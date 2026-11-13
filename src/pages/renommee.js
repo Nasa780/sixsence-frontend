@@ -1,3 +1,5 @@
+import { SectionTrace } from "../components/effects/SectionTrace";
+import { SectionMarks } from "../components/home/SectionMarks";
 import { motion } from "framer-motion";
 import Head from "next/head";
 import Link from "next/link";
@@ -24,6 +26,16 @@ const dateFr = (iso) => (iso ? new Date(iso).toLocaleDateString("fr-FR", { day: 
  * des coupes (trophées Horus, médailles Anubis) et MVP du mois. Données GET /hall-of-fame du backend ; en tête, joueur
  * de la semaine (GET /highlights : le plus de points gagnés en classé sur 7 jours, 3 matchs au moins).
  */
+/** Repères à droite (ordinateur) ; une section absente (pas de clip de la semaine…) n'a pas de repère (2026-11-13). */
+const MARKS = [
+  { id: "semaine", label: "Top de la semaine" },
+  { id: "clip-semaine", label: "Clip de la semaine" },
+  { id: "records", label: "Records" },
+  { id: "saisons", label: "Champions" },
+  { id: "coupes", label: "Trophées" },
+  { id: "mvp", label: "MVP du mois" },
+];
+
 export default function RenownPage() {
   const [data, setData] = useState(null);
   const [error, setError] = useState(null);
@@ -68,15 +80,19 @@ export default function RenownPage() {
           </>
         }
         description="Les champions, les vainqueurs de trophées et les records de SixSence. Ceux qui ont marqué l'histoire de la communauté."
+        live
       />
-      <Container className="space-y-16 py-12">
+      <SectionMarks marks={MARKS} />
+      {/* traced : filet doré entre les sections (pas au-dessus de la première). */}
+      <Container className="traced space-y-16 py-12">
         {error ? <Notice tone="error">{error}</Notice> : null}
         {!data && !error ? <Loading /> : null}
 
         {data ? (
           <>
             {playerOfWeek ? (
-              <section aria-labelledby="titre-semaine">
+              <section id="semaine" aria-labelledby="titre-semaine" className="relative">
+                <SectionTrace className="-top-8" />
                 <SectionTitle id="titre-semaine" eyebrow="7 derniers jours" title="Top de la semaine" />
                 <div className="mt-6">
                   <PlayerOfWeek player={playerOfWeek} />
@@ -85,7 +101,8 @@ export default function RenownPage() {
             ) : null}
 
             {clipOfWeek ? (
-              <section aria-labelledby="titre-clip-semaine">
+              <section id="clip-semaine" aria-labelledby="titre-clip-semaine" className="relative">
+                <SectionTrace className="-top-8" />
                 <SectionTitle id="titre-clip-semaine" eyebrow="Le plus voté des 7 derniers jours" title="Clip de la semaine" />
                 <div className="mt-6 grid items-center gap-6 lg:grid-cols-[1.3fr_1fr]">
                   <ClipCard clip={clipOfWeek} highlight onRemoved={() => setClipOfWeek(null)} />
@@ -103,7 +120,8 @@ export default function RenownPage() {
             ) : null}
 
             {records.length ? (
-              <section aria-labelledby="titre-records">
+              <section id="records" aria-labelledby="titre-records" className="relative">
+                <SectionTrace className="-top-8" />
                 <SectionTitle id="titre-records" eyebrow="De tous les temps" title="Records" />
                 <ul className="mt-6 grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4">
                   {records.map(([key, label, Icon, format], index) => {
@@ -131,7 +149,8 @@ export default function RenownPage() {
               </section>
             ) : null}
 
-            <section aria-labelledby="titre-saisons">
+            <section id="saisons" aria-labelledby="titre-saisons" className="relative">
+                <SectionTrace className="-top-8" />
               <SectionTitle id="titre-saisons" eyebrow="Classé et Division" title="Champions de saison" />
               {data.seasons.length === 0 ? (
                 <div className="mt-6">
@@ -166,7 +185,8 @@ export default function RenownPage() {
               )}
             </section>
 
-            <section aria-labelledby="titre-coupes">
+            <section id="coupes" aria-labelledby="titre-coupes" className="relative">
+                <SectionTrace className="-top-8" />
               <SectionTitle id="titre-coupes" eyebrow="Horus, Anubis, fin de saison" title="Vainqueurs des trophées" />
               {data.cups.length === 0 ? (
                 <div className="mt-6">
@@ -212,7 +232,8 @@ export default function RenownPage() {
               )}
             </section>
 
-            <section aria-labelledby="titre-mvp">
+            <section id="mvp" aria-labelledby="titre-mvp" className="relative">
+                <SectionTrace className="-top-8" />
               <SectionTitle id="titre-mvp" eyebrow="Élus par les joueurs" title="MVP du mois" />
               {data.mvps.length === 0 ? (
                 <div className="mt-6">

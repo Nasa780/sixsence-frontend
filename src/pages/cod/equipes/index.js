@@ -77,6 +77,7 @@ export default function TeamsPage() {
         <meta name="description" content="Classement des équipes de la Division de SixSence : BO3 en 4v4, points en direct, tournoi de fin de saison." />
       </Head>
       <PageHeader
+        live
         image="/images/mw4.webp"
         eyebrow={`${label} · Division`}
         title={
