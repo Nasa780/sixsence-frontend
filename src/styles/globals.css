@@ -353,6 +353,79 @@
   transition: transform 1.1s cubic-bezier(0.22, 1, 0.36, 1);
   background: linear-gradient(90deg, transparent, var(--color-gold) 30%, var(--color-gold-pale) 50%, var(--color-gold) 70%, transparent);
 }
+/* Podium vivant (2026-11-13) : reflet qui traverse les cartes en boucle (doré et plus marqué sur le n°1), couronne
+   qui scintille, étincelles autour du blason du leader. */
+.standings-podium::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background: linear-gradient(105deg, transparent 42%, rgba(255, 255, 255, 0.16) 50%, transparent 58%);
+  background-size: 300% 100%;
+  animation: standings-podium-sheen 6.5s ease-in-out infinite;
+}
+.standings-podium[data-rank="1"]::after {
+  background-image: linear-gradient(105deg, transparent 40%, rgba(255, 240, 200, 0.3) 50%, transparent 60%);
+  animation-duration: 4.5s;
+}
+.standings-podium[data-rank="1"]::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 340px;
+  height: 220px;
+  z-index: 1;
+  pointer-events: none;
+  background:
+    radial-gradient(circle at 12% 30%, #fff8 0 1.5px, transparent 2.5px),
+    radial-gradient(circle at 26% 18%, #f8ecc0aa 0 2px, transparent 3px),
+    radial-gradient(circle at 34% 44%, #fff7 0 1px, transparent 2px),
+    radial-gradient(circle at 8% 62%, #f8ecc099 0 1.5px, transparent 2.5px),
+    radial-gradient(circle at 30% 70%, #fff6 0 1px, transparent 2px);
+  animation: standings-sparkle 2.2s ease-in-out infinite alternate;
+}
+.standings-crown { transform-origin: 50% 70%; animation: standings-crown 2.6s ease-in-out infinite; }
+@keyframes standings-podium-sheen { 0% { background-position: 150% 0; } 45%, 100% { background-position: -50% 0; } }
+@keyframes standings-sparkle { from { opacity: 0.15; } to { opacity: 1; } }
+@keyframes standings-crown {
+  0%, 100% { transform: scale(1) rotate(0); filter: drop-shadow(0 0 2px #d4af37); }
+  50% { transform: scale(1.35) rotate(-8deg); filter: drop-shadow(0 0 10px #f8ecc0) drop-shadow(0 0 4px #fff); }
+}
+
+/* Classement des équipes (2026-11-13) : éclat et reflet sur l'équipe qui vient de gagner des places (data-climb). */
+.standings-row[data-climb]::before,
+.standings-podium[data-climb]::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  width: auto;
+  height: auto;
+  z-index: 1;
+  pointer-events: none;
+  background: linear-gradient(90deg, color-mix(in srgb, var(--color-gold) 55%, transparent), color-mix(in srgb, var(--color-gold) 12%, transparent) 60%, transparent);
+  animation: standings-climb-flash 1.8s ease-out both;
+}
+.standings-row[data-climb]::after,
+.standings-podium[data-climb]::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  pointer-events: none;
+  background: linear-gradient(100deg, transparent 30%, rgba(255, 255, 255, 0.55) 50%, transparent 70%);
+  background-size: 250% 100%;
+  animation: standings-climb-sweep 1.1s ease-out 0.15s both;
+}
+@keyframes standings-climb-flash { 0% { opacity: 0; } 15% { opacity: 1; } 100% { opacity: 0; } }
+@keyframes standings-climb-sweep { from { background-position: 160% 0; } to { background-position: -60% 0; } }
+
+@media (prefers-reduced-motion: reduce) {
+  .standings-row[data-climb]::before, .standings-row[data-climb]::after,
+  .standings-podium[data-climb]::before, .standings-podium[data-climb]::after { animation: none; opacity: 0; }
+  .standings-podium::after, .standings-podium[data-rank="1"]::before, .standings-crown { animation: none; }
+}
+
 /* Pages à sections (`traced`, 2026-11-13) : pas de filet au-dessus de la première section ; une section vide (rien
    d'autre que son filet) disparaît, sans laisser d'espace. */
 .traced > :first-child > .section-trace { display: none; }
