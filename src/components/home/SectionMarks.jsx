@@ -10,9 +10,10 @@ export function SectionMarks({ marks }) {
   const [shown, setShown] = useState([]);
   const [active, setActive] = useState(null);
 
-  // Sections présentes (hauteur non nulle), dans l'ordre de la page ; relu quand une section apparaît ou disparaît.
+  // Sections présentes (hauteur non nulle), dans l'ordre de la page ; relu quand une section apparaît, disparaît ou
+  // change de taille, y compris une section ajoutée après le chargement (données arrivées plus tard).
   useEffect(() => {
-    const nodes = marks.map((mark) => document.getElementById(mark.id)).filter(Boolean);
+    let nodes = [];
     const update = () =>
       setShown(
         marks
@@ -22,13 +23,36 @@ export function SectionMarks({ marks }) {
           .map(({ id, label }) => ({ id, label })),
       );
     const resize = new ResizeObserver(update);
-    nodes.forEach((node) => resize.observe(node));
     const view = new IntersectionObserver(
       (entries) => entries.forEach((entry) => entry.isIntersecting && setActive(entry.target.id)),
       { rootMargin: "-45% 0px -50% 0px" },
     );
-    nodes.forEach((node) => view.observe(node));
+    const bind = () => {
+      const next = marks.map((mark) => document.getElementById(mark.id)).filter(Boolean);
+      if (next.length === nodes.length && next.every((node, index) => node === nodes[index])) return;
+      nodes.forEach((node) => {
+        resize.unobserve(node);
+        view.unobserve(node);
+      });
+      nodes = next;
+      nodes.forEach((node) => {
+        resize.observe(node);
+        view.observe(node);
+      });
+      update();
+    };
+    bind();
+    let frame = 0;
+    const mutation = new MutationObserver(() => {
+      frame ||= requestAnimationFrame(() => {
+        frame = 0;
+        bind();
+      });
+    });
+    mutation.observe(document.body, { childList: true, subtree: true });
     return () => {
+      mutation.disconnect();
+      cancelAnimationFrame(frame);
       resize.disconnect();
       view.disconnect();
     };

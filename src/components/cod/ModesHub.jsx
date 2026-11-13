@@ -10,6 +10,8 @@ import { MySeason } from "./MySeason";
 import { OnboardingPanel } from "./OnboardingPanel";
 import { GoldParticles } from "../effects/GoldParticles";
 import { Reveal } from "../effects/Reveal";
+import { SectionTrace } from "../effects/SectionTrace";
+import { SectionMarks } from "../home/SectionMarks";
 import { TiltCard } from "../effects/TiltCard";
 import { ButtonLink } from "../ui/Button";
 import { Container } from "../ui/Container";
@@ -30,6 +32,14 @@ import { HubHighlights, SHOW_WEEK_HIGHLIGHTS } from "./HubHighlights";
 
 /** Barre « Ma saison » (Classé et Division du joueur) retirée le 2026-10-28, gardée de côté : true pour la remettre. */
 const SHOW_MY_SEASON = false;
+
+/** Repères à droite (ordinateur) : une section vide (pas de direct Twitch, premiers pas faits) n'a pas de repère. */
+const MARKS = [
+  { id: "modes", label: "Modes" },
+  { id: "twitch-mw4", label: "En direct" },
+  { id: "premiers-pas", label: "Premiers pas" },
+  { id: "top", label: "Top 10" },
+];
 
 /** Les deux modes de jeu, présentés séparément sur le hub. */
 const MODES = [
@@ -129,12 +139,16 @@ export function ModesHub() {
           user ? `Content de te revoir, ${user.username}. Classé, Division et Tournoi t'attendent.` : "Recherche & Destruction Hardcore : le classé en solo (2v2 à 5v5), la Division pour les équipes (BO3 4v4) et le tournoi de fin de saison."
         }
         actions={<HubActions user={user} hasActiveMatch={Boolean(activeMatch)} />}
+        live
       />
+      <SectionMarks marks={MARKS} />
 
       {/* Fond de particules dorées qui se relient à la souris, comme sur les files Classé et Division (2026-11-12). */}
       <div className="relative isolate">
         <GoldParticles id="particules-mw4" density={60} className="-z-10 mask-fade" />
-      <Container className="space-y-16 py-12">
+      {/* traced : filet doré entre les sections (pas au-dessus de la première ni d'une section vide). */}
+      <Container className="traced space-y-16 py-12">
+        <div id="modes" className="relative space-y-16">
         {session && disputed && !extra.activeMatchId ? (
           <Notice>
             Ton match {disputed.format ? `${disputed.format} ` : ""}sur {disputed.map} est contesté : un arbitre SixSence va trancher.{" "}
@@ -195,17 +209,25 @@ export function ModesHub() {
             </Reveal>
           ))}
         </div>
+        </div>
 
-        <TwitchLive bare />
+        <div id="twitch-mw4" className="relative">
+          <SectionTrace className="-top-8" />
+          <TwitchLive bare />
+        </div>
 
         {/* Premiers pas : compte, puis parcours Classé ou Division (onglets). */}
-        <OnboardingPanel user={user} />
+        <div id="premiers-pas" className="relative">
+          <SectionTrace className="-top-8" />
+          <OnboardingPanel user={user} />
+        </div>
 
 
         {/* Joueur et match de la semaine, fil d'activité en direct. */}
         {SHOW_WEEK_HIGHLIGHTS ? <HubHighlights /> : null}
 
-        <div className="grid grid-cols-1 gap-12 xl:grid-cols-[3fr_2fr]">
+        <div id="top" className="relative grid grid-cols-1 gap-12 xl:grid-cols-[3fr_2fr]">
+          <SectionTrace className="-top-8" />
           <section aria-labelledby="titre-top10">
             <SectionHeading eyebrow={`${seasonLabel} · Classé`} title={<span id="titre-top10">Top 10 joueurs</span>} />
             <div className="mt-8">
