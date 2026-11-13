@@ -1,7 +1,6 @@
 import Image from "next/image";
 import { useRouter } from "next/router";
 import { CodModeNav, codModeOf } from "../cod/CodModeNav";
-import { LiveBand } from "../home/LiveBand";
 import { cn } from "../../lib/cn";
 import { Container } from "./Container";
 
@@ -35,12 +34,11 @@ export function SectionHeading({ eyebrow, title, description = null, center = fa
 /** Image de fond des en-têtes COD : un visuel par mode (Classé, Division, Tournoi). */
 const MODE_IMAGES = { classe: "/images/modes/classe.webp", team: "/images/modes/division.jpg", tournoi: "/images/modes/tournoi.webp" };
 
-export function PageHeader({ eyebrow, title, description = null, actions = null, image = null, live = false }) {
+export function PageHeader({ eyebrow, title, description = null, actions = null, image = null }) {
   // Pages COD : sélecteur « Classé | Division | Tournoi » sous le titre.
   const codMode = codModeOf(useRouter().pathname);
   const modeImage = image && MODE_IMAGES[codMode];
   return (
-    <>
     <header
       className={cn(
         "relative isolate overflow-hidden border-b border-white/10 pt-28 pb-10 sm:pt-36 sm:pb-14",
@@ -84,13 +82,5 @@ export function PageHeader({ eyebrow, title, description = null, actions = null,
         </Container>
       ) : null}
     </header>
-    {/* Bande « En direct » de l'accueil sous l'en-tête des pages COD principales (2026-11-13), sur ordinateur et tablette
-        seulement : retirée des téléphones le 2026-11-13 (l'accueil garde la sienne). */}
-    {live ? (
-      <div className="hidden md:block">
-        <LiveBand />
-      </div>
-    ) : null}
-    </>
   );
 }

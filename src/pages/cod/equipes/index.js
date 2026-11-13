@@ -82,7 +82,6 @@ export default function TeamsPage() {
         <meta name="description" content="Classement des équipes de la Division de SixSence : BO3 en 4v4, points en direct, tournoi de fin de saison." />
       </Head>
       <PageHeader
-        live
         image="/images/mw4.webp"
         eyebrow={`${label} · Division`}
         title={
@@ -181,8 +180,8 @@ export default function TeamsPage() {
 
             {teams && teams.length > 0 ? (
               <Notice className="mt-8">
-                Badge « Qualifiée » : équipe qualifiée pour le tournoi de fin de saison (top {spots}, {TEAM_LIMITS.qualifyMatches} matchs min.). Forme : les
-                5 derniers matchs, du plus récent au plus ancien. Toutes les équipes débutent à 1 000 points.
+                Badge « Qualifiée » : équipe qualifiée pour le tournoi de fin de saison (top {spots}, {TEAM_LIMITS.qualifyMatches} matchs min). Toutes les équipes
+                débutent à 1 000 points.
               </Notice>
             ) : null}
 

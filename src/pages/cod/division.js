@@ -71,7 +71,6 @@ export default function DivisionQueuePage() {
       </Head>
 
       <PageHeader
-        live
         image="/images/mw4.webp"
         eyebrow={`Division · BO3 ${size}v${size} · R&D Hardcore`}
         title={

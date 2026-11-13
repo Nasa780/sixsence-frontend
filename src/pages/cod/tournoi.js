@@ -101,7 +101,6 @@ export default function TournamentPage() {
         />
       </Head>
       <PageHeader
-        live
         image="/images/mw4.webp"
         eyebrow={listView ? "Coupes et tournois" : horus ? "Tournoi · Coupe Horus" : anubis ? "Tournoi · Coupe Anubis" : playin ? "Tournoi · Play-in de la grande finale" : "Tournoi · Fin de saison"}
         title={

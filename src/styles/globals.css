@@ -393,6 +393,54 @@
   50% { transform: scale(1.35) rotate(-8deg); filter: drop-shadow(0 0 10px #f8ecc0) drop-shadow(0 0 4px #fff); }
 }
 
+/* Classement des équipes : anneau lumineux de la couleur de l'équipe (--team) qui tourne autour du blason d'une ligne
+   survolée, blason qui grossit un peu (2026-11-13). */
+@property --standings-ring { syntax: "<angle>"; inherits: false; initial-value: 0deg; }
+.standings-crest::before {
+  content: "";
+  position: absolute;
+  inset: -7px;
+  border-radius: 12px;
+  padding: 3px;
+  background: conic-gradient(from var(--standings-ring), transparent 0 30%, var(--team) 65%, #fff 82%, var(--team) 88%, transparent 96%);
+  -webkit-mask: linear-gradient(#000 0 0) content-box, linear-gradient(#000 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  filter: drop-shadow(0 0 6px var(--team));
+  opacity: 0;
+  transition: opacity 0.3s;
+  animation: standings-ring 1.4s linear infinite;
+  pointer-events: none;
+}
+.standings-crest > span { transition: transform 0.3s; }
+.standings-row:hover .standings-crest::before { opacity: 1; }
+.standings-row:hover .standings-crest > span { transform: scale(1.08); }
+@keyframes standings-ring { to { --standings-ring: 360deg; } }
+@media (prefers-reduced-motion: reduce) { .standings-crest::before { animation: none; } }
+
+/* Cartes « Ils recrutent » en relief (teams/RecruitingTeams, 2026-11-13) : variables posées par la souris (--rx, --ry
+   inclinaison ; --mx, --my position ; --hover), bannière au fond et blason devant en parallaxe, reflet, ombre portée. */
+.recruit-card {
+  --rx: 0deg; --ry: 0deg; --mx: 0.5; --my: 0.5; --hover: 0;
+  height: 100%;
+  perspective: 900px;
+  filter: drop-shadow(0 calc(var(--hover) * 22px) calc(var(--hover) * 26px) rgba(0, 0, 0, 0.6)) drop-shadow(0 0 calc(var(--hover) * 16px) color-mix(in srgb, var(--team) 35%, transparent));
+  transition: filter 0.4s;
+}
+.recruit-card > a {
+  transform: rotateX(var(--rx)) rotateY(var(--ry)) translateY(calc(var(--hover) * -8px));
+  transition: transform 0.6s cubic-bezier(0.22, 1, 0.36, 1), box-shadow 0.4s;
+  will-change: transform;
+}
+.recruit-card .rc-back { transform: translate(calc((var(--mx) - 0.5) * -24px), calc((var(--my) - 0.5) * -24px)) scale(1.14); transition: transform 0.6s cubic-bezier(0.22, 1, 0.36, 1); }
+.recruit-card .rc-front { transform: translate(calc((var(--mx) - 0.5) * 12px), calc((var(--my) - 0.5) * 12px)); transition: transform 0.6s cubic-bezier(0.22, 1, 0.36, 1); }
+.recruit-card .rc-glare { background: radial-gradient(circle at calc(var(--mx) * 100%) calc(var(--my) * 100%), rgba(255, 255, 255, 0.24), transparent 45%); opacity: var(--hover); mix-blend-mode: overlay; transition: opacity 0.4s; }
+.recruit-card[data-move] > a { transition: transform 0.1s linear, box-shadow 0.4s; box-shadow: inset 0 0 0 1px var(--team), inset 0 0 36px -12px var(--team); }
+.recruit-card[data-move] .rc-back, .recruit-card[data-move] .rc-front { transition: transform 0.1s linear; }
+@media (prefers-reduced-motion: reduce) {
+  .recruit-card > a, .recruit-card .rc-back, .recruit-card .rc-front { transform: none; }
+}
+
 /* Classement des équipes (2026-11-13) : éclat et reflet sur l'équipe qui vient de gagner des places (data-climb). */
 .standings-row[data-climb]::before,
 .standings-podium[data-climb]::before {

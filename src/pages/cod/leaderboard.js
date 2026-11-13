@@ -52,7 +52,6 @@ export default function LeaderboardPage() {
         }
         description="Les meilleurs joueurs du classé Call of Duty, mis à jour en direct après chaque match confirmé."
         actions={<ButtonLink href="/cod/ranked">Rejoindre la file</ButtonLink>}
-        live
       />
       <SectionMarks marks={MARKS} />
       {/* traced : filet doré entre les sections (pas au-dessus de la première ni d'une section vide). */}
