@@ -97,7 +97,7 @@ export function MemberRow({ member, children = null, isMe = false }) {
           {isMe ? <Chip className="shrink-0">Toi</Chip> : null}
         </p>
         {/* Surnom choisi par un Leader (champ motto) ; rien s'il n'en a pas. */}
-        {member.motto ? <p className="mt-1.5 truncate text-xs font-semibold text-gold">« {member.motto} »</p> : null}
+        {member.motto ? <p className="mt-1.5 truncate text-xs font-semibold text-gold">{member.motto}</p> : null}
       </div>
       {children}
     </li>
