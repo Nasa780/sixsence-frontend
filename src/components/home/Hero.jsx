@@ -25,8 +25,8 @@ const MASK = { WebkitMask: `url(${LOGO}) center / contain no-repeat`, mask: `url
 
 const GOLD = { key: "or", color: "#d4af37", grad: "linear-gradient(100deg,#9c7c1c,#d4af37 30%,#f8ecc0 50%,#d4af37 70%,#9c7c1c)" };
 
-/** Image du téléphone quand aucun mode n'est mis en avant (l'or) : silhouettes en papier découpé devant un soleil doré, choisie le 2026-11-13 (avant : affiche MW4 mw4-park.webp, gardée dans le dossier). */
-const GOLD_IMAGE = "/images/accueil/fond-mobile.webp";
+/** Image du téléphone quand aucun mode n'est mis en avant (l'or) : affiche MW4 (Park). Essayée puis retirée le 2026-11-13 : silhouettes en papier découpé `fond-mobile.webp`, gardée dans le dossier. */
+const GOLD_IMAGE = "/images/accueil/mw4-park.webp";
 
 /**
  * Les modes, dans leur couleur. `text` : couleur lisible du nom sur fond sombre ; `position` : cadrage de l'image ;
