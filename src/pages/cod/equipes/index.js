@@ -9,6 +9,7 @@ import { RecentTeamMatches } from "../../../components/teams/RecentTeamMatches";
 import { DivisionSeasonBand } from "../../../components/teams/DivisionSeasonBand";
 import { ButtonLink } from "../../../components/ui/Button";
 import { SeasonCountdown } from "../../../components/cod/SeasonCountdown";
+import { StatsLeaderboardPreview } from "../../../components/cod/StatsLeaderboard";
 import { Container } from "../../../components/ui/Container";
 import { EmptyState, Loading, Notice } from "../../../components/ui/Feedback";
 import { PageHeader } from "../../../components/ui/Typography";
@@ -183,6 +184,13 @@ export default function TeamsPage() {
                 Badge « Qualifiée » : équipe qualifiée pour le tournoi de fin de saison (top {spots}, {TEAM_LIMITS.qualifyMatches} matchs min). Toutes les équipes
                 débutent à 1 000 points.
               </Notice>
+            ) : null}
+
+            {/* Stats perso des joueurs, tous modes confondus : top 5 de chaque stat, lien vers le classement complet. */}
+            {teams && teams.length > 0 ? (
+              <div id="stats" className="mt-16">
+                <StatsLeaderboardPreview currentUserId={userId} />
+              </div>
             ) : null}
 
             {/* Les équipes qui cherchent des joueurs (2026-11-13). */}

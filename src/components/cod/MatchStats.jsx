@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { LuCheck, LuExternalLink, LuFlag, LuImagePlus, LuLoaderCircle, LuPencil, LuTrash2, LuX } from "react-icons/lu";
 import useUser from "../../hooks/useUser";
@@ -10,6 +11,7 @@ import { Button } from "../ui/Button";
 import { Notice } from "../ui/Feedback";
 import { TacticalCard } from "../ui/TacticalCard";
 import { Eyebrow } from "../ui/Typography";
+import { STAT_BOARDS, sortedBoard, useStatsBoard } from "./StatsLeaderboard";
 
 const HEAD = ["Score", "Élim.", "Poses", "Désam."];
 const FIELDS = [["score", "Score"], ["kills", "Élim."], ["plants", "Poses"], ["defuses", "Désam."]];
@@ -510,9 +512,13 @@ export function MatchStats({ kind, matchId, status = null, initial = null }) {
   );
 }
 
-/** Bilan des stats de capture sur le profil (GET /cod/players/:id/stats) : rien tant qu'aucune capture n'est validée. */
-export function PlayerCaptureStats({ playerId, initial = null }) {
+/**
+ * Bilan des stats de capture sur le profil (GET /cod/players/:id/stats), Classé, Division et tournois confondus,
+ * avec la place du joueur au classement des stats dès qu'il a assez de maps. own : son propre profil.
+ */
+export function PlayerCaptureStats({ playerId, initial = null, own = false }) {
   const [stats, setStats] = useState(initial);
+  const board = useStatsBoard();
   useEffect(() => {
     if (initial) return undefined;
     let alive = true;
@@ -521,7 +527,26 @@ export function PlayerCaptureStats({ playerId, initial = null }) {
       alive = false;
     };
   }, [playerId, initial]);
-  if (!stats?.maps) return null;
+  if (!stats) return null;
+  if (!stats.maps) {
+    return (
+      <section aria-labelledby="titre-stats-capture">
+        <Eyebrow>Sur le terrain</Eyebrow>
+        <h2 id="titre-stats-capture" className="mt-3 font-display text-4xl font-black uppercase leading-none">
+          Stats perso de la saison
+        </h2>
+        <p className="mt-4 max-w-2xl border-l border-white/12 bg-white/[0.03] px-4 py-3.5 text-sm text-white/60">
+          {own
+            ? "Pas encore de stats cette saison. Envoie la capture du tableau de fin de match depuis la feuille de match : tes élim., ton score et tes objectifs apparaîtront ici, tous modes confondus."
+            : "Pas encore de capture de fin de match cette saison."}
+        </p>
+      </section>
+    );
+  }
+  const minMaps = board?.minMaps ?? 10;
+  const places = board
+    ? STAT_BOARDS.map((item) => ({ ...item, place: sortedBoard(board.players, item.key).findIndex((player) => player.id === playerId) + 1 })).filter((item) => item.place > 0)
+    : [];
   const tiles = [
     ["Élim. par map", stats.avgKills],
     ["Score moyen", stats.avgScore],
@@ -546,6 +571,27 @@ export function PlayerCaptureStats({ playerId, initial = null }) {
           </div>
         ))}
       </dl>
+      {board ? (
+        <p className="mt-4 flex flex-wrap items-center gap-x-4 gap-y-2 text-sm text-white/60">
+          {places.length > 0 ? (
+            <>
+              <span className="font-tech text-[10px] uppercase tracking-[0.2em] text-white/45">Classement des stats</span>
+              {places.map((item) => (
+                <span key={item.key}>
+                  <span className={cn("font-display text-lg font-black tabular-nums", item.place <= 3 ? "text-gold" : "text-white")}>{item.place === 1 ? "1er" : `${item.place}e`}</span> {item.title.toLowerCase()}
+                </span>
+              ))}
+            </>
+          ) : (
+            <span>
+              Encore {Math.max(minMaps - stats.maps, 1)} map{minMaps - stats.maps > 1 ? "s" : ""} pour entrer au classement des stats ({stats.maps} / {minMaps}).
+            </span>
+          )}
+          <Link href="/cod/leaderboard#stats" className="text-gold underline underline-offset-4 hover:text-gold-light">
+            Voir le classement
+          </Link>
+        </p>
+      ) : null}
     </section>
   );
 }

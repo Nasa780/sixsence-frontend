@@ -346,7 +346,7 @@ export function ProfileView({ userId, editable = false, ownUser = null, nameAsTi
         <PerformancePanel history={history} userId={player.id} points={profile.points} seasonId={activeSeason?.id ?? null} seasonLabel={seasonLabel} />
       </section>
 
-      {captureStats ? <PlayerCaptureStats playerId={player.id} initial={captureStats} /> : null}
+      {captureStats ? <PlayerCaptureStats playerId={player.id} initial={captureStats} own={editable} /> : null}
 
       {/* --- Analyse : place sur le site, ratio 30 j, face à face, adversaires, activité, équipes */}
       <PlayerInsights playerId={player.id} />

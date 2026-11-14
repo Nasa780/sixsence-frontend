@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import { QueuePanel } from "../../components/cod/QueuePanel";
 import { RankRoad } from "../../components/cod/RankRoad";
 import { RanksGrid } from "../../components/cod/RanksGrid";
+import { StatsLeaderboardPreview } from "../../components/cod/StatsLeaderboard";
 import { GoldParticles } from "../../components/effects/GoldParticles";
 import { Container } from "../../components/ui/Container";
 import { Loading, StatTile } from "../../components/ui/Feedback";
@@ -128,6 +129,10 @@ export default function RankedPage() {
             </TacticalCard>
           </Container>
         ) : null}
+
+        <Container className="pb-12">
+          <StatsLeaderboardPreview currentUserId={user?.id ?? null} />
+        </Container>
 
         <Container className="pb-8">
           <RanksGrid highlight={user?.profile ? rankFor(user.profile.points).name : null} />
