@@ -3,6 +3,7 @@ import Link from "next/link";
 import { useEffect, useState } from "react";
 import { LuCrosshair, LuCrown, LuShield, LuTrophy } from "react-icons/lu";
 import { LeaderboardView } from "./LeaderboardView";
+import { StatsLeaderboardPreview } from "./StatsLeaderboard";
 import { ActiveMatchBanner } from "./ActiveMatchBanner";
 import { HubActions } from "./HubActions";
 import { TwitchLive } from "./TwitchLive";
@@ -39,6 +40,7 @@ const MARKS = [
   { id: "twitch-mw4", label: "En direct" },
   { id: "premiers-pas", label: "Premiers pas" },
   { id: "top", label: "Top 10" },
+  { id: "stats", label: "Stats" },
 ];
 
 /** Les deux modes de jeu, présentés séparément sur le hub. */
@@ -234,6 +236,12 @@ export function ModesHub() {
             </div>
           </section>
           <TopTeams label={seasonLabel} />
+        </div>
+
+        {/* Stats perso de la saison (captures), tous modes confondus : top 5 de chaque stat. */}
+        <div id="stats" className="relative">
+          <SectionTrace className="-top-8" />
+          <StatsLeaderboardPreview currentUserId={user?.id ?? null} label={seasonLabel} />
         </div>
       </Container>
       </div>
