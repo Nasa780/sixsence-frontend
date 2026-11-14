@@ -75,7 +75,7 @@ export default function LeaderboardPage() {
         {archived ? null : (
           <div id="stats" className="relative">
             <SectionTrace className="-top-10" />
-            <StatsLeaderboard currentUserId={userId} />
+            <StatsLeaderboard currentUserId={userId} mode="classe" />
           </div>
         )}
         {archived ? null : (
