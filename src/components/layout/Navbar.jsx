@@ -24,6 +24,8 @@ import { Button } from "../ui/Button";
 import { Container } from "../ui/Container";
 import { InstallButton } from "../ui/InstallButton";
 import { GlobalSearch } from "./GlobalSearch";
+import { InboxBell } from "./InboxBell";
+import { OnlinePill } from "./OnlinePill";
 import { Logo } from "../ui/Logo";
 
 /** Lien du menu du compte sur mobile (icône + libellé, comme le menu du profil sur ordinateur). */
@@ -188,6 +190,10 @@ export function Navbar() {
           <div className="flex items-center gap-2">
             {/* Recherche rapide réservée à l'équipe SixSence (admin, staff, arbitres). */}
             {user && isReferee(user.role) ? <GlobalSearch /> : null}
+            {/* Personnes sur le site et activité du moment (file, matchs). */}
+            <OnlinePill />
+            {/* Centre de notifications (connecté) ; la roue dentée ouvre les réglages. */}
+            {user ? <InboxBell onSettings={() => setNotifications(true)} /> : null}
             <InstallButton variant="nav" />
             {/* Zone de largeur fixe pendant le chargement : évite que la barre ne saute. */}
             <div className="hidden min-w-[9rem] justify-end sm:flex">

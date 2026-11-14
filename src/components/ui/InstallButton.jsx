@@ -59,7 +59,8 @@ export function InstallButton({ variant = "panel", className = "" }) {
           )}
         >
           <LuDownload aria-hidden className="h-4 w-4" />
-          {label}
+          {/* Version courte dans la barre du haut, pour laisser de la place à la pastille et à la cloche. */}
+          Installer l&apos;app
         </button>
       ) : variant === "menu" ? (
         <button
