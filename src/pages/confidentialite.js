@@ -38,6 +38,10 @@ const SECTIONS = [
             <strong>Contenus que tu publies</strong> : messages du tchat de match et captures d&apos;écran envoyées comme preuves.
           </li>
           <li>
+            <strong>Messagerie</strong> : messages privés échangés avec d&apos;autres joueurs, ton réglage « qui peut m&apos;écrire » et la
+            liste des joueurs que tu as bloqués.
+          </li>
+          <li>
             <strong>Données techniques</strong> : journaux des serveurs (adresse IP, date, requête), conservés brièvement par les
             hébergeurs pour la sécurité.
           </li>
@@ -73,6 +77,11 @@ const SECTIONS = [
           Les <strong>messages du tchat de match</strong> et les <strong>captures de preuve</strong> ne sont visibles que par les
           joueurs du match et les administrateurs. Tes <strong>avertissements</strong> ne sont pas publics.
         </p>
+        <p>
+          Tes <strong>messages privés</strong> ne sont lisibles que par toi et la personne avec qui tu échanges. L&apos;équipe SixSence
+          ne les lit pas, sauf si l&apos;un de vous deux <strong>signale la conversation</strong> : elle voit alors une copie des 50
+          derniers messages de cette conversation, et seulement de celle-ci, pour trancher (sanction possible).
+        </p>
       </>
     ),
   },
@@ -92,7 +101,7 @@ const SECTIONS = [
           </li>
           <li>
             <strong>Discord</strong> : fournit la connexion ; si le bot SixSence est actif, il t&apos;envoie des messages privés
-            (match trouvé) et crée les salons vocaux des matchs.
+            (match trouvé, premier message non lu d’une conversation) et crée les salons vocaux des matchs.
           </li>
         </ul>
       </>
@@ -106,6 +115,12 @@ const SECTIONS = [
         <li>Compte, profil, statistiques et historique : tant que ton compte existe.</li>
         <li>Archives de fin de saison (classement final) : conservées pour l&apos;historique de la plateforme.</li>
         <li>Avertissements pour match non accepté : seuls ceux des dernières 24 heures comptent pour les sanctions.</li>
+        <li>Messages privés : supprimés automatiquement 30 jours après leur envoi.</li>
+        <li>
+          Copie d&apos;une conversation signalée : gardée pendant le traitement du signalement, puis supprimée 30 jours après la
+          décision.
+        </li>
+        <li>Notifications du site (la cloche) : supprimées 30 jours après leur envoi.</li>
         <li>Journaux techniques des hébergeurs : quelques jours à quelques semaines selon l&apos;hébergeur.</li>
       </ul>
     ),
