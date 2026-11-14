@@ -80,7 +80,7 @@ function NewConversation() {
                 type="button"
                 onClick={() => {
                   setQuery("");
-                  router.push(`/messages?avec=${player.id}`, undefined, { shallow: true });
+                  router.push({ pathname: router.pathname, query: { avec: player.id } }, undefined, { shallow: true });
                 }}
                 className="flex w-full items-center gap-3 px-3 py-2 text-left text-sm transition-colors hover:bg-white/[0.06]"
               >
@@ -97,6 +97,7 @@ function NewConversation() {
 
 /** Liste des conversations, la plus récente d'abord. */
 function ConversationList({ items, selected }) {
+  const { pathname } = useRouter();
   if (!items) return <p className="px-4 py-6 text-sm text-white/45">Chargement…</p>;
   if (items.length === 0) {
     return <p className="px-4 py-8 text-center text-sm text-white/55">Aucune conversation. Cherche un joueur ci-dessus, ou clique sur « Envoyer un message » sur son profil.</p>;
@@ -106,7 +107,7 @@ function ConversationList({ items, selected }) {
       {items.map((item) => (
         <li key={item.id}>
           <Link
-            href={`/messages?avec=${item.with.id}`}
+            href={{ pathname, query: { avec: item.with.id } }}
             shallow
             className={cn("flex items-center gap-3 border-l-2 px-4 py-3 transition-colors hover:bg-white/[0.05]", item.with.id === selected ? "border-gold bg-white/[0.05]" : "border-transparent")}
           >
@@ -135,6 +136,7 @@ function ConversationList({ items, selected }) {
 
 /** Conversation ouverte : messages, plus anciens à la demande, zone d'écriture. */
 function Thread({ me, otherId, thread, onLoadOlder, onSent }) {
+  const { pathname } = useRouter();
   const [draft, setDraft] = useState("");
   const [sending, setSending] = useState(false);
   const [error, setError] = useState(null);
@@ -174,7 +176,7 @@ function Thread({ me, otherId, thread, onLoadOlder, onSent }) {
   return (
     <>
       <div className="flex items-center gap-3 border-b border-white/10 px-4 py-3">
-        <Link href="/messages" shallow aria-label="Retour aux conversations" className="grid h-8 w-8 place-items-center text-white/60 hover:text-white lg:hidden">
+        <Link href={pathname} shallow aria-label="Retour aux conversations" className="grid h-8 w-8 place-items-center text-white/60 hover:text-white lg:hidden">
           <LuArrowLeft aria-hidden className="h-5 w-5" />
         </Link>
         <Link href={`/cod/profile/${thread.with.id}`} className="group flex min-w-0 items-center gap-3">
