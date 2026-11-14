@@ -43,7 +43,7 @@ function useActivity() {
   return activity;
 }
 
-/** Pastille « N en ligne » de la barre du haut ; au clic, ce qui se passe en ce moment (file, matchs) avec des liens. */
+/** Antenne « N » (personnes en ligne) de la barre du haut ; au clic, ce qui se passe en ce moment (file, matchs) avec des liens. */
 export function OnlinePill() {
   const activity = useActivity();
   const [open, setOpen] = useState(false);
@@ -82,22 +82,15 @@ export function OnlinePill() {
         onClick={() => setOpen((value) => !value)}
         aria-expanded={open}
         aria-label={`${activity.online} en ligne : voir l'activité du site`}
-        className="flex h-9 items-center border-b border-transparent px-2 transition-colors hover:border-gold lg:clip-slant lg:border-0 lg:bg-white/[0.06] lg:px-4 lg:[--slant:10px] lg:hover:bg-white/[0.12]"
+        title="Personnes sur le site"
+        className="flex h-9 items-center gap-1.5 border-b border-transparent px-2 transition-colors hover:border-gold"
       >
-        {/* Téléphone et tablette : antenne verte qui émet et chiffre. */}
-        <span className="flex items-center gap-1.5 lg:hidden">
-          <span aria-hidden className="relative grid place-items-center">
-            <LuRadio className="h-[18px] w-[18px] text-win" />
-            <span className="absolute inset-0 animate-ping rounded-full bg-win/20 motion-reduce:animate-none" />
-          </span>
-          <span className="font-display text-lg font-black tabular-nums text-white">{activity.online.toLocaleString("fr-FR")}</span>
+        {/* Antenne verte qui émet et chiffre, sur ordinateur comme sur téléphone. */}
+        <span aria-hidden className="relative grid place-items-center">
+          <LuRadio className="h-[18px] w-[18px] text-win" />
+          <span className="absolute inset-0 animate-ping rounded-full bg-win/20 motion-reduce:animate-none" />
         </span>
-        {/* Ordinateur : plaque en biais, chiffre HUD et « en ligne » en petites capitales. */}
-        <span className="hidden items-center gap-2 lg:flex">
-          <span aria-hidden className="h-1.5 w-1.5 animate-pulse bg-win motion-reduce:animate-none" />
-          <span className="font-tech text-sm font-bold tabular-nums text-white">{String(activity.online).padStart(2, "0")}</span>
-          <span className="font-tech text-[9px] uppercase tracking-[0.24em] text-white/50">en ligne</span>
-        </span>
+        <span className="font-display text-lg font-black tabular-nums text-white">{activity.online.toLocaleString("fr-FR")}</span>
       </button>
 
       <NavPopover open={open} onClose={close} label="Activité du site" className="sm:w-80">

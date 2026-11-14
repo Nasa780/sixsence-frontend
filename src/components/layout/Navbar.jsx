@@ -189,13 +189,13 @@ export function Navbar() {
           </nav>
 
           <div className="flex items-center gap-2">
-            {/* Recherche rapide réservée à l'équipe SixSence (admin, staff, arbitres). */}
-            {user && isReferee(user.role) ? <GlobalSearch /> : null}
-            {/* Personnes sur le site et activité du moment (file, matchs). */}
+            {/* Recherche rapide réservée à l'équipe SixSence (admin, staff, arbitres) : loupe seule, Ctrl+K. */}
+            {user && isReferee(user.role) ? <GlobalSearch iconOnly /> : null}
+            {/* Personnes sur le site (antenne, comme sur téléphone) et activité du moment au clic. */}
             <OnlinePill />
-            {/* Centre de notifications (connecté) ; la roue dentée ouvre les réglages. */}
             {/* Messagerie (connecté) : enveloppe et nombre de messages non lus. */}
             {user ? <MessagesLink userId={user.id} active={pathname.startsWith("/messages")} /> : null}
+            {/* Centre de notifications (connecté) ; la roue dentée ouvre les réglages. */}
             {user ? <InboxBell onSettings={() => setNotifications(true)} /> : null}
             <InstallButton variant="nav" />
             {/* Zone de largeur fixe pendant le chargement : évite que la barre ne saute. */}
