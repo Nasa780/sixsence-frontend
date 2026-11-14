@@ -13,25 +13,20 @@ const BOARDS = [
   { key: "avgObjectives", tab: "Poses + désam.", unit: "par map", format: decimal },
 ];
 const TOP = 20;
-/** Libellé du mode dans la description ; sans mode, tous modes confondus. */
-const MODE_TEXT = { classe: "en Classé", division: "en Division" };
 
-/**
- * Classements des stats perso de la saison (GET /cod/stats-leaderboard), en moyenne par map.
- * mode : "classe" ou "division" pour un seul mode ; sans mode, tous modes confondus.
- */
-export function StatsLeaderboard({ currentUserId = null, initial = null, mode = null }) {
+/** Classements des stats perso de la saison (GET /cod/stats-leaderboard), tous modes confondus, en moyenne par map. */
+export function StatsLeaderboard({ currentUserId = null, initial = null }) {
   const [data, setData] = useState(initial);
   const [selected, setSelected] = useState(BOARDS[0].key);
 
   useEffect(() => {
     if (initial) return undefined;
     let alive = true;
-    api(mode ? `/cod/stats-leaderboard?mode=${mode}` : "/cod/stats-leaderboard").then((result) => alive && setData(result), () => {});
+    api("/cod/stats-leaderboard").then((result) => alive && setData(result), () => {});
     return () => {
       alive = false;
     };
-  }, [initial, mode]);
+  }, [initial]);
 
   if (!data) return null;
   const board = BOARDS.find((item) => item.key === selected);
@@ -39,7 +34,7 @@ export function StatsLeaderboard({ currentUserId = null, initial = null, mode = 
 
   return (
     <section aria-labelledby="titre-classement-stats">
-      <SectionHeading eyebrow="Stats perso" title={<span id="titre-classement-stats">Classement des stats</span>} description={`En moyenne par map sur la saison, ${MODE_TEXT[mode] ?? "tous modes confondus"}, à partir de ${data.minMaps} maps enregistrées par capture.`} />
+      <SectionHeading eyebrow="Stats perso" title={<span id="titre-classement-stats">Classement des stats</span>} description={`En moyenne par map sur la saison, Classé, Division et tournois confondus, à partir de ${data.minMaps} maps enregistrées par capture.`} />
       <div role="tablist" aria-label="Classement affiché" className="mt-6 flex flex-wrap gap-2">
         {BOARDS.map((item) => (
           <button

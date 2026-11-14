@@ -186,10 +186,10 @@ export default function TeamsPage() {
               </Notice>
             ) : null}
 
-            {/* Stats perso des joueurs en Division, comme sur le classement des joueurs du Classé. */}
+            {/* Stats perso des joueurs, tous modes confondus : même bloc que le classement des joueurs. */}
             {teams && teams.length > 0 ? (
               <div id="stats" className="mt-16">
-                <StatsLeaderboard currentUserId={userId} mode="division" />
+                <StatsLeaderboard currentUserId={userId} />
               </div>
             ) : null}
 
