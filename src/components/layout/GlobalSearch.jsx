@@ -56,7 +56,7 @@ function saveRecent(item) {
  * (ou Cmd+K). Joueurs (pseudo, même stylisé, ou identifiant Activision), équipes (nom ou tag) et pages,
  * pendant la frappe ; flèches, Entrée, Échap ; dernières recherches.
  */
-export function GlobalSearch() {
+export function GlobalSearch({ iconOnly = false }) {
   const router = useRouter();
   const [open, setOpen] = useState(false);
 
@@ -83,10 +83,10 @@ export function GlobalSearch() {
         onClick={() => setOpen(true)}
         aria-label="Rechercher (Ctrl K)"
         title="Rechercher (Ctrl K)"
-        className="group flex h-10 items-center gap-2 whitespace-nowrap px-2.5 text-white/70 transition-colors hover:text-gold lg:border lg:border-white/10 lg:bg-white/[0.03] lg:hover:border-gold/40"
+        className={iconOnly ? "grid h-9 w-9 place-items-center rounded-full text-white/70 transition-colors hover:bg-white/[0.08] hover:text-white" : "group flex h-10 items-center gap-2 whitespace-nowrap px-2.5 text-white/70 transition-colors hover:text-gold lg:border lg:border-white/10 lg:bg-white/[0.03] lg:hover:border-gold/40"}
       >
-        <LuSearch aria-hidden className="h-5 w-5 lg:h-4 lg:w-4" />
-        <kbd className="hidden font-tech text-[9px] text-white/40 2xl:inline">Ctrl K</kbd>
+        <LuSearch aria-hidden className={iconOnly ? "h-[18px] w-[18px]" : "h-5 w-5 lg:h-4 lg:w-4"} />
+        {iconOnly ? null : <kbd className="hidden font-tech text-[9px] text-white/40 2xl:inline">Ctrl K</kbd>}
       </button>
       <AnimatePresence>{open ? <SearchDialog onClose={() => setOpen(false)} /> : null}</AnimatePresence>
     </>

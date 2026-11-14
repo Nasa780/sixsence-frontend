@@ -54,7 +54,7 @@ export function InstallButton({ variant = "panel", className = "" }) {
           type="button"
           onClick={onClick}
           className={cn(
-            "hidden items-center gap-2 px-3 py-2 font-display text-sm font-bold uppercase tracking-[0.14em] text-gold/90 transition-colors hover:text-gold xl:inline-flex",
+            "hidden items-center gap-2 whitespace-nowrap px-3 py-2 font-display text-sm font-bold uppercase tracking-[0.14em] text-gold/90 transition-colors hover:text-gold xl:inline-flex",
             className,
           )}
         >
