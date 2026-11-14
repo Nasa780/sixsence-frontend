@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { useRouter } from "next/router";
 import { useCallback, useEffect, useState } from "react";
-import { LuCheck, LuFlag, LuImage, LuLock, LuMedal, LuShare2 } from "react-icons/lu";
+import { LuCheck, LuFlag, LuImage, LuLock, LuMail, LuMedal, LuShare2 } from "react-icons/lu";
 import useSeasons, { seasonBadge } from "../../hooks/useSeasons";
 import useSession from "../../hooks/useSession";
 import { api } from "../../lib/api";
@@ -249,6 +249,15 @@ export function ProfileView({ userId, editable = false, ownUser = null, nameAsTi
               </p>
               <RankBadge points={profile.points} showProgress className="mt-4" />
               <div className="mt-4 flex flex-wrap items-center gap-x-5 gap-y-2">
+                {viewerId && viewerId !== userId ? (
+                  <Link
+                    href={`/messages?avec=${userId}`}
+                    className="clip-slant inline-flex items-center gap-1.5 bg-gold px-4 py-1.5 font-display text-xs font-bold uppercase tracking-[0.14em] text-ink transition-colors [--slant:8px] hover:bg-gold-light"
+                  >
+                    <LuMail aria-hidden className="h-3.5 w-3.5" />
+                    Envoyer un message
+                  </Link>
+                ) : null}
                 <button
                   type="button"
                   onClick={shareProfile}

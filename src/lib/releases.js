@@ -6,6 +6,16 @@
 export const RELEASES = [
   {
     date: "2026-11-14",
+    title: "Messagerie, notifications et joueurs en ligne",
+    items: [
+      { tag: "Site", text: "Nouvelle messagerie : écris à n'importe quel joueur depuis son profil, la fiche d'une équipe (« Écrire au Leader ») ou la page Messages. Les messages arrivent en direct et sont gardés 30 jours." },
+      { tag: "Site", text: "Nouveau message : tu es prévenu dans la cloche, en notification et sur Discord. Tu peux couper chaque alerte dans tes réglages (catégorie Messages)." },
+      { tag: "Site", text: "La cloche garde tes 30 dernières notifications : match trouvé, résultats, équipe, coupes, cartes. Un clic t'emmène à la bonne page." },
+      { tag: "Site", text: "En haut du site, le nombre de joueurs en ligne ; au clic, qui cherche un match en Classé et en Division en ce moment." },
+    ],
+  },
+  {
+    date: "2026-11-14",
     title: "Tes stats perso partout",
     items: [
       { tag: "Site", text: "Ton profil affiche tes stats perso de la saison (élim., score, poses et désamorçages par map) et ta place au classement des stats dès 10 maps enregistrées." },

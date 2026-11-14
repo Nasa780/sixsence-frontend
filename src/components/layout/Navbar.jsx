@@ -25,6 +25,7 @@ import { Container } from "../ui/Container";
 import { InstallButton } from "../ui/InstallButton";
 import { GlobalSearch } from "./GlobalSearch";
 import { InboxBell } from "./InboxBell";
+import { MessagesLink } from "./MessagesLink";
 import { OnlinePill } from "./OnlinePill";
 import { Logo } from "../ui/Logo";
 
@@ -193,6 +194,8 @@ export function Navbar() {
             {/* Personnes sur le site et activité du moment (file, matchs). */}
             <OnlinePill />
             {/* Centre de notifications (connecté) ; la roue dentée ouvre les réglages. */}
+            {/* Messagerie (connecté) : enveloppe et nombre de messages non lus. */}
+            {user ? <MessagesLink userId={user.id} active={pathname.startsWith("/messages")} /> : null}
             {user ? <InboxBell onSettings={() => setNotifications(true)} /> : null}
             <InstallButton variant="nav" />
             {/* Zone de largeur fixe pendant le chargement : évite que la barre ne saute. */}

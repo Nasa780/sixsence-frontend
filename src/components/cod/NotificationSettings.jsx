@@ -16,6 +16,7 @@ const CATEGORIES = [
   ["coupes", "Tournois", "Inscriptions, check-in, tirage, matchs et résultats des coupes"],
   ["cartes", "Cartes de visite", "Nouvelle carte obtenue"],
   ["gta", "GTA 6", "Nouveaux événements et rappels de ceux où tu es inscrit"],
+  ["messages", "Messages", "Nouveau message d'un joueur (sur Discord : seulement le premier non lu d'une conversation)"],
 ];
 
 function Switch({ on, onChange, label, disabled = false }) {
