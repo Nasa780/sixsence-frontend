@@ -57,7 +57,7 @@ export function OnlinePill() {
       key: "classe",
       label: "Classé",
       color: "text-emerald-400",
-      text: `${plural(activity.rankedQueue, "joueur")} en file · ${plural(activity.rankedMatches, "match")} en cours`,
+      lines: [`${plural(activity.rankedQueue, "joueur")} en file`, `${plural(activity.rankedMatches, "match")} en cours`],
       href: "/cod/ranked",
       cta: "Rejoindre la file",
     },
@@ -67,7 +67,7 @@ export function OnlinePill() {
             key: "division",
             label: "Division",
             color: "text-cyan-300",
-            text: `${plural(activity.teamsSearching, "équipe")} en recherche · ${plural(activity.teamMatches, "match")} en cours`,
+            lines: [`${plural(activity.teamsSearching, "équipe")} en recherche`, `${plural(activity.teamMatches, "match")} en cours`],
             href: "/cod/division",
             cta: "Lancer un match",
           },
@@ -107,7 +107,11 @@ export function OnlinePill() {
               <Link href={row.href} className="group flex items-center gap-3 px-4 py-3 transition-colors hover:bg-white/[0.05]">
                 <span className="min-w-0 flex-1">
                   <span className={`block font-display text-sm font-bold uppercase tracking-[0.14em] ${row.color}`}>{row.label}</span>
-                  <span className="block text-xs tabular-nums text-white/60">{row.text}</span>
+                  {row.lines.map((line) => (
+                    <span key={line} className="block text-xs tabular-nums text-white/60">
+                      {line}
+                    </span>
+                  ))}
                 </span>
                 <span className="flex shrink-0 items-center gap-1 text-xs text-white/45 group-hover:text-white">
                   {row.cta}
