@@ -1,7 +1,7 @@
 import Head from "next/head";
 import { useRouter } from "next/router";
 import { useCallback, useEffect, useState } from "react";
-import { LuCheck, LuFlag, LuSettings, LuShare2, LuUserPlus } from "react-icons/lu";
+import { LuCheck, LuFlag, LuMail, LuSettings, LuShare2, LuUserPlus } from "react-icons/lu";
 import { TeamHero, useTeamInsights } from "../../../components/teams/TeamOverview";
 import { MemberRow, RosterHeading } from "../../../components/teams/TeamParts";
 import { TeamTrophyCase } from "../../../components/teams/TeamTrophyCase";
@@ -170,6 +170,16 @@ function TeamSheet() {
               </Button>
             )}
             {team.disbanded || isMember || !userId ? null : <ChallengeButton target={team} />}
+            {/* Message privé au Leader qui porte la couronne (recrutement, organisation d'un match). */}
+            {(() => {
+              const leader = team.members.find((member) => member.crown);
+              return team.disbanded || isMember || !userId || !leader || leader.id === userId ? null : (
+                <ButtonLink href={`/messages?avec=${leader.id}`} size="lg" variant="outline">
+                  <LuMail aria-hidden className="h-5 w-5" />
+                  Écrire au Leader
+                </ButtonLink>
+              );
+            })()}
             {team.disbanded ? null : isMember ? (
               <ButtonLink href="/cod/equipe" size="lg">
                 <LuSettings aria-hidden className="h-5 w-5" />
