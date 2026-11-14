@@ -1,7 +1,7 @@
 import Link from "next/link";
 import { useRouter } from "next/router";
 import { useCallback, useEffect, useState } from "react";
-import { LuArrowRight } from "react-icons/lu";
+import { LuArrowRight, LuRadio } from "react-icons/lu";
 import { api } from "../../lib/api";
 import { MATCH_TEAM_ENABLED } from "../../lib/config";
 import { NavPopover } from "./NavPopover";
@@ -82,14 +82,22 @@ export function OnlinePill() {
         onClick={() => setOpen((value) => !value)}
         aria-expanded={open}
         aria-label={`${activity.online} en ligne : voir l'activité du site`}
-        className="flex h-9 items-center gap-2 rounded-full border border-white/10 bg-white/[0.04] px-3 text-sm transition-colors hover:border-win/40 hover:bg-white/[0.08]"
+        className="flex h-9 items-center border-b border-transparent px-2 transition-colors hover:border-gold lg:clip-slant lg:border-0 lg:bg-white/[0.06] lg:px-4 lg:[--slant:10px] lg:hover:bg-white/[0.12]"
       >
-        <span aria-hidden className="relative flex h-2 w-2">
-          <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-win opacity-60 motion-reduce:animate-none" />
-          <span className="relative inline-flex h-2 w-2 rounded-full bg-win" />
+        {/* Téléphone et tablette : antenne verte qui émet et chiffre. */}
+        <span className="flex items-center gap-1.5 lg:hidden">
+          <span aria-hidden className="relative grid place-items-center">
+            <LuRadio className="h-[18px] w-[18px] text-win" />
+            <span className="absolute inset-0 animate-ping rounded-full bg-win/20 motion-reduce:animate-none" />
+          </span>
+          <span className="font-display text-lg font-black tabular-nums text-white">{activity.online.toLocaleString("fr-FR")}</span>
         </span>
-        <span className="font-semibold tabular-nums">{activity.online.toLocaleString("fr-FR")}</span>
-        <span className="hidden text-white/60 lg:inline">en ligne</span>
+        {/* Ordinateur : plaque en biais, chiffre HUD et « en ligne » en petites capitales. */}
+        <span className="hidden items-center gap-2 lg:flex">
+          <span aria-hidden className="h-1.5 w-1.5 animate-pulse bg-win motion-reduce:animate-none" />
+          <span className="font-tech text-sm font-bold tabular-nums text-white">{String(activity.online).padStart(2, "0")}</span>
+          <span className="font-tech text-[9px] uppercase tracking-[0.24em] text-white/50">en ligne</span>
+        </span>
       </button>
 
       <NavPopover open={open} onClose={close} label="Activité du site" className="sm:w-80">

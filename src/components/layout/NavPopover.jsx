@@ -33,7 +33,7 @@ export function NavPopover({ open, onClose, label, className = "", children }) {
           exit={{ opacity: 0, y: -6 }}
           transition={{ duration: 0.15 }}
           className={cn(
-            "fixed inset-x-3 top-16 z-50 border border-white/10 bg-ink-800/95 shadow-2xl shadow-black/60 backdrop-blur-md sm:absolute sm:inset-x-auto sm:right-0 sm:top-full sm:mt-2",
+            "clip-corner fixed inset-x-3 top-16 z-50 border border-white/10 border-t-2 border-t-gold/70 bg-ink-800 [--cut:14px] shadow-2xl shadow-black/60 sm:absolute sm:inset-x-auto sm:right-0 sm:top-full sm:mt-2",
             className,
           )}
         >
