@@ -5,6 +5,14 @@
  */
 export const RELEASES = [
   {
+    date: "2026-11-14",
+    title: "Tes stats perso partout",
+    items: [
+      { tag: "Site", text: "Ton profil affiche tes stats perso de la saison (élim., score, poses et désamorçages par map) et ta place au classement des stats dès 10 maps enregistrées." },
+      { tag: "Site", text: "Le top 5 du classement des stats arrive sur la page MW4, la file Classé et le classement de la Division. Toutes tes captures comptent : Classé, Division et tournois." },
+    ],
+  },
+  {
     date: "2026-11-09",
     title: "Un menu plus utile",
     items: [
