@@ -7,7 +7,6 @@ import { MATCH_TEAM_ENABLED } from "../../lib/config";
 import { NavPopover } from "./NavPopover";
 
 const REFRESH_MS = 30_000;
-const plural = (count, word) => `${count.toLocaleString("fr-FR")} ${word}${count > 1 ? "s" : ""}`;
 
 /** Activité du site : GET /cod/status (visiteurs, Classé) et GET /teams/status (Division), relus toutes les 30 s. */
 function useActivity() {
@@ -56,8 +55,9 @@ export function OnlinePill() {
     {
       key: "classe",
       label: "Classé",
+      stats: [[activity.rankedQueue, activity.rankedQueue > 1 ? "joueurs en file" : "joueur en file"], [activity.rankedMatches, activity.rankedMatches > 1 ? "matchs en cours" : "match en cours"]],
       color: "text-emerald-400",
-      lines: [`${plural(activity.rankedQueue, "joueur")} en file`, `${plural(activity.rankedMatches, "match")} en cours`],
+      border: "border-emerald-400/60",
       href: "/cod/ranked",
       cta: "Rejoindre la file",
     },
@@ -67,7 +67,8 @@ export function OnlinePill() {
             key: "division",
             label: "Division",
             color: "text-cyan-300",
-            lines: [`${plural(activity.teamsSearching, "équipe")} en recherche`, `${plural(activity.teamMatches, "match")} en cours`],
+            stats: [[activity.teamsSearching, activity.teamsSearching > 1 ? "équipes en recherche" : "équipe en recherche"], [activity.teamMatches, activity.teamMatches > 1 ? "matchs en cours" : "match en cours"]],
+            border: "border-cyan-300/60",
             href: "/cod/division",
             cta: "Lancer un match",
           },
@@ -104,18 +105,22 @@ export function OnlinePill() {
         <ul className="divide-y divide-white/[0.06]">
           {rows.map((row) => (
             <li key={row.key}>
-              <Link href={row.href} className="group flex items-center gap-3 px-4 py-3 transition-colors hover:bg-white/[0.05]">
-                <span className="min-w-0 flex-1">
-                  <span className={`block font-display text-sm font-bold uppercase tracking-[0.14em] ${row.color}`}>{row.label}</span>
-                  {row.lines.map((line) => (
-                    <span key={line} className="block text-xs tabular-nums text-white/60">
-                      {line}
+              <Link href={row.href} className="group block px-4 py-3 transition-colors hover:bg-white/[0.05]">
+                <span className="flex items-center justify-between gap-3">
+                  <span className={`font-display text-sm font-bold uppercase tracking-[0.14em] ${row.color}`}>{row.label}</span>
+                  <span className="flex shrink-0 items-center gap-1 text-xs text-white/45 group-hover:text-white">
+                    {row.cta}
+                    <LuArrowRight aria-hidden className="h-3.5 w-3.5" />
+                  </span>
+                </span>
+                {/* Deux compteurs côte à côte, chiffre en grand dans la couleur du mode. */}
+                <span className="mt-2 grid grid-cols-2 gap-2">
+                  {row.stats.map(([value, label]) => (
+                    <span key={label} className={`border-l-2 bg-white/[0.03] px-3 py-2 ${row.border}`}>
+                      <span className={`block font-display text-2xl font-black leading-none tabular-nums ${row.color}`}>{value.toLocaleString("fr-FR")}</span>
+                      <span className="mt-1 block text-[11px] text-white/55">{label}</span>
                     </span>
                   ))}
-                </span>
-                <span className="flex shrink-0 items-center gap-1 text-xs text-white/45 group-hover:text-white">
-                  {row.cta}
-                  <LuArrowRight aria-hidden className="h-3.5 w-3.5" />
                 </span>
               </Link>
             </li>
