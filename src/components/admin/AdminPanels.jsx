@@ -653,6 +653,25 @@ export function CasesPanel({ kind }) {
                       · {new Date(item.created_at).toLocaleString("fr-FR", { day: "numeric", month: "short", hour: "2-digit", minute: "2-digit" })}
                     </p>
                     {item.details ? <p className="mt-2 whitespace-pre-wrap text-sm text-white/80">« {item.details} »</p> : null}
+                    {/* Signalement de messages privés : copie des derniers messages (seule partie que l'équipe voit). */}
+                    {Array.isArray(item.dm_snapshot) ? (
+                      <details className="mt-3 border border-white/10 bg-ink/60">
+                        <summary className="cursor-pointer px-3 py-2 text-sm text-gold">
+                          Conversation signalée ({item.dm_snapshot.length} message{item.dm_snapshot.length > 1 ? "s" : ""})
+                        </summary>
+                        <ol className="max-h-80 space-y-2 overflow-y-auto border-t border-white/10 px-3 py-3">
+                          {item.dm_snapshot.map((line, index) => (
+                            <li key={index} className="text-sm">
+                              <span className={line.fromReporter ? "font-semibold text-white/60" : "font-semibold text-loss"}>{line.from}</span>
+                              <span className="ml-2 text-[11px] text-white/35">
+                                {new Date(line.at).toLocaleString("fr-FR", { day: "numeric", month: "short", hour: "2-digit", minute: "2-digit" })}
+                              </span>
+                              <p className="whitespace-pre-wrap break-words text-white/85">{line.body}</p>
+                            </li>
+                          ))}
+                        </ol>
+                      </details>
+                    ) : null}
                     {item.match_id || item.team_match_id ? (
                       <Link href={item.team_match_id ? `/cod/equipes/match/${item.team_match_id}` : `/cod/match/${item.match_id}`} className="mt-2 inline-flex items-center gap-1.5 text-sm text-gold underline underline-offset-4">
                         Voir le match, le tchat et les preuves
