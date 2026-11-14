@@ -5,7 +5,8 @@ import { LuClock, LuCornerDownLeft, LuFileText, LuLoaderCircle, LuSearch, LuX } 
 import { api } from "../../lib/api";
 import { cn } from "../../lib/cn";
 import { MATCH_TEAM_ENABLED, MY_MATCHES_ENABLED } from "../../lib/config";
-import { rankFor } from "../../lib/ranks";
+import { rankFor, rankGradient } from "../../lib/ranks";
+import { RankEmblem } from "../cod/RankEmblem";
 import { TeamCrest } from "../teams/TeamParts";
 import { Avatar } from "../ui/Avatar";
 import { Portal } from "../ui/Portal";
@@ -197,8 +198,11 @@ function SearchDialog({ onClose }) {
           transition={{ duration: 0.18 }}
           className="relative w-full max-w-xl overflow-hidden border border-[#e7c05a]/35 bg-ink-800 shadow-2xl shadow-black/70 [clip-path:polygon(16px_0,100%_0,100%_calc(100%-16px),calc(100%-16px)_100%,0_100%,0_16px)]"
         >
+          {/* Ambiance : grille tactique fine et lueur dorée en haut. */}
+          <div aria-hidden className="pointer-events-none absolute inset-0 bg-grid opacity-50" />
+          <div aria-hidden className="pointer-events-none absolute -top-20 left-1/2 h-40 w-4/5 -translate-x-1/2 rounded-full bg-[#e7c05a]/12 blur-3xl" />
           <div aria-hidden className="pointer-events-none absolute inset-x-0 top-0 h-px bg-linear-to-r from-transparent via-[#e7c05a] to-transparent" />
-          <div className="flex items-center gap-3 border-b border-white/10 px-5">
+          <div className="relative flex items-center gap-3 border-b border-white/10 px-5">
             {pending ? <LuLoaderCircle aria-hidden className="h-5 w-5 shrink-0 animate-spin text-[#e7c05a]" /> : <LuSearch aria-hidden className="h-5 w-5 shrink-0 text-[#e7c05a]" />}
             <input
               ref={input}
@@ -208,15 +212,15 @@ function SearchDialog({ onClose }) {
               placeholder="Pseudo, ID Activision, équipe, page…"
               aria-label="Rechercher un joueur, une équipe ou une page"
               maxLength={40}
-              className="h-16 min-w-0 flex-1 bg-transparent text-lg text-white placeholder:text-white/30 focus:outline-none"
+              className="h-[4.25rem] min-w-0 flex-1 bg-transparent font-display text-xl font-bold tracking-[0.04em] text-white placeholder:font-sans placeholder:text-base placeholder:font-normal placeholder:tracking-normal placeholder:text-white/30 focus:outline-none"
             />
-            <button type="button" onClick={onClose} aria-label="Fermer" className="shrink-0 border border-white/15 px-2 py-1 font-tech text-[10px] text-white/45 hover:text-white">
-              <span className="hidden sm:inline">Échap</span>
+            <button type="button" onClick={onClose} aria-label="Fermer" className="shrink-0 text-white/45 hover:text-white">
+              <Kbd className="hidden sm:grid">Échap</Kbd>
               <LuX aria-hidden className="h-4 w-4 sm:hidden" />
             </button>
           </div>
 
-          <div className="max-h-[60vh] overflow-y-auto py-2">
+          <div className="relative max-h-[60vh] overflow-y-auto py-2">
             <Group title="Récentes" rows={section("recent")} active={active} onPick={go} onHover={setActive} render={(item) => <PlainRow icon={LuClock} label={item.label} />} />
             <Group
               title="Joueurs"
@@ -224,25 +228,37 @@ function SearchDialog({ onClose }) {
               active={active}
               onPick={go}
               onHover={setActive}
-              render={({ player }) => (
-                <>
-                  <Avatar full src={player.avatarUrl} name={player.username} size={34} />
-                  <div className="min-w-0 flex-1">
-                    <p className="truncate text-sm font-semibold text-white">
-                      {player.username}
-                      {player.team ? (
-                        <span className="ml-2 font-tech text-[10px] font-bold" style={{ color: player.team.color }}>
-                          [{player.team.tag}]
+              render={({ player }) => {
+                const rank = rankFor(player.points);
+                return (
+                  <>
+                    {/* Avatar entouré de la couleur du rang. */}
+                    <Avatar full src={player.avatarUrl} name={player.username} size={38} ring={rankGradient(rank, 160)} />
+                    <div className="min-w-0 flex-1">
+                      <p className="truncate text-sm font-semibold text-white">
+                        {player.username}
+                        {player.team ? (
+                          <span className="ml-2 font-tech text-[10px] font-bold" style={{ color: player.team.color }}>
+                            [{player.team.tag}]
+                          </span>
+                        ) : null}
+                      </p>
+                      <p className="mt-0.5 flex items-center gap-1.5 text-xs text-white/45">
+                        <RankEmblem rank={rank} size={16} animated={false} />
+                        <span className="font-semibold" style={{ color: rank.text }}>
+                          {rank.name}
                         </span>
-                      ) : null}
-                    </p>
-                    <p className="text-xs text-white/45">
-                      {rankFor(player.points).name} · {player.points.toLocaleString("fr-FR")} pts{player.position ? ` · #${player.position}` : ""}
-                      {player.activisionId ? <span className="ml-1 text-white/35">· {player.activisionId}</span> : null}
-                    </p>
-                  </div>
-                </>
-              )}
+                        {player.position ? <span>· #{player.position}</span> : null}
+                        {player.activisionId ? <span className="truncate text-white/35">· {player.activisionId}</span> : null}
+                      </p>
+                    </div>
+                    <span className="shrink-0 text-right">
+                      <span className="block font-tech text-sm font-bold tabular-nums text-[#e7c05a]">{player.points.toLocaleString("fr-FR")}</span>
+                      <span className="block font-tech text-[9px] uppercase tracking-[0.2em] text-white/35">pts</span>
+                    </span>
+                  </>
+                );
+              }}
             />
             <Group
               title="Équipes"
@@ -252,7 +268,10 @@ function SearchDialog({ onClose }) {
               onHover={setActive}
               render={({ team }) => (
                 <>
-                  <TeamCrest team={team} size={34} />
+                  {/* Blason plus grand, liseré à la couleur de l'équipe. */}
+                  <span className="shrink-0 p-[2px]" style={{ boxShadow: `0 0 0 1px ${team.color}, 0 0 12px ${team.color}55` }}>
+                    <TeamCrest team={team} size={38} />
+                  </span>
                   <div className="min-w-0 flex-1">
                     <p className="truncate text-sm font-semibold text-white">
                       {team.name}
@@ -260,10 +279,16 @@ function SearchDialog({ onClose }) {
                         [{team.tag}]
                       </span>
                     </p>
-                    <p className="text-xs text-white/45">
-                      #{team.position} Division · {team.points.toLocaleString("fr-FR")} pts · {team.size} joueur{team.size > 1 ? "s" : ""}
+                    <p className="mt-0.5 text-xs text-white/45">
+                      #{team.position} Division · {team.size} joueur{team.size > 1 ? "s" : ""}
                     </p>
                   </div>
+                  <span className="shrink-0 text-right">
+                    <span className="block font-tech text-sm font-bold tabular-nums" style={{ color: team.color }}>
+                      {team.points.toLocaleString("fr-FR")}
+                    </span>
+                    <span className="block font-tech text-[9px] uppercase tracking-[0.2em] text-white/35">pts</span>
+                  </span>
                 </>
               )}
             />
@@ -271,12 +296,22 @@ function SearchDialog({ onClose }) {
             {empty ? <p className="px-5 py-8 text-center text-sm text-white/45">Aucun résultat pour « {query.trim()} ».</p> : null}
           </div>
 
-          <div className="hidden items-center gap-5 border-t border-white/10 px-5 py-2.5 font-tech text-[9px] uppercase tracking-[0.18em] text-white/35 sm:flex">
-            <span>↑ ↓ naviguer</span>
-            <span className="inline-flex items-center gap-1">
-              <LuCornerDownLeft aria-hidden className="h-3 w-3" /> ouvrir
+          {/* Raccourcis dessinés comme des touches de clavier. */}
+          <div className="relative hidden items-center gap-5 border-t border-white/10 bg-ink-800/80 px-5 py-2.5 font-tech text-[9px] uppercase tracking-[0.18em] text-white/40 sm:flex">
+            <span className="inline-flex items-center gap-1.5">
+              <Kbd>↑</Kbd>
+              <Kbd>↓</Kbd> naviguer
             </span>
-            <span>Ctrl K rechercher</span>
+            <span className="inline-flex items-center gap-1.5">
+              <Kbd>
+                <LuCornerDownLeft aria-hidden className="h-3 w-3" />
+              </Kbd>
+              ouvrir
+            </span>
+            <span className="inline-flex items-center gap-1.5">
+              <Kbd>Ctrl</Kbd>
+              <Kbd>K</Kbd> rechercher
+            </span>
           </div>
         </motion.div>
       </motion.div>
@@ -296,8 +331,10 @@ function Group({ title, rows, active, onPick, onHover, render }) {
               type="button"
               onMouseMove={() => onHover(index)}
               onClick={() => onPick(item)}
-              className={cn("flex w-full items-center gap-3 border-l-2 px-5 py-2 text-left transition-colors", index === active ? "border-[#e7c05a] bg-[#e7c05a]/[0.08]" : "border-transparent")}
+              className={cn("relative flex w-full items-center gap-3 px-5 py-2 text-left transition-colors", index === active ? "bg-linear-to-r from-[#e7c05a]/[0.16] via-[#e7c05a]/[0.05] to-transparent" : "")}
             >
+              {/* Ligne choisie : barre dorée en biais à gauche. */}
+              {index === active ? <span aria-hidden className="absolute inset-y-1 left-0 w-1.5 bg-[#e7c05a] [clip-path:polygon(0_0,100%_18%,100%_82%,0_100%)]" /> : null}
               {render(item)}
               {index === active ? <LuCornerDownLeft aria-hidden className="h-4 w-4 shrink-0 text-[#e7c05a]" /> : null}
             </button>
@@ -305,6 +342,15 @@ function Group({ title, rows, active, onPick, onHover, render }) {
         ))}
       </ul>
     </div>
+  );
+}
+
+/** Touche de clavier dessinée (raccourcis du bas de la recherche). */
+function Kbd({ children, className = "" }) {
+  return (
+    <kbd className={cn("grid h-5 min-w-5 place-items-center border border-b-2 border-white/20 bg-white/[0.05] px-1 font-tech text-[9px] normal-case tracking-normal text-white/70", className)}>
+      {children}
+    </kbd>
   );
 }
 
