@@ -19,7 +19,7 @@ const ROLES = [
         { key: "tournoi", univers: "tournoi", game: "Call of Duty · MW4", title: "Tournoi", word: "Podium", text: "Coupe Horus en équipe, Coupe Anubis en solo. Trophées et podium.", cta: "Prochain tournoi", href: "/cod/tournoi", image: "/images/modes/tournoi.webp", x: "36%" },
       ]
     : []),
-  { key: "gta", univers: "gta", game: "Grand Theft Auto VI", title: "GTA 6", word: null, text: "Sessions, courses et braquages avec la communauté.", cta: "Le programme", href: "/gta6", image: "/images/gta/braquage-portrait.webp", x: "50%" },
+  { key: "gta", univers: "gta", game: "Grand Theft Auto VI", title: "GTA 6", word: null, text: "Lancement en direct, défis et concours entre membres.", cta: "Le programme", href: "/gta6", image: "/images/gta/braquage-portrait.webp", x: "50%" },
 ];
 
 

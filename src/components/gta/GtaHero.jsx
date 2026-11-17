@@ -62,7 +62,7 @@ export function GtaHero() {
           </p>
 
           <p style={step(3)} className="hero-in mt-5 max-w-xl text-base leading-relaxed text-white/65 sm:text-lg">
-            Sessions organisées, courses, braquages en équipe : consulte le programme et réserve ta place. Les places sont comptées.
+            Lancement en direct, défis et concours entre membres : consulte le programme et inscris-toi. Le jeu en ligne viendra plus tard.
           </p>
 
           <div style={step(4)} className="hero-in mt-8">

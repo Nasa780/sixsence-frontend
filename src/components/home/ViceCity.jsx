@@ -72,7 +72,7 @@ export function ViceCity() {
           )}
 
           <p className="mt-6 max-w-md text-[15px] leading-relaxed text-white/70 sm:mt-8 sm:text-lg">
-            Sessions, courses et braquages en équipe, organisés par la communauté dès la sortie du jeu.
+            Lancement en direct, défis et concours entre membres dès la sortie du jeu, en attendant le jeu en ligne.
           </p>
           <div className="mt-7 sm:mt-8">
             <ButtonLink href="/gta6" size="lg" className="w-full sm:w-auto">

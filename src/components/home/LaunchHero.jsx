@@ -1,30 +1,13 @@
-import { useEffect, useState, useSyncExternalStore } from "react";
+import { useEffect, useState } from "react";
 import { LuArrowDown, LuArrowRight } from "react-icons/lu";
-import { GTA6_RELEASE } from "../../lib/config";
 import { celebrate } from "../../lib/celebrate";
 import { GTA_IMAGES } from "../../lib/gtaImages";
 import { GtaArt } from "../gta/GtaArt";
 import { ButtonLink } from "../ui/Button";
 import { Container } from "../ui/Container";
 
-const START = new Date(GTA6_RELEASE).getTime();
-/** Le jour J dure 48 h : le 19 et le 20 novembre (heure de Paris), puis l'accordéon des modes reprend la tête. */
-const END = START + 2 * 86_400_000;
-/** Vrai pendant les 48 h qui suivent la sortie de GTA 6. */
-export const inLaunchWindow = (now) => now >= START && now < END;
-
-const subscribe = (onChange) => {
-  const timer = setInterval(onChange, 60_000);
-  return () => clearInterval(timer);
-};
-
-/**
- * Jour J en cours ? Calculé par le serveur à chaque régénération de la page (`fromServer`, getStaticProps), puis
- * revérifié dans le navigateur chaque minute : la page passe toute seule au jour J, puis en revient.
- */
-export function useLaunchWindow(fromServer) {
-  return useSyncExternalStore(subscribe, () => inLaunchWindow(Date.now()), () => fromServer);
-}
+// Fenêtre du jour J (48 h) : lib/launch.js, partagée avec le mode Vice City et le bandeau du site.
+export { inLaunchWindow, useLaunchWindow } from "../../lib/launch";
 
 const SUNSET = ["#ffd25a", "#ff8a3d", "#ff4fa3", "#d6246e", "#ffffff"];
 const SEEN = "sixsence-jour-j";
@@ -107,7 +90,7 @@ export function LaunchHero() {
         </div>
 
         <p className="max-w-lg text-[15px] leading-relaxed text-white/75 sm:text-lg">
-          Vice City est ouverte. Les premières sessions SixSence arrivent : courses, braquages et soirées en équipe.
+          Vice City est ouverte. Suis le lancement en direct et relève les premiers défis de la communauté.
         </p>
         <div className="mt-8">
           <ButtonLink href="/gta6" size="lg" className="w-full sm:w-auto">
