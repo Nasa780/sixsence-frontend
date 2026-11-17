@@ -21,7 +21,7 @@ export const EVENTS = {
     { key: "ends_at", label: "Fin", type: "datetime" },
     { key: "location", label: "Lieu", placeholder: "Serveur, ville…" },
     { key: "max_slots", label: "Places", type: "number", hint: "Vide = illimité" },
-    { key: "cover_url", label: "Image (https)", type: "url" },
+    { key: "cover_url", label: "Image", type: "image", hint: "Envoie une image de ton ordinateur (PNG, JPEG ou WebP) ou colle une adresse https." },
     {
       key: "status",
       label: "Statut",
