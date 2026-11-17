@@ -500,6 +500,8 @@ export function SeasonPanel() {
           <input
             id="fin-saison"
             type="datetime-local"
+            min="2020-01-01T00:00"
+            max="2099-12-31T23:59"
             value={endsAt}
             onChange={(event) => setEndsAt(event.target.value)}
             className="flex-1 border border-white/12 bg-ink px-3 py-2.5 text-sm text-white focus:border-gold focus:outline-none"

@@ -223,7 +223,7 @@ function ChallengeDialog({ target, mine, onClose }) {
                       À une heure
                     </Button>
                   </div>
-                  {later ? <input type="datetime-local" aria-label="Date et heure du match" className={cn(fieldClass, "max-w-xs")} value={at} onChange={(event) => setAt(event.target.value)} /> : null}
+                  {later ? <input type="datetime-local" min="2020-01-01T00:00" max="2099-12-31T23:59" aria-label="Date et heure du match" className={cn(fieldClass, "max-w-xs")} value={at} onChange={(event) => setAt(event.target.value)} /> : null}
                 </div>
                 <RosterPicker members={mine.team.members} size={mine.rosterSize} value={roster} onChange={setRoster} />
                 <div>
