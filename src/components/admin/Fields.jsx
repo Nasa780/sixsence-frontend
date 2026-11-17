@@ -1,4 +1,7 @@
+import { useState } from "react";
+import { LuImagePlus, LuLoaderCircle } from "react-icons/lu";
 import { cn } from "../../lib/cn";
+import { uploadEventImage } from "../../lib/cups";
 
 /** Briques de formulaire de l'administration, au style du site. */
 
@@ -7,7 +10,8 @@ const INPUT =
 
 /**
  * Champ décrit par un objet :
- *   { key, label, type: "text" | "textarea" | "url" | "number" | "datetime" | "select", required, options, placeholder, hint }
+ *   { key, label, type: "text" | "textarea" | "url" | "number" | "datetime" | "select" | "image", required, options, placeholder, hint }
+ *   image : adresse https collée, ou image envoyée depuis l'ordinateur (bouton), avec un aperçu.
  */
 export function Field({ field, value, onChange }) {
   const id = `champ-${field.key}`;
@@ -22,6 +26,7 @@ export function Field({ field, value, onChange }) {
 
   let control;
   if (field.type === "textarea") control = <textarea {...common} rows={4} className={cn(INPUT, "resize-y")} />;
+  else if (field.type === "image") control = <ImageInput common={common} value={value} onPick={(url) => onChange(field.key, url)} />;
   else if (field.type === "select")
     control = (
       <select {...common} className={INPUT}>
@@ -51,6 +56,42 @@ export function Field({ field, value, onChange }) {
       </label>
       {control}
       {field.hint ? <p className="mt-1 text-xs text-white/40">{field.hint}</p> : null}
+    </div>
+  );
+}
+
+/** Image : adresse https, ou fichier de l'ordinateur envoyé dans le stockage du site (adresse remplie toute seule). */
+function ImageInput({ common, value, onPick }) {
+  const [busy, setBusy] = useState(false);
+  const [error, setError] = useState(null);
+  async function pick(file) {
+    if (!file) return;
+    setBusy(true);
+    setError(null);
+    try {
+      onPick(await uploadEventImage(file));
+    } catch (caught) {
+      setError(caught.message);
+    } finally {
+      setBusy(false);
+    }
+  }
+  return (
+    <div className="space-y-2">
+      <div className="flex gap-2">
+        <input {...common} type="url" placeholder="https://… ou envoie une image" className={INPUT} />
+        <label className={cn("flex shrink-0 cursor-pointer items-center gap-2 border border-white/15 px-3 text-xs font-semibold uppercase tracking-wide text-white/75 hover:border-gold hover:text-gold", busy && "pointer-events-none opacity-50")}>
+          {busy ? <LuLoaderCircle aria-hidden className="h-4 w-4 animate-spin" /> : <LuImagePlus aria-hidden className="h-4 w-4" />}
+          <span className="hidden sm:inline">Envoyer</span>
+          <span className="sr-only sm:hidden">Envoyer une image</span>
+          <input type="file" accept="image/png,image/jpeg,image/webp" className="sr-only" onChange={(event) => pick(event.target.files?.[0])} />
+        </label>
+      </div>
+      {value ? (
+        // eslint-disable-next-line @next/next/no-img-element
+        <img src={value} alt="Aperçu de l'image" className="aspect-video w-full max-w-xs border border-white/10 bg-ink object-cover" />
+      ) : null}
+      {error ? <p className="text-xs text-loss">{error}</p> : null}
     </div>
   );
 }

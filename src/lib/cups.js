@@ -9,15 +9,25 @@ import { toWebp } from "./teams";
 const MAX_FILE = 8 * 1024 * 1024;
 const TYPES = ["image/png", "image/jpeg", "image/webp"];
 
-/** Envoie une affiche et renvoie son adresse publique (à enregistrer ensuite par l'API d'administration). */
-export async function uploadCupPoster(file) {
+/**
+ * Envoie une image d'administration (affiche de coupe, image d'événement GTA 6) dans le bucket public cup-posters
+ * (envoi réservé aux admins, 2 Mo au plus : l'image est d'abord convertie en WebP à la largeur voulue) et renvoie
+ * son adresse publique (à enregistrer ensuite par l'API d'administration).
+ */
+async function uploadAdminImage(file, width, folder = "") {
   if (!TYPES.includes(file.type)) throw new Error("Image PNG, JPEG ou WebP uniquement.");
   if (file.size > MAX_FILE) throw new Error("Image trop lourde (8 Mo au plus).");
-  const path = `${Date.now()}-${Math.random().toString(36).slice(2, 8)}.webp`;
-  const { error } = await supabase.storage.from("cup-posters").upload(path, await toWebp(file, 900), { contentType: "image/webp" });
-  if (error) throw new Error("Envoi de l'affiche impossible. Réessaie dans un instant.");
+  const path = `${folder}${Date.now()}-${Math.random().toString(36).slice(2, 8)}.webp`;
+  const { error } = await supabase.storage.from("cup-posters").upload(path, await toWebp(file, width), { contentType: "image/webp" });
+  if (error) throw new Error("Envoi de l'image impossible. Réessaie dans un instant (2 Mo au plus une fois compressée).");
   return supabase.storage.from("cup-posters").getPublicUrl(path).data.publicUrl;
 }
+
+/** Envoie une affiche de coupe et renvoie son adresse publique. */
+export const uploadCupPoster = (file) => uploadAdminImage(file, 900);
+
+/** Envoie l'image d'un événement GTA 6 (paysage, 1600 px) et renvoie son adresse publique (2026-11-18). */
+export const uploadEventImage = (file) => uploadAdminImage(file, 1600, "evenements/");
 
 /** Affiche envoyée par un admin (et non générée) ? */
 export const isCustomPoster = (url) => Boolean(url && url.includes("/storage/v1/object/public/cup-posters/"));
