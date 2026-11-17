@@ -10,6 +10,7 @@ import useSession from "../../hooks/useSession";
 import useTeamTags from "../../hooks/useTeamTags";
 import useUser from "../../hooks/useUser";
 import { signInWithDiscord, signOut } from "../../lib/auth";
+import { Gta6Strip } from "./Gta6Strip";
 import { cn } from "../../lib/cn";
 import { codModeOf } from "../cod/CodModeNav";
 import { MATCH_TEAM_ENABLED, MY_MATCHES_ENABLED } from "../../lib/config";
@@ -233,6 +234,8 @@ export function Navbar() {
           />
         ) : null}
       </AnimatePresence>
+      {/* Compte à rebours de GTA 6 (puis « disponible » le jour J), sauf sur l'accueil et les pages GTA 6. */}
+      <Gta6Strip />
     </header>
     <MobileTabBar pathname={pathname} menuOpen={mobileOpen} pending={pending} onToggleMenu={() => setMobileOpen((open) => !open)} onNavigate={() => setMobileOpen(false)} />
     </>

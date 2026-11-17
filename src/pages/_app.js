@@ -7,6 +7,7 @@ import { Navbar } from "../components/layout/Navbar";
 import { ActiveMatchBar } from "../components/layout/ActiveMatchBar";
 import { CaptureReminderBar } from "../components/layout/CaptureReminderBar";
 import { RouteLoader } from "../components/layout/RouteLoader";
+import { ViceCityMode } from "../components/layout/ViceCityMode";
 import { ErrorBoundary } from "../components/ui/ErrorBoundary";
 import { PageFade } from "../components/effects/PageFade";
 import { GROUPS_ENABLED, MATCH_TEAM_ENABLED, SITE_URL } from "../lib/config";
@@ -109,6 +110,8 @@ export default function App({ Component, pageProps }) {
           >
             Aller au contenu
           </a>
+          {/* Jour J de GTA 6 : l'or du site passe aux couleurs coucher de soleil pendant 48 h. */}
+          <ViceCityMode />
           <Navbar />
           <ActiveMatchBar />
           <CaptureReminderBar />

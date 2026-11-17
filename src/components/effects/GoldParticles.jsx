@@ -1,6 +1,7 @@
 import { useReducedMotion } from "framer-motion";
 import dynamic from "next/dynamic";
 import { cn } from "../../lib/cn";
+import { useLaunchWindow } from "../../lib/launch";
 
 // Chargé à part, côté navigateur uniquement : tsParticles dessine dans un
 // <canvas> et n'a aucun intérêt à être rendu par le serveur.
@@ -18,11 +19,13 @@ const GoldParticlesCanvas = dynamic(() => import("./GoldParticlesCanvas"), { ssr
  */
 export function GoldParticles({ id, density = 80, linked = true, palette = "or", className = "" }) {
   const reduceMotion = useReducedMotion();
+  // Mode Vice City (jour J de GTA 6) : les particules dorées passent au coucher de soleil.
+  const launch = useLaunchWindow();
   if (reduceMotion) return null;
 
   return (
     <div aria-hidden className={cn("pointer-events-none absolute inset-0", className)}>
-      <GoldParticlesCanvas id={id} density={density} linked={linked} palette={palette} />
+      <GoldParticlesCanvas key={launch ? "gta" : palette} id={id} density={density} linked={linked} palette={launch && palette === "or" ? "gta" : palette} />
     </div>
   );
 }
