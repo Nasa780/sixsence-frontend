@@ -64,6 +64,8 @@ const CARDS = {
   "staff-6": { rarity: "rare", art: { type: "illustration", glyph: "6", hue: "#d4af37", image: "/images/cartes/staff-6.webp", og: "/images/cartes/og/staff-6.jpg", position: "center", mobilePosition: "72% center" } },
   "premiere-viree": { rarity: "commune", art: { type: "illustration", glyph: "1", hue: "#ff9a5c", image: "/images/cartes/premiere-viree.webp", og: "/images/cartes/og/premiere-viree.jpg", position: "center 50%", mobilePosition: "70% center" } },
   habitue: { rarity: "rare", art: { type: "illustration", glyph: "×5", hue: "#ff5f8a", image: "/images/cartes/habitue.webp", og: "/images/cartes/og/habitue.jpg", position: "center 50%", mobilePosition: "80% center" } },
+  // Jour 1 de GTA 6 (exclusive, 19 et 20 novembre 2026) : coucher de soleil provisoire en attendant l'illustration.
+  "gta6-jour1": { rarity: "legendaire", art: { type: "sunset", glyph: "J1" } },
 };
 
 /** Illustrations propres à une saison (même clé que la carte, ex. « s1-champion »). */
