@@ -9,7 +9,7 @@ export const RELEASES = [
     title: "GTA 6 arrive sur SixSence",
     items: [
       { tag: "GTA 6", text: "Compte à rebours de la sortie sur toutes les pages, puis le site passe aux couleurs de Vice City pendant les 48 h du lancement." },
-      { tag: "Cartes", text: "Carte de visite légendaire et exclusive « Jour 1 · Vice City » : connecte-toi au site le 19 ou le 20 novembre pour l'obtenir. Après, plus personne ne pourra l'avoir." },
+      { tag: "GTA 6", text: "Carte de visite légendaire et exclusive « Jour 1 · Vice City » : connecte-toi au site le 19 ou le 20 novembre pour l'obtenir. Après, plus personne ne pourra l'avoir." },
     ],
   },
   {
