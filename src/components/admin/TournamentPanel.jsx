@@ -84,7 +84,7 @@ function SeasonTab() {
                 <label htmlFor="t-start" className={labelClass}>
                   Début (heure de Paris)
                 </label>
-                <input id="t-start" type="datetime-local" className={fieldClass} value={form.startsAt} onChange={(event) => setForm({ ...form, startsAt: event.target.value })} />
+                <input id="t-start" type="datetime-local" min="2020-01-01T00:00" max="2099-12-31T23:59" className={fieldClass} value={form.startsAt} onChange={(event) => setForm({ ...form, startsAt: event.target.value })} />
               </div>
               <div>
                 <label htmlFor="t-size" className={labelClass}>
@@ -289,7 +289,7 @@ function PlayInPanel() {
                 <label htmlFor="p-start" className={labelClass}>
                   Début (heure de Paris)
                 </label>
-                <input id="p-start" type="datetime-local" className={fieldClass} value={form.startsAt} onChange={(event) => setForm({ ...form, startsAt: event.target.value })} />
+                <input id="p-start" type="datetime-local" min="2020-01-01T00:00" max="2099-12-31T23:59" className={fieldClass} value={form.startsAt} onChange={(event) => setForm({ ...form, startsAt: event.target.value })} />
               </div>
               <div>
                 <label htmlFor="p-size" className={labelClass}>
@@ -499,7 +499,7 @@ function CupForm({ mode, initial = null, lockFormat = false, testTeamSize = fals
               <label htmlFor="f-start" className={labelClass}>
                 Début (heure de Paris)
               </label>
-              <input id="f-start" type="datetime-local" disabled={lockFormat} className={cn(fieldClass, "disabled:opacity-50")} value={form.startsAt} onChange={(event) => set({ startsAt: event.target.value })} />
+              <input id="f-start" type="datetime-local" min="2020-01-01T00:00" max="2099-12-31T23:59" disabled={lockFormat} className={cn(fieldClass, "disabled:opacity-50")} value={form.startsAt} onChange={(event) => set({ startsAt: event.target.value })} />
             </div>
           )}
           <fieldset disabled={lockFormat} className={cn("min-w-0 space-y-4", lockFormat && "opacity-50")}>

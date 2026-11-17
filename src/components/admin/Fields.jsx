@@ -37,6 +37,8 @@ export function Field({ field, value, onChange }) {
       <input
         {...common}
         type={field.type === "datetime" ? "datetime-local" : field.type === "number" ? "number" : field.type === "url" ? "url" : "text"}
+        // Année limitée à 4 chiffres : sans borne, le navigateur en accepte 6 et l'heure tapée à la suite part dans l'année.
+        {...(field.type === "datetime" ? { min: "2020-01-01T00:00", max: "2099-12-31T23:59" } : {})}
         className={INPUT}
       />
     );
