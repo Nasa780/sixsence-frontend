@@ -5,7 +5,6 @@ import { LuArrowRight, LuRadio, LuTrophy } from "react-icons/lu";
 import { api } from "../../lib/api";
 import { MATCH_TEAM_ENABLED } from "../../lib/config";
 import { CountUp } from "../effects/CountUp";
-import { TiltCard } from "../effects/TiltCard";
 import { NavPopover } from "./NavPopover";
 
 const REFRESH_MS = 30_000;
@@ -64,7 +63,7 @@ function cupDate(iso) {
   return `${day} · ${time}`;
 }
 
-/** Bande « prochain rendez-vous » sous les cartes, aux couleurs du Tournoi : nom, date, places prises. */
+/** Bande « prochain rendez-vous » sous les anneaux, aux couleurs du Tournoi : nom, date, places prises. */
 function NextCup({ cup }) {
   const unit = cup.kind === "anubis" ? "joueurs" : "équipes";
   return (
@@ -84,67 +83,65 @@ function NextCup({ cup }) {
   );
 }
 
-/** Points d'une file active : un point par place, allumés pour les joueurs (ou équipes) qui attendent. */
-function QueueDots({ label, size, needed, color }) {
+/** Chiffre animé dans la couleur du mode. */
+function Figure({ value, color, className = "text-2xl" }) {
   return (
-    <span className="flex items-center gap-1.5" title={`${label} : ${size} sur ${needed}`}>
-      <span className="min-w-8 shrink-0 font-tech text-[9px] font-bold uppercase tracking-[0.12em] text-white/80">{label}</span>
-      <span aria-hidden className="flex flex-wrap gap-[3px]">
-        {Array.from({ length: needed }, (_, index) => (
-          <span key={index} className="h-1.5 w-1.5 rounded-full transition-all duration-500" style={index < size ? { background: color, boxShadow: `0 0 6px ${color}` } : { background: "rgba(255,255,255,0.15)" }} />
-        ))}
-      </span>
-      <span className="sr-only">
-        {size} sur {needed}
-      </span>
+    <span className={`block font-display font-black leading-none tabular-nums ${className}`} style={{ color, textShadow: `0 0 14px ${color}55` }}>
+      <CountUp value={value} duration={700} />
     </span>
   );
 }
 
-/**
- * Carte verticale d'un mode (Classé, Division), même taille pour les deux : image de sa bande d'accueil en entier,
- * nom, deux grands chiffres (en file, en cours), files actives seulement (points), bouton Jouer.
- */
-function ModeCard({ mode }) {
+/** Remplissage du mode (0 à 1) : la file la plus proche de lancer un match. */
+const fillOf = (mode) => mode.queues.reduce((best, queue) => Math.max(best, queue.size / queue.needed), 0);
+
+/** Anneaux : un anneau de progression par mode, rempli comme la file la plus avancée, chiffre en file au centre. */
+function RingsModule({ modes }) {
+  const R = 38;
+  const L = 2 * Math.PI * R;
   return (
-    <Link href={mode.href} className="group relative flex h-60 flex-col overflow-hidden border border-white/10 transition-colors hover:border-white/25">
-      <span aria-hidden className="absolute inset-0 bg-cover bg-top transition-transform duration-500 group-hover:scale-105" style={{ backgroundImage: `url(${mode.image})` }} />
-      <span aria-hidden className="absolute inset-0 bg-linear-to-b from-ink/70 via-ink/35 to-ink/95" />
-      <span aria-hidden className="absolute inset-x-0 top-0 h-0.5" style={{ background: mode.color, boxShadow: `0 0 12px ${mode.color}` }} />
-      <span className="relative px-3 pt-2.5 text-center font-display text-base font-black uppercase tracking-[0.12em]" style={{ color: mode.color, textShadow: `0 0 14px ${mode.color}88` }}>
-        {mode.label}
-      </span>
-      <span className="relative mt-auto block space-y-2 px-3 pb-2.5">
-        <span className="grid grid-cols-2 gap-2">
-          {[
-            [mode.waiting, "en file"],
-            [mode.matches, "en cours"],
-          ].map(([value, label]) => (
-            <span key={label} className="text-center">
-              <span className="block font-display text-2xl font-black leading-none tabular-nums text-white" style={{ textShadow: `0 0 16px ${mode.color}66` }}>
-                <CountUp value={value} duration={700} />
+    <div className="grid grid-cols-2 gap-1 px-2 py-3">
+      {modes.map((mode) => (
+        <Link key={mode.key} href={mode.href} className="group flex flex-col items-center gap-2 py-1 transition-colors hover:bg-white/[0.04]">
+          <span className="relative h-24 w-24">
+            <svg viewBox="0 0 96 96" className="h-full w-full -rotate-90" aria-hidden>
+              <circle cx="48" cy="48" r={R} fill="none" stroke="rgba(255,255,255,0.08)" strokeWidth="7" />
+              <circle
+                cx="48"
+                cy="48"
+                r={R}
+                fill="none"
+                stroke={mode.color}
+                strokeWidth="7"
+                strokeLinecap="round"
+                strokeDasharray={L}
+                strokeDashoffset={L * (1 - fillOf(mode))}
+                style={{ filter: `drop-shadow(0 0 6px ${mode.color})`, transition: "stroke-dashoffset 700ms ease" }}
+              />
+            </svg>
+            <span className="absolute inset-0 grid place-items-center text-center">
+              <span>
+                <Figure value={mode.waiting} color={mode.color} className="text-3xl" />
+                <span className="block text-[9px] uppercase tracking-[0.16em] text-white/50">en file</span>
               </span>
-              <span className="block text-[10px] uppercase tracking-[0.14em] text-white/55">{label}</span>
             </span>
-          ))}
-        </span>
-        <span className="flex h-[3.4rem] flex-col items-center justify-center space-y-0.5 overflow-hidden">
-          {mode.queues.length > 0 ? (
-            <span className="flex flex-col items-start space-y-0.5">
-              {mode.queues.map((queue) => (
-                <QueueDots key={queue.label} {...queue} color={mode.color} />
-              ))}
-            </span>
-          ) : (
-            <span className="block text-center text-[11px] text-white/45">Personne en file</span>
-          )}
-        </span>
-        <span className="flex items-center justify-center gap-1.5 border-t border-white/15 pt-2 text-xs font-semibold text-white/80 group-hover:text-white">
-          {mode.cta}
-          <LuArrowRight aria-hidden className="h-3.5 w-3.5 transition-transform group-hover:translate-x-0.5" style={{ color: mode.color }} />
-        </span>
-      </span>
-    </Link>
+          </span>
+          <span className="font-display text-sm font-black uppercase tracking-[0.14em]" style={{ color: mode.color }}>
+            {mode.label}
+          </span>
+          <span className="text-[11px] text-white/55">
+            <span className="font-semibold tabular-nums" style={{ color: mode.color }}>
+              {mode.matches}
+            </span>{" "}
+            {mode.matches > 1 ? "matchs en cours" : "match en cours"}
+          </span>
+          <span className="flex items-center gap-1 text-xs font-semibold text-white/75 group-hover:text-white">
+            Jouer
+            <LuArrowRight aria-hidden className="h-3.5 w-3.5" style={{ color: mode.color }} />
+          </span>
+        </Link>
+      ))}
+    </div>
   );
 }
 
@@ -163,7 +160,6 @@ export function OnlinePill() {
       key: "classe",
       label: "Classé",
       color: "#34d399",
-      image: "/images/accueil/mw4-valeria.webp",
       href: "/cod/ranked",
       cta: "Jouer en Classé",
       waiting: activity.queues.reduce((sum, queue) => sum + queue.size, 0),
@@ -177,7 +173,6 @@ export function OnlinePill() {
             key: "division",
             label: "Division",
             color: "#22d3ee",
-            image: "/images/accueil/mw4-price.webp",
             href: "/cod/division",
             cta: "Jouer en Division",
             waiting: activity.teamsSearching,
@@ -226,17 +221,8 @@ export function OnlinePill() {
             <span className="text-sm text-white/60">{activity.online > 1 ? "personnes sur le site" : "personne sur le site"}</span>
           </span>
         </div>
-        {/* Les deux modes à égalité, côte à côte. */}
-        <ul className="grid grid-cols-2 gap-2 p-2">
-          {modes.map((mode) => (
-            <li key={mode.key}>
-              {/* Légère inclinaison vers la souris, avec reflet (ordinateur ; immobile si animations réduites). */}
-              <TiltCard max={5}>
-                <ModeCard mode={mode} />
-              </TiltCard>
-            </li>
-          ))}
-        </ul>
+        {/* Un anneau par mode, rempli comme sa file la plus avancée. */}
+        <RingsModule modes={modes} />
         {/* Prochain rendez-vous (coupe ou tournoi prévu), seulement s'il y en a un. */}
         {nextCup ? <NextCup cup={nextCup} /> : null}
       </NavPopover>
