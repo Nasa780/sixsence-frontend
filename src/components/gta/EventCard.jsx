@@ -58,7 +58,8 @@ export function EventCard({ event, registered = false }) {
             <dt className="sr-only">Inscrits</dt>
             <dd>
               {event.registered_count} inscrit{event.registered_count > 1 ? "s" : ""}
-              {event.max_slots ? ` sur ${event.max_slots} places` : " · places illimitées"}
+              {/* Places illimitées : rien à préciser, seulement le nombre d'inscrits. */}
+              {event.max_slots ? ` sur ${event.max_slots} places` : null}
             </dd>
           </div>
         </dl>

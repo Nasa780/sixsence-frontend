@@ -194,11 +194,11 @@ export default function EventPage() {
                 <div className="flex items-start gap-3">
                   <LuUsers aria-hidden className="mt-0.5 h-5 w-5 shrink-0 text-gold" />
                   <div className="flex-1">
-                    <dt className="font-tech text-[10px] uppercase tracking-[0.24em] text-white/45">Places</dt>
+                    <dt className="font-tech text-[10px] uppercase tracking-[0.24em] text-white/45">{event.max_slots ? "Places" : "Inscrits"}</dt>
                     <dd className="mt-1 text-white/85">
                       {event.max_slots
                         ? `${event.registered_count} sur ${event.max_slots}${state.remaining ? ` · ${state.remaining} restante${state.remaining > 1 ? "s" : ""}` : ""}`
-                        : `${event.registered_count} inscrit${event.registered_count > 1 ? "s" : ""} · places illimitées`}
+                        : `${event.registered_count} inscrit${event.registered_count > 1 ? "s" : ""}`}
                     </dd>
                     {fill !== null ? (
                       <div aria-hidden className="mt-2.5 h-1 w-full bg-white/10">
