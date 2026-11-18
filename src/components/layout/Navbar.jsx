@@ -116,9 +116,11 @@ export function Navbar() {
     // le lien GTA 6 garde son coucher de soleil (son propre data-univers).
     <>
     <header data-univers="or" className="fixed inset-x-0 top-0 z-50">
+      {/* Au-dessus du bandeau GTA 6 (Gta6Strip) : les menus déroulants (MW4, Classements, en ligne, cloche, compte)
+          s'ouvrent par-dessus lui, pas en dessous. */}
       <div
         className={cn(
-          "border-b transition-colors duration-300",
+          "relative z-10 border-b transition-colors duration-300",
           scrolled || mobileOpen ? "border-white/10 bg-ink/85 backdrop-blur-md" : "border-transparent bg-transparent",
         )}
       >
