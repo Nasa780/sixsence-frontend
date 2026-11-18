@@ -38,7 +38,7 @@ export function FeaturedEvent({ event, registered = false }) {
             {!registered && state.full ? <Chip tone="loss">Complet</Chip> : null}
           </div>
           <h3 className="font-display text-5xl font-black uppercase leading-[0.9] sm:text-6xl">{event.title}</h3>
-          {event.description ? <p className="line-clamp-3 max-w-xl text-base leading-relaxed text-white/65">{event.description}</p> : null}
+          {event.description ? <p className="max-w-xl whitespace-pre-line text-base leading-relaxed text-white/65">{event.description}</p> : null}
 
           <dl className="space-y-2 text-sm text-white/75">
             <div className="flex items-center gap-2.5">

@@ -38,7 +38,7 @@ export function EventCard({ event, registered = false }) {
           </div>
         </div>
 
-        {event.description ? <p className="mt-4 line-clamp-2 text-sm leading-relaxed text-white/55">{event.description}</p> : null}
+        {event.description ? <p className="mt-4 whitespace-pre-line text-sm leading-relaxed text-white/55">{event.description}</p> : null}
 
         <dl className="mt-5 space-y-2 text-sm text-white/70">
           <div className="flex items-center gap-2.5">
